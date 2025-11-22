@@ -139,8 +139,9 @@ public class WarfarinDbContext : DbContext
     
     private static void SeedData(ModelBuilder modelBuilder)
     {
-        // Il seeding verrà implementato nel file separato SeedDataConfiguration
-        // per mantenere il codice pulito e organizzato
+        // Seeding dati lookup completi
+        Seeding.InteractionDrugSeeder.Seed(modelBuilder);
+        Seeding.IndicationTypeSeeder.Seed(modelBuilder);
     }
     
     public override int SaveChanges()
