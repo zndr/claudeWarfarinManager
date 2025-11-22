@@ -44,7 +44,7 @@ public class DosageSuggestionConfiguration : IEntityTypeConfiguration<DosageSugg
             
         builder.Property(d => d.WeeklySchedule)
             .IsRequired()
-            .HasColumnType("TEXT"); // JSON
+            .HasColumnType("TEXT");
             
         builder.Property(d => d.ClinicalNotes)
             .HasColumnType("TEXT");

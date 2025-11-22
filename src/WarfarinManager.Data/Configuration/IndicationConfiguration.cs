@@ -22,11 +22,11 @@ public class IndicationConfiguration : IEntityTypeConfiguration<Indication>
             
         builder.Property(i => i.TargetINRMin)
             .IsRequired()
-            .HasPrecision(3, 1); // es. 2.0
+            .HasPrecision(3, 1);
             
         builder.Property(i => i.TargetINRMax)
             .IsRequired()
-            .HasPrecision(3, 1); // es. 3.0
+            .HasPrecision(3, 1);
             
         builder.Property(i => i.StartDate)
             .IsRequired();

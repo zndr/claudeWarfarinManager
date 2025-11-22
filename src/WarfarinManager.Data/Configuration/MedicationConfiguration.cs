@@ -30,7 +30,7 @@ public class MedicationConfiguration : IEntityTypeConfiguration<Medication>
             .IsRequired();
             
         builder.Property(m => m.InteractionDetails)
-            .HasColumnType("TEXT"); // JSON storage
+            .HasColumnType("TEXT");
             
         // Indici
         builder.HasIndex(m => new { m.PatientId, m.IsActive })

@@ -21,11 +21,11 @@ public class INRControlConfiguration : IEntityTypeConfiguration<INRControl>
             
         builder.Property(i => i.INRValue)
             .IsRequired()
-            .HasPrecision(4, 2); // es. 2.50
+            .HasPrecision(4, 2);
             
         builder.Property(i => i.CurrentWeeklyDose)
             .IsRequired()
-            .HasPrecision(5, 2); // es. 35.00 mg
+            .HasPrecision(5, 2);
             
         builder.Property(i => i.PhaseOfTherapy)
             .IsRequired()
@@ -38,7 +38,7 @@ public class INRControlConfiguration : IEntityTypeConfiguration<INRControl>
             
         // Indici
         builder.HasIndex(i => new { i.PatientId, i.ControlDate })
-            .IsDescending(false, true) // PatientId ASC, ControlDate DESC
+            .IsDescending(false, true)
             .HasDatabaseName("IX_INRControls_Patient_Date");
             
         // Relazioni

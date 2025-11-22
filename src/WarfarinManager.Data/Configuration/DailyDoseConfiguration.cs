@@ -21,7 +21,7 @@ public class DailyDoseConfiguration : IEntityTypeConfiguration<DailyDose>
             
         builder.Property(d => d.DoseMg)
             .IsRequired()
-            .HasPrecision(4, 2); // es. 5.00, 2.50
+            .HasPrecision(4, 2);
             
         // Vincolo: DayOfWeek deve essere tra 1 e 7
         builder.HasCheckConstraint("CK_DailyDoses_DayOfWeek", "[DayOfWeek] BETWEEN 1 AND 7");
