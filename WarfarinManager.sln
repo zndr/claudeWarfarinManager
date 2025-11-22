@@ -1,0 +1,46 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.0.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarfarinManager.UI", "src\WarfarinManager.UI\WarfarinManager.UI.csproj", "{A1B2C3D4-E5F6-4789-A1B2-C3D4E5F67890}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarfarinManager.Core", "src\WarfarinManager.Core\WarfarinManager.Core.csproj", "{B2C3D4E5-F678-49AB-C2D3-E4F5678901AB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarfarinManager.Data", "src\WarfarinManager.Data\WarfarinManager.Data.csproj", "{C3D4E5F6-7890-4ABC-D3E4-F56789012BCD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarfarinManager.Shared", "src\WarfarinManager.Shared\WarfarinManager.Shared.csproj", "{D4E5F678-9012-4BCD-E4F5-6789012CDEF3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarfarinManager.Tests", "tests\WarfarinManager.Tests\WarfarinManager.Tests.csproj", "{E5F67890-1234-4CDE-F567-8901234DEF45}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A1B2C3D4-E5F6-4789-A1B2-C3D4E5F67890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-E5F6-4789-A1B2-C3D4E5F67890}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B2C3D4-E5F6-4789-A1B2-C3D4E5F67890}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-E5F6-4789-A1B2-C3D4E5F67890}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2C3D4E5-F678-49AB-C2D3-E4F5678901AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2C3D4E5-F678-49AB-C2D3-E4F5678901AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2C3D4E5-F678-49AB-C2D3-E4F5678901AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2C3D4E5-F678-49AB-C2D3-E4F5678901AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3D4E5F6-7890-4ABC-D3E4-F56789012BCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3D4E5F6-7890-4ABC-D3E4-F56789012BCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3D4E5F6-7890-4ABC-D3E4-F56789012BCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3D4E5F6-7890-4ABC-D3E4-F56789012BCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4E5F678-9012-4BCD-E4F5-6789012CDEF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4E5F678-9012-4BCD-E4F5-6789012CDEF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4E5F678-9012-4BCD-E4F5-6789012CDEF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4E5F678-9012-4BCD-E4F5-6789012CDEF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5F67890-1234-4CDE-F567-8901234DEF45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5F67890-1234-4CDE-F567-8901234DEF45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5F67890-1234-4CDE-F567-8901234DEF45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5F67890-1234-4CDE-F567-8901234DEF45}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
