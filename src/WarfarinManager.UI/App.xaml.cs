@@ -12,6 +12,8 @@ using WarfarinManager.Data.Repositories;
 using WarfarinManager.Data.Repositories.Interfaces;
 using WarfarinManager.UI.Services;
 using WarfarinManager.UI.ViewModels;
+using WarfarinManager.UI.Views.Dashboard;
+using WarfarinManager.UI.Views.Patient;
 
 namespace WarfarinManager.UI;
 
@@ -82,6 +84,11 @@ public partial class App : Application
         // ViewModels
         services.AddTransient<MainViewModel>();
         services.AddTransient<PatientListViewModel>();
+        services.AddTransient<PatientFormViewModel>();
+
+        // Views
+        services.AddTransient<PatientListView>();
+        services.AddTransient<PatientFormView>();
 
         // Main Window
         services.AddSingleton<MainWindow>();

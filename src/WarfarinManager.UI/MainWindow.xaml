@@ -28,41 +28,8 @@
         </Border>
 
         <!-- Content Area -->
-        <Border Grid.Row="1" Padding="20">
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock Text="Benvenuto in WarfarinManager Pro"
-                           FontSize="24"
-                           FontWeight="Bold"
-                           Margin="0,0,0,20"
-                           HorizontalAlignment="Center"/>
-                
-                <TextBlock Text="Applicazione per la gestione ottimizzata della terapia anticoagulante con warfarin"
-                           FontSize="14"
-                           Foreground="#7F8C8D"
-                           TextWrapping="Wrap"
-                           MaxWidth="500"
-                           TextAlignment="Center"
-                           Margin="0,0,0,30"/>
-                
-                <TextBlock Text="✓ Database configurato correttamente"
-                           FontSize="14"
-                           Foreground="#27AE60"
-                           HorizontalAlignment="Center"
-                           Margin="0,5"/>
-                
-                <TextBlock Text="✓ Core business logic pronta"
-                           FontSize="14"
-                           Foreground="#27AE60"
-                           HorizontalAlignment="Center"
-                           Margin="0,5"/>
-                
-                <TextBlock Text="⏳ Interfaccia utente in sviluppo..."
-                           FontSize="14"
-                           Foreground="#F39C12"
-                           HorizontalAlignment="Center"
-                           Margin="0,5"/>
-            </StackPanel>
-        </Border>
+        <ContentControl x:Name="ContentArea" 
+                       Grid.Row="1"/>
 
         <!-- Status Bar -->
         <Border Grid.Row="2" Background="#ECF0F1" Padding="10,5">

@@ -13,6 +13,13 @@ public class NavigationService : INavigationService
     private readonly Stack<object> _navigationHistory = new();
     private object? _currentView;
 
+    // Mapping ViewModel -> View
+    private readonly Dictionary<Type, Type> _viewModelToViewMap = new()
+    {
+        { typeof(ViewModels.PatientListViewModel), typeof(Views.Dashboard.PatientListView) },
+        { typeof(ViewModels.PatientFormViewModel), typeof(Views.Patient.PatientFormView) }
+    };
+
     public NavigationService(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
@@ -45,16 +52,25 @@ public class NavigationService : INavigationService
             _navigationHistory.Push(CurrentView);
         }
 
-        // Risolvi il ViewModel dal DI container
-        var viewModel = _serviceProvider.GetRequiredService<TViewModel>();
+        // Ottieni il tipo della View dal mapping
+        var viewModelType = typeof(TViewModel);
+        if (!_viewModelToViewMap.TryGetValue(viewModelType, out var viewType))
+        {
+            throw new InvalidOperationException($"Nessuna View registrata per il ViewModel {viewModelType.Name}");
+        }
+
+        // Risolvi la View dal DI container
+        var view = _serviceProvider.GetRequiredService(viewType);
 
         // Se il ViewModel implementa INavigationAware, passa il parametro
-        if (viewModel is INavigationAware navigationAware && parameter != null)
+        if (view is System.Windows.FrameworkElement element &&
+            element.DataContext is INavigationAware navigationAware &&
+            parameter != null)
         {
             navigationAware.OnNavigatedTo(parameter);
         }
 
-        CurrentView = viewModel;
+        CurrentView = view;
     }
 
     public void GoBack()
