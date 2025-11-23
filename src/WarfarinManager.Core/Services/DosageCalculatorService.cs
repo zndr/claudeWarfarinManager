@@ -190,7 +190,7 @@ public class DosageCalculatorService : IDosageCalculatorService
             {
                 // INR 1.5-1.7
                 result.LoadingDoseAction = "Aumentare dose del 50% oggi";
-                result.PercentageAdjustment = isSlowMetabolizer ? 5 : 7.5m;
+                result.PercentageAdjustment = isSlowMetabolizer ? 5 : 10m;
                 result.SuggestedWeeklyDoseMg = currentDose * (1 + result.PercentageAdjustment / 100);
                 result.NextControlDays = 7;
                 result.RequiresEBPM = risk == ThromboembolicRisk.High;
@@ -205,7 +205,7 @@ public class DosageCalculatorService : IDosageCalculatorService
             {
                 // INR <1.5
                 result.LoadingDoseAction = "Raddoppiare dose abituale oggi";
-                result.PercentageAdjustment = isSlowMetabolizer ? 7.5m : 10;
+                result.PercentageAdjustment = 10m;
                 result.SuggestedWeeklyDoseMg = currentDose * (1 + result.PercentageAdjustment / 100);
                 result.NextControlDays = 5;
                 result.RequiresEBPM = risk == ThromboembolicRisk.High;
@@ -233,7 +233,7 @@ public class DosageCalculatorService : IDosageCalculatorService
             {
                 // INR 1.8-2.2
                 result.LoadingDoseAction = "Aumentare dose del 50% oggi";
-                result.PercentageAdjustment = isSlowMetabolizer ? 5 : 7.5m;
+                result.PercentageAdjustment = isSlowMetabolizer ? 5 : 10m;
                 result.SuggestedWeeklyDoseMg = currentDose * (1 + result.PercentageAdjustment / 100);
                 result.NextControlDays = 7;
                 result.RequiresEBPM = false;
@@ -242,7 +242,7 @@ public class DosageCalculatorService : IDosageCalculatorService
             {
                 // INR 1.5-1.7
                 result.LoadingDoseAction = "Aumentare dose del 50% oggi";
-                result.PercentageAdjustment = isSlowMetabolizer ? 5 : 7.5m;
+                result.PercentageAdjustment = isSlowMetabolizer ? 5 : 10m;
                 result.SuggestedWeeklyDoseMg = currentDose * (1 + result.PercentageAdjustment / 100);
                 result.NextControlDays = 7;
                 result.RequiresEBPM = risk >= ThromboembolicRisk.Moderate; // Dose intermedia
@@ -256,7 +256,7 @@ public class DosageCalculatorService : IDosageCalculatorService
             {
                 // INR <1.5
                 result.LoadingDoseAction = "Raddoppiare dose abituale oggi";
-                result.PercentageAdjustment = isSlowMetabolizer ? 7.5m : 10;
+                result.PercentageAdjustment = 10m;
                 result.SuggestedWeeklyDoseMg = currentDose * (1 + result.PercentageAdjustment / 100);
                 result.NextControlDays = 5;
                 result.RequiresEBPM = true; // Dose terapeutica
@@ -278,8 +278,8 @@ public class DosageCalculatorService : IDosageCalculatorService
         {
             // INR 3-5 sopra range (ma ≤5)
             result.LoadingDoseAction = "Ridurre dose del 50% oggi o saltare 1 giorno";
-            result.PercentageAdjustment = -7.5m;
-            result.SuggestedWeeklyDoseMg = currentDose * 0.925m;
+            result.PercentageAdjustment = -10m;
+            result.SuggestedWeeklyDoseMg = currentDose * 0.90m;
             result.NextControlDays = 7;
             result.RequiresVitaminK = false;
             result.ClinicalNotes = "INR moderatamente sopra range. Riduzione dose temporanea.";
@@ -288,8 +288,8 @@ public class DosageCalculatorService : IDosageCalculatorService
         {
             // INR 5-6
             result.LoadingDoseAction = "Saltare 1 giorno di terapia";
-            result.PercentageAdjustment = -7.5m;
-            result.SuggestedWeeklyDoseMg = currentDose * 0.925m;
+            result.PercentageAdjustment = -10m;
+            result.SuggestedWeeklyDoseMg = currentDose * 0.90m;
             result.NextControlDays = 5; // Controllo più ravvicinato
             result.RequiresVitaminK = false;
             result.ClinicalNotes = "INR elevato. Sospensione temporanea raccomandata.";

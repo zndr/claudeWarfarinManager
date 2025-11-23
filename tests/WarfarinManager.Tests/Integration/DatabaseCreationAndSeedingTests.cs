@@ -1,6 +1,5 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using WarfarinManager.Data.Context;
 using WarfarinManager.Shared.Enums;
 
 namespace WarfarinManager.Tests.Integration;
@@ -10,7 +9,7 @@ namespace WarfarinManager.Tests.Integration;
 /// </summary>
 public class DatabaseCreationAndSeedingTests : IDisposable
 {
-    private readonly WarfarinDbContext _context;
+    private readonly TestWarfarinDbContext _context;
 
     public DatabaseCreationAndSeedingTests()
     {

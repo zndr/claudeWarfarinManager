@@ -12,7 +12,7 @@ namespace WarfarinManager.Tests.Integration;
 /// </summary>
 public class PerformanceTests : IDisposable
 {
-    private readonly WarfarinDbContext _context;
+    private readonly TestWarfarinDbContext _context;
     private readonly UnitOfWork _unitOfWork;
 
     public PerformanceTests()
@@ -146,14 +146,22 @@ public class PerformanceTests : IDisposable
     {
         // Arrange
         await SeedPatients(1000);
+        
+        // Prendi il primo codice fiscale generato:
+        // i=0: lastName="Rossi"+0="Rossi0" → primi 3 char = "ROS"
+        // firstName="Mario" → primi 3 char = "MAR"
+        // year=1940 → year%100 = 40
+        // Pattern: ROS + MAR + 40 + A01H + 500 + Z
+        var expectedFiscalCode = "ROSMAR40A01H500Z";
 
         // Act
         var stopwatch = Stopwatch.StartNew();
-        var patient = await _unitOfWork.Patients.GetByFiscalCodeAsync("RSSMRA60A01H501Z");
+        var patient = await _unitOfWork.Patients.GetByFiscalCodeAsync(expectedFiscalCode);
         stopwatch.Stop();
 
         // Assert
-        patient.Should().NotBeNull();
+        patient.Should().NotBeNull($"paziente con CF {expectedFiscalCode} dovrebbe esistere");
+        patient!.LastName.Should().StartWith("Rossi");
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(10, 
             "lookup su indice unique deve essere istantaneo");
     }
@@ -209,7 +217,7 @@ public class PerformanceTests : IDisposable
 
     // Helper methods
 
-    private async Task SeedPatients(int count, WarfarinDbContext? context = null)
+    private async Task SeedPatients(int count, TestWarfarinDbContext? context = null)
     {
         var targetContext = context ?? _context;
         var patients = GeneratePatients(count);

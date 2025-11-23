@@ -12,7 +12,7 @@ namespace WarfarinManager.Tests.Integration;
 /// </summary>
 public class PatientRepositoryIntegrationTests : IDisposable
 {
-    private readonly WarfarinDbContext _context;
+    private readonly TestWarfarinDbContext _context;
     private readonly PatientRepository _repository;
 
     public PatientRepositoryIntegrationTests()

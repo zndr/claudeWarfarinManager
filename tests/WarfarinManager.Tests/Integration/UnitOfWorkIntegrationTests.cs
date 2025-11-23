@@ -12,7 +12,7 @@ namespace WarfarinManager.Tests.Integration;
 /// </summary>
 public class UnitOfWorkIntegrationTests : IDisposable
 {
-    private readonly WarfarinDbContext _context;
+    private readonly TestWarfarinDbContext _context;
     private readonly UnitOfWork _unitOfWork;
 
     public UnitOfWorkIntegrationTests()

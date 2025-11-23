@@ -13,7 +13,7 @@ namespace WarfarinManager.Tests.Integration;
 /// </summary>
 public class INRControlRepositoryIntegrationTests : IDisposable
 {
-    private readonly WarfarinDbContext _context;
+    private readonly TestWarfarinDbContext _context;
     private readonly INRControlRepository _repository;
     private readonly PatientRepository _patientRepository;
     private readonly TTRCalculatorService _ttrCalculator;
@@ -145,7 +145,7 @@ public class INRControlRepositoryIntegrationTests : IDisposable
         ttrResult.Should().NotBeNull();
         ttrResult.TTRPercentage.Should().BeGreaterThan(0);
         ttrResult.TTRPercentage.Should().BeLessThan(100);
-        ttrResult.TotalDays.Should().Be(90, "dal primo all'ultimo controllo");
+        ttrResult.TotalDays.Should().Be(85, "dal primo controllo (-90 giorni) all'ultimo (-6 giorni) = 84 giorni + 1");
         
         // Verifica classificazione qualità
         if (ttrResult.TTRPercentage >= 70)

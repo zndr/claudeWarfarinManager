@@ -1,0 +1,427 @@
+  Individuazione dei progetti da ripristinare...
+  Tutti i progetti sono aggiornati per il ripristino.
+  WarfarinManager.Shared -> D:\Claude\winTaoGest\src\WarfarinManager.Shared\bin\Debug\net8.0\WarfarinManager.Shared.dll
+  WarfarinManager.Data -> D:\Claude\winTaoGest\src\WarfarinManager.Data\bin\Debug\net8.0\WarfarinManager.Data.dll
+  WarfarinManager.Core -> D:\Claude\winTaoGest\src\WarfarinManager.Core\bin\Debug\net8.0\WarfarinManager.Core.dll
+  WarfarinManager.Tests -> D:\Claude\winTaoGest\tests\WarfarinManager.Tests\bin\Debug\net8.0\WarfarinManager.Tests.dll
+Esecuzione dei test per D:\Claude\winTaoGest\tests\WarfarinManager.Tests\bin\Debug\net8.0\WarfarinManager.Tests.dll (.NETCoreApp,Version=v8.0)
+Versione di VSTest 17.14.1 (x64)
+
+Avvio dell'esecuzione dei test in corso. Attendere...
+Un totale di 1 file di test corrisponde al criterio specificato.
+D:\Claude\winTaoGest\tests\WarfarinManager.Tests\bin\Debug\net8.0\WarfarinManager.Tests.dll
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.22)
+[xUnit.net 00:00:00.04]   Discovering: WarfarinManager.Tests
+[xUnit.net 00:00:00.09]   Discovered:  WarfarinManager.Tests
+[xUnit.net 00:00:00.09]   Starting:    WarfarinManager.Tests
+[xUnit.net 00:00:00.58]       System.InvalidOperationException : An error was generated for warning 'Microsoft.EntityFrameworkCore.Database.Transaction.TransactionIgnoredWarning': Transactions are not supported by the in-memory store. See https://go.microsoft.com/fwlink/?LinkId=800142 This exception can be suppressed or logged by passing event ID 'InMemoryEventId.TransactionIgnoredWarning' to the 'ConfigureWarnings' method in 'DbContext.OnConfiguring' or 'AddDbContext'.
+[xUnit.net 00:00:00.58]       Stack Trace:
+[xUnit.net 00:00:00.58]            at Microsoft.EntityFrameworkCore.Diagnostics.EventDefinition.Log[TLoggerCategory](IDiagnosticsLogger`1 logger, Exception exception)
+[xUnit.net 00:00:00.58]            at Microsoft.EntityFrameworkCore.InMemory.Internal.InMemoryLoggerExtensions.TransactionIgnoredWarning(IDiagnosticsLogger`1 diagnostics)
+[xUnit.net 00:00:00.58]            at Microsoft.EntityFrameworkCore.InMemory.Storage.Internal.InMemoryTransactionManager.BeginTransactionAsync(CancellationToken cancellationToken)
+[xUnit.net 00:00:00.58]            at Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade.BeginTransactionAsync(CancellationToken cancellationToken)
+[xUnit.net 00:00:00.58]         D:\Claude\winTaoGest\src\WarfarinManager.Data\Repositories\UnitOfWork.cs(40,0): at WarfarinManager.Data.Repositories.UnitOfWork.BeginTransactionAsync(CancellationToken cancellationToken)
+[xUnit.net 00:00:00.58]         D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\UnitOfWorkIntegrationTests.cs(77,0): at WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.Transaction_Commit_ShouldPersistAllChanges()
+[xUnit.net 00:00:00.58]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.61]       System.InvalidOperationException : An error was generated for warning 'Microsoft.EntityFrameworkCore.Database.Transaction.TransactionIgnoredWarning': Transactions are not supported by the in-memory store. See https://go.microsoft.com/fwlink/?LinkId=800142 This exception can be suppressed or logged by passing event ID 'InMemoryEventId.TransactionIgnoredWarning' to the 'ConfigureWarnings' method in 'DbContext.OnConfiguring' or 'AddDbContext'.
+[xUnit.net 00:00:00.61]       Stack Trace:
+[xUnit.net 00:00:00.61]            at Microsoft.EntityFrameworkCore.Diagnostics.EventDefinition.Log[TLoggerCategory](IDiagnosticsLogger`1 logger, Exception exception)
+[xUnit.net 00:00:00.61]            at Microsoft.EntityFrameworkCore.InMemory.Internal.InMemoryLoggerExtensions.TransactionIgnoredWarning(IDiagnosticsLogger`1 diagnostics)
+[xUnit.net 00:00:00.61]            at Microsoft.EntityFrameworkCore.InMemory.Storage.Internal.InMemoryTransactionManager.BeginTransactionAsync(CancellationToken cancellationToken)
+[xUnit.net 00:00:00.61]            at Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade.BeginTransactionAsync(CancellationToken cancellationToken)
+[xUnit.net 00:00:00.61]         D:\Claude\winTaoGest\src\WarfarinManager.Data\Repositories\UnitOfWork.cs(40,0): at WarfarinManager.Data.Repositories.UnitOfWork.BeginTransactionAsync(CancellationToken cancellationToken)
+[xUnit.net 00:00:00.61]         D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\UnitOfWorkIntegrationTests.cs(113,0): at WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.Transaction_Rollback_ShouldNotPersistChanges()
+[xUnit.net 00:00:00.61]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.61]       System.ObjectDisposedException : Cannot access a disposed context instance. A common cause of this error is disposing a context instance that was resolved from dependency injection and then later trying to use the same context instance elsewhere in your application. This may occur if you are calling 'Dispose' on the context instance, or wrapping it in a using statement. If you are using dependency injection, you should let the dependency injection container take care of disposing context instances.
+[xUnit.net 00:00:00.61]       Object name: 'TestWarfarinDbContext'.
+[xUnit.net 00:00:00.61]       Stack Trace:
+[xUnit.net 00:00:00.61]            at Microsoft.EntityFrameworkCore.DbContext.CheckDisposed()
+[xUnit.net 00:00:00.61]            at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+[xUnit.net 00:00:00.61]         D:\Claude\winTaoGest\src\WarfarinManager.Data\Repositories\UnitOfWork.cs(35,0): at WarfarinManager.Data.Repositories.UnitOfWork.SaveChangesAsync(CancellationToken cancellationToken)
+[xUnit.net 00:00:00.61]         D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\UnitOfWorkIntegrationTests.cs(251,0): at WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.<>c__DisplayClass8_0.<<ConcurrentAccess_ShouldHandleCorrectly>b__1>d.MoveNext()
+[xUnit.net 00:00:00.61]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.61]         D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\UnitOfWorkIntegrationTests.cs(255,0): at WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.ConcurrentAccess_ShouldHandleCorrectly()
+[xUnit.net 00:00:00.61]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.62]       System.ObjectDisposedException : Cannot access a disposed context instance. A common cause of this error is disposing a context instance that was resolved from dependency injection and then later trying to use the same context instance elsewhere in your application. This may occur if you are calling 'Dispose' on the context instance, or wrapping it in a using statement. If you are using dependency injection, you should let the dependency injection container take care of disposing context instances.
+[xUnit.net 00:00:00.62]       Object name: 'TestWarfarinDbContext'.
+[xUnit.net 00:00:00.62]       Stack Trace:
+[xUnit.net 00:00:00.62]            at Microsoft.EntityFrameworkCore.DbContext.CheckDisposed()
+[xUnit.net 00:00:00.62]            at Microsoft.EntityFrameworkCore.DbContext.get_DbContextDependencies()
+[xUnit.net 00:00:00.62]            at Microsoft.EntityFrameworkCore.DbContext.Set[TEntity]()
+[xUnit.net 00:00:00.62]         D:\Claude\winTaoGest\src\WarfarinManager.Data\Repositories\Repository.cs(19,0): at WarfarinManager.Data.Repositories.Repository`1..ctor(WarfarinDbContext context)
+[xUnit.net 00:00:00.62]         D:\Claude\winTaoGest\src\WarfarinManager.Data\Repositories\PatientRepository.cs(13,0): at WarfarinManager.Data.Repositories.PatientRepository..ctor(WarfarinDbContext context)
+[xUnit.net 00:00:00.62]         D:\Claude\winTaoGest\src\WarfarinManager.Data\Repositories\UnitOfWork.cs(25,0): at WarfarinManager.Data.Repositories.UnitOfWork.get_Patients()
+[xUnit.net 00:00:00.62]         D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\UnitOfWorkIntegrationTests.cs(283,0): at WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.Dispose_ShouldCleanupResources()
+[xUnit.net 00:00:00.62]         --- End of stack trace from previous location ---
+  Superato WarfarinManager.Tests.Integration.DatabaseCreationAndSeedingTests.Database_Indexes_ShouldBeConfigured [461 ms]
+  Non superato WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.Transaction_Commit_ShouldPersistAllChanges [459 ms]
+  Messaggio di errore:
+   System.InvalidOperationException : An error was generated for warning 'Microsoft.EntityFrameworkCore.Database.Transaction.TransactionIgnoredWarning': Transactions are not supported by the in-memory store. See https://go.microsoft.com/fwlink/?LinkId=800142 This exception can be suppressed or logged by passing event ID 'InMemoryEventId.TransactionIgnoredWarning' to the 'ConfigureWarnings' method in 'DbContext.OnConfiguring' or 'AddDbContext'.
+  Analisi dello stack:
+     at Microsoft.EntityFrameworkCore.Diagnostics.EventDefinition.Log[TLoggerCategory](IDiagnosticsLogger`1 logger, Exception exception)
+   at Microsoft.EntityFrameworkCore.InMemory.Internal.InMemoryLoggerExtensions.TransactionIgnoredWarning(IDiagnosticsLogger`1 diagnostics)
+   at Microsoft.EntityFrameworkCore.InMemory.Storage.Internal.InMemoryTransactionManager.BeginTransactionAsync(CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade.BeginTransactionAsync(CancellationToken cancellationToken)
+   at WarfarinManager.Data.Repositories.UnitOfWork.BeginTransactionAsync(CancellationToken cancellationToken) in D:\Claude\winTaoGest\src\WarfarinManager.Data\Repositories\UnitOfWork.cs:line 40
+   at WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.Transaction_Commit_ShouldPersistAllChanges() in D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\UnitOfWorkIntegrationTests.cs:line 77
+--- End of stack trace from previous location ---
+  Non superato WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.Transaction_Rollback_ShouldNotPersistChanges [27 ms]
+  Messaggio di errore:
+   System.InvalidOperationException : An error was generated for warning 'Microsoft.EntityFrameworkCore.Database.Transaction.TransactionIgnoredWarning': Transactions are not supported by the in-memory store. See https://go.microsoft.com/fwlink/?LinkId=800142 This exception can be suppressed or logged by passing event ID 'InMemoryEventId.TransactionIgnoredWarning' to the 'ConfigureWarnings' method in 'DbContext.OnConfiguring' or 'AddDbContext'.
+  Analisi dello stack:
+     at Microsoft.EntityFrameworkCore.Diagnostics.EventDefinition.Log[TLoggerCategory](IDiagnosticsLogger`1 logger, Exception exception)
+   at Microsoft.EntityFrameworkCore.InMemory.Internal.InMemoryLoggerExtensions.TransactionIgnoredWarning(IDiagnosticsLogger`1 diagnostics)
+   at Microsoft.EntityFrameworkCore.InMemory.Storage.Internal.InMemoryTransactionManager.BeginTransactionAsync(CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade.BeginTransactionAsync(CancellationToken cancellationToken)
+   at WarfarinManager.Data.Repositories.UnitOfWork.BeginTransactionAsync(CancellationToken cancellationToken) in D:\Claude\winTaoGest\src\WarfarinManager.Data\Repositories\UnitOfWork.cs:line 40
+   at WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.Transaction_Rollback_ShouldNotPersistChanges() in D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\UnitOfWorkIntegrationTests.cs:line 113
+--- End of stack trace from previous location ---
+  Non superato WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.ConcurrentAccess_ShouldHandleCorrectly [6 ms]
+  Messaggio di errore:
+   System.ObjectDisposedException : Cannot access a disposed context instance. A common cause of this error is disposing a context instance that was resolved from dependency injection and then later trying to use the same context instance elsewhere in your application. This may occur if you are calling 'Dispose' on the context instance, or wrapping it in a using statement. If you are using dependency injection, you should let the dependency injection container take care of disposing context instances.
+Object name: 'TestWarfarinDbContext'.
+  Analisi dello stack:
+     at Microsoft.EntityFrameworkCore.DbContext.CheckDisposed()
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at WarfarinManager.Data.Repositories.UnitOfWork.SaveChangesAsync(CancellationToken cancellationToken) in D:\Claude\winTaoGest\src\WarfarinManager.Data\Repositories\UnitOfWork.cs:line 35
+   at WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.<>c__DisplayClass8_0.<<ConcurrentAccess_ShouldHandleCorrectly>b__1>d.MoveNext() in D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\UnitOfWorkIntegrationTests.cs:line 251
+--- End of stack trace from previous location ---
+   at WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.ConcurrentAccess_ShouldHandleCorrectly() in D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\UnitOfWorkIntegrationTests.cs:line 255
+--- End of stack trace from previous location ---
+  Non superato WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.Dispose_ShouldCleanupResources [1 ms]
+  Messaggio di errore:
+   System.ObjectDisposedException : Cannot access a disposed context instance. A common cause of this error is disposing a context instance that was resolved from dependency injection and then later trying to use the same context instance elsewhere in your application. This may occur if you are calling 'Dispose' on the context instance, or wrapping it in a using statement. If you are using dependency injection, you should let the dependency injection container take care of disposing context instances.
+Object name: 'TestWarfarinDbContext'.
+  Analisi dello stack:
+     at Microsoft.EntityFrameworkCore.DbContext.CheckDisposed()
+   at Microsoft.EntityFrameworkCore.DbContext.get_DbContextDependencies()
+   at Microsoft.EntityFrameworkCore.DbContext.Set[TEntity]()
+   at WarfarinManager.Data.Repositories.Repository`1..ctor(WarfarinDbContext context) in D:\Claude\winTaoGest\src\WarfarinManager.Data\Repositories\Repository.cs:line 19
+   at WarfarinManager.Data.Repositories.PatientRepository..ctor(WarfarinDbContext context) in D:\Claude\winTaoGest\src\WarfarinManager.Data\Repositories\PatientRepository.cs:line 13
+   at WarfarinManager.Data.Repositories.UnitOfWork.get_Patients() in D:\Claude\winTaoGest\src\WarfarinManager.Data\Repositories\UnitOfWork.cs:line 25
+   at WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.Dispose_ShouldCleanupResources() in D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\UnitOfWorkIntegrationTests.cs:line 283
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:00.63]       System.InvalidOperationException : An error was generated for warning 'Microsoft.EntityFrameworkCore.Database.Transaction.TransactionIgnoredWarning': Transactions are not supported by the in-memory store. See https://go.microsoft.com/fwlink/?LinkId=800142 This exception can be suppressed or logged by passing event ID 'InMemoryEventId.TransactionIgnoredWarning' to the 'ConfigureWarnings' method in 'DbContext.OnConfiguring' or 'AddDbContext'.
+[xUnit.net 00:00:00.63]       Stack Trace:
+[xUnit.net 00:00:00.63]            at Microsoft.EntityFrameworkCore.Diagnostics.EventDefinition.Log[TLoggerCategory](IDiagnosticsLogger`1 logger, Exception exception)
+[xUnit.net 00:00:00.63]            at Microsoft.EntityFrameworkCore.InMemory.Internal.InMemoryLoggerExtensions.TransactionIgnoredWarning(IDiagnosticsLogger`1 diagnostics)
+[xUnit.net 00:00:00.63]            at Microsoft.EntityFrameworkCore.InMemory.Storage.Internal.InMemoryTransactionManager.BeginTransactionAsync(CancellationToken cancellationToken)
+[xUnit.net 00:00:00.63]            at Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade.BeginTransactionAsync(CancellationToken cancellationToken)
+[xUnit.net 00:00:00.63]         D:\Claude\winTaoGest\src\WarfarinManager.Data\Repositories\UnitOfWork.cs(40,0): at WarfarinManager.Data.Repositories.UnitOfWork.BeginTransactionAsync(CancellationToken cancellationToken)
+[xUnit.net 00:00:00.63]         D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\UnitOfWorkIntegrationTests.cs(176,0): at WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.ComplexTransaction_MultipleEntities_ShouldBeAtomic()
+[xUnit.net 00:00:00.63]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.64]       Expected a <Microsoft.EntityFrameworkCore.DbUpdateException> to be thrown because non deve permettere FiscalCode duplicati, but no exception was thrown.
+[xUnit.net 00:00:00.64]       Stack Trace:
+[xUnit.net 00:00:00.64]            at FluentAssertions.Execution.XUnit2TestFramework.Throw(String message)
+[xUnit.net 00:00:00.64]            at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)
+[xUnit.net 00:00:00.64]            at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)
+[xUnit.net 00:00:00.64]            at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
+[xUnit.net 00:00:00.64]            at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
+[xUnit.net 00:00:00.64]            at FluentAssertions.Execution.AssertionScope.FailWith(String message)
+[xUnit.net 00:00:00.64]            at FluentAssertions.Specialized.DelegateAssertionsBase`2.ThrowInternal[TException](Exception exception, String because, Object[] becauseArgs)
+[xUnit.net 00:00:00.64]            at FluentAssertions.Specialized.AsyncFunctionAssertions`2.ThrowAsync[TException](String because, Object[] becauseArgs)
+[xUnit.net 00:00:00.64]         D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\DatabaseCreationAndSeedingTests.cs(164,0): at WarfarinManager.Tests.Integration.DatabaseCreationAndSeedingTests.Database_Constraints_ShouldWork()
+[xUnit.net 00:00:00.64]         --- End of stack trace from previous location ---
+  Superato WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.SaveChangesAsync_ShouldPersistAllChanges [1 ms]
+  Superato WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.UnitOfWork_ShouldProvideAccessToAllRepositories [1 ms]
+  Superato WarfarinManager.Tests.Integration.INRControlRepositoryIntegrationTests.AddINRControl_WithDailyDoses_ShouldPersist [510 ms]
+  Non superato WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.ComplexTransaction_MultipleEntities_ShouldBeAtomic [2 ms]
+  Messaggio di errore:
+   System.InvalidOperationException : An error was generated for warning 'Microsoft.EntityFrameworkCore.Database.Transaction.TransactionIgnoredWarning': Transactions are not supported by the in-memory store. See https://go.microsoft.com/fwlink/?LinkId=800142 This exception can be suppressed or logged by passing event ID 'InMemoryEventId.TransactionIgnoredWarning' to the 'ConfigureWarnings' method in 'DbContext.OnConfiguring' or 'AddDbContext'.
+  Analisi dello stack:
+     at Microsoft.EntityFrameworkCore.Diagnostics.EventDefinition.Log[TLoggerCategory](IDiagnosticsLogger`1 logger, Exception exception)
+   at Microsoft.EntityFrameworkCore.InMemory.Internal.InMemoryLoggerExtensions.TransactionIgnoredWarning(IDiagnosticsLogger`1 diagnostics)
+   at Microsoft.EntityFrameworkCore.InMemory.Storage.Internal.InMemoryTransactionManager.BeginTransactionAsync(CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade.BeginTransactionAsync(CancellationToken cancellationToken)
+   at WarfarinManager.Data.Repositories.UnitOfWork.BeginTransactionAsync(CancellationToken cancellationToken) in D:\Claude\winTaoGest\src\WarfarinManager.Data\Repositories\UnitOfWork.cs:line 40
+   at WarfarinManager.Tests.Integration.UnitOfWorkIntegrationTests.ComplexTransaction_MultipleEntities_ShouldBeAtomic() in D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\UnitOfWorkIntegrationTests.cs:line 176
+--- End of stack trace from previous location ---
+  Non superato WarfarinManager.Tests.Integration.DatabaseCreationAndSeedingTests.Database_Constraints_ShouldWork [70 ms]
+  Messaggio di errore:
+   Expected a <Microsoft.EntityFrameworkCore.DbUpdateException> to be thrown because non deve permettere FiscalCode duplicati, but no exception was thrown.
+  Analisi dello stack:
+     at FluentAssertions.Execution.XUnit2TestFramework.Throw(String message)
+   at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)
+   at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
+   at FluentAssertions.Execution.AssertionScope.FailWith(String message)
+   at FluentAssertions.Specialized.DelegateAssertionsBase`2.ThrowInternal[TException](Exception exception, String because, Object[] becauseArgs)
+   at FluentAssertions.Specialized.AsyncFunctionAssertions`2.ThrowAsync[TException](String because, Object[] becauseArgs)
+   at WarfarinManager.Tests.Integration.DatabaseCreationAndSeedingTests.Database_Constraints_ShouldWork() in D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\DatabaseCreationAndSeedingTests.cs:line 164
+--- End of stack trace from previous location ---
+  Superato WarfarinManager.Tests.Integration.DatabaseCreationAndSeedingTests.Timestamps_ShouldBeAutoPopulated [10 ms]
+  Superato WarfarinManager.Tests.Integration.PatientRepositoryIntegrationTests.GetPatientsWithRecentINRAsync_ShouldFilterCorrectly [545 ms]
+[xUnit.net 00:00:00.67]       Expected drugs to contain more than 15 item(s) because ci devono essere almeno 16 farmaci critici, but found 3: 
+[xUnit.net 00:00:00.67]       {
+[xUnit.net 00:00:00.67]           WarfarinManager.Data.Entities.InteractionDrug
+[xUnit.net 00:00:00.67]           {
+[xUnit.net 00:00:00.67]               ACCPManagement = "Monitoraggio stretto", 
+[xUnit.net 00:00:00.67]               Category = "Antiaritmico", 
+[xUnit.net 00:00:00.67]               DrugName = "Amiodarone", 
+[xUnit.net 00:00:00.67]               FCSAManagement = "Ridurre dose 20-30%", 
+[xUnit.net 00:00:00.67]               Id = 1, 
+[xUnit.net 00:00:00.67]               InteractionEffect = InteractionEffect.Increases {value: 0}, 
+[xUnit.net 00:00:00.67]               InteractionLevel = InteractionLevel.High {value: 3}, 
+[xUnit.net 00:00:00.67]               Mechanism = "Inibizione CYP2C9", 
+[xUnit.net 00:00:00.67]               OddsRatio = 2.0M, 
+[xUnit.net 00:00:00.67]               RecommendedINRCheckDays = 3
+[xUnit.net 00:00:00.67]           }, 
+[xUnit.net 00:00:00.67]           WarfarinManager.Data.Entities.InteractionDrug
+[xUnit.net 00:00:00.67]           {
+[xUnit.net 00:00:00.67]               ACCPManagement = "Considerare alternativa", 
+[xUnit.net 00:00:00.67]               Category = "Antibiotico", 
+[xUnit.net 00:00:00.67]               DrugName = "Cotrimoxazolo", 
+[xUnit.net 00:00:00.67]               FCSAManagement = "Ridurre dose 25-40%", 
+[xUnit.net 00:00:00.67]               Id = 2, 
+[xUnit.net 00:00:00.67]               InteractionEffect = InteractionEffect.Increases {value: 0}, 
+[xUnit.net 00:00:00.67]               InteractionLevel = InteractionLevel.High {value: 3}, 
+[xUnit.net 00:00:00.67]               Mechanism = "Inibizione CYP2C9 + sintesi Vit K", 
+[xUnit.net 00:00:00.67]               OddsRatio = 2.70M, 
+[xUnit.net 00:00:00.67]               RecommendedINRCheckDays = 3
+[xUnit.net 00:00:00.67]           }, 
+[xUnit.net 00:00:00.67]           WarfarinManager.Data.Entities.InteractionDrug
+[xUnit.net 00:00:00.67]           {
+[xUnit.net 00:00:00.67]               ACCPManagement = "Considerare alternativa", 
+[xUnit.net 00:00:00.67]               Category = "Antifungino", 
+[xUnit.net 00:00:00.67]               DrugName = "Fluconazolo", 
+[xUnit.net 00:00:00.67]               FCSAManagement = "Ridurre dose 25-40%", 
+[xUnit.net 00:00:00.67]               Id = 3, 
+[xUnit.net 00:00:00.67]               InteractionEffect = InteractionEffect.Increases {value: 0}, 
+[xUnit.net 00:00:00.67]               InteractionLevel = InteractionLevel.High {value: 3}, 
+[xUnit.net 00:00:00.67]               Mechanism = "Inibizione CYP2C9", 
+[xUnit.net 00:00:00.67]               OddsRatio = 4.57M, 
+[xUnit.net 00:00:00.67]               RecommendedINRCheckDays = 3
+[xUnit.net 00:00:00.67]           }
+[xUnit.net 00:00:00.67]       }.
+[xUnit.net 00:00:00.67]       Stack Trace:
+[xUnit.net 00:00:00.67]            at FluentAssertions.Execution.XUnit2TestFramework.Throw(String message)
+[xUnit.net 00:00:00.67]            at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)
+[xUnit.net 00:00:00.67]            at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)
+[xUnit.net 00:00:00.67]            at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
+[xUnit.net 00:00:00.67]            at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
+[xUnit.net 00:00:00.67]            at FluentAssertions.Execution.AssertionScope.FailWith(String message, Object[] args)
+[xUnit.net 00:00:00.67]            at FluentAssertions.Execution.GivenSelector`1.FailWith(String message, Object[] args)
+[xUnit.net 00:00:00.67]            at FluentAssertions.Execution.GivenSelector`1.FailWith(String message, Func`2[] args)
+[xUnit.net 00:00:00.67]            at FluentAssertions.Collections.GenericCollectionAssertions`3.HaveCountGreaterThan(Int32 expected, String because, Object[] becauseArgs)
+[xUnit.net 00:00:00.67]         D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\DatabaseCreationAndSeedingTests.cs(54,0): at WarfarinManager.Tests.Integration.DatabaseCreationAndSeedingTests.InteractionDrugs_ShouldBeSeeeded_WithCorrectData()
+[xUnit.net 00:00:00.67]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.67]       System.InvalidOperationException : Relational-specific methods can only be used when the context is using a relational database provider.
+[xUnit.net 00:00:00.67]       Stack Trace:
+[xUnit.net 00:00:00.67]            at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.GetFacadeDependencies(DatabaseFacade databaseFacade)
+[xUnit.net 00:00:00.67]            at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.GetDbConnection(DatabaseFacade databaseFacade)
+[xUnit.net 00:00:00.67]         D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\DatabaseCreationAndSeedingTests.cs(186,0): at WarfarinManager.Tests.Integration.DatabaseCreationAndSeedingTests.EnumConversions_ShouldStoreAsStrings()
+[xUnit.net 00:00:00.67]         --- End of stack trace from previous location ---
+  Superato WarfarinManager.Tests.Integration.PatientRepositoryIntegrationTests.AddAsync_ShouldPersistPatient [1 ms]
+  Superato WarfarinManager.Tests.Integration.INRControlRepositoryIntegrationTests.ComplexQuery_PatientsWithTTRBelowThreshold_ShouldWork [42 ms]
+  Non superato WarfarinManager.Tests.Integration.DatabaseCreationAndSeedingTests.InteractionDrugs_ShouldBeSeeeded_WithCorrectData [13 ms]
+  Messaggio di errore:
+   Expected drugs to contain more than 15 item(s) because ci devono essere almeno 16 farmaci critici, but found 3: 
+{
+    WarfarinManager.Data.Entities.InteractionDrug
+    {
+        ACCPManagement = "Monitoraggio stretto", 
+        Category = "Antiaritmico", 
+        DrugName = "Amiodarone", 
+        FCSAManagement = "Ridurre dose 20-30%", 
+        Id = 1, 
+        InteractionEffect = InteractionEffect.Increases {value: 0}, 
+        InteractionLevel = InteractionLevel.High {value: 3}, 
+        Mechanism = "Inibizione CYP2C9", 
+        OddsRatio = 2.0M, 
+        RecommendedINRCheckDays = 3
+    }, 
+    WarfarinManager.Data.Entities.InteractionDrug
+    {
+        ACCPManagement = "Considerare alternativa", 
+        Category = "Antibiotico", 
+        DrugName = "Cotrimoxazolo", 
+        FCSAManagement = "Ridurre dose 25-40%", 
+        Id = 2, 
+        InteractionEffect = InteractionEffect.Increases {value: 0}, 
+        InteractionLevel = InteractionLevel.High {value: 3}, 
+        Mechanism = "Inibizione CYP2C9 + sintesi Vit K", 
+        OddsRatio = 2.70M, 
+        RecommendedINRCheckDays = 3
+    }, 
+    WarfarinManager.Data.Entities.InteractionDrug
+    {
+        ACCPManagement = "Considerare alternativa", 
+        Category = "Antifungino", 
+        DrugName = "Fluconazolo", 
+        FCSAManagement = "Ridurre dose 25-40%", 
+        Id = 3, 
+        InteractionEffect = InteractionEffect.Increases {value: 0}, 
+        InteractionLevel = InteractionLevel.High {value: 3}, 
+        Mechanism = "Inibizione CYP2C9", 
+        OddsRatio = 4.57M, 
+        RecommendedINRCheckDays = 3
+    }
+}.
+  Analisi dello stack:
+     at FluentAssertions.Execution.XUnit2TestFramework.Throw(String message)
+   at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)
+   at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
+   at FluentAssertions.Execution.AssertionScope.FailWith(String message, Object[] args)
+   at FluentAssertions.Execution.GivenSelector`1.FailWith(String message, Object[] args)
+   at FluentAssertions.Execution.GivenSelector`1.FailWith(String message, Func`2[] args)
+   at FluentAssertions.Collections.GenericCollectionAssertions`3.HaveCountGreaterThan(Int32 expected, String because, Object[] becauseArgs)
+   at WarfarinManager.Tests.Integration.DatabaseCreationAndSeedingTests.InteractionDrugs_ShouldBeSeeeded_WithCorrectData() in D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\DatabaseCreationAndSeedingTests.cs:line 54
+--- End of stack trace from previous location ---
+  Superato WarfarinManager.Tests.Integration.INRControlRepositoryIntegrationTests.GetPatientINRHistoryAsync_ShouldReturnOrderedByDate [4 ms]
+  Non superato WarfarinManager.Tests.Integration.DatabaseCreationAndSeedingTests.EnumConversions_ShouldStoreAsStrings [1 ms]
+  Messaggio di errore:
+   System.InvalidOperationException : Relational-specific methods can only be used when the context is using a relational database provider.
+  Analisi dello stack:
+     at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.GetFacadeDependencies(DatabaseFacade databaseFacade)
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.GetDbConnection(DatabaseFacade databaseFacade)
+   at WarfarinManager.Tests.Integration.DatabaseCreationAndSeedingTests.EnumConversions_ShouldStoreAsStrings() in D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\DatabaseCreationAndSeedingTests.cs:line 186
+--- End of stack trace from previous location ---
+  Superato WarfarinManager.Tests.Integration.INRControlRepositoryIntegrationTests.CalculateTTR_FromDatabaseControls_ShouldBeAccurate [2 ms]
+  Superato WarfarinManager.Tests.Integration.DatabaseCreationAndSeedingTests.Database_ShouldBeCreated_WithAllTables [1 ms]
+[xUnit.net 00:00:00.68]       Expected indications to contain more than 10 item(s) because devono esserci tutte le indicazioni principali, but found 3: 
+[xUnit.net 00:00:00.68]       {
+[xUnit.net 00:00:00.68]           WarfarinManager.Data.Entities.IndicationType
+[xUnit.net 00:00:00.68]           {
+[xUnit.net 00:00:00.68]               Category = "FIBRILLAZIONE ATRIALE", 
+[xUnit.net 00:00:00.68]               Code = "FA_PREVENTION", 
+[xUnit.net 00:00:00.68]               Description = "Fibrillazione atriale - Prevenzione stroke", 
+[xUnit.net 00:00:00.68]               Id = 1, 
+[xUnit.net 00:00:00.68]               Indications = {empty}, 
+[xUnit.net 00:00:00.68]               TargetINRMax = 3.0M, 
+[xUnit.net 00:00:00.68]               TargetINRMin = 2.0M, 
+[xUnit.net 00:00:00.68]               TypicalDuration = "Indefinita"
+[xUnit.net 00:00:00.68]           }, 
+[xUnit.net 00:00:00.68]           WarfarinManager.Data.Entities.IndicationType
+[xUnit.net 00:00:00.68]           {
+[xUnit.net 00:00:00.68]               Category = "TROMBOEMBOLISMO VENOSO", 
+[xUnit.net 00:00:00.68]               Code = "TVP_TREATMENT", 
+[xUnit.net 00:00:00.68]               Description = "TVP - Trattamento", 
+[xUnit.net 00:00:00.68]               Id = 2, 
+[xUnit.net 00:00:00.68]               Indications = {empty}, 
+[xUnit.net 00:00:00.68]               TargetINRMax = 3.0M, 
+[xUnit.net 00:00:00.68]               TargetINRMin = 2.0M, 
+[xUnit.net 00:00:00.68]               TypicalDuration = "3-6 mesi"
+[xUnit.net 00:00:00.68]           }, 
+[xUnit.net 00:00:00.68]           WarfarinManager.Data.Entities.IndicationType
+[xUnit.net 00:00:00.68]           {
+[xUnit.net 00:00:00.68]               Category = "PROTESI VALVOLARI", 
+[xUnit.net 00:00:00.68]               Code = "MECHANICAL_VALVE", 
+[xUnit.net 00:00:00.68]               Description = "Protesi valvolari meccaniche", 
+[xUnit.net 00:00:00.68]               Id = 3, 
+[xUnit.net 00:00:00.68]               Indications = {empty}, 
+[xUnit.net 00:00:00.68]               TargetINRMax = 3.5M, 
+[xUnit.net 00:00:00.68]               TargetINRMin = 2.5M, 
+[xUnit.net 00:00:00.68]               TypicalDuration = "Indefinita"
+[xUnit.net 00:00:00.68]           }
+[xUnit.net 00:00:00.68]       }.
+[xUnit.net 00:00:00.68]       Stack Trace:
+[xUnit.net 00:00:00.68]            at FluentAssertions.Execution.XUnit2TestFramework.Throw(String message)
+[xUnit.net 00:00:00.68]            at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)
+[xUnit.net 00:00:00.68]            at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)
+[xUnit.net 00:00:00.68]            at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
+[xUnit.net 00:00:00.68]            at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
+[xUnit.net 00:00:00.68]            at FluentAssertions.Execution.AssertionScope.FailWith(String message, Object[] args)
+[xUnit.net 00:00:00.68]            at FluentAssertions.Execution.GivenSelector`1.FailWith(String message, Object[] args)
+[xUnit.net 00:00:00.68]            at FluentAssertions.Execution.GivenSelector`1.FailWith(String message, Func`2[] args)
+[xUnit.net 00:00:00.68]            at FluentAssertions.Collections.GenericCollectionAssertions`3.HaveCountGreaterThan(Int32 expected, String because, Object[] becauseArgs)
+[xUnit.net 00:00:00.68]         D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\DatabaseCreationAndSeedingTests.cs(86,0): at WarfarinManager.Tests.Integration.DatabaseCreationAndSeedingTests.IndicationTypes_ShouldBeSeeded_WithAllCategories()
+[xUnit.net 00:00:00.68]         --- End of stack trace from previous location ---
+  Non superato WarfarinManager.Tests.Integration.DatabaseCreationAndSeedingTests.IndicationTypes_ShouldBeSeeded_WithAllCategories [8 ms]
+  Messaggio di errore:
+   Expected indications to contain more than 10 item(s) because devono esserci tutte le indicazioni principali, but found 3: 
+{
+    WarfarinManager.Data.Entities.IndicationType
+    {
+        Category = "FIBRILLAZIONE ATRIALE", 
+        Code = "FA_PREVENTION", 
+        Description = "Fibrillazione atriale - Prevenzione stroke", 
+        Id = 1, 
+        Indications = {empty}, 
+        TargetINRMax = 3.0M, 
+        TargetINRMin = 2.0M, 
+        TypicalDuration = "Indefinita"
+    }, 
+    WarfarinManager.Data.Entities.IndicationType
+    {
+        Category = "TROMBOEMBOLISMO VENOSO", 
+        Code = "TVP_TREATMENT", 
+        Description = "TVP - Trattamento", 
+        Id = 2, 
+        Indications = {empty}, 
+        TargetINRMax = 3.0M, 
+        TargetINRMin = 2.0M, 
+        TypicalDuration = "3-6 mesi"
+    }, 
+    WarfarinManager.Data.Entities.IndicationType
+    {
+        Category = "PROTESI VALVOLARI", 
+        Code = "MECHANICAL_VALVE", 
+        Description = "Protesi valvolari meccaniche", 
+        Id = 3, 
+        Indications = {empty}, 
+        TargetINRMax = 3.5M, 
+        TargetINRMin = 2.5M, 
+        TypicalDuration = "Indefinita"
+    }
+}.
+  Analisi dello stack:
+     at FluentAssertions.Execution.XUnit2TestFramework.Throw(String message)
+   at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)
+   at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
+   at FluentAssertions.Execution.AssertionScope.FailWith(String message, Object[] args)
+   at FluentAssertions.Execution.GivenSelector`1.FailWith(String message, Object[] args)
+   at FluentAssertions.Execution.GivenSelector`1.FailWith(String message, Func`2[] args)
+   at FluentAssertions.Collections.GenericCollectionAssertions`3.HaveCountGreaterThan(Int32 expected, String because, Object[] becauseArgs)
+   at WarfarinManager.Tests.Integration.DatabaseCreationAndSeedingTests.IndicationTypes_ShouldBeSeeded_WithAllCategories() in D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\DatabaseCreationAndSeedingTests.cs:line 86
+--- End of stack trace from previous location ---
+  Superato WarfarinManager.Tests.Integration.INRControlRepositoryIntegrationTests.GetINRControlsInDateRangeAsync_ShouldFilterCorrectly [12 ms]
+  Superato WarfarinManager.Tests.Integration.PatientRepositoryIntegrationTests.DeleteAsync_ShouldCascadeToRelatedEntities [39 ms]
+  Superato WarfarinManager.Tests.Integration.PatientRepositoryIntegrationTests.GetByFiscalCodeAsync_ShouldReturnCorrectPatient [4 ms]
+  Superato WarfarinManager.Tests.Integration.INRControlRepositoryIntegrationTests.GetControlsRequiringFollowUp_ShouldIdentifyOutOfRange [20 ms]
+  Superato WarfarinManager.Tests.Integration.PerformanceTests.ConcurrentReads_ShouldScale [596 ms]
+  Superato WarfarinManager.Tests.Integration.PerformanceTests.BulkInsert_100Patients_ShouldBeEfficient [3 ms]
+  Superato WarfarinManager.Tests.Integration.PatientRepositoryIntegrationTests.GetPatientsWithActiveIndicationsAsync_ShouldIncludeRelatedData [9 ms]
+  Superato WarfarinManager.Tests.Integration.PatientRepositoryIntegrationTests.UpdateSlowMetabolizerFlag_ShouldWorkCorrectly [1 ms]
+  Superato WarfarinManager.Tests.Integration.INRControlRepositoryIntegrationTests.GetLastINRControl_ShouldReturnMostRecent [11 ms]
+  Superato WarfarinManager.Tests.Integration.PatientRepositoryIntegrationTests.SearchPatientsAsync_ShouldFindByMultipleCriteria [7 ms]
+  Superato WarfarinManager.Tests.Integration.PerformanceTests.LoadPatientList_500Patients_ShouldBeFast [12 ms]
+  Superato WarfarinManager.Tests.Integration.PerformanceTests.GetPatientINRHistory_LargeHistory_ShouldBeFast [16 ms]
+  Superato WarfarinManager.Tests.Integration.PerformanceTests.MemoryUsage_LargeDataset_ShouldBeReasonable [18 ms]
+  Superato WarfarinManager.Tests.Integration.PerformanceTests.LoadPatientDetails_WithRelations_ShouldBeFast [11 ms]
+  Superato WarfarinManager.Tests.Integration.PerformanceTests.SearchPatients_InLargeDataset_ShouldBeFast [13 ms]
+[xUnit.net 00:00:00.84]       Expected patient not to be <null>.
+[xUnit.net 00:00:00.84]       Stack Trace:
+[xUnit.net 00:00:00.84]            at FluentAssertions.Execution.XUnit2TestFramework.Throw(String message)
+[xUnit.net 00:00:00.84]            at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)
+[xUnit.net 00:00:00.84]            at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)
+[xUnit.net 00:00:00.84]            at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
+[xUnit.net 00:00:00.84]            at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
+[xUnit.net 00:00:00.84]            at FluentAssertions.Execution.AssertionScope.FailWith(String message)
+[xUnit.net 00:00:00.84]            at FluentAssertions.Primitives.ReferenceTypeAssertions`2.NotBeNull(String because, Object[] becauseArgs)
+[xUnit.net 00:00:00.84]         D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\PerformanceTests.cs(160,0): at WarfarinManager.Tests.Integration.PerformanceTests.IndexEfficiency_FiscalCodeLookup_ShouldBeInstant()
+[xUnit.net 00:00:00.84]         --- End of stack trace from previous location ---
+[xUnit.net 00:00:00.84]   Finished:    WarfarinManager.Tests
+  Superato WarfarinManager.Tests.Integration.PerformanceTests.ComplexQuery_PatientsWithCriteria_ShouldBeFast [21 ms]
+  Non superato WarfarinManager.Tests.Integration.PerformanceTests.IndexEfficiency_FiscalCodeLookup_ShouldBeInstant [31 ms]
+  Messaggio di errore:
+   Expected patient not to be <null>.
+  Analisi dello stack:
+     at FluentAssertions.Execution.XUnit2TestFramework.Throw(String message)
+   at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)
+   at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
+   at FluentAssertions.Execution.AssertionScope.FailWith(String message)
+   at FluentAssertions.Primitives.ReferenceTypeAssertions`2.NotBeNull(String because, Object[] becauseArgs)
+   at WarfarinManager.Tests.Integration.PerformanceTests.IndexEfficiency_FiscalCodeLookup_ShouldBeInstant() in D:\Claude\winTaoGest\tests\WarfarinManager.Tests\Integration\PerformanceTests.cs:line 160
+--- End of stack trace from previous location ---
+
+Totale test: 37
+     Superati: 27
+     Non superati: 10
+ Tempo totale: 1,1508 Secondi

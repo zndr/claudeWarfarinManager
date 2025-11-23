@@ -220,8 +220,9 @@ public class TTRCalculatorService : ITTRCalculatorService
                 continue;
             }
 
-            // Interpolazione giorno per giorno
-            for (int day = 0; day <= totalDays; day++)
+            // Interpolazione giorno per giorno (ESCLUSO ultimo giorno della coppia)
+            // L'ultimo giorno sarà il primo della prossima coppia
+            for (int day = 0; day < totalDays; day++)
             {
                 var currentDate = date1.AddDays(day);
                 
@@ -231,6 +232,10 @@ public class TTRCalculatorService : ITTRCalculatorService
                 result[currentDate] = Math.Round(interpolatedINR, 2);
             }
         }
+        
+        // Aggiungi l'ultimo controllo
+        var lastControl = orderedControls.Last();
+        result[lastControl.ControlDate.Date] = lastControl.INRValue;
 
         _logger.LogDebug("Interpolazione completata: {Days} giorni da {Controls} controlli",
             result.Count, orderedControls.Count);
