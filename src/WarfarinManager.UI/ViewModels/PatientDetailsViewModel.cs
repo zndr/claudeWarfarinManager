@@ -161,10 +161,8 @@ public partial class PatientDetailsViewModel : ObservableObject, INavigationAwar
         {
             _logger.LogInformation("Apertura form nuova indicazione per paziente {PatientId}", PatientId);
             
-            // TODO: Navigare a IndicationFormViewModel
-            _dialogService.ShowInformation(
-                "Form inserimento nuova indicazione\n\n(Funzionalità in sviluppo - prossimo step)",
-                "Info");
+            // Naviga al form indicazione passando l'ID del paziente
+            _navigationService.NavigateTo<IndicationFormViewModel>(PatientId);
         }
         catch (Exception ex)
         {

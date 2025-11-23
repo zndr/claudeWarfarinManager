@@ -18,7 +18,8 @@ public class NavigationService : INavigationService
     {
         { typeof(ViewModels.PatientListViewModel), typeof(Views.Dashboard.PatientListView) },
         { typeof(ViewModels.PatientFormViewModel), typeof(Views.Patient.PatientFormView) },
-        { typeof(ViewModels.PatientDetailsViewModel), typeof(Views.Patient.PatientDetailsView) }
+        { typeof(ViewModels.PatientDetailsViewModel), typeof(Views.Patient.PatientDetailsView) },
+        { typeof(ViewModels.IndicationFormViewModel), typeof(Views.Patient.IndicationFormView) }
     };
 
     public NavigationService(IServiceProvider serviceProvider)

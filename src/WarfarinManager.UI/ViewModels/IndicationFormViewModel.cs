@@ -195,7 +195,7 @@ public partial class IndicationFormViewModel : ObservableObject, INavigationAwar
             var indication = new Indication
             {
                 PatientId = PatientId,
-                IndicationTypeId = SelectedIndicationType!.Id,
+                IndicationTypeCode = SelectedIndicationType!.Code,
                 TargetINRMin = SelectedIndicationType.TargetINRMin,
                 TargetINRMax = SelectedIndicationType.TargetINRMax,
                 StartDate = StartDate,

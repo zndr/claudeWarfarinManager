@@ -1,0 +1,281 @@
+<UserControl x:Class="WarfarinManager.UI.Views.Patient.IndicationFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
+             xmlns:local="clr-namespace:WarfarinManager.UI.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=vm:IndicationFormViewModel}">
+    
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <local:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+        <local:ErrorToTagConverter x:Key="ErrorToTagConverter"/>
+        <local:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        
+        <!-- Style per controlli con errore -->
+        <Style x:Key="ControlWithValidation" TargetType="Control">
+            <Setter Property="BorderBrush" Value="#D0D0D0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Tag}" Value="Error">
+                    <Setter Property="BorderBrush" Value="#E81123"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" 
+                Background="#0078D4" 
+                Padding="20,15">
+            <StackPanel>
+                <TextBlock Text="Nuova Indicazione Terapeutica" 
+                           FontSize="20" 
+                           FontWeight="SemiBold" 
+                           Foreground="White"/>
+                <TextBlock FontSize="12" 
+                           Foreground="White" 
+                           Opacity="0.9"
+                           Margin="0,4,0,0">
+                    <Run Text="Paziente:"/>
+                    <Run Text="{Binding PatientName, Mode=OneWay}" FontWeight="SemiBold"/>
+                </TextBlock>
+            </StackPanel>
+        </Border>
+
+        <!-- Form Content -->
+        <ScrollViewer Grid.Row="1" 
+                     VerticalScrollBarVisibility="Auto"
+                     Padding="20">
+            <StackPanel MaxWidth="700">
+                
+                <!-- Indicazione Terapeutica -->
+                <StackPanel Margin="0,0,0,20">
+                    <TextBlock Text="Indicazione Terapeutica *" 
+                               FontWeight="SemiBold" 
+                               Margin="0,0,0,5"/>
+                    <ComboBox ItemsSource="{Binding AvailableIndications}"
+                             SelectedItem="{Binding SelectedIndicationType}"
+                             DisplayMemberPath="DisplayText"
+                             Tag="{Binding IndicationError, Converter={StaticResource ErrorToTagConverter}}"
+                             Style="{StaticResource ControlWithValidation}"
+                             Padding="8"
+                             FontSize="13"
+                             IsEnabled="{Binding IsSaving, Converter={StaticResource InverseBoolConverter}}"/>
+                    <TextBlock Text="{Binding IndicationError}" 
+                               Foreground="#E81123" 
+                               FontSize="11"
+                               Margin="0,3,0,0"
+                               Visibility="{Binding IndicationError, Converter={StaticResource StringToVisibilityConverter}}"/>
+                    <TextBlock Text="Seleziona l'indicazione terapeutica per il trattamento anticoagulante" 
+                               FontSize="11" 
+                               Foreground="#666666"
+                               Margin="0,5,0,0"/>
+                </StackPanel>
+
+                <!-- Info Automatiche -->
+                <Border Background="#F5F5F5" 
+                        Padding="15" 
+                        CornerRadius="4"
+                        Margin="0,0,0,20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Target INR -->
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Target INR" 
+                                       FontSize="11" 
+                                       Foreground="#666666"
+                                       Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding TargetINRDisplay}" 
+                                       FontSize="16" 
+                                       FontWeight="SemiBold"
+                                       Foreground="#0078D4"/>
+                        </StackPanel>
+
+                        <!-- Durata Tipica -->
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Durata Tipica" 
+                                       FontSize="11" 
+                                       Foreground="#666666"
+                                       Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding TypicalDurationDisplay}" 
+                                       FontSize="14" 
+                                       FontWeight="SemiBold"
+                                       Foreground="#666666"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Data Inizio -->
+                <StackPanel Margin="0,0,0,20">
+                    <TextBlock Text="Data Inizio Terapia *" 
+                               FontWeight="SemiBold" 
+                               Margin="0,0,0,5"/>
+                    <DatePicker SelectedDate="{Binding StartDate}"
+                               Tag="{Binding StartDateError, Converter={StaticResource ErrorToTagConverter}}"
+                               Style="{StaticResource ControlWithValidation}"
+                               Padding="8"
+                               FontSize="13"
+                               IsEnabled="{Binding IsSaving, Converter={StaticResource InverseBoolConverter}}"/>
+                    <TextBlock Text="{Binding StartDateError}" 
+                               Foreground="#E81123" 
+                               FontSize="11"
+                               Margin="0,3,0,0"
+                               Visibility="{Binding StartDateError, Converter={StaticResource StringToVisibilityConverter}}"/>
+                </StackPanel>
+
+                <!-- Note -->
+                <StackPanel Margin="0,0,0,20">
+                    <TextBlock Text="Note" 
+                               FontWeight="SemiBold" 
+                               Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
+                             Height="100"
+                             Padding="8"
+                             FontSize="13"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             BorderBrush="#D0D0D0"
+                             BorderThickness="1"
+                             IsEnabled="{Binding IsSaving, Converter={StaticResource InverseBoolConverter}}"/>
+                    <TextBlock Text="Note aggiuntive sull'indicazione terapeutica (opzionale)" 
+                               FontSize="11" 
+                               Foreground="#666666"
+                               Margin="0,5,0,0"/>
+                </StackPanel>
+
+                <!-- Info Box -->
+                <Border Background="#FFF4CE" 
+                        BorderBrush="#FFD700" 
+                        BorderThickness="1"
+                        Padding="12" 
+                        CornerRadius="4">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="ℹ" 
+                                   FontSize="16" 
+                                   Foreground="#CC8800"
+                                   Margin="0,0,8,0"
+                                   VerticalAlignment="Top"/>
+                        <TextBlock FontSize="12" 
+                                   Foreground="#665500"
+                                   TextWrapping="Wrap">
+                            <Run Text="Se esiste già un'indicazione attiva, questa verrà automaticamente terminata alla data precedente a quella di inizio della nuova indicazione."/>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Action Buttons -->
+        <Border Grid.Row="2" 
+                Background="#F5F5F5" 
+                Padding="20,15"
+                BorderBrush="#E0E0E0"
+                BorderThickness="0,1,0,0">
+            <StackPanel Orientation="Horizontal" 
+                       HorizontalAlignment="Right">
+                <Button Content="Annulla"
+                        Command="{Binding CancelCommand}"
+                        Background="#E0E0E0"
+                        Foreground="#333333"
+                        FontWeight="SemiBold"
+                        Padding="20,10"
+                        Margin="0,0,10,0"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        IsEnabled="{Binding IsSaving, Converter={StaticResource InverseBoolConverter}}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                CornerRadius="4"
+                                                Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#D0D0D0"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value="0.6"/>
+                                    <Setter Property="Cursor" Value="Arrow"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button Content="💾 Salva Indicazione"
+                        Command="{Binding SaveCommand}"
+                        Background="#107C10"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        Padding="20,10"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        IsEnabled="{Binding IsSaving, Converter={StaticResource InverseBoolConverter}}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                CornerRadius="4"
+                                                Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#0F6B0D"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Background" Value="#C0C0C0"/>
+                                    <Setter Property="Cursor" Value="Arrow"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- Loading Overlay -->
+        <Grid Grid.RowSpan="3" 
+              Background="#CC000000"
+              Visibility="{Binding IsSaving, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="💾 Salvataggio in corso..."
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="White"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>
