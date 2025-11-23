@@ -52,4 +52,35 @@ public class INRControlRepository : Repository<INRControl>, IINRControlRepositor
             .OrderBy(c => c.ControlDate)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IEnumerable<INRControl>> GetPatientINRHistoryAsync(int patientId, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Include(c => c.DailyDoses.OrderBy(d => d.DayOfWeek))
+            .Where(c => c.PatientId == patientId)
+            .OrderByDescending(c => c.ControlDate)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<INRControl>> GetINRControlsInDateRangeAsync(int patientId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
+    {
+        return await GetByDateRangeAsync(patientId, startDate, endDate, cancellationToken);
+    }
+
+    public async Task<IEnumerable<INRControl>> GetControlsRequiringFollowUpAsync(int daysThreshold, decimal targetMin, decimal targetMax, CancellationToken cancellationToken = default)
+    {
+        var cutoffDate = DateTime.Today.AddDays(-daysThreshold);
+        
+        return await _dbSet
+            .Include(c => c.Patient)
+            .Where(c => c.ControlDate >= cutoffDate && 
+                       (c.INRValue < targetMin || c.INRValue > targetMax))
+            .OrderByDescending(c => c.ControlDate)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<INRControl?> GetLastINRControlAsync(int patientId, CancellationToken cancellationToken = default)
+    {
+        return await GetLatestByPatientIdAsync(patientId, cancellationToken);
+    }
 }

@@ -1,0 +1,20 @@
+<Project>
+  <!-- Configurazione Visual Studio Test Explorer -->
+  <PropertyGroup>
+    <!-- Abilita parallel test execution -->
+    <TestParallel>true</TestParallel>
+    
+    <!-- Timeout per singolo test (30 secondi) -->
+    <TestTimeout>30000</TestTimeout>
+    
+    <!-- Output dettagliato -->
+    <VSTestVerbosity>normal</VSTestVerbosity>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Test categories per filtri -->
+    <TestCategory Include="Integration" />
+    <TestCategory Include="Performance" />
+    <TestCategory Include="Database" />
+  </ItemGroup>
+</Project>

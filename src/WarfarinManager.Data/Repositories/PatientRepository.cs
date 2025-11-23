@@ -63,4 +63,30 @@ public class PatientRepository : Repository<Patient>, IPatientRepository
             .OrderBy(p => p.LastName)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IEnumerable<Patient>> GetPatientsWithActiveIndicationsAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Include(p => p.Indications.Where(i => i.IsActive))
+            .Where(p => p.Indications.Any(i => i.IsActive))
+            .OrderBy(p => p.LastName)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Patient>> GetPatientsWithRecentINRAsync(int daysThreshold, CancellationToken cancellationToken = default)
+    {
+        var cutoffDate = DateTime.Today.AddDays(-daysThreshold);
+        
+        return await _dbSet
+            .Include(p => p.INRControls.OrderByDescending(c => c.ControlDate).Take(1))
+            .Where(p => p.INRControls.Any(c => c.ControlDate >= cutoffDate))
+            .OrderBy(p => p.LastName)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Patient>> SearchPatientsAsync(string searchTerm, CancellationToken cancellationToken = default)
+    {
+        // Alias per SearchByNameAsync - manteniamo compatibilità con test
+        return await SearchByNameAsync(searchTerm, cancellationToken);
+    }
 }

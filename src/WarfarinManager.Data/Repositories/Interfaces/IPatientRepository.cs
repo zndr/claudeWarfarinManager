@@ -12,4 +12,9 @@ public interface IPatientRepository : IRepository<Patient>
     Task<IEnumerable<Patient>> SearchByNameAsync(string searchTerm, CancellationToken cancellationToken = default);
     Task<IEnumerable<Patient>> GetSlowMetabolizersAsync(CancellationToken cancellationToken = default);
     Task<IEnumerable<Patient>> GetWithControlsDueAsync(DateTime beforeDate, CancellationToken cancellationToken = default);
+    
+    // Metodi per integration tests
+    Task<IEnumerable<Patient>> GetPatientsWithActiveIndicationsAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<Patient>> GetPatientsWithRecentINRAsync(int daysThreshold, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Patient>> SearchPatientsAsync(string searchTerm, CancellationToken cancellationToken = default);
 }
