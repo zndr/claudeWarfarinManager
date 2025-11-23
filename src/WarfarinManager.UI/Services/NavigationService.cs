@@ -17,7 +17,8 @@ public class NavigationService : INavigationService
     private readonly Dictionary<Type, Type> _viewModelToViewMap = new()
     {
         { typeof(ViewModels.PatientListViewModel), typeof(Views.Dashboard.PatientListView) },
-        { typeof(ViewModels.PatientFormViewModel), typeof(Views.Patient.PatientFormView) }
+        { typeof(ViewModels.PatientFormViewModel), typeof(Views.Patient.PatientFormView) },
+        { typeof(ViewModels.PatientDetailsViewModel), typeof(Views.Patient.PatientDetailsView) }
     };
 
     public NavigationService(IServiceProvider serviceProvider)

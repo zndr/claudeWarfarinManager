@@ -244,13 +244,13 @@
                                     Width="180">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
-                            <Setter Property="Text" Value="{Binding ActiveIndication}"/>
+                            <Setter Property="Foreground" Value="Black"/>
                             <Style.Triggers>
-                                <Trigger Property="Text" Value="{x:Null}">
+                                <DataTrigger Binding="{Binding ActiveIndication}" Value="{x:Null}">
                                     <Setter Property="Text" Value="-"/>
                                     <Setter Property="Foreground" Value="#A0A0A0"/>
                                     <Setter Property="FontStyle" Value="Italic"/>
-                                </Trigger>
+                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
@@ -264,6 +264,7 @@
                     </DataGridTextColumn.Binding>
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="Black"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding LastINR}" Value="{x:Null}">
                                     <Setter Property="Text" Value="-"/>
@@ -285,6 +286,7 @@
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Center"/>
                             <Setter Property="FontWeight" Value="SemiBold"/>
+                            <Setter Property="Foreground" Value="Black"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding TTRPercentage}" Value="{x:Null}">
                                     <Setter Property="Text" Value="-"/>

@@ -85,10 +85,12 @@ public partial class App : Application
         services.AddTransient<MainViewModel>();
         services.AddTransient<PatientListViewModel>();
         services.AddTransient<PatientFormViewModel>();
+        services.AddTransient<PatientDetailsViewModel>();
 
         // Views
         services.AddTransient<PatientListView>();
         services.AddTransient<PatientFormView>();
+        services.AddTransient<PatientDetailsView>();
 
         // Main Window
         services.AddSingleton<MainWindow>();

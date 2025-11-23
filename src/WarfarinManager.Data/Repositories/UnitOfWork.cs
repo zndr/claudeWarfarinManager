@@ -30,6 +30,8 @@ public class UnitOfWork : IUnitOfWork
     public IInteractionDrugRepository InteractionDrugs => 
         _interactionDrugs ??= new InteractionDrugRepository(_context);
 
+    public WarfarinDbContext Database => _context;
+
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         return await _context.SaveChangesAsync(cancellationToken);

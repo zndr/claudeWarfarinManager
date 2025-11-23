@@ -1,3 +1,5 @@
+using WarfarinManager.Data.Context;
+
 namespace WarfarinManager.Data.Repositories.Interfaces;
 
 /// <summary>
@@ -8,6 +10,11 @@ public interface IUnitOfWork : IDisposable
     IPatientRepository Patients { get; }
     IINRControlRepository INRControls { get; }
     IInteractionDrugRepository InteractionDrugs { get; }
+    
+    /// <summary>
+    /// Accesso diretto al DbContext per query complesse
+    /// </summary>
+    WarfarinDbContext Database { get; }
     
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task BeginTransactionAsync(CancellationToken cancellationToken = default);

@@ -152,10 +152,8 @@ public partial class PatientListViewModel : ObservableObject
         {
             _logger.LogInformation("Apertura dettagli paziente ID: {PatientId}", SelectedPatient.Id);
             
-            // TODO: Implementare navigazione a PatientDetailsView
-            _dialogService.ShowInformation(
-                $"Apertura dettagli paziente:\n{SelectedPatient.FullName}\n\n(Funzionalità in sviluppo)",
-                "Info");
+            // Naviga ai dettagli passando l'ID del paziente
+            _navigationService.NavigateTo<PatientDetailsViewModel>(SelectedPatient.Id);
         }
         catch (Exception ex)
         {
