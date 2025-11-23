@@ -8,44 +8,44 @@ namespace WarfarinManager.Core.Models;
 public class InteractionCheckResult
 {
     /// <summary>
-    /// Interazione trovata
+    /// Presenza interazione documentata
     /// </summary>
-    public bool InteractionFound { get; set; }
+    public bool HasInteraction { get; set; }
     
     /// <summary>
-    /// Nome farmaco
-    /// </summary>
-    public string DrugName { get; set; } = string.Empty;
-    
-    /// <summary>
-    /// Livello interazione
+    /// Livello rischio interazione
     /// </summary>
     public InteractionLevel InteractionLevel { get; set; }
     
     /// <summary>
-    /// Effetto sull'INR
+    /// Nome farmaco
     /// </summary>
-    public InteractionEffect? InteractionEffect { get; set; }
+    public string MedicationName { get; set; } = string.Empty;
     
     /// <summary>
-    /// Odds Ratio per sanguinamento (se disponibile)
+    /// Effetto interazione (Increases/Decreases/Variable)
     /// </summary>
-    public decimal? OddsRatio { get; set; }
+    public string InteractionEffect { get; set; } = string.Empty;
     
     /// <summary>
     /// Meccanismo interazione
     /// </summary>
-    public string? Mechanism { get; set; }
+    public string Mechanism { get; set; } = string.Empty;
     
     /// <summary>
-    /// Raccomandazione gestione FCSA
+    /// Odds Ratio sanguinamento
     /// </summary>
-    public string? FCSAManagement { get; set; }
+    public decimal? OddsRatio { get; set; }
     
     /// <summary>
-    /// Raccomandazione gestione ACCP
+    /// Gestione FCSA-SIMG
     /// </summary>
-    public string? ACCPManagement { get; set; }
+    public string FCSAManagement { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Gestione ACCP/ACC
+    /// </summary>
+    public string ACCPManagement { get; set; } = string.Empty;
     
     /// <summary>
     /// Giorni raccomandati per controllo INR
@@ -53,12 +53,43 @@ public class InteractionCheckResult
     public int? RecommendedINRCheckDays { get; set; }
     
     /// <summary>
-    /// Percentuale riduzione dose empirica suggerita (se aumenta INR)
+    /// Messaggio descrittivo
     /// </summary>
-    public decimal? SuggestedDoseReduction { get; set; }
+    public string Message { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Raccomandazione aggiustamento dose
+/// </summary>
+public class DoseAdjustmentRecommendation
+{
+    /// <summary>
+    /// Linea guida utilizzata
+    /// </summary>
+    public GuidelineType GuidelineUsed { get; set; }
     
     /// <summary>
-    /// Percentuale aumento dose empirica suggerita (se riduce INR)
+    /// Percentuale aggiustamento suggerita
     /// </summary>
-    public decimal? SuggestedDoseIncrease { get; set; }
+    public decimal? PercentageAdjustment { get; set; }
+    
+    /// <summary>
+    /// Nuova dose settimanale suggerita (mg)
+    /// </summary>
+    public decimal? SuggestedWeeklyDoseMg { get; set; }
+    
+    /// <summary>
+    /// Raccomandazione testuale
+    /// </summary>
+    public string Recommendation { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Giorni raccomandati per controllo INR
+    /// </summary>
+    public int? RecommendedINRCheckDays { get; set; }
+    
+    /// <summary>
+    /// Note aggiuntive
+    /// </summary>
+    public string Notes { get; set; } = string.Empty;
 }

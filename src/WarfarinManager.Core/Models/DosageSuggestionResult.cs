@@ -7,99 +7,39 @@ namespace WarfarinManager.Core.Models;
 /// </summary>
 public class DosageSuggestionResult
 {
-    /// <summary>
-    /// Linea guida utilizzata
-    /// </summary>
-    public Guideline GuidelineUsed { get; set; }
-    
-    /// <summary>
-    /// INR è nel range terapeutico
-    /// </summary>
+    public GuidelineType GuidelineUsed { get; set; }
+    public decimal CurrentINR { get; set; }
+    public decimal TargetINRMin { get; set; }
+    public decimal TargetINRMax { get; set; }
+    public decimal CurrentWeeklyDoseMg { get; set; }
     public bool IsInRange { get; set; }
-    
-    /// <summary>
-    /// Stato INR (es. "In range", "Sottoterapeutico", "Sovraterapeutico")
-    /// </summary>
-    public string INRStatus { get; set; } = string.Empty;
-    
-    /// <summary>
-    /// Distanza da target (positivo se sopra, negativo se sotto)
-    /// </summary>
-    public decimal DistanceFromTarget { get; set; }
-    
-    /// <summary>
-    /// Azione dose carico (se necessaria)
-    /// </summary>
+    public INRStatus INRStatus { get; set; }
     public string? LoadingDoseAction { get; set; }
-    
-    /// <summary>
-    /// Percentuale aggiustamento dose settimanale
-    /// </summary>
-    public decimal? PercentageAdjustment { get; set; }
-    
-    /// <summary>
-    /// Nuova dose settimanale suggerita (mg)
-    /// </summary>
-    public decimal SuggestedWeeklyDose { get; set; }
+    public decimal PercentageAdjustment { get; set; }
+    public decimal SuggestedWeeklyDoseMg { get; set; }
     
     /// <summary>
     /// Schema settimanale dettagliato
     /// </summary>
-    public List<DailyDoseSchedule> WeeklySchedule { get; set; } = new();
+    public WeeklyDoseSchedule WeeklySchedule { get; set; } = new();
     
-    /// <summary>
-    /// Giorni al prossimo controllo
-    /// </summary>
     public int NextControlDays { get; set; }
-    
-    /// <summary>
-    /// Data prossimo controllo suggerito
-    /// </summary>
-    public DateTime NextControlDate { get; set; }
-    
-    /// <summary>
-    /// Motivazione timing controllo
-    /// </summary>
-    public string ControlRationale { get; set; } = string.Empty;
-    
-    /// <summary>
-    /// Richiede EBPM bridge
-    /// </summary>
     public bool RequiresEBPM { get; set; }
-    
-    /// <summary>
-    /// Dettagli EBPM se necessario
-    /// </summary>
-    public string? EBPMDetails { get; set; }
-    
-    /// <summary>
-    /// Richiede Vitamina K
-    /// </summary>
     public bool RequiresVitaminK { get; set; }
-    
-    /// <summary>
-    /// Dosaggio Vitamina K se necessaria
-    /// </summary>
-    public string? VitaminKDosage { get; set; }
-    
-    /// <summary>
-    /// Note cliniche e raccomandazioni
-    /// </summary>
-    public List<string> ClinicalNotes { get; set; } = new();
-    
-    /// <summary>
-    /// Alert e warning
-    /// </summary>
+    public decimal? VitaminKDoseMg { get; set; }
+    public string? VitaminKRoute { get; set; }
+    public string ClinicalNotes { get; set; } = string.Empty;
     public List<string> Warnings { get; set; } = new();
 }
 
 /// <summary>
-/// Dose giornaliera nello schema settimanale
+/// Raccomandazione Vitamina K
 /// </summary>
-public class DailyDoseSchedule
+public class VitaminKRecommendation
 {
-    public int DayOfWeek { get; set; } // 1=Lunedì, 7=Domenica
-    public string DayName { get; set; } = string.Empty;
+    public bool IsRecommended { get; set; }
     public decimal DoseMg { get; set; }
-    public string DoseDescription { get; set; } = string.Empty; // es. "1 cp 5mg", "1/2 cp 2.5mg"
+    public string Route { get; set; } = string.Empty;
+    public string Urgency { get; set; } = string.Empty;
+    public string Notes { get; set; } = string.Empty;
 }

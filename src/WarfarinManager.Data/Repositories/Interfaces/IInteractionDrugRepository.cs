@@ -7,7 +7,18 @@ namespace WarfarinManager.Data.Repositories.Interfaces;
 /// </summary>
 public interface IInteractionDrugRepository : IRepository<InteractionDrug>
 {
-    Task<InteractionDrug?> GetByDrugNameAsync(string drugName, CancellationToken cancellationToken = default);
-    Task<IEnumerable<InteractionDrug>> SearchByNameAsync(string searchTerm, CancellationToken cancellationToken = default);
-    Task<IEnumerable<InteractionDrug>> GetHighRiskDrugsAsync(CancellationToken cancellationToken = default);
+    /// <summary>
+    /// Trova farmaco per nome esatto
+    /// </summary>
+    Task<InteractionDrug?> FindByNameAsync(string drugName, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Ricerca farmaci per nome parziale (autocomplete)
+    /// </summary>
+    Task<List<InteractionDrug>> SearchByNameAsync(string searchTerm, int maxResults, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Ottieni farmaci ad alto rischio (OR > 2.0)
+    /// </summary>
+    Task<List<InteractionDrug>> GetHighRiskDrugsAsync(CancellationToken cancellationToken = default);
 }
