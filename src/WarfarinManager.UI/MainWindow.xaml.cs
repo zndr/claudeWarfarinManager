@@ -1,4 +1,5 @@
 using System.Windows;
+using WarfarinManager.UI.ViewModels;
 
 namespace WarfarinManager.UI;
 
@@ -7,8 +8,9 @@ namespace WarfarinManager.UI;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    public MainWindow(MainViewModel viewModel)
     {
         InitializeComponent();
+        DataContext = viewModel;
     }
 }
