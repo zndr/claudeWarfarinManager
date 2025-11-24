@@ -199,7 +199,7 @@ namespace WarfarinManager.UI.ViewModels
         #region Commands
 
         [RelayCommand]
-        private async Task LoadPatientDataAsync(int patientId)
+        public async Task LoadPatientDataAsync(int patientId)
         {
             try
             {

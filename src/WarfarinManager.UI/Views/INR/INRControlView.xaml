@@ -10,9 +10,7 @@
         WindowStartupLocation="CenterScreen"
         Background="#F5F5F5">
     
-    <Window.DataContext>
-        <vm:INRControlViewModel />
-    </Window.DataContext>
+
 
     <Window.Resources>
         <!-- Converter per Visibility -->
