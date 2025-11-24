@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="1000"
              d:DataContext="{d:DesignInstance Type=vm:PatientDetailsViewModel}">
-    
+
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <local:CountToVisibilityConverter x:Key="CountToVisibilityConverter" xmlns:local="clr-namespace:WarfarinManager.UI.Converters"/>
@@ -80,38 +80,80 @@
                 </StackPanel>
 
                 <!-- Azioni -->
-                <Button Grid.Column="2"
-                        Content="✏ Modifica Anagrafica"
-                        Command="{Binding EditPatientCommand}"
-                        Background="White"
-                        Foreground="#0078D4"
-                        FontSize="13"
-                        FontWeight="SemiBold"
-                        Padding="15,8"
-                        BorderThickness="0"
-                        Cursor="Hand">
-                    <Button.Style>
-                        <Style TargetType="Button">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}"
-                                                CornerRadius="4"
-                                                Padding="{TemplateBinding Padding}">
-                                            <ContentPresenter HorizontalAlignment="Center"
-                                                            VerticalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#F0F0F0"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
+                <StackPanel Grid.Column="2" 
+            Orientation="Horizontal">
+
+                    <!-- Pulsante Gestione INR -->
+                    <Button Content="📊 Gestione INR"
+            Command="{Binding OpenINRControlCommand}"
+            Background="#107C10"
+            Foreground="White"
+            FontSize="13"
+            FontWeight="SemiBold"
+            Padding="15,8"
+            Margin="0,0,10,0"
+            BorderThickness="0"
+            Cursor="Hand">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                    CornerRadius="4"
+                                    Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#0E6B0E"/>
+                                    </Trigger>
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter Property="Background" Value="#0C5A0C"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <!-- Pulsante Modifica Anagrafica -->
+                    <Button Content="✏ Modifica Anagrafica"
+            Command="{Binding EditPatientCommand}"
+            Background="White"
+            Foreground="#0078D4"
+            FontSize="13"
+            FontWeight="SemiBold"
+            Padding="15,8"
+            BorderThickness="0"
+            Cursor="Hand">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                    CornerRadius="4"
+                                    Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#F0F0F0"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                </StackPanel>
             </Grid>
         </Border>
 
@@ -295,7 +337,7 @@
                               AlternatingRowBackground="#F9F9F9"
                               CanUserResizeRows="False"
                               CanUserSortColumns="True">
-                        
+
                         <DataGrid.ColumnHeaderStyle>
                             <Style TargetType="DataGridColumnHeader">
                                 <Setter Property="Background" Value="#E8E8E8"/>
