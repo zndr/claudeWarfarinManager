@@ -3,88 +3,89 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace WarfarinManager.UI.Converters;
-
-/// <summary>
-/// Converte una stringa in Visibility (Visible se non vuota, Collapsed se vuota)
-/// </summary>
-public class StringToVisibilityConverter : IValueConverter
+namespace WarfarinManager.UI.Converters
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    /// <summary>
+    /// Converte una stringa in Visibility (Visible se non vuota, Collapsed se vuota)
+    /// </summary>
+    public class StringToVisibilityConverter : IValueConverter
     {
-        if (value is string str)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return string.IsNullOrWhiteSpace(str) ? Visibility.Collapsed : Visibility.Visible;
+            if (value is string str)
+            {
+                return string.IsNullOrWhiteSpace(str) ? Visibility.Collapsed : Visibility.Visible;
+            }
+            return Visibility.Collapsed;
         }
-        return Visibility.Collapsed;
-    }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-/// <summary>
-/// Converte un errore in Tag per styling (restituisce "Error" se presente errore)
-/// </summary>
-public class ErrorToTagConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        if (value is string str && !string.IsNullOrWhiteSpace(str))
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return "Error";
+            throw new NotImplementedException();
         }
-        return null;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    /// <summary>
+    /// Converte un errore in Tag per styling (restituisce "Error" se presente errore)
+    /// </summary>
+    public class ErrorToTagConverter : IValueConverter
     {
-        throw new NotImplementedException();
-    }
-}
-
-/// <summary>
-/// Inverte un valore booleano
-/// </summary>
-public class InverseBoolConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        if (value is bool boolValue)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return !boolValue;
+            if (value is string str && !string.IsNullOrWhiteSpace(str))
+            {
+                return "Error";
+            }
+            return null;
         }
-        return true;
-    }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        if (value is bool boolValue)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return !boolValue;
+            throw new NotImplementedException();
         }
-        return false;
     }
-}
 
-/// <summary>
-/// Converte un conteggio in Visibility (Visible se 0, Collapsed altrimenti)
-/// </summary>
-public class CountToVisibilityConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    /// <summary>
+    /// Inverte un valore booleano
+    /// </summary>
+    public class InverseBoolConverter : IValueConverter
     {
-        if (value is int count)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return count == 0 ? Visibility.Visible : Visibility.Collapsed;
+            if (value is bool boolValue)
+            {
+                return !boolValue;
+            }
+            return true;
         }
-        return Visibility.Collapsed;
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool boolValue)
+            {
+                return !boolValue;
+            }
+            return false;
+        }
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    /// <summary>
+    /// Converte un conteggio in Visibility (Visible se 0, Collapsed altrimenti)
+    /// </summary>
+    public class CountToVisibilityConverter : IValueConverter
     {
-        throw new NotImplementedException();
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is int count)
+            {
+                return count == 0 ? Visibility.Visible : Visibility.Collapsed;
+            }
+            return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

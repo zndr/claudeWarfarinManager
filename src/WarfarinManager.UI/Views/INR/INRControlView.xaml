@@ -1,78 +1,84 @@
-<Window x:Class="WarfarinManager.UI.Views.INR.INRControlView"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
-        mc:Ignorable="d"
-        Title="Controllo INR - Warfarin Manager Pro" 
-        Height="900" Width="1400"
-        WindowStartupLocation="CenterScreen"
-        Background="#F5F5F5">
-    
+﻿<Window
+    x:Class="WarfarinManager.UI.Views.INR.INRControlView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:WarfarinManager.UI.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
+    Title="Controllo INR - Warfarin Manager Pro"
+    Width="1400"
+    Height="900"
+    Background="#F5F5F5"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+
 
 
     <Window.Resources>
-        <!-- Converter per Visibility -->
-        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        
-        <!-- Stili comuni -->
+        <!--  Converter per Visibility  -->
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:DecimalConverter x:Key="DecimalConverter" />
+        <!--  Stili comuni  -->
         <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#0078D4"/>
-            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#0078D4" />
+            <Setter Property="Margin" Value="0,0,0,10" />
         </Style>
 
         <Style x:Key="CardStyle" TargetType="Border">
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="CornerRadius" Value="8"/>
-            <Setter Property="Padding" Value="20"/>
-            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Background" Value="White" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="20" />
+            <Setter Property="Margin" Value="0,0,0,15" />
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect Color="#000000" Opacity="0.1" 
-                                    BlurRadius="10" ShadowDepth="2"/>
+                    <DropShadowEffect
+                        BlurRadius="10"
+                        Opacity="0.1"
+                        ShadowDepth="2"
+                        Color="#000000" />
                 </Setter.Value>
             </Setter>
         </Style>
 
         <Style x:Key="InputLabelStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Foreground" Value="#666666"/>
-            <Setter Property="Margin" Value="0,0,0,5"/>
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="#666666" />
+            <Setter Property="Margin" Value="0,0,0,5" />
         </Style>
 
         <Style x:Key="InputTextBoxStyle" TargetType="TextBox">
-            <Setter Property="Padding" Value="8"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="BorderBrush" Value="#CCCCCC"/>
-            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="BorderBrush" Value="#CCCCCC" />
+            <Setter Property="BorderThickness" Value="1" />
         </Style>
 
         <Style x:Key="PrimaryButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#0078D4"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Padding" Value="15,8"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="#0078D4" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Padding" Value="15,8" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" 
-                                CornerRadius="4" 
-                                Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" 
-                                            VerticalAlignment="Center"/>
+                        <Border
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#106EBE"/>
+                                <Setter Property="Background" Value="#106EBE" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#005A9E"/>
+                                <Setter Property="Background" Value="#005A9E" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -80,366 +86,560 @@
             </Setter>
         </Style>
 
-        <Style x:Key="SecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
-            <Setter Property="Background" Value="#FFFFFF"/>
-            <Setter Property="Foreground" Value="#0078D4"/>
-            <Setter Property="BorderBrush" Value="#0078D4"/>
-            <Setter Property="BorderThickness" Value="1"/>
+        <Style
+            x:Key="SecondaryButtonStyle"
+            BasedOn="{StaticResource PrimaryButtonStyle}"
+            TargetType="Button">
+            <Setter Property="Background" Value="#FFFFFF" />
+            <Setter Property="Foreground" Value="#0078D4" />
+            <Setter Property="BorderBrush" Value="#0078D4" />
+            <Setter Property="BorderThickness" Value="1" />
         </Style>
     </Window.Resources>
 
     <Grid>
-        <!-- Header -->
+        <!--  Header  -->
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Header Paziente -->
-        <Border Grid.Row="0" Background="#0078D4" Padding="20">
+        <!--  Header Paziente  -->
+        <Border
+            Grid.Row="0"
+            Padding="20"
+            Background="#0078D4">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0">
-                    <TextBlock Text="{Binding PatientName}" 
-                             FontSize="24" FontWeight="Bold" 
-                             Foreground="White"/>
-                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                        <TextBlock Text="CF: " Foreground="#CCCCCC" FontSize="14"/>
-                        <TextBlock Text="{Binding PatientFiscalCode}" 
-                                 Foreground="White" FontSize="14" FontWeight="SemiBold"/>
-                        <TextBlock Text=" | " Foreground="#CCCCCC" Margin="10,0"/>
-                        <TextBlock Text="{Binding ActiveIndication}" 
-                                 Foreground="White" FontSize="14"/>
-                        <TextBlock Text=" | Target INR: " Foreground="#CCCCCC" Margin="10,0,0,0"/>
-                        <TextBlock Foreground="White" FontSize="14" FontWeight="SemiBold">
-                            <Run Text="{Binding TargetINRMin, StringFormat=F1}"/>
-                            <Run Text="-"/>
-                            <Run Text="{Binding TargetINRMax, StringFormat=F1}"/>
+                    <TextBlock
+                        FontSize="24"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="{Binding PatientName}" />
+                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                        <TextBlock
+                            FontSize="14"
+                            Foreground="#CCCCCC"
+                            Text="CF: " />
+                        <TextBlock
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Foreground="White"
+                            Text="{Binding PatientFiscalCode}" />
+                        <TextBlock
+                            Margin="10,0"
+                            Foreground="#CCCCCC"
+                            Text=" | " />
+                        <TextBlock
+                            FontSize="14"
+                            Foreground="White"
+                            Text="{Binding ActiveIndication}" />
+                        <TextBlock
+                            Margin="10,0,0,0"
+                            Foreground="#CCCCCC"
+                            Text=" | Target INR: " />
+                        <TextBlock
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Foreground="White">
+                            <Run Text="{Binding TargetINRMin, StringFormat=F1}" />
+                            <Run Text="-" />
+                            <Run Text="{Binding TargetINRMax, StringFormat=F1}" />
                         </TextBlock>
                     </StackPanel>
                 </StackPanel>
 
-                <!-- TTR Badge -->
-                <Border Grid.Column="1" Background="White" 
-                        CornerRadius="20" Padding="15,8" VerticalAlignment="Center">
+                <!--  TTR Badge  -->
+                <Border
+                    Grid.Column="1"
+                    Padding="15,8"
+                    VerticalAlignment="Center"
+                    Background="White"
+                    CornerRadius="20">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="TTR: " FontSize="14" Foreground="#666666"/>
-                        <TextBlock Text="{Binding CurrentTTR, StringFormat=F1}" 
-                                 FontSize="16" FontWeight="Bold" Foreground="#0078D4"/>
-                        <TextBlock Text="%" FontSize="14" Foreground="#666666"/>
+                        <TextBlock
+                            FontSize="14"
+                            Foreground="#666666"
+                            Text="TTR: " />
+                        <TextBlock
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Foreground="#0078D4"
+                            Text="{Binding CurrentTTR, StringFormat=F1}" />
+                        <TextBlock
+                            FontSize="14"
+                            Foreground="#666666"
+                            Text="%" />
                     </StackPanel>
                 </Border>
             </Grid>
         </Border>
 
-        <!-- Contenuto Principale -->
+        <!--  Contenuto Principale  -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <Grid Margin="20">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="20"/>
-                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="3*" />
                 </Grid.ColumnDefinitions>
 
-                <!-- COLONNA SINISTRA: Form Inserimento -->
+                <!--  COLONNA SINISTRA: Form Inserimento  -->
                 <StackPanel Grid.Column="0">
-                    
-                    <!-- Form Controllo INR -->
+
+                    <!--  Form Controllo INR  -->
                     <Border Style="{StaticResource CardStyle}">
                         <StackPanel>
-                            <TextBlock Text="📊 NUOVO CONTROLLO INR" 
-                                     Style="{StaticResource SectionHeaderStyle}"/>
+                            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="📊 NUOVO CONTROLLO INR" />
 
-                            <!-- Data prelievo -->
-                            <TextBlock Text="Data prelievo" Style="{StaticResource InputLabelStyle}"/>
-                            <DatePicker SelectedDate="{Binding ControlDate}" 
-                                      FontSize="14" Margin="0,0,0,15"/>
+                            <!--  Data prelievo  -->
+                            <TextBlock Style="{StaticResource InputLabelStyle}" Text="Data prelievo" />
+                            <DatePicker
+                                Margin="0,0,0,15"
+                                FontSize="14"
+                                SelectedDate="{Binding ControlDate}" />
 
-                            <!-- Valore INR -->
-                            <TextBlock Text="Valore INR" Style="{StaticResource InputLabelStyle}"/>
-                            <TextBox Text="{Binding INRValue, UpdateSourceTrigger=PropertyChanged}" 
-                                   Style="{StaticResource InputTextBoxStyle}"
-                                   Margin="0,0,0,5"/>
-                            <TextBlock Text="(Range valido: 0.5 - 10.0)" 
-                                     FontSize="10" Foreground="#999999" Margin="0,0,0,15"/>
+                            <!--  Valore INR  -->
+                            <TextBlock Style="{StaticResource InputLabelStyle}" Text="Valore INR" />
+                            <TextBox
+                                Margin="0,0,0,5"
+                                Style="{StaticResource InputTextBoxStyle}"
+                                Text="{Binding InrValue, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=LostFocus}" />
+                            <TextBlock
+                                Margin="0,0,0,15"
+                                FontSize="10"
+                                Foreground="#999999"
+                                Text="(Range valido: 0.5 - 10.0)" />
 
-                            <!-- Fase terapia -->
-                            <TextBlock Text="Fase terapia" Style="{StaticResource InputLabelStyle}"/>
-                            <ComboBox ItemsSource="{Binding TherapyPhases}"
-                                    SelectedItem="{Binding SelectedPhase}"
-                                    FontSize="14" Padding="8" Margin="0,0,0,15"/>
+                            <!--  Fase terapia  -->
+                            <TextBlock Style="{StaticResource InputLabelStyle}" Text="Fase terapia" />
+                            <ComboBox
+                                Margin="0,0,0,15"
+                                Padding="8"
+                                FontSize="14"
+                                ItemsSource="{Binding TherapyPhases}"
+                                SelectedItem="{Binding SelectedPhase}" />
 
-                            <!-- Compliance -->
-                            <CheckBox Content="Paziente assume regolarmente la terapia" 
-                                    IsChecked="{Binding IsCompliant}"
-                                    FontSize="13" Margin="0,0,0,15"/>
+                            <!--  Compliance  -->
+                            <CheckBox
+                                Margin="0,0,0,15"
+                                Content="Paziente assume regolarmente la terapia"
+                                FontSize="13"
+                                IsChecked="{Binding IsCompliant}" />
 
-                            <!-- Note -->
-                            <TextBlock Text="Note cliniche" Style="{StaticResource InputLabelStyle}"/>
-                            <TextBox Text="{Binding Notes}" 
-                                   AcceptsReturn="True" TextWrapping="Wrap"
-                                   Height="80" Padding="8" FontSize="13"
-                                   BorderBrush="#CCCCCC" BorderThickness="1"/>
+                            <!--  Note  -->
+                            <TextBlock Style="{StaticResource InputLabelStyle}" Text="Note cliniche" />
+                            <TextBox
+                                Height="80"
+                                Padding="8"
+                                AcceptsReturn="True"
+                                BorderBrush="#CCCCCC"
+                                BorderThickness="1"
+                                FontSize="13"
+                                Text="{Binding Notes}"
+                                TextWrapping="Wrap" />
                         </StackPanel>
                     </Border>
 
-                    <!-- Dosaggio Settimanale Corrente -->
+                    <!--  Dosaggio Settimanale Corrente  -->
                     <Border Style="{StaticResource CardStyle}">
                         <StackPanel>
-                            <TextBlock Text="💊 DOSAGGIO CORRENTE" 
-                                     Style="{StaticResource SectionHeaderStyle}"/>
+                            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="💊 DOSAGGIO CORRENTE" />
 
-                            <!-- Griglia dosi giornaliere -->
+                            <!--  Griglia dosi giornaliere  -->
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="15"/>
-                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="15" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <!-- Lunedì -->
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Lunedì" 
-                                         VerticalAlignment="Center" Margin="0,0,10,5"/>
-                                <TextBox Grid.Row="0" Grid.Column="1" 
-                                       Text="{Binding MondayDose, UpdateSourceTrigger=PropertyChanged}"
-                                       Style="{StaticResource InputTextBoxStyle}" Margin="0,0,5,5"/>
-                                <TextBlock Grid.Row="0" Grid.Column="2" Text="mg" 
-                                         VerticalAlignment="Center"/>
+                                <!--  Lunedì  -->
+                                <TextBlock
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Margin="0,0,10,5"
+                                    VerticalAlignment="Center"
+                                    Text="Lunedì" />
+                                <TextBox
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Margin="0,0,5,5"
+                                    Style="{StaticResource InputTextBoxStyle}"
+                                    Text="{Binding MondayDose, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=LostFocus}" />
+                                <TextBlock
+                                    Grid.Row="0"
+                                    Grid.Column="2"
+                                    VerticalAlignment="Center"
+                                    Text="mg" />
 
-                                <!-- Martedì -->
-                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Martedì" 
-                                         VerticalAlignment="Center" Margin="0,0,10,5"/>
-                                <TextBox Grid.Row="1" Grid.Column="1" 
-                                       Text="{Binding TuesdayDose, UpdateSourceTrigger=PropertyChanged}"
-                                       Style="{StaticResource InputTextBoxStyle}" Margin="0,0,5,5"/>
-                                <TextBlock Grid.Row="1" Grid.Column="2" Text="mg" 
-                                         VerticalAlignment="Center"/>
+                                <!--  Martedì  -->
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Margin="0,0,10,5"
+                                    VerticalAlignment="Center"
+                                    Text="Martedì" />
+                                <TextBox
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Margin="0,0,5,5"
+                                    Style="{StaticResource InputTextBoxStyle}"
+                                    Text="{Binding TuesdayDose, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=LostFocus}" />
 
-                                <!-- Mercoledì -->
-                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Mercoledì" 
-                                         VerticalAlignment="Center" Margin="0,0,10,5"/>
-                                <TextBox Grid.Row="2" Grid.Column="1" 
-                                       Text="{Binding WednesdayDose, UpdateSourceTrigger=PropertyChanged}"
-                                       Style="{StaticResource InputTextBoxStyle}" Margin="0,0,5,5"/>
-                                <TextBlock Grid.Row="2" Grid.Column="2" Text="mg" 
-                                         VerticalAlignment="Center"/>
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Grid.Column="2"
+                                    VerticalAlignment="Center"
+                                    Text="mg" />
 
-                                <!-- Giovedì -->
-                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Giovedì" 
-                                         VerticalAlignment="Center" Margin="0,0,10,5"/>
-                                <TextBox Grid.Row="3" Grid.Column="1" 
-                                       Text="{Binding ThursdayDose, UpdateSourceTrigger=PropertyChanged}"
-                                       Style="{StaticResource InputTextBoxStyle}" Margin="0,0,5,5"/>
-                                <TextBlock Grid.Row="3" Grid.Column="2" Text="mg" 
-                                         VerticalAlignment="Center"/>
+                                <!--  Mercoledì  -->
+                                <TextBlock
+                                    Grid.Row="2"
+                                    Grid.Column="0"
+                                    Margin="0,0,10,5"
+                                    VerticalAlignment="Center"
+                                    Text="Mercoledì" />
+                                <TextBox
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Margin="0,0,5,5"
+                                    Style="{StaticResource InputTextBoxStyle}"
+                                    Text="{Binding WednesdayDose, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=LostFocus}" />
+                                <TextBlock
+                                    Grid.Row="2"
+                                    Grid.Column="2"
+                                    VerticalAlignment="Center"
+                                    Text="mg" />
 
-                                <!-- Venerdì -->
-                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Venerdì" 
-                                         VerticalAlignment="Center" Margin="0,0,10,5"/>
-                                <TextBox Grid.Row="4" Grid.Column="1" 
-                                       Text="{Binding FridayDose, UpdateSourceTrigger=PropertyChanged}"
-                                       Style="{StaticResource InputTextBoxStyle}" Margin="0,0,5,5"/>
-                                <TextBlock Grid.Row="4" Grid.Column="2" Text="mg" 
-                                         VerticalAlignment="Center"/>
+                                <!--  Giovedì  -->
+                                <TextBlock
+                                    Grid.Row="3"
+                                    Grid.Column="0"
+                                    Margin="0,0,10,5"
+                                    VerticalAlignment="Center"
+                                    Text="Giovedì" />
+                                <TextBox
+                                    Grid.Row="3"
+                                    Grid.Column="1"
+                                    Margin="0,0,5,5"
+                                    Style="{StaticResource InputTextBoxStyle}"
+                                    Text="{Binding ThursdayDose, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=LostFocus}" />
 
-                                <!-- Sabato -->
-                                <TextBlock Grid.Row="5" Grid.Column="0" Text="Sabato" 
-                                         VerticalAlignment="Center" Margin="0,0,10,5"/>
-                                <TextBox Grid.Row="5" Grid.Column="1" 
-                                       Text="{Binding SaturdayDose, UpdateSourceTrigger=PropertyChanged}"
-                                       Style="{StaticResource InputTextBoxStyle}" Margin="0,0,5,5"/>
-                                <TextBlock Grid.Row="5" Grid.Column="2" Text="mg" 
-                                         VerticalAlignment="Center"/>
+                                <TextBlock
+                                    Grid.Row="3"
+                                    Grid.Column="2"
+                                    VerticalAlignment="Center"
+                                    Text="mg" />
 
-                                <!-- Domenica -->
-                                <TextBlock Grid.Row="6" Grid.Column="0" Text="Domenica" 
-                                         VerticalAlignment="Center" Margin="0,0,10,5"/>
-                                <TextBox Grid.Row="6" Grid.Column="1" 
-                                       Text="{Binding SundayDose, UpdateSourceTrigger=PropertyChanged}"
-                                       Style="{StaticResource InputTextBoxStyle}" Margin="0,0,5,5"/>
-                                <TextBlock Grid.Row="6" Grid.Column="2" Text="mg" 
-                                         VerticalAlignment="Center"/>
+                                <!--  Venerdì  -->
+                                <TextBlock
+                                    Grid.Row="4"
+                                    Grid.Column="0"
+                                    Margin="0,0,10,5"
+                                    VerticalAlignment="Center"
+                                    Text="Venerdì" />
+                                <TextBox
+                                    Grid.Row="4"
+                                    Grid.Column="1"
+                                    Margin="0,0,5,5"
+                                    Style="{StaticResource InputTextBoxStyle}"
+                                    Text="{Binding FridayDose, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=LostFocus}" />
+                                <TextBlock
+                                    Grid.Row="4"
+                                    Grid.Column="2"
+                                    VerticalAlignment="Center"
+                                    Text="mg" />
 
-                                <!-- Totale Settimanale -->
-                                <Border Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3"
-                                      Background="#F0F0F0" Padding="10" CornerRadius="4">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock Text="Totale Settimanale: " 
-                                                 FontWeight="SemiBold" FontSize="14"/>
-                                        <TextBlock Text="{Binding CurrentWeeklyDose, StringFormat=F1}" 
-                                                 FontWeight="Bold" FontSize="16" Foreground="#0078D4"/>
-                                        <TextBlock Text=" mg" FontWeight="SemiBold" FontSize="14"/>
+                                <!--  Sabato  -->
+                                <TextBlock
+                                    Grid.Row="5"
+                                    Grid.Column="0"
+                                    Margin="0,0,10,5"
+                                    VerticalAlignment="Center"
+                                    Text="Sabato" />
+                                <TextBox
+                                    Grid.Row="5"
+                                    Grid.Column="1"
+                                    Margin="0,0,5,5"
+                                    Style="{StaticResource InputTextBoxStyle}"
+                                    Text="{Binding SaturdayDose, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=LostFocus}" />
+                                <TextBlock
+                                    Grid.Row="5"
+                                    Grid.Column="2"
+                                    VerticalAlignment="Center"
+                                    Text="mg" />
+
+                                <!--  Domenica  -->
+                                <TextBlock
+                                    Grid.Row="6"
+                                    Grid.Column="0"
+                                    Margin="0,0,10,5"
+                                    VerticalAlignment="Center"
+                                    Text="Domenica" />
+                                <TextBox
+                                    Grid.Row="6"
+                                    Grid.Column="1"
+                                    Margin="0,0,5,5"
+                                    Style="{StaticResource InputTextBoxStyle}"
+                                    Text="{Binding SundayDose, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=LostFocus}" />
+                                <TextBlock
+                                    Grid.Row="6"
+                                    Grid.Column="2"
+                                    VerticalAlignment="Center"
+                                    Text="mg" />
+
+                                <!--  Totale Settimanale  -->
+                                <Border
+                                    Grid.Row="8"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="3"
+                                    Padding="10"
+                                    Background="#F0F0F0"
+                                    CornerRadius="4">
+                                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                        <TextBlock
+                                            FontSize="14"
+                                            FontWeight="SemiBold"
+                                            Text="Totale Settimanale: " />
+                                        <TextBlock
+                                            FontSize="16"
+                                            FontWeight="Bold"
+                                            Foreground="#0078D4"
+                                            Text="{Binding CurrentWeeklyDose, StringFormat=F1}" />
+                                        <TextBlock
+                                            FontSize="14"
+                                            FontWeight="SemiBold"
+                                            Text=" mg" />
                                     </StackPanel>
                                 </Border>
                             </Grid>
 
-                            <!-- Pulsante Carica Ultimo -->
-                            <Button Content="📋 Carica ultimo dosaggio" 
-                                  Command="{Binding LoadLastDosageCommand}"
-                                  Style="{StaticResource SecondaryButtonStyle}"
-                                  Margin="0,15,0,0"/>
+                            <!--  Pulsante Carica Ultimo  -->
+                            <Button
+                                Margin="0,15,0,0"
+                                Command="{Binding LoadLastDosageCommand}"
+                                Content="📋 Carica ultimo dosaggio"
+                                Style="{StaticResource SecondaryButtonStyle}" />
                         </StackPanel>
                     </Border>
 
-                    <!-- Azioni -->
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
-                        <Button Content="💾 Salva Controllo" 
-                              Command="{Binding SaveControlCommand}"
-                              Style="{StaticResource PrimaryButtonStyle}"
-                              Margin="0,0,10,0"/>
-                        <Button Content="🔄 Reset" 
-                              Style="{StaticResource SecondaryButtonStyle}"/>
+                    <!--  Azioni  -->
+                    <StackPanel
+                        Margin="0,10,0,0"
+                        HorizontalAlignment="Right"
+                        Orientation="Horizontal">
+                        <Button
+                            Margin="0,0,10,0"
+                            Command="{Binding SaveControlCommand}"
+                            Content="💾 Salva Controllo"
+                            Style="{StaticResource PrimaryButtonStyle}" />
+                        <Button Content="🔄 Reset" Style="{StaticResource SecondaryButtonStyle}" />
                     </StackPanel>
                 </StackPanel>
 
-                <!-- COLONNA DESTRA: Suggerimenti e Storico -->
+                <!--  COLONNA DESTRA: Suggerimenti e Storico  -->
                 <StackPanel Grid.Column="2">
-                    
-                    <!-- Pannello Suggerimenti -->
-                    <Border Style="{StaticResource CardStyle}" 
-                          Visibility="{Binding HasSuggestions, Converter={StaticResource BoolToVisibilityConverter}}">
-                        <StackPanel>
-                            <TextBlock Text="🎯 SUGGERIMENTO DOSAGGIO" 
-                                     Style="{StaticResource SectionHeaderStyle}"/>
 
-                            <!-- Toggle Linee Guida -->
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
-                                <RadioButton Content="FCSA-SIMG (Italia)" 
-                                           GroupName="Guidelines"
-                                           FontSize="13" Margin="0,0,20,0"/>
-                                <RadioButton Content="ACCP (USA)" 
-                                           GroupName="Guidelines"
-                                           FontSize="13"/>
+                    <!--  Pannello Suggerimenti  -->
+                    <Border Style="{StaticResource CardStyle}" Visibility="{Binding HasSuggestions, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="🎯 SUGGERIMENTO DOSAGGIO" />
+
+                            <!--  Toggle Linee Guida  -->
+                            <StackPanel Margin="0,0,0,15" Orientation="Horizontal">
+                                <RadioButton
+                                    Margin="0,0,20,0"
+                                    Content="FCSA-SIMG (Italia)"
+                                    FontSize="13"
+                                    GroupName="Guidelines" />
+                                <RadioButton
+                                    Content="ACCP (USA)"
+                                    FontSize="13"
+                                    GroupName="Guidelines" />
                             </StackPanel>
 
-                            <!-- Status INR -->
-                            <Border Padding="15,10" CornerRadius="4" Margin="0,0,0,15">
+                            <!--  Status INR  -->
+                            <Border
+                                Margin="0,0,0,15"
+                                Padding="15,10"
+                                CornerRadius="4">
                                 <Border.Background>
-                                    <SolidColorBrush Color="{Binding INRStatusColor}"/>
+                                    <SolidColorBrush Color="{Binding INRStatusColor}" />
                                 </Border.Background>
-                                <TextBlock Text="{Binding INRStatusText}" 
-                                         Foreground="White" FontSize="16" 
-                                         FontWeight="Bold" TextAlignment="Center"/>
+                                <TextBlock
+                                    FontSize="16"
+                                    FontWeight="Bold"
+                                    Foreground="White"
+                                    Text="{Binding INRStatusText}"
+                                    TextAlignment="Center" />
                             </Border>
 
-                            <!-- Nuova Dose Suggerita -->
-                            <Border Background="#F0F8FF" Padding="15" CornerRadius="4" Margin="0,0,0,15">
+                            <!--  Nuova Dose Suggerita  -->
+                            <Border
+                                Margin="0,0,0,15"
+                                Padding="15"
+                                Background="#F0F8FF"
+                                CornerRadius="4">
                                 <StackPanel>
-                                    <TextBlock Text="NUOVA DOSE SETTIMANALE" 
-                                             FontSize="12" Foreground="#666666"/>
-                                    <TextBlock FontSize="32" FontWeight="Bold" 
-                                             Foreground="#0078D4" TextAlignment="Center">
-                                        <Run Text="{Binding ActiveSuggestion.SuggestedWeeklyDoseMg, StringFormat=F1}"/>
-                                        <Run Text="mg" FontSize="20"/>
+                                    <TextBlock
+                                        FontSize="12"
+                                        Foreground="#666666"
+                                        Text="NUOVA DOSE SETTIMANALE" />
+                                    <TextBlock
+                                        FontSize="32"
+                                        FontWeight="Bold"
+                                        Foreground="#0078D4"
+                                        TextAlignment="Center">
+                                        <Run Text="{Binding ActiveSuggestion.SuggestedWeeklyDoseMg, StringFormat=F1}" />
+                                        <Run FontSize="20" Text="mg" />
                                     </TextBlock>
-                                    <TextBlock TextAlignment="Center" FontSize="13" Foreground="#666666">
-                                        <Run Text="("/>
-                                        <Run Text="{Binding ActiveSuggestion.PercentageAdjustment, StringFormat=+0.0;-0.0}"/>
-                                        <Run Text="%)"/>
+                                    <TextBlock
+                                        FontSize="13"
+                                        Foreground="#666666"
+                                        TextAlignment="Center">
+                                        <Run Text="(" />
+                                        <Run Text="{Binding ActiveSuggestion.PercentageAdjustment, StringFormat=+0.0;-0.0}" />
+                                        <Run Text="%)" />
                                     </TextBlock>
                                 </StackPanel>
                             </Border>
 
-                            <!-- Schema Settimanale -->
-                            <TextBlock Text="SCHEMA SETTIMANALE CONSIGLIATO" 
-                                     FontSize="12" FontWeight="SemiBold" 
-                                     Foreground="#666666" Margin="0,0,0,10"/>
-                            <Border Background="#FAFAFA" Padding="12" CornerRadius="4" Margin="0,0,0,15">
-                                <TextBlock Text="{Binding ActiveSuggestion.WeeklySchedule.Description}" 
-                                         FontFamily="Consolas" FontSize="12" TextWrapping="Wrap"/>
+                            <!--  Schema Settimanale  -->
+                            <TextBlock
+                                Margin="0,0,0,10"
+                                FontSize="12"
+                                FontWeight="SemiBold"
+                                Foreground="#666666"
+                                Text="SCHEMA SETTIMANALE CONSIGLIATO" />
+                            <Border
+                                Margin="0,0,0,15"
+                                Padding="12"
+                                Background="#FAFAFA"
+                                CornerRadius="4">
+                                <TextBlock
+                                    FontFamily="Consolas"
+                                    FontSize="12"
+                                    Text="{Binding ActiveSuggestion.WeeklySchedule.Description}"
+                                    TextWrapping="Wrap" />
                             </Border>
 
-                            <!-- Prossimo Controllo -->
+                            <!--  Prossimo Controllo  -->
                             <Grid Margin="0,0,0,15">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="🗓 Prossimo controllo: " 
-                                         FontSize="13" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" FontSize="14" FontWeight="SemiBold" 
-                                         Foreground="#0078D4" VerticalAlignment="Center">
-                                    <Run Text="tra"/>
-                                    <Run Text="{Binding ActiveSuggestion.NextControlDays}"/>
-                                    <Run Text="giorni"/>
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    FontSize="13"
+                                    Text="🗓 Prossimo controllo: " />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    FontSize="14"
+                                    FontWeight="SemiBold"
+                                    Foreground="#0078D4">
+                                    <Run Text="tra" />
+                                    <Run Text="{Binding ActiveSuggestion.NextControlDays}" />
+                                    <Run Text="giorni" />
                                 </TextBlock>
                             </Grid>
 
-                            <!-- Note Cliniche -->
-                            <TextBlock Text="NOTE CLINICHE" 
-                                     FontSize="12" FontWeight="SemiBold" 
-                                     Foreground="#666666" Margin="0,0,0,8"/>
-                            <TextBlock Text="{Binding ActiveSuggestion.ClinicalNotes}" 
-                                     FontSize="12" TextWrapping="Wrap" 
-                                     Foreground="#333333" Margin="0,0,0,15"/>
+                            <!--  Note Cliniche  -->
+                            <TextBlock
+                                Margin="0,0,0,8"
+                                FontSize="12"
+                                FontWeight="SemiBold"
+                                Foreground="#666666"
+                                Text="NOTE CLINICHE" />
+                            <TextBlock
+                                Margin="0,0,0,15"
+                                FontSize="12"
+                                Foreground="#333333"
+                                Text="{Binding ActiveSuggestion.ClinicalNotes}"
+                                TextWrapping="Wrap" />
 
-                            <!-- Azioni Export -->
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
-                                <Button Content="📋 Copia" 
-                                      Command="{Binding CopyToClipboardCommand}"
-                                      Style="{StaticResource SecondaryButtonStyle}"
-                                      Margin="0,0,10,0"/>
-                                <Button Content="💾 Esporta TXT" 
-                                      Command="{Binding ExportToFileCommand}"
-                                      Style="{StaticResource PrimaryButtonStyle}"/>
+                            <!--  Azioni Export  -->
+                            <StackPanel
+                                Margin="0,15,0,0"
+                                HorizontalAlignment="Right"
+                                Orientation="Horizontal">
+                                <Button
+                                    Margin="0,0,10,0"
+                                    Command="{Binding CopyToClipboardCommand}"
+                                    Content="📋 Copia"
+                                    Style="{StaticResource SecondaryButtonStyle}" />
+                                <Button
+                                    Command="{Binding ExportToFileCommand}"
+                                    Content="💾 Esporta TXT"
+                                    Style="{StaticResource PrimaryButtonStyle}" />
                             </StackPanel>
                         </StackPanel>
                     </Border>
 
-                    <!-- Storico INR -->
+                    <!--  Storico INR  -->
                     <Border Style="{StaticResource CardStyle}">
                         <StackPanel>
-                            <TextBlock Text="📈 STORICO CONTROLLI" 
-                                     Style="{StaticResource SectionHeaderStyle}"/>
+                            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="📈 STORICO CONTROLLI" />
 
-                            <DataGrid ItemsSource="{Binding INRHistory}"
-                                    SelectedItem="{Binding SelectedHistoryItem}"
-                                    AutoGenerateColumns="False"
-                                    IsReadOnly="True"
-                                    HeadersVisibility="Column"
-                                    GridLinesVisibility="None"
-                                    AlternatingRowBackground="#F9F9F9"
-                                    SelectionMode="Single"
-                                    CanUserResizeRows="False"
-                                    Height="300">
+                            <DataGrid
+                                Height="300"
+                                AlternatingRowBackground="#F9F9F9"
+                                AutoGenerateColumns="False"
+                                CanUserResizeRows="False"
+                                GridLinesVisibility="None"
+                                HeadersVisibility="Column"
+                                IsReadOnly="True"
+                                ItemsSource="{Binding INRHistory}"
+                                SelectedItem="{Binding SelectedHistoryItem}"
+                                SelectionMode="Single">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Data" 
-                                                      Binding="{Binding FormattedDate}" 
-                                                      Width="90"/>
-                                    <DataGridTextColumn Header="INR" 
-                                                      Binding="{Binding INRValue, StringFormat=F1}" 
-                                                      Width="50"/>
-                                    <DataGridTextColumn Header="Status" 
-                                                      Binding="{Binding Status}" 
-                                                      Width="80"/>
-                                    <DataGridTextColumn Header="Dose (mg/sett)" 
-                                                      Binding="{Binding CurrentWeeklyDose, StringFormat=F1}" 
-                                                      Width="100"/>
-                                    <DataGridTextColumn Header="Fase" 
-                                                      Binding="{Binding PhaseDescription}" 
-                                                      Width="*"/>
+                                    <DataGridTextColumn
+                                        Width="90"
+                                        Binding="{Binding FormattedDate}"
+                                        Header="Data" />
+                                    <DataGridTextColumn
+                                        Width="50"
+                                        Binding="{Binding INRValue, StringFormat=F1}"
+                                        Header="INR" />
+                                    <DataGridTextColumn
+                                        Width="80"
+                                        Binding="{Binding Status}"
+                                        Header="Status" />
+                                    <DataGridTextColumn
+                                        Width="100"
+                                        Binding="{Binding CurrentWeeklyDose, StringFormat=F1}"
+                                        Header="Dose (mg/sett)" />
+                                    <DataGridTextColumn
+                                        Width="*"
+                                        Binding="{Binding PhaseDescription}"
+                                        Header="Fase" />
                                 </DataGrid.Columns>
                             </DataGrid>
 
-                            <Button Content="📂 Carica controllo selezionato" 
-                                  Command="{Binding LoadHistoryItemCommand}"
-                                  Style="{StaticResource SecondaryButtonStyle}"
-                                  Margin="0,10,0,0"/>
+                            <Button
+                                Margin="0,10,0,0"
+                                Command="{Binding LoadHistoryItemCommand}"
+                                Content="📂 Carica controllo selezionato"
+                                Style="{StaticResource SecondaryButtonStyle}" />
                         </StackPanel>
                     </Border>
                 </StackPanel>
