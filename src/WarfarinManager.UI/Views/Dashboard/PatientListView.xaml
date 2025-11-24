@@ -258,7 +258,7 @@
 
                 <!-- Ultimo INR -->
                 <DataGridTextColumn Header="Ultimo INR" 
-                                    Width="100">
+                                    Width="90">
                     <DataGridTextColumn.Binding>
                         <Binding Path="LastINR" StringFormat="{}{0:F2}"/>
                     </DataGridTextColumn.Binding>
@@ -270,6 +270,28 @@
                                     <Setter Property="Text" Value="-"/>
                                     <Setter Property="Foreground" Value="#A0A0A0"/>
                                     <Setter Property="FontStyle" Value="Italic"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <!-- Dose settimanale (mg/wk) -->
+                <DataGridTextColumn Header="mg/wk" 
+                                    Width="70">
+                    <DataGridTextColumn.Binding>
+                        <Binding Path="CurrentWeeklyDose" StringFormat="{}{0:F1}"/>
+                    </DataGridTextColumn.Binding>
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                            <Setter Property="Foreground" Value="#333333"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentWeeklyDose}" Value="{x:Null}">
+                                    <Setter Property="Text" Value="-"/>
+                                    <Setter Property="Foreground" Value="#A0A0A0"/>
+                                    <Setter Property="FontStyle" Value="Italic"/>
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>

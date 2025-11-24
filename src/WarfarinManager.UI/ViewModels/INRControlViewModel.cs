@@ -1,9 +1,12 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using WarfarinManager.Core.Models;
@@ -11,6 +14,7 @@ using WarfarinManager.Core.Services;
 using WarfarinManager.Core.Interfaces;
 using WarfarinManager.Data.Repositories.Interfaces;
 using WarfarinManager.Shared.Enums;
+using WarfarinManager.UI.Helpers;
 using WarfarinManager.UI.Models;
 using WarfarinManager.UI.Services;
 
@@ -69,30 +73,47 @@ namespace WarfarinManager.UI.ViewModels
         [ObservableProperty]
         private string _notes = string.Empty;
 
-        // Dosi giornaliere (mg)
+        // Dosi giornaliere usando DoseOption per visualizzare mg + compresse
         [ObservableProperty]
-        private decimal _mondayDose = 5.0m;
+        private DoseOption _mondayDose;
 
         [ObservableProperty]
-        private decimal _tuesdayDose = 5.0m;
+        private DoseOption _tuesdayDose;
 
         [ObservableProperty]
-        private decimal _wednesdayDose = 5.0m;
+        private DoseOption _wednesdayDose;
 
         [ObservableProperty]
-        private decimal _thursdayDose = 5.0m;
+        private DoseOption _thursdayDose;
 
         [ObservableProperty]
-        private decimal _fridayDose = 5.0m;
+        private DoseOption _fridayDose;
 
         [ObservableProperty]
-        private decimal _saturdayDose = 5.0m;
+        private DoseOption _saturdayDose;
 
         [ObservableProperty]
-        private decimal _sundayDose = 5.0m;
+        private DoseOption _sundayDose;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(CurrentWeeklyTablets))]
         private decimal _currentWeeklyDose;
+
+        /// <summary>
+        /// Numero di compresse settimanali formattato (1 cp = 5 mg)
+        /// </summary>
+        public string CurrentWeeklyTablets => DoseDistributionHelper.FormatAsTablets(CurrentWeeklyDose);
+
+        // Opzione esclusione quarti di compressa
+        [ObservableProperty]
+        private bool _excludeQuarterTablets = true; // Default: solo mezze cp (step 2.5 mg)
+
+        // Lista valori dose disponibili (con visualizzazione mg + compresse)
+        [ObservableProperty]
+        private ObservableCollection<DoseOption> _availableDoses = new();
+
+        // Flag per bloccare il ricalcolo durante l'applicazione dello schema
+        private bool _isApplyingSchedule = false;
 
         #endregion
 
@@ -118,6 +139,13 @@ namespace WarfarinManager.UI.ViewModels
 
         [ObservableProperty]
         private string _inrStatusColor = "#666666";
+
+        // Schema suggerito distribuito equilibratamente
+        [ObservableProperty]
+        private decimal[] _suggestedDistributedSchedule = new decimal[7];
+
+        [ObservableProperty]
+        private string _suggestedScheduleText = string.Empty;
 
         #endregion
 
@@ -164,6 +192,9 @@ namespace WarfarinManager.UI.ViewModels
             _dialogService = dialogService;
             _navigationService = navigationService;
 
+            // Inizializza lista dosi disponibili e valori default
+            UpdateAvailableDoses();
+
             // Subscribe to property changes
             PropertyChanged += OnPropertyChanged;
         }
@@ -179,15 +210,21 @@ namespace WarfarinManager.UI.ViewModels
                 e.PropertyName == nameof(SaturdayDose) ||
                 e.PropertyName == nameof(SundayDose))
             {
-                CurrentWeeklyDose = MondayDose + TuesdayDose + WednesdayDose +
-                                   ThursdayDose + FridayDose + SaturdayDose + SundayDose;
+                RecalculateWeeklyDose();
             }
 
-            // Ricalcola suggerimenti quando cambia INR o linea guida
-            if (e.PropertyName == nameof(InrValue) ||
-                e.PropertyName == nameof(SelectedGuideline) ||
-                e.PropertyName == nameof(CurrentWeeklyDose) ||
-                e.PropertyName == nameof(SelectedPhase))
+            // Aggiorna lista dosi disponibili quando cambia il checkbox
+            if (e.PropertyName == nameof(ExcludeQuarterTablets))
+            {
+                UpdateAvailableDoses();
+            }
+
+            // Ricalcola suggerimenti quando cambia INR o fase terapia
+            // NON ricalcolare quando cambia CurrentWeeklyDose (altrimenti loop infinito con ApplySuggestedSchedule)
+            // NON ricalcolare quando cambia SelectedGuideline (gestito separatamente in OnSelectedGuidelineChanged)
+            if (!_isApplyingSchedule &&
+                (e.PropertyName == nameof(InrValue) ||
+                 e.PropertyName == nameof(SelectedPhase)))
             {
                 if (InrValue > 0 && CurrentWeeklyDose > 0)
                 {
@@ -196,7 +233,125 @@ namespace WarfarinManager.UI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Ricalcola la dose settimanale totale
+        /// </summary>
+        private void RecalculateWeeklyDose()
+        {
+            CurrentWeeklyDose = 
+                (MondayDose?.DoseMg ?? 0) + 
+                (TuesdayDose?.DoseMg ?? 0) + 
+                (WednesdayDose?.DoseMg ?? 0) +
+                (ThursdayDose?.DoseMg ?? 0) + 
+                (FridayDose?.DoseMg ?? 0) + 
+                (SaturdayDose?.DoseMg ?? 0) + 
+                (SundayDose?.DoseMg ?? 0);
+        }
+
+        /// <summary>
+        /// Aggiorna la lista delle dosi disponibili in base all'opzione quarti di compressa
+        /// </summary>
+        private void UpdateAvailableDoses()
+        {
+            // Salva i valori correnti prima di aggiornare la lista
+            decimal mondayMg = MondayDose?.DoseMg ?? 5.0m;
+            decimal tuesdayMg = TuesdayDose?.DoseMg ?? 5.0m;
+            decimal wednesdayMg = WednesdayDose?.DoseMg ?? 5.0m;
+            decimal thursdayMg = ThursdayDose?.DoseMg ?? 5.0m;
+            decimal fridayMg = FridayDose?.DoseMg ?? 5.0m;
+            decimal saturdayMg = SaturdayDose?.DoseMg ?? 5.0m;
+            decimal sundayMg = SundayDose?.DoseMg ?? 5.0m;
+
+            // Crea nuove opzioni
+            var options = DoseOption.CreateOptions(ExcludeQuarterTablets);
+            
+            AvailableDoses.Clear();
+            foreach (var option in options)
+            {
+                AvailableDoses.Add(option);
+            }
+
+            // Ripristina i valori arrotondati al più vicino disponibile
+            MondayDose = DoseOption.FindNearest(options, mondayMg);
+            TuesdayDose = DoseOption.FindNearest(options, tuesdayMg);
+            WednesdayDose = DoseOption.FindNearest(options, wednesdayMg);
+            ThursdayDose = DoseOption.FindNearest(options, thursdayMg);
+            FridayDose = DoseOption.FindNearest(options, fridayMg);
+            SaturdayDose = DoseOption.FindNearest(options, saturdayMg);
+            SundayDose = DoseOption.FindNearest(options, sundayMg);
+        }
+
+        /// <summary>
+        /// Trova il DoseOption corrispondente a un valore in mg
+        /// </summary>
+        private DoseOption FindDoseOption(decimal doseMg)
+        {
+            return AvailableDoses.FirstOrDefault(d => d.DoseMg == doseMg) 
+                ?? DoseOption.FindNearest(AvailableDoses.ToArray(), doseMg);
+        }
+
+        /// <summary>
+        /// Ottiene lo schema corrente come array di dosi
+        /// </summary>
+        private decimal[] GetCurrentScheduleArray()
+        {
+            return new[]
+            {
+                MondayDose?.DoseMg ?? 0,
+                TuesdayDose?.DoseMg ?? 0,
+                WednesdayDose?.DoseMg ?? 0,
+                ThursdayDose?.DoseMg ?? 0,
+                FridayDose?.DoseMg ?? 0,
+                SaturdayDose?.DoseMg ?? 0,
+                SundayDose?.DoseMg ?? 0
+            };
+        }
+
+        #region Clipboard Helper
+
+        /// <summary>
+        /// Copia testo negli appunti con retry per gestire il clipboard occupato
+        /// </summary>
+        private static bool TrySetClipboardText(string text, int maxRetries = 10, int retryDelayMs = 100)
+        {
+            for (int i = 0; i < maxRetries; i++)
+            {
+                try
+                {
+                    Clipboard.Clear();
+                    Clipboard.SetDataObject(text, true);
+                    return true;
+                }
+                catch (COMException)
+                {
+                    if (i < maxRetries - 1)
+                        Thread.Sleep(retryDelayMs);
+                }
+                catch (ExternalException)
+                {
+                    if (i < maxRetries - 1)
+                        Thread.Sleep(retryDelayMs);
+                }
+            }
+            return false;
+        }
+
+        #endregion
+
         #region Commands
+
+        /// <summary>
+        /// Torna all'elenco pazienti (chiude la finestra)
+        /// </summary>
+        [RelayCommand]
+        private void GoBack()
+        {
+            // Chiude la finestra corrente per tornare alla MainWindow
+            Application.Current.Windows
+                .OfType<Window>()
+                .FirstOrDefault(w => w.DataContext == this)?
+                .Close();
+        }
 
         [RelayCommand]
         public async Task LoadPatientDataAsync(int patientId)
@@ -219,8 +374,9 @@ namespace WarfarinManager.UI.ViewModels
                     .FirstOrDefaultAsync();
 
                 if (indication != null)
-                    {
-                    ActiveIndication = indication.IndicationType.Description; TargetINRMin = indication.TargetINRMin;
+                {
+                    ActiveIndication = indication.IndicationType.Description;
+                    TargetINRMin = indication.TargetINRMin;
                     TargetINRMax = indication.TargetINRMax;
                 }
 
@@ -241,7 +397,8 @@ namespace WarfarinManager.UI.ViewModels
         {
             try
             {
-                var controls = await _unitOfWork.INRControls.GetByPatientIdAsync(PatientId);
+                // Usa GetByPatientIdWithDetailsAsync per includere DailyDoses e DosageSuggestions
+                var controls = await _unitOfWork.INRControls.GetByPatientIdWithDetailsAsync(PatientId);
                 
                 // Converti da Data.Entities.INRControl a Core.Models.INRControl
                 var coreControls = controls.Select(c => new Core.Models.INRControl
@@ -278,16 +435,31 @@ namespace WarfarinManager.UI.ViewModels
         [RelayCommand]
         private void LoadLastDosage()
         {
-            if (InrHistory.Any())
+            if (!InrHistory.Any()) return;
+
+            try
             {
+                // Blocca il ricalcolo durante il caricamento
+                _isApplyingSchedule = true;
+
                 var lastControl = InrHistory.First();
-                MondayDose = lastControl.MondayDose;
-                TuesdayDose = lastControl.TuesdayDose;
-                WednesdayDose = lastControl.WednesdayDose;
-                ThursdayDose = lastControl.ThursdayDose;
-                FridayDose = lastControl.FridayDose;
-                SaturdayDose = lastControl.SaturdayDose;
-                SundayDose = lastControl.SundayDose;
+                MondayDose = FindDoseOption(lastControl.MondayDose);
+                TuesdayDose = FindDoseOption(lastControl.TuesdayDose);
+                WednesdayDose = FindDoseOption(lastControl.WednesdayDose);
+                ThursdayDose = FindDoseOption(lastControl.ThursdayDose);
+                FridayDose = FindDoseOption(lastControl.FridayDose);
+                SaturdayDose = FindDoseOption(lastControl.SaturdayDose);
+                SundayDose = FindDoseOption(lastControl.SundayDose);
+            }
+            finally
+            {
+                _isApplyingSchedule = false;
+                
+                // Ricalcola solo se abbiamo anche un INR
+                if (InrValue > 0 && CurrentWeeklyDose > 0)
+                {
+                    _ = CalculateSuggestionsAsync();
+                }
             }
         }
 
@@ -332,6 +504,15 @@ namespace WarfarinManager.UI.ViewModels
                 // Aggiorna status INR
                 UpdateINRStatus();
 
+                // Genera schema distribuito equilibratamente
+                if (ActiveSuggestion != null)
+                {
+                    SuggestedDistributedSchedule = DoseDistributionHelper.DistributeWeeklyDose(
+                        ActiveSuggestion.SuggestedWeeklyDoseMg, 
+                        ExcludeQuarterTablets);
+                    SuggestedScheduleText = DoseDistributionHelper.GenerateShortSchedule(SuggestedDistributedSchedule);
+                }
+
                 await Task.CompletedTask;
             }
             catch (Exception ex)
@@ -345,16 +526,17 @@ namespace WarfarinManager.UI.ViewModels
         {
             try
             {
-                // Validazione
-                if (InrValue <= 0)
+                // Validazione INR
+                if (InrValue <= 0 || InrValue < 0.5m || InrValue > 10.0m)
                 {
-                    _dialogService.ShowWarning("Inserire un valore INR valido.");
+                    _dialogService.ShowWarning("Inserire un valore INR valido (tra 0.5 e 10.0).");
                     return;
                 }
 
+                // Validazione dosaggio settimanale
                 if (CurrentWeeklyDose <= 0)
                 {
-                    _dialogService.ShowWarning("Inserire un dosaggio settimanale valido.");
+                    _dialogService.ShowWarning("Inserire un dosaggio settimanale valido.\n\nAlmeno un giorno deve avere una dose > 0 mg.");
                     return;
                 }
 
@@ -373,13 +555,13 @@ namespace WarfarinManager.UI.ViewModels
                 // Aggiungi dosi giornaliere
                 control.DailyDoses = new List<Data.Entities.DailyDose>
                 {
-                    new() { DayOfWeek = 1, DoseMg = MondayDose },
-                    new() { DayOfWeek = 2, DoseMg = TuesdayDose },
-                    new() { DayOfWeek = 3, DoseMg = WednesdayDose },
-                    new() { DayOfWeek = 4, DoseMg = ThursdayDose },
-                    new() { DayOfWeek = 5, DoseMg = FridayDose },
-                    new() { DayOfWeek = 6, DoseMg = SaturdayDose },
-                    new() { DayOfWeek = 7, DoseMg = SundayDose }
+                    new() { DayOfWeek = 1, DoseMg = MondayDose?.DoseMg ?? 0 },
+                    new() { DayOfWeek = 2, DoseMg = TuesdayDose?.DoseMg ?? 0 },
+                    new() { DayOfWeek = 3, DoseMg = WednesdayDose?.DoseMg ?? 0 },
+                    new() { DayOfWeek = 4, DoseMg = ThursdayDose?.DoseMg ?? 0 },
+                    new() { DayOfWeek = 5, DoseMg = FridayDose?.DoseMg ?? 0 },
+                    new() { DayOfWeek = 6, DoseMg = SaturdayDose?.DoseMg ?? 0 },
+                    new() { DayOfWeek = 7, DoseMg = SundayDose?.DoseMg ?? 0 }
                 };
 
                 // Salva suggerimenti se disponibili
@@ -441,8 +623,36 @@ namespace WarfarinManager.UI.ViewModels
             try
             {
                 var exportText = GenerateExportText();
-                Clipboard.SetText(exportText);
-                _dialogService.ShowInformation("Suggerimento copiato negli appunti!");
+                bool success = TrySetClipboardText(exportText);
+                
+                if (success)
+                    _dialogService.ShowInformation("Suggerimento copiato negli appunti!");
+                else
+                    _dialogService.ShowWarning("Impossibile accedere agli appunti. Riprovare.");
+            }
+            catch (Exception ex)
+            {
+                _dialogService.ShowError($"Errore nella copia: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Copia negli appunti una versione concisa del suggerimento
+        /// </summary>
+        [RelayCommand]
+        private void CopyShortToClipboard()
+        {
+            if (ActiveSuggestion == null) return;
+
+            try
+            {
+                var shortText = GenerateShortExportText();
+                bool success = TrySetClipboardText(shortText);
+                
+                if (success)
+                    _dialogService.ShowInformation("Testo breve copiato negli appunti!");
+                else
+                    _dialogService.ShowWarning("Impossibile accedere agli appunti. Riprovare.");
             }
             catch (Exception ex)
             {
@@ -484,17 +694,136 @@ namespace WarfarinManager.UI.ViewModels
         {
             if (SelectedHistoryItem == null) return;
 
-            InrValue = SelectedHistoryItem.INRValue;
-            MondayDose = SelectedHistoryItem.MondayDose;
-            TuesdayDose = SelectedHistoryItem.TuesdayDose;
-            WednesdayDose = SelectedHistoryItem.WednesdayDose;
-            ThursdayDose = SelectedHistoryItem.ThursdayDose;
-            FridayDose = SelectedHistoryItem.FridayDose;
-            SaturdayDose = SelectedHistoryItem.SaturdayDose;
-            SundayDose = SelectedHistoryItem.SundayDose;
-            SelectedPhase = SelectedHistoryItem.Phase;
-            IsCompliant = SelectedHistoryItem.IsCompliant;
-            Notes = SelectedHistoryItem.Notes ?? string.Empty;
+            try
+            {
+                // Blocca il ricalcolo durante il caricamento
+                _isApplyingSchedule = true;
+
+                InrValue = SelectedHistoryItem.INRValue;
+                MondayDose = FindDoseOption(SelectedHistoryItem.MondayDose);
+                TuesdayDose = FindDoseOption(SelectedHistoryItem.TuesdayDose);
+                WednesdayDose = FindDoseOption(SelectedHistoryItem.WednesdayDose);
+                ThursdayDose = FindDoseOption(SelectedHistoryItem.ThursdayDose);
+                FridayDose = FindDoseOption(SelectedHistoryItem.FridayDose);
+                SaturdayDose = FindDoseOption(SelectedHistoryItem.SaturdayDose);
+                SundayDose = FindDoseOption(SelectedHistoryItem.SundayDose);
+                SelectedPhase = SelectedHistoryItem.Phase;
+                IsCompliant = SelectedHistoryItem.IsCompliant;
+                Notes = SelectedHistoryItem.Notes ?? string.Empty;
+            }
+            finally
+            {
+                _isApplyingSchedule = false;
+                
+                // Ora ricalcola i suggerimenti con i dati caricati
+                if (InrValue > 0 && CurrentWeeklyDose > 0)
+                {
+                    _ = CalculateSuggestionsAsync();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Applica lo schema suggerito ai campi di input giornalieri
+        /// NON deve triggerare un ricalcolo dei suggerimenti
+        /// </summary>
+        [RelayCommand]
+        private void ApplySuggestedSchedule()
+        {
+            if (SuggestedDistributedSchedule == null || SuggestedDistributedSchedule.Length != 7) return;
+
+            try
+            {
+                // Blocca il ricalcolo durante l'applicazione
+                _isApplyingSchedule = true;
+
+                MondayDose = FindDoseOption(SuggestedDistributedSchedule[0]);
+                TuesdayDose = FindDoseOption(SuggestedDistributedSchedule[1]);
+                WednesdayDose = FindDoseOption(SuggestedDistributedSchedule[2]);
+                ThursdayDose = FindDoseOption(SuggestedDistributedSchedule[3]);
+                FridayDose = FindDoseOption(SuggestedDistributedSchedule[4]);
+                SaturdayDose = FindDoseOption(SuggestedDistributedSchedule[5]);
+                SundayDose = FindDoseOption(SuggestedDistributedSchedule[6]);
+
+                _dialogService.ShowInformation("Schema suggerito applicato!");
+            }
+            finally
+            {
+                // Ripristina la possibilità di ricalcolo
+                _isApplyingSchedule = false;
+            }
+        }
+
+        /// <summary>
+        /// Elimina il controllo INR selezionato dallo storico
+        /// </summary>
+        [RelayCommand(CanExecute = nameof(CanDeleteHistoryItem))]
+        private async Task DeleteHistoryItemAsync()
+        {
+            if (SelectedHistoryItem == null) return;
+
+            try
+            {
+                // Chiedi conferma
+                var result = _dialogService.ShowConfirmation(
+                    $"Eliminare il controllo INR del {SelectedHistoryItem.FormattedDate}?\n\n" +
+                    $"INR: {SelectedHistoryItem.INRValue:F1}\n" +
+                    $"Dose: {SelectedHistoryItem.CurrentWeeklyDose:F1} mg/sett\n\n" +
+                    "Questa operazione non può essere annullata.",
+                    "Conferma eliminazione");
+
+                if (!result) return;
+
+                // Elimina dal database
+                var control = await _unitOfWork.INRControls.GetByIdAsync(SelectedHistoryItem.Id);
+                if (control != null)
+                {
+                    await _unitOfWork.INRControls.DeleteAsync(control);
+                    await _unitOfWork.SaveChangesAsync();
+
+                    _dialogService.ShowInformation("Controllo INR eliminato con successo.");
+
+                    // Ricarica storico
+                    await LoadINRHistoryAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                _dialogService.ShowError($"Errore durante l'eliminazione: {ex.Message}");
+            }
+        }
+
+        private bool CanDeleteHistoryItem() => SelectedHistoryItem != null;
+
+        /// <summary>
+        /// Aggiorna CanExecute quando cambia la selezione nello storico
+        /// </summary>
+        partial void OnSelectedHistoryItemChanged(INRControlDto? value)
+        {
+            DeleteHistoryItemCommand.NotifyCanExecuteChanged();
+        }
+
+        /// <summary>
+        /// Cambia il suggerimento attivo quando l'utente seleziona una diversa linea guida
+        /// </summary>
+        partial void OnSelectedGuidelineChanged(GuidelineType value)
+        {
+            // Switch tra suggerimenti già calcolati (non ricalcola)
+            if (FcsaSuggestion != null && AccpSuggestion != null)
+            {
+                ActiveSuggestion = value == GuidelineType.FCSA ? FcsaSuggestion : AccpSuggestion;
+                
+                // Aggiorna status e schema distribuito
+                UpdateINRStatus();
+                
+                if (ActiveSuggestion != null)
+                {
+                    SuggestedDistributedSchedule = DoseDistributionHelper.DistributeWeeklyDose(
+                        ActiveSuggestion.SuggestedWeeklyDoseMg, 
+                        ExcludeQuarterTablets);
+                    SuggestedScheduleText = DoseDistributionHelper.GenerateShortSchedule(SuggestedDistributedSchedule);
+                }
+            }
         }
 
         #endregion
@@ -522,6 +851,49 @@ namespace WarfarinManager.UI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Genera il testo breve/conciso per export negli appunti
+        /// </summary>
+        private string GenerateShortExportText()
+        {
+            if (ActiveSuggestion == null) return string.Empty;
+
+            var currentSchedule = GetCurrentScheduleArray();
+            var currentScheduleText = DoseDistributionHelper.GenerateShortSchedule(currentSchedule);
+            var suggestedScheduleText = DoseDistributionHelper.GenerateShortSchedule(SuggestedDistributedSchedule);
+
+            bool isDoseChanged = Math.Abs(ActiveSuggestion.SuggestedWeeklyDoseMg - CurrentWeeklyDose) > 0.1m;
+
+            string doseSection;
+            if (isDoseChanged)
+            {
+                doseSection = $"NUOVO DOSAGGIO ({ActiveSuggestion.SuggestedWeeklyDoseMg:F1} mg/sett): {suggestedScheduleText}";
+            }
+            else
+            {
+                doseSection = $"Proseguire con dosaggio attuale ({CurrentWeeklyDose:F1} mg/sett): {currentScheduleText}";
+            }
+
+            // Calcola intervallo prossimo controllo
+            string controlInterval = ActiveSuggestion.NextControlDays switch
+            {
+                <= 3 => $"{ActiveSuggestion.NextControlDays} giorni",
+                <= 7 => "1 settimana",
+                <= 14 => "2 settimane",
+                <= 21 => "3 settimane",
+                <= 28 => "4 settimane",
+                <= 42 => "6 settimane",
+                _ => $"{ActiveSuggestion.NextControlDays} giorni"
+            };
+
+            var text = $@"INR attuale: {InrValue:F1}
+Dosaggio corrente: {CurrentWeeklyDose:F1} mg/sett
+{doseSection}
+Prossimo controllo: {controlInterval}";
+
+            return text;
+        }
+
         private string GenerateExportText()
         {
             if (ActiveSuggestion == null) return string.Empty;
@@ -545,13 +917,13 @@ Scostamento: {(InrValue - (TargetINRMin + TargetINRMax) / 2):+0.0;-0.0}
 
 DOSAGGIO ATTUALE: {CurrentWeeklyDose:F1} mg/settimana
 Schema corrente:
-  Lunedì:    {MondayDose:F1} mg
-  Martedì:   {TuesdayDose:F1} mg
-  Mercoledì: {WednesdayDose:F1} mg
-  Giovedì:   {ThursdayDose:F1} mg
-  Venerdì:   {FridayDose:F1} mg
-  Sabato:    {SaturdayDose:F1} mg
-  Domenica:  {SundayDose:F1} mg
+  Lunedì:    {MondayDose?.DoseMg ?? 0:F1} mg ({MondayDose?.TabletDescription ?? "—"})
+  Martedì:   {TuesdayDose?.DoseMg ?? 0:F1} mg ({TuesdayDose?.TabletDescription ?? "—"})
+  Mercoledì: {WednesdayDose?.DoseMg ?? 0:F1} mg ({WednesdayDose?.TabletDescription ?? "—"})
+  Giovedì:   {ThursdayDose?.DoseMg ?? 0:F1} mg ({ThursdayDose?.TabletDescription ?? "—"})
+  Venerdì:   {FridayDose?.DoseMg ?? 0:F1} mg ({FridayDose?.TabletDescription ?? "—"})
+  Sabato:    {SaturdayDose?.DoseMg ?? 0:F1} mg ({SaturdayDose?.TabletDescription ?? "—"})
+  Domenica:  {SundayDose?.DoseMg ?? 0:F1} mg ({SundayDose?.TabletDescription ?? "—"})
 
 ───────────────────────────────────────────────────────────────
 SUGGERIMENTO DOSAGGIO (Linee Guida {SelectedGuideline})
@@ -569,8 +941,8 @@ SUGGERIMENTO DOSAGGIO (Linee Guida {SelectedGuideline})
 
             text += $@"NUOVA DOSE SETTIMANALE: {ActiveSuggestion.SuggestedWeeklyDoseMg:F1} mg ({ActiveSuggestion.PercentageAdjustment:+0.0;-0.0}%)
 
-SCHEMA SETTIMANALE CONSIGLIATO:
-{ActiveSuggestion.WeeklySchedule.GetFullDescription()}
+SCHEMA SETTIMANALE CONSIGLIATO (distribuzione equilibrata):
+{SuggestedScheduleText}
 
 ───────────────────────────────────────────────────────────────
 PROSSIMO CONTROLLO INR
@@ -636,12 +1008,12 @@ valutazione clinica finale e della decisione terapeutica.
             FcsaSuggestion = null;
             AccpSuggestion = null;
             ActiveSuggestion = null;
+            SuggestedScheduleText = string.Empty;
         }
 
         private INRControlDto MapToDto(Data.Entities.INRControl control)
         {
-            // Carica le dosi giornaliere dalla collezione
-            var dailyDoses = control.DailyDoses.OrderBy(d => d.DayOfWeek).ToList();
+            var dailyDoses = control.DailyDoses?.OrderBy(d => d.DayOfWeek).ToList() ?? new List<Data.Entities.DailyDose>();
             
             return new INRControlDto
             {
@@ -649,8 +1021,11 @@ valutazione clinica finale e della decisione terapeutica.
                 PatientId = control.PatientId,
                 ControlDate = control.ControlDate,
                 INRValue = control.INRValue,
-                TargetINRMin = TargetINRMin, // Usa i valori dal paziente
+                TargetINRMin = TargetINRMin,
                 TargetINRMax = TargetINRMax,
+                // Dose settimanale salvata direttamente (fallback)
+                SavedWeeklyDose = control.CurrentWeeklyDose,
+                // Dosi giornaliere (se disponibili)
                 MondayDose = dailyDoses.FirstOrDefault(d => d.DayOfWeek == 1)?.DoseMg ?? 0,
                 TuesdayDose = dailyDoses.FirstOrDefault(d => d.DayOfWeek == 2)?.DoseMg ?? 0,
                 WednesdayDose = dailyDoses.FirstOrDefault(d => d.DayOfWeek == 3)?.DoseMg ?? 0,

@@ -42,11 +42,23 @@ public class INRControlDto
     public decimal SundayDose { get; set; }
     
     /// <summary>
-    /// Dose settimanale totale (mg)
+    /// Dose settimanale totale salvata direttamente (mg) - usata come fallback
     /// </summary>
-    public decimal CurrentWeeklyDose => 
-        MondayDose + TuesdayDose + WednesdayDose + ThursdayDose + 
-        FridayDose + SaturdayDose + SundayDose;
+    public decimal SavedWeeklyDose { get; set; }
+    
+    /// <summary>
+    /// Dose settimanale totale (mg) - calcolata dalle dosi giornaliere o fallback al valore salvato
+    /// </summary>
+    public decimal CurrentWeeklyDose
+    {
+        get
+        {
+            var calculated = MondayDose + TuesdayDose + WednesdayDose + ThursdayDose + 
+                            FridayDose + SaturdayDose + SundayDose;
+            // Se le dosi giornaliere sono tutte 0 ma c'è un valore salvato, usa quello
+            return calculated > 0 ? calculated : SavedWeeklyDose;
+        }
+    }
     
     /// <summary>
     /// Fase della terapia

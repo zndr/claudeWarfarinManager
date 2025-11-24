@@ -1,4 +1,4 @@
-﻿<Window
+<Window
     x:Class="WarfarinManager.UI.Views.INR.INRControlView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -13,12 +13,12 @@
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
 
-
-
     <Window.Resources>
         <!--  Converter per Visibility  -->
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:DecimalConverter x:Key="DecimalConverter" />
+        <converters:EnumToBoolConverter x:Key="EnumToBoolConverter" />
+        
         <!--  Stili comuni  -->
         <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="16" />
@@ -54,6 +54,15 @@
             <Setter Property="FontSize" Value="14" />
             <Setter Property="BorderBrush" Value="#CCCCCC" />
             <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style x:Key="DoseComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Padding" Value="8,6" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="BorderBrush" Value="#CCCCCC" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="MinWidth" Value="160" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
         </Style>
 
         <Style x:Key="PrimaryButtonStyle" TargetType="Button">
@@ -95,6 +104,21 @@
             <Setter Property="BorderBrush" Value="#0078D4" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
+
+        <Style
+            x:Key="SuccessButtonStyle"
+            BasedOn="{StaticResource PrimaryButtonStyle}"
+            TargetType="Button">
+            <Setter Property="Background" Value="#107C10" />
+        </Style>
+
+        <Style
+            x:Key="SmallButtonStyle"
+            BasedOn="{StaticResource SecondaryButtonStyle}"
+            TargetType="Button">
+            <Setter Property="Padding" Value="10,6" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
     </Window.Resources>
 
     <Grid>
@@ -111,11 +135,36 @@
             Background="#0078D4">
             <Grid>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0">
+                <!--  Pulsante Indietro  -->
+                <Button
+                    Grid.Column="0"
+                    Margin="0,0,20,0"
+                    Padding="12,8"
+                    VerticalAlignment="Center"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Command="{Binding GoBackCommand}"
+                    Cursor="Hand"
+                    ToolTip="Torna all'elenco pazienti">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            FontSize="18"
+                            Foreground="White"
+                            Text="←" />
+                        <TextBlock
+                            Margin="8,0,0,0"
+                            FontSize="14"
+                            Foreground="White"
+                            Text="Indietro" />
+                    </StackPanel>
+                </Button>
+
+                <StackPanel Grid.Column="1">
                     <TextBlock
                         FontSize="24"
                         FontWeight="Bold"
@@ -156,7 +205,7 @@
 
                 <!--  TTR Badge  -->
                 <Border
-                    Grid.Column="1"
+                    Grid.Column="2"
                     Padding="15,8"
                     VerticalAlignment="Center"
                     Background="White"
@@ -251,12 +300,48 @@
                         <StackPanel>
                             <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="💊 DOSAGGIO CORRENTE" />
 
-                            <!--  Griglia dosi giornaliere  -->
+                            <!--  CheckBox per escludere quarti di compressa  -->
+                            <Border
+                                Margin="0,0,0,15"
+                                Padding="10"
+                                Background="#FFF8E1"
+                                BorderBrush="#FFB900"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <CheckBox
+                                    Content="Escludi quarti di compressa (usa solo ½ cp)"
+                                    FontSize="12"
+                                    FontWeight="SemiBold"
+                                    Foreground="#5D4037"
+                                    IsChecked="{Binding ExcludeQuarterTablets}"
+                                    ToolTip="✓ Marcato: step 2.5 mg (½, 1, 1½, 2 cp...)&#x0a;☐ Vuoto: step 1.25 mg (¼, ½, ¾, 1 cp...)" />
+                            </Border>
+
+                            <!--  Intestazione colonne  -->
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="80" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Grid.Column="0"
+                                    FontSize="11"
+                                    FontWeight="SemiBold"
+                                    Foreground="#999999"
+                                    Text="GIORNO" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    FontSize="11"
+                                    FontWeight="SemiBold"
+                                    Foreground="#999999"
+                                    Text="DOSE (mg e compresse)" />
+                            </Grid>
+
+                            <!--  Griglia dosi giornaliere con ComboBox  -->
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="80" />
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
@@ -274,160 +359,160 @@
                                 <TextBlock
                                     Grid.Row="0"
                                     Grid.Column="0"
-                                    Margin="0,0,10,5"
+                                    Margin="0,0,10,8"
                                     VerticalAlignment="Center"
+                                    FontWeight="Medium"
                                     Text="Lunedì" />
-                                <TextBox
+                                <ComboBox
                                     Grid.Row="0"
                                     Grid.Column="1"
-                                    Margin="0,0,5,5"
-                                    Style="{StaticResource InputTextBoxStyle}"
-                                    Text="{Binding MondayDose, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=LostFocus}" />
-                                <TextBlock
-                                    Grid.Row="0"
-                                    Grid.Column="2"
-                                    VerticalAlignment="Center"
-                                    Text="mg" />
+                                    Margin="0,0,0,8"
+                                    DisplayMemberPath="DisplayText"
+                                    ItemsSource="{Binding AvailableDoses}"
+                                    SelectedItem="{Binding MondayDose}"
+                                    Style="{StaticResource DoseComboBoxStyle}" />
 
                                 <!--  Martedì  -->
                                 <TextBlock
                                     Grid.Row="1"
                                     Grid.Column="0"
-                                    Margin="0,0,10,5"
+                                    Margin="0,0,10,8"
                                     VerticalAlignment="Center"
+                                    FontWeight="Medium"
                                     Text="Martedì" />
-                                <TextBox
+                                <ComboBox
                                     Grid.Row="1"
                                     Grid.Column="1"
-                                    Margin="0,0,5,5"
-                                    Style="{StaticResource InputTextBoxStyle}"
-                                    Text="{Binding TuesdayDose, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=LostFocus}" />
-
-                                <TextBlock
-                                    Grid.Row="1"
-                                    Grid.Column="2"
-                                    VerticalAlignment="Center"
-                                    Text="mg" />
+                                    Margin="0,0,0,8"
+                                    DisplayMemberPath="DisplayText"
+                                    ItemsSource="{Binding AvailableDoses}"
+                                    SelectedItem="{Binding TuesdayDose}"
+                                    Style="{StaticResource DoseComboBoxStyle}" />
 
                                 <!--  Mercoledì  -->
                                 <TextBlock
                                     Grid.Row="2"
                                     Grid.Column="0"
-                                    Margin="0,0,10,5"
+                                    Margin="0,0,10,8"
                                     VerticalAlignment="Center"
+                                    FontWeight="Medium"
                                     Text="Mercoledì" />
-                                <TextBox
+                                <ComboBox
                                     Grid.Row="2"
                                     Grid.Column="1"
-                                    Margin="0,0,5,5"
-                                    Style="{StaticResource InputTextBoxStyle}"
-                                    Text="{Binding WednesdayDose, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=LostFocus}" />
-                                <TextBlock
-                                    Grid.Row="2"
-                                    Grid.Column="2"
-                                    VerticalAlignment="Center"
-                                    Text="mg" />
+                                    Margin="0,0,0,8"
+                                    DisplayMemberPath="DisplayText"
+                                    ItemsSource="{Binding AvailableDoses}"
+                                    SelectedItem="{Binding WednesdayDose}"
+                                    Style="{StaticResource DoseComboBoxStyle}" />
 
                                 <!--  Giovedì  -->
                                 <TextBlock
                                     Grid.Row="3"
                                     Grid.Column="0"
-                                    Margin="0,0,10,5"
+                                    Margin="0,0,10,8"
                                     VerticalAlignment="Center"
+                                    FontWeight="Medium"
                                     Text="Giovedì" />
-                                <TextBox
+                                <ComboBox
                                     Grid.Row="3"
                                     Grid.Column="1"
-                                    Margin="0,0,5,5"
-                                    Style="{StaticResource InputTextBoxStyle}"
-                                    Text="{Binding ThursdayDose, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=LostFocus}" />
-
-                                <TextBlock
-                                    Grid.Row="3"
-                                    Grid.Column="2"
-                                    VerticalAlignment="Center"
-                                    Text="mg" />
+                                    Margin="0,0,0,8"
+                                    DisplayMemberPath="DisplayText"
+                                    ItemsSource="{Binding AvailableDoses}"
+                                    SelectedItem="{Binding ThursdayDose}"
+                                    Style="{StaticResource DoseComboBoxStyle}" />
 
                                 <!--  Venerdì  -->
                                 <TextBlock
                                     Grid.Row="4"
                                     Grid.Column="0"
-                                    Margin="0,0,10,5"
+                                    Margin="0,0,10,8"
                                     VerticalAlignment="Center"
+                                    FontWeight="Medium"
                                     Text="Venerdì" />
-                                <TextBox
+                                <ComboBox
                                     Grid.Row="4"
                                     Grid.Column="1"
-                                    Margin="0,0,5,5"
-                                    Style="{StaticResource InputTextBoxStyle}"
-                                    Text="{Binding FridayDose, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=LostFocus}" />
-                                <TextBlock
-                                    Grid.Row="4"
-                                    Grid.Column="2"
-                                    VerticalAlignment="Center"
-                                    Text="mg" />
+                                    Margin="0,0,0,8"
+                                    DisplayMemberPath="DisplayText"
+                                    ItemsSource="{Binding AvailableDoses}"
+                                    SelectedItem="{Binding FridayDose}"
+                                    Style="{StaticResource DoseComboBoxStyle}" />
 
                                 <!--  Sabato  -->
                                 <TextBlock
                                     Grid.Row="5"
                                     Grid.Column="0"
-                                    Margin="0,0,10,5"
+                                    Margin="0,0,10,8"
                                     VerticalAlignment="Center"
+                                    FontWeight="Medium"
                                     Text="Sabato" />
-                                <TextBox
+                                <ComboBox
                                     Grid.Row="5"
                                     Grid.Column="1"
-                                    Margin="0,0,5,5"
-                                    Style="{StaticResource InputTextBoxStyle}"
-                                    Text="{Binding SaturdayDose, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=LostFocus}" />
-                                <TextBlock
-                                    Grid.Row="5"
-                                    Grid.Column="2"
-                                    VerticalAlignment="Center"
-                                    Text="mg" />
+                                    Margin="0,0,0,8"
+                                    DisplayMemberPath="DisplayText"
+                                    ItemsSource="{Binding AvailableDoses}"
+                                    SelectedItem="{Binding SaturdayDose}"
+                                    Style="{StaticResource DoseComboBoxStyle}" />
 
                                 <!--  Domenica  -->
                                 <TextBlock
                                     Grid.Row="6"
                                     Grid.Column="0"
-                                    Margin="0,0,10,5"
+                                    Margin="0,0,10,8"
                                     VerticalAlignment="Center"
+                                    FontWeight="Medium"
                                     Text="Domenica" />
-                                <TextBox
+                                <ComboBox
                                     Grid.Row="6"
                                     Grid.Column="1"
-                                    Margin="0,0,5,5"
-                                    Style="{StaticResource InputTextBoxStyle}"
-                                    Text="{Binding SundayDose, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=LostFocus}" />
-                                <TextBlock
-                                    Grid.Row="6"
-                                    Grid.Column="2"
-                                    VerticalAlignment="Center"
-                                    Text="mg" />
+                                    Margin="0,0,0,8"
+                                    DisplayMemberPath="DisplayText"
+                                    ItemsSource="{Binding AvailableDoses}"
+                                    SelectedItem="{Binding SundayDose}"
+                                    Style="{StaticResource DoseComboBoxStyle}" />
 
                                 <!--  Totale Settimanale  -->
                                 <Border
                                     Grid.Row="8"
                                     Grid.Column="0"
-                                    Grid.ColumnSpan="3"
-                                    Padding="10"
-                                    Background="#F0F0F0"
+                                    Grid.ColumnSpan="2"
+                                    Padding="12"
+                                    Background="#E3F2FD"
                                     CornerRadius="4">
-                                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                            <TextBlock
+                                                FontSize="14"
+                                                FontWeight="SemiBold"
+                                                Text="Totale Settimanale: " />
+                                            <TextBlock
+                                                FontSize="18"
+                                                FontWeight="Bold"
+                                                Foreground="#0078D4"
+                                                Text="{Binding CurrentWeeklyDose, StringFormat=F1}" />
+                                            <TextBlock
+                                                Margin="3,0,0,0"
+                                                FontSize="14"
+                                                FontWeight="SemiBold"
+                                                Text=" mg" />
+                                        </StackPanel>
                                         <TextBlock
-                                            FontSize="14"
-                                            FontWeight="SemiBold"
-                                            Text="Totale Settimanale: " />
-                                        <TextBlock
-                                            FontSize="16"
-                                            FontWeight="Bold"
-                                            Foreground="#0078D4"
-                                            Text="{Binding CurrentWeeklyDose, StringFormat=F1}" />
-                                        <TextBlock
-                                            FontSize="14"
-                                            FontWeight="SemiBold"
-                                            Text=" mg" />
-                                    </StackPanel>
+                                            Grid.Column="1"
+                                            VerticalAlignment="Center"
+                                            FontSize="12"
+                                            Foreground="#666666">
+                                            <Run Text="(" />
+                                            <Run Text="{Binding CurrentWeeklyTablets, Mode=OneWay}" />
+                                            <Run Text=" cp/sett)" />
+                                        </TextBlock>
+                                    </Grid>
                                 </Border>
                             </Grid>
 
@@ -468,11 +553,13 @@
                                     Margin="0,0,20,0"
                                     Content="FCSA-SIMG (Italia)"
                                     FontSize="13"
-                                    GroupName="Guidelines" />
+                                    GroupName="Guidelines"
+                                    IsChecked="{Binding SelectedGuideline, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=FCSA}" />
                                 <RadioButton
                                     Content="ACCP (USA)"
                                     FontSize="13"
-                                    GroupName="Guidelines" />
+                                    GroupName="Guidelines"
+                                    IsChecked="{Binding SelectedGuideline, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=ACCP}" />
                             </StackPanel>
 
                             <!--  Status INR  -->
@@ -481,13 +568,13 @@
                                 Padding="15,10"
                                 CornerRadius="4">
                                 <Border.Background>
-                                    <SolidColorBrush Color="{Binding INRStatusColor}" />
+                                    <SolidColorBrush Color="{Binding InrStatusColor}" />
                                 </Border.Background>
                                 <TextBlock
                                     FontSize="16"
                                     FontWeight="Bold"
                                     Foreground="White"
-                                    Text="{Binding INRStatusText}"
+                                    Text="{Binding InrStatusText}"
                                     TextAlignment="Center" />
                             </Border>
 
@@ -521,24 +608,37 @@
                                 </StackPanel>
                             </Border>
 
-                            <!--  Schema Settimanale  -->
+                            <!--  Schema Settimanale Distribuito  -->
                             <TextBlock
-                                Margin="0,0,0,10"
+                                Margin="0,0,0,8"
                                 FontSize="12"
                                 FontWeight="SemiBold"
                                 Foreground="#666666"
-                                Text="SCHEMA SETTIMANALE CONSIGLIATO" />
+                                Text="SCHEMA SETTIMANALE (distribuzione equilibrata)" />
                             <Border
-                                Margin="0,0,0,15"
+                                Margin="0,0,0,10"
                                 Padding="12"
-                                Background="#FAFAFA"
+                                Background="#E8F5E9"
+                                BorderBrush="#4CAF50"
+                                BorderThickness="1"
                                 CornerRadius="4">
                                 <TextBlock
                                     FontFamily="Consolas"
-                                    FontSize="12"
-                                    Text="{Binding ActiveSuggestion.WeeklySchedule.Description}"
+                                    FontSize="13"
+                                    FontWeight="SemiBold"
+                                    Foreground="#2E7D32"
+                                    Text="{Binding SuggestedScheduleText}"
                                     TextWrapping="Wrap" />
                             </Border>
+                            
+                            <!--  Pulsante Applica Schema  -->
+                            <Button
+                                Margin="0,0,0,15"
+                                HorizontalAlignment="Left"
+                                Command="{Binding ApplySuggestedScheduleCommand}"
+                                Content="✅ Applica schema suggerito"
+                                Style="{StaticResource SuccessButtonStyle}"
+                                ToolTip="Imposta le dosi giornaliere con lo schema suggerito" />
 
                             <!--  Prossimo Controllo  -->
                             <Grid Margin="0,0,0,15">
@@ -578,16 +678,27 @@
                                 TextWrapping="Wrap" />
 
                             <!--  Azioni Export  -->
-                            <StackPanel
-                                Margin="0,15,0,0"
-                                HorizontalAlignment="Right"
-                                Orientation="Horizontal">
+                            <StackPanel Margin="0,15,0,0">
+                                <!--  Prima riga: pulsanti copia  -->
+                                <StackPanel
+                                    Margin="0,0,0,10"
+                                    HorizontalAlignment="Right"
+                                    Orientation="Horizontal">
+                                    <Button
+                                        Margin="0,0,10,0"
+                                        Command="{Binding CopyShortToClipboardCommand}"
+                                        Content="📝 Copia Breve"
+                                        Style="{StaticResource SmallButtonStyle}"
+                                        ToolTip="Copia versione concisa (INR, dosaggio, prossimo controllo)" />
+                                    <Button
+                                        Command="{Binding CopyToClipboardCommand}"
+                                        Content="📋 Copia Completo"
+                                        Style="{StaticResource SmallButtonStyle}"
+                                        ToolTip="Copia report completo con tutti i dettagli" />
+                                </StackPanel>
+                                <!--  Seconda riga: export file  -->
                                 <Button
-                                    Margin="0,0,10,0"
-                                    Command="{Binding CopyToClipboardCommand}"
-                                    Content="📋 Copia"
-                                    Style="{StaticResource SecondaryButtonStyle}" />
-                                <Button
+                                    HorizontalAlignment="Right"
                                     Command="{Binding ExportToFileCommand}"
                                     Content="💾 Esporta TXT"
                                     Style="{StaticResource PrimaryButtonStyle}" />
@@ -608,7 +719,7 @@
                                 GridLinesVisibility="None"
                                 HeadersVisibility="Column"
                                 IsReadOnly="True"
-                                ItemsSource="{Binding INRHistory}"
+                                ItemsSource="{Binding InrHistory}"
                                 SelectedItem="{Binding SelectedHistoryItem}"
                                 SelectionMode="Single">
                                 <DataGrid.Columns>
@@ -635,11 +746,32 @@
                                 </DataGrid.Columns>
                             </DataGrid>
 
-                            <Button
+                            <StackPanel
                                 Margin="0,10,0,0"
-                                Command="{Binding LoadHistoryItemCommand}"
-                                Content="📂 Carica controllo selezionato"
-                                Style="{StaticResource SecondaryButtonStyle}" />
+                                HorizontalAlignment="Right"
+                                Orientation="Horizontal">
+                                <Button
+                                    Margin="0,0,10,0"
+                                    Command="{Binding LoadHistoryItemCommand}"
+                                    Content="📂 Carica selezionato"
+                                    Style="{StaticResource SecondaryButtonStyle}" />
+                                <Button
+                                    Command="{Binding DeleteHistoryItemCommand}"
+                                    Content="🗑 Elimina"
+                                    ToolTip="Elimina il controllo INR selezionato">
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource SecondaryButtonStyle}" TargetType="Button">
+                                            <Setter Property="Foreground" Value="#E81123" />
+                                            <Setter Property="BorderBrush" Value="#E81123" />
+                                            <Style.Triggers>
+                                                <Trigger Property="IsEnabled" Value="False">
+                                                    <Setter Property="Opacity" Value="0.5" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </StackPanel>
                         </StackPanel>
                     </Border>
                 </StackPanel>

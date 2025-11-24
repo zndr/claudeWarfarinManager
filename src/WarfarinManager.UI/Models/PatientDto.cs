@@ -43,6 +43,11 @@ public class PatientDto
     public DateTime? LastINRDate { get; set; }
     
     /// <summary>
+    /// Dosaggio settimanale corrente (mg) - dall'ultimo controllo
+    /// </summary>
+    public decimal? CurrentWeeklyDose { get; set; }
+    
+    /// <summary>
     /// Time in Therapeutic Range (percentuale)
     /// </summary>
     public decimal? TTRPercentage { get; set; }

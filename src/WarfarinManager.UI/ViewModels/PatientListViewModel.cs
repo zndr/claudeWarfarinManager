@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using WarfarinManager.Core.Interfaces;
 using WarfarinManager.Data.Repositories.Interfaces;
 using WarfarinManager.UI.Models;
 using WarfarinManager.UI.Services;
@@ -17,6 +20,7 @@ namespace WarfarinManager.UI.ViewModels;
 public partial class PatientListViewModel : ObservableObject
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ITTRCalculatorService _ttrCalculator;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
     private readonly ILogger<PatientListViewModel> _logger;
@@ -44,18 +48,20 @@ public partial class PatientListViewModel : ObservableObject
 
     public PatientListViewModel(
         IUnitOfWork unitOfWork,
+        ITTRCalculatorService ttrCalculator,
         INavigationService navigationService,
         IDialogService dialogService,
         ILogger<PatientListViewModel> logger)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _ttrCalculator = ttrCalculator ?? throw new ArgumentNullException(nameof(ttrCalculator));
         _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
         _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     /// <summary>
-    /// Carica tutti i pazienti dal database
+    /// Carica tutti i pazienti dal database con dati INR e TTR
     /// </summary>
     [RelayCommand]
     private async Task LoadPatientsAsync()
@@ -65,13 +71,23 @@ public partial class PatientListViewModel : ObservableObject
             IsLoading = true;
             _logger.LogInformation("Caricamento lista pazienti...");
 
-            var patients = await _unitOfWork.Patients.GetAllAsync();
-            
-            var patientDtos = patients
-                .Select(p => MapToDto(p))
+            // Carica pazienti con indicazioni e controlli INR
+            var patients = await _unitOfWork.Database.Patients
+                .Include(p => p.Indications)
+                    .ThenInclude(i => i.IndicationType)
+                .Include(p => p.INRControls)
+                    .ThenInclude(c => c.DosageSuggestions)
                 .OrderBy(p => p.LastName)
                 .ThenBy(p => p.FirstName)
-                .ToList();
+                .ToListAsync();
+
+            var patientDtos = new List<PatientDto>();
+
+            foreach (var patient in patients)
+            {
+                var dto = await MapToDtoWithStatsAsync(patient);
+                patientDtos.Add(dto);
+            }
 
             Patients = new ObservableCollection<PatientDto>(patientDtos);
             FilteredPatients = new ObservableCollection<PatientDto>(patientDtos);
@@ -203,13 +219,11 @@ public partial class PatientListViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Mappa un'entità Patient a PatientDto
+    /// Mappa un'entità Patient a PatientDto con statistiche INR e TTR
     /// </summary>
-    private PatientDto MapToDto(Data.Entities.Patient patient)
+    private async Task<PatientDto> MapToDtoWithStatsAsync(Data.Entities.Patient patient)
     {
-        // Per ora mappiamo solo i dati base
-        // TODO: Aggiungere caricamento indicazioni attive, ultimo INR, TTR
-        return new PatientDto
+        var dto = new PatientDto
         {
             Id = patient.Id,
             FirstName = patient.FirstName,
@@ -219,14 +233,65 @@ public partial class PatientListViewModel : ObservableObject
             Gender = patient.Gender?.ToString(),
             Phone = patient.Phone,
             Email = patient.Email,
-            IsSlowMetabolizer = patient.IsSlowMetabolizer,
-            
-            // TODO: Caricare da database
-            ActiveIndication = null,
-            LastINR = null,
-            LastINRDate = null,
-            TTRPercentage = null,
-            NextControlDate = null
+            IsSlowMetabolizer = patient.IsSlowMetabolizer
         };
+
+        // Carica indicazione attiva
+        var activeIndication = patient.Indications?
+            .FirstOrDefault(i => i.IsActive);
+        
+        if (activeIndication != null)
+        {
+            dto.ActiveIndication = activeIndication.IndicationType?.Description ?? "N/D";
+        }
+
+        // Carica ultimo controllo INR
+        var lastControl = patient.INRControls?
+            .OrderByDescending(c => c.ControlDate)
+            .FirstOrDefault();
+
+        if (lastControl != null)
+        {
+            dto.LastINR = lastControl.INRValue;
+            dto.LastINRDate = lastControl.ControlDate;
+            dto.CurrentWeeklyDose = lastControl.CurrentWeeklyDose;
+
+            // Calcola prossimo controllo previsto
+            var lastSuggestion = lastControl.DosageSuggestions?.FirstOrDefault();
+            if (lastSuggestion != null)
+            {
+                dto.NextControlDate = lastControl.ControlDate.AddDays(lastSuggestion.NextControlDays);
+            }
+        }
+
+        // Calcola TTR se ci sono abbastanza controlli
+        if (patient.INRControls != null && patient.INRControls.Count >= 2 && activeIndication != null)
+        {
+            try
+            {
+                var coreControls = patient.INRControls
+                    .Select(c => new Core.Models.INRControl
+                    {
+                        Id = c.Id,
+                        ControlDate = c.ControlDate,
+                        INRValue = c.INRValue,
+                        CurrentWeeklyDose = c.CurrentWeeklyDose
+                    })
+                    .ToList();
+
+                var ttrResult = _ttrCalculator.CalculateTTR(
+                    coreControls,
+                    activeIndication.TargetINRMin,
+                    activeIndication.TargetINRMax);
+
+                dto.TTRPercentage = (decimal)ttrResult.TTRPercentage;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Errore calcolo TTR per paziente {PatientId}", patient.Id);
+            }
+        }
+
+        return dto;
     }
 }
