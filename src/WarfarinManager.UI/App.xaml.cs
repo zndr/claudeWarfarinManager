@@ -14,6 +14,7 @@ using WarfarinManager.UI.Services;
 using WarfarinManager.UI.ViewModels;
 using WarfarinManager.UI.Views.Dashboard;
 using WarfarinManager.UI.Views.Patient;
+using WarfarinManager.UI.Views.INR;
 
 namespace WarfarinManager.UI;
 
@@ -87,12 +88,14 @@ public partial class App : Application
         services.AddTransient<PatientFormViewModel>();
         services.AddTransient<PatientDetailsViewModel>();
         services.AddTransient<IndicationFormViewModel>();
+        services.AddTransient<INRControlViewModel>();
 
         // Views
         services.AddTransient<PatientListView>();
         services.AddTransient<PatientFormView>();
         services.AddTransient<PatientDetailsView>();
         services.AddTransient<IndicationFormView>();
+        services.AddTransient<INRControlView>();
 
         // Main Window
         services.AddSingleton<MainWindow>();

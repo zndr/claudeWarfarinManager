@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using WarfarinManager.Data.Repositories.Interfaces;
 using WarfarinManager.UI.Models;
 using WarfarinManager.UI.Services;
+using Microsoft.Extensions.DependencyInjection;
+using WarfarinManager.UI.Views.INR;
 
 namespace WarfarinManager.UI.ViewModels;
 
@@ -16,12 +18,12 @@ namespace WarfarinManager.UI.ViewModels;
 /// ViewModel per la vista dettagli paziente con tab multiple
 /// </summary>
 public partial class PatientDetailsViewModel : ObservableObject, INavigationAware
-{
+    {
     private readonly IUnitOfWork _unitOfWork;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
     private readonly ILogger<PatientDetailsViewModel> _logger;
-
+    private readonly IServiceProvider _serviceProvider;  // ← AGGIUNTO
     [ObservableProperty]
     private int _patientId;
 
@@ -44,14 +46,15 @@ public partial class PatientDetailsViewModel : ObservableObject, INavigationAwar
         IUnitOfWork unitOfWork,
         INavigationService navigationService,
         IDialogService dialogService,
-        ILogger<PatientDetailsViewModel> logger)
-    {
+        ILogger<PatientDetailsViewModel> logger,
+        IServiceProvider serviceProvider)  // ← AGGIUNTO PARAMETRO
+        {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
         _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
+        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));  // ← AGGIUNTO
+        }
     /// <summary>
     /// Chiamato quando si naviga verso questa view
     /// </summary>
@@ -60,7 +63,7 @@ public partial class PatientDetailsViewModel : ObservableObject, INavigationAwar
         if (parameter is int patientId)
         {
             PatientId = patientId;
-            _ = LoadPatientAsync();
+            _ = LoadPatientDataAsync(PatientId);
         }
     }
 
@@ -68,9 +71,9 @@ public partial class PatientDetailsViewModel : ObservableObject, INavigationAwar
     /// Carica i dati del paziente
     /// </summary>
     [RelayCommand]
-    private async Task LoadPatientAsync()
+    public async Task LoadPatientDataAsync(int patientId)  // ← public invece di private
     {
-        try
+            try
         {
             IsLoading = true;
             _logger.LogInformation("Caricamento dettagli paziente ID: {PatientId}", PatientId);
@@ -92,7 +95,6 @@ public partial class PatientDetailsViewModel : ObservableObject, INavigationAwar
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Errore durante il caricamento del paziente");
             _dialogService.ShowError($"Errore: {ex.Message}", "Errore");
         }
         finally
@@ -170,6 +172,41 @@ public partial class PatientDetailsViewModel : ObservableObject, INavigationAwar
             _dialogService.ShowError($"Errore: {ex.Message}", "Errore");
         }
     }
+
+    /// <summary>
+    /// Apre la vista per gestire i controlli INR del paziente
+    /// </summary>
+    [RelayCommand]
+    private async Task OpenINRControlAsync()
+        {
+        try
+            {
+            if (Patient == null) return;
+
+            _logger.LogInformation("Apertura gestione INR per paziente {PatientId}", PatientId);
+
+            // Risolvi INRControlView e ViewModel dal DI
+            var inrView = _serviceProvider.GetRequiredService<INRControlView>();
+            var inrViewModel = _serviceProvider.GetRequiredService<INRControlViewModel>();
+
+            // Carica i dati del paziente nel ViewModel
+            await inrViewModel.LoadPatientDataAsync(PatientId);
+
+            // Assegna il DataContext
+            inrView.DataContext = inrViewModel;
+
+            // Mostra la finestra
+            inrView.ShowDialog();
+
+            // Dopo la chiusura, ricarica i dati del paziente (potrebbero essere cambiati)
+            await LoadPatientDataAsync(PatientId);
+            }
+        catch (Exception ex)
+            {
+            _logger.LogError(ex, "Errore apertura gestione INR");
+            _dialogService.ShowError($"Errore: {ex.Message}", "Errore");
+            }
+        }
 
     /// <summary>
     /// Termina l'indicazione selezionata
