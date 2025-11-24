@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using WarfarinManager.Shared.Enums;
 
 namespace WarfarinManager.UI.Models;
 
@@ -23,14 +23,35 @@ public class INRControlDto
     public decimal INRValue { get; set; }
     
     /// <summary>
-    /// Dose settimanale corrente (mg)
+    /// Target INR minimo del paziente
     /// </summary>
-    public decimal CurrentWeeklyDose { get; set; }
+    public decimal TargetINRMin { get; set; }
+    
+    /// <summary>
+    /// Target INR massimo del paziente
+    /// </summary>
+    public decimal TargetINRMax { get; set; }
+    
+    // Dosi giornaliere individuali (mg)
+    public decimal MondayDose { get; set; }
+    public decimal TuesdayDose { get; set; }
+    public decimal WednesdayDose { get; set; }
+    public decimal ThursdayDose { get; set; }
+    public decimal FridayDose { get; set; }
+    public decimal SaturdayDose { get; set; }
+    public decimal SundayDose { get; set; }
+    
+    /// <summary>
+    /// Dose settimanale totale (mg)
+    /// </summary>
+    public decimal CurrentWeeklyDose => 
+        MondayDose + TuesdayDose + WednesdayDose + ThursdayDose + 
+        FridayDose + SaturdayDose + SundayDose;
     
     /// <summary>
     /// Fase della terapia
     /// </summary>
-    public string PhaseOfTherapy { get; set; } = string.Empty;
+    public TherapyPhase Phase { get; set; }
     
     /// <summary>
     /// Paziente assume regolarmente
@@ -43,19 +64,24 @@ public class INRControlDto
     public string? Notes { get; set; }
     
     /// <summary>
-    /// Dosaggi giornalieri (Lunedì = index 0, Domenica = index 6)
+    /// Nuova dose settimanale suggerita (mg)
     /// </summary>
-    public List<decimal> DailyDoses { get; set; } = new List<decimal>(7);
+    public decimal? SuggestedWeeklyDose { get; set; }
     
     /// <summary>
-    /// Target INR minimo del paziente
+    /// Schema posologico suggerito
     /// </summary>
-    public decimal TargetINRMin { get; set; }
+    public string? SuggestedSchedule { get; set; }
     
     /// <summary>
-    /// Target INR massimo del paziente
+    /// Giorni al prossimo controllo (FCSA)
     /// </summary>
-    public decimal TargetINRMax { get; set; }
+    public int? NextControlDays_FCSA { get; set; }
+    
+    /// <summary>
+    /// Giorni al prossimo controllo (ACCP)
+    /// </summary>
+    public int? NextControlDays_ACCP { get; set; }
     
     /// <summary>
     /// Indica se l'INR è nel range terapeutico
@@ -69,9 +95,38 @@ public class INRControlDto
     {
         get
         {
-            if (IsInRange) return "In Range";
-            if (INRValue < TargetINRMin) return "Sotto-anticoagulazione";
-            return "Sovra-anticoagulazione";
+            if (IsInRange) return "✓ In Range";
+            if (INRValue < TargetINRMin) return "⚠ Sotto";
+            return "⚠ Sopra";
         }
     }
+    
+    /// <summary>
+    /// Colore status INR
+    /// </summary>
+    public string StatusColor
+    {
+        get
+        {
+            if (IsInRange) return "#107C10"; // Verde
+            if (INRValue < TargetINRMin) return "#FFB900"; // Giallo
+            return "#E81123"; // Rosso
+        }
+    }
+    
+    /// <summary>
+    /// Formattazione data per UI
+    /// </summary>
+    public string FormattedDate => ControlDate.ToString("dd/MM/yyyy");
+    
+    /// <summary>
+    /// Fase terapia in italiano
+    /// </summary>
+    public string PhaseDescription => Phase switch
+    {
+        TherapyPhase.Induction => "Induzione",
+        TherapyPhase.Maintenance => "Mantenimento",
+        TherapyPhase.PostAdjustment => "Post-aggiustamento",
+        _ => "Sconosciuta"
+    };
 }
