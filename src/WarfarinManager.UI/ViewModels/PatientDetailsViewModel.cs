@@ -42,8 +42,6 @@ namespace WarfarinManager.UI.ViewModels
         [ObservableProperty]
         private int _selectedTabIndex = 0;
 
-        public MedicationsViewModel MedicationsViewModel { get; }
-
         public PatientDetailsViewModel(
             IUnitOfWork unitOfWork,
             INavigationService navigationService,
@@ -56,9 +54,6 @@ namespace WarfarinManager.UI.ViewModels
             _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));  // ← AGGIUNTO
-            // Inizializza MedicationsViewModel
-            MedicationsViewModel = _serviceProvider.GetRequiredService<MedicationsViewModel>();
-            System.Windows.MessageBox.Show("✅ MedicationsViewModel creato nel costruttore!");
             }
         /// <summary>
         /// Chiamato quando si naviga verso questa view
@@ -95,9 +90,6 @@ namespace WarfarinManager.UI.ViewModels
 
                 // Carica le indicazioni
                 await LoadIndicationsAsync();
-
-                System.Windows.MessageBox.Show($"📊 Carico farmaci per paziente {PatientId}");
-                await MedicationsViewModel.LoadMedicationsAsync(PatientId);
 
                 _logger.LogInformation("Paziente caricato: {FullName}", Patient.FullName);
                 }

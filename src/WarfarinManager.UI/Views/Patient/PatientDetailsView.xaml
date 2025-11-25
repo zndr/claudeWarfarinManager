@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
-			 xmlns:views="clr-namespace:WarfarinManager.UI.Views.Patient"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="1000"
              d:DataContext="{d:DesignInstance Type=vm:PatientDetailsViewModel}">
@@ -420,12 +419,17 @@
                 </Grid>
             </TabItem>
 
-			<!-- Tab 3: Farmaci -->
+            <!-- Tab 3: Farmaci (placeholder) -->
             <TabItem Header="💊 Farmaci">
-				<views:MedicationsView DataContext="{Binding MedicationsViewModel}" />
+                <Grid>
+                    <TextBlock Text="Gestione farmaci concomitanti - In sviluppo"
+                               FontSize="16"
+                               Foreground="#A0A0A0"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                </Grid>
             </TabItem>
-			
-			
+
             <!-- Tab 4: Storico INR (placeholder) -->
             <TabItem Header="📊 Storico INR">
                 <Grid>
