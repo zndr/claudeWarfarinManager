@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -15,7 +15,13 @@ namespace WarfarinManager.UI.ViewModels
     public partial class MedicationsViewModel : ObservableObject
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IInteractionCheckerService _interactionChecker;
+        private readonly Data.Repositories.Interfaces.IInteractionDrugRepository _drugRepository;
+
+        public MedicationsViewModel(IUnitOfWork unitOfWork, Data.Repositories.Interfaces.IInteractionDrugRepository drugRepository)
+            {
+            _unitOfWork = unitOfWork;
+            _drugRepository = drugRepository;
+            }
         private int _patientId;
 
         [ObservableProperty] private ObservableCollection<MedicationDto> _activeMedications = new();
@@ -40,6 +46,7 @@ namespace WarfarinManager.UI.ViewModels
             _unitOfWork = unitOfWork;
             _interactionChecker = interactionChecker;
             
+            System.Windows.MessageBox.Show("✅ MedicationsViewModel COSTRUTTORE chiamato!");
             System.Diagnostics.Debug.WriteLine("✅ MedicationsViewModel creato!");
         }
 
@@ -80,43 +87,65 @@ namespace WarfarinManager.UI.ViewModels
 
         [RelayCommand]
         private async Task SaveMedicationAsync()
-        {
-            if (string.IsNullOrWhiteSpace(NewMedicationName))
             {
+            System.Windows.MessageBox.Show("PULSANTE CLICCATO!");
+            System.Diagnostics.Debug.WriteLine($"💾 INIZIO SaveMedicationAsync - PatientId: {_patientId}, Nome: '{NewMedicationName}'");
+
+            if (string.IsNullOrWhiteSpace(NewMedicationName))
+                {
                 ShowFormError("Il nome del farmaco è obbligatorio");
                 return;
-            }
+                }
+
+            if (_patientId == 0)
+                {
+                ShowFormError("Errore: ID paziente non valido");
+                return;
+                }
 
             try
-            {
-                var interactionResult = await _interactionChecker.CheckInteractionAsync(NewMedicationName);
+                {
+                System.Diagnostics.Debug.WriteLine("🔍 Controllo interazioni...");
+                var drug = await _drugRepository.FindByNameAsync(NewMedicationName);
+                InteractionLevel = interactionLevel,
+                InteractionDetails = interactionDetails                string? interactionDetails = null;
+
+                if (drug != null)
+                    {
+                    interactionLevel = drug.InteractionLevel;
+                    interactionDetails = $"{drug.Mechanism}\n{drug.FCSAManagement}";
+                    }
+                System.Diagnostics.Debug.WriteLine($"   Livello: {interactionResult.InteractionLevel}");
 
                 var medication = new Data.Entities.Medication
-                {
+                    {
                     PatientId = _patientId,
                     MedicationName = NewMedicationName.Trim(),
                     Dosage = string.IsNullOrWhiteSpace(NewDosage) ? null : NewDosage.Trim(),
                     Frequency = string.IsNullOrWhiteSpace(NewFrequency) ? null : NewFrequency.Trim(),
                     StartDate = NewStartDate,
                     IsActive = true,
-                    InteractionLevel = interactionResult.InteractionLevel, // Già enum
-                    InteractionDetails = interactionResult.HasInteraction 
+                    InteractionLevel = interactionResult.InteractionLevel,
+                    InteractionDetails = interactionResult.HasInteraction
                         ? $"{interactionResult.Mechanism}\n{interactionResult.FCSAManagement}"
                         : null
-                };
+                    };
 
+                System.Diagnostics.Debug.WriteLine("💾 Salvataggio...");
                 await _unitOfWork.Database.Medications.AddAsync(medication);
                 await _unitOfWork.SaveChangesAsync();
+                System.Diagnostics.Debug.WriteLine("✅ SALVATO!");
 
                 await LoadMedicationsAsync(_patientId);
                 IsAddingMedication = false;
                 ClearForm();
-            }
+                }
             catch (Exception ex)
-            {
+                {
+                System.Diagnostics.Debug.WriteLine($"❌ ERRORE: {ex.Message}");
                 ShowFormError($"Errore: {ex.Message}");
+                }
             }
-        }
 
         [RelayCommand]
         private void CancelAddMedication()

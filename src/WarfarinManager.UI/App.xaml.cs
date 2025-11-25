@@ -10,6 +10,8 @@ using WarfarinManager.Core.Services;
 using WarfarinManager.Data.Context;
 using WarfarinManager.Data.Repositories;
 using WarfarinManager.Data.Repositories.Interfaces;
+using IInteractionDrugRepoData = WarfarinManager.Data.Repositories.Interfaces.IInteractionDrugRepository;
+using CoreInterfaces = WarfarinManager.Core.Interfaces;
 using WarfarinManager.UI.Services;
 using WarfarinManager.UI.ViewModels;
 using WarfarinManager.UI.Views.Dashboard;
@@ -71,7 +73,10 @@ public partial class App : Application
             options.UseSqlite($"Data Source={dbPath}"));
 
         // Repositories & Unit of Work
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IPatientRepository, PatientRepository>();
+        services.AddScoped<CoreInterfaces.IInteractionDrugRepository, Adapters.InteractionDrugRepositoryAdapter>();        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        // Adapter per InteractionDrugRepository (usa implementazione Data per interfaccia Core)
+
 
         // Core Business Services
         services.AddScoped<IDosageCalculatorService, DosageCalculatorService>();
@@ -89,6 +94,7 @@ public partial class App : Application
         services.AddTransient<PatientDetailsViewModel>();
         services.AddTransient<IndicationFormViewModel>();
         services.AddTransient<INRControlViewModel>();
+        services.AddTransient<MedicationsViewModel>();
 
         // Views
         services.AddTransient<PatientListView>();

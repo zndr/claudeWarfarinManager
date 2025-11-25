@@ -9,7 +9,7 @@ namespace WarfarinManager.Data.Repositories;
 /// Implementazione repository InteractionDrug
 /// </summary>
 public class InteractionDrugRepository : Repository<InteractionDrug>, IInteractionDrugRepository
-{
+    {    
     public InteractionDrugRepository(WarfarinDbContext context) : base(context)
     {
     }
