@@ -162,6 +162,22 @@ namespace WarfarinManager.UI.ViewModels
 
         #endregion
 
+        #region Properties - Grafico INR
+
+        /// <summary>
+        /// ViewModel per il grafico andamento INR
+        /// </summary>
+        [ObservableProperty]
+        private INRChartViewModel _chartViewModel = new();
+
+        /// <summary>
+        /// Visibilità del pannello grafico (toggle mostra/nascondi)
+        /// </summary>
+        [ObservableProperty]
+        private bool _isChartVisible = true;
+
+        #endregion
+
         #region Collections
 
         public ObservableCollection<TherapyPhase> TherapyPhases { get; } = new()
@@ -425,11 +441,35 @@ namespace WarfarinManager.UI.ViewModels
                         TargetINRMax);
                     CurrentTTR = (decimal)ttrResult.TTRPercentage;
                 }
+
+                // Aggiorna il grafico INR
+                UpdateChart();
             }
             catch (Exception ex)
             {
                 _dialogService.ShowError($"Errore nel caricamento storico: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Aggiorna il grafico INR con i dati correnti
+        /// </summary>
+        private void UpdateChart()
+        {
+            if (InrHistory.Any())
+            {
+                ChartViewModel.LoadData(InrHistory, TargetINRMin, TargetINRMax);
+                ChartViewModel.UpdateTTR(CurrentTTR);
+            }
+        }
+
+        /// <summary>
+        /// Toggle visibilità del grafico
+        /// </summary>
+        [RelayCommand]
+        private void ToggleChart()
+        {
+            IsChartVisible = !IsChartVisible;
         }
 
         [RelayCommand]
@@ -603,7 +643,7 @@ namespace WarfarinManager.UI.ViewModels
 
                 _dialogService.ShowInformation("Controllo INR salvato con successo!");
 
-                // Ricarica storico
+                // Ricarica storico (aggiorna anche il grafico)
                 await LoadINRHistoryAsync();
 
                 // Reset form
@@ -783,7 +823,7 @@ namespace WarfarinManager.UI.ViewModels
 
                     _dialogService.ShowInformation("Controllo INR eliminato con successo.");
 
-                    // Ricarica storico
+                    // Ricarica storico (aggiorna anche il grafico)
                     await LoadINRHistoryAsync();
                 }
             }
