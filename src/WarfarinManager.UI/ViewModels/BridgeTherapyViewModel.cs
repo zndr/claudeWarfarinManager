@@ -9,6 +9,7 @@ using WarfarinManager.Core.Services;
 using WarfarinManager.Data.Entities;
 using WarfarinManager.Data.Repositories.Interfaces;
 using WarfarinManager.Shared.Enums;
+using WarfarinManager.UI.Services;
 
 namespace WarfarinManager.UI.ViewModels;
 
@@ -19,6 +20,7 @@ public partial class BridgeTherapyViewModel : ObservableObject
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IBridgeTherapyService _bridgeTherapyService;
+    private readonly BridgeTherapyPdfService _pdfService;
     
     private Patient? _patient;
     private Indication? _activeIndication;
@@ -97,6 +99,7 @@ public partial class BridgeTherapyViewModel : ObservableObject
     {
         _unitOfWork = unitOfWork;
         _bridgeTherapyService = bridgeTherapyService;
+        _pdfService = new BridgeTherapyPdfService();
         
         InitializeSurgeryTypes();
     }
@@ -375,31 +378,53 @@ public partial class BridgeTherapyViewModel : ObservableObject
     }
     
     [RelayCommand]
-    private async Task ExportToFileAsync()
+    private void ExportToPdf()
     {
-        if (_patient == null || string.IsNullOrEmpty(ProtocolText))
+        if (_patient == null || CurrentProtocol == null || FcsaRecommendation == null)
+        {
+            ErrorMessage = "Calcolare prima il protocollo";
             return;
+        }
         
         var saveDialog = new Microsoft.Win32.SaveFileDialog
         {
-            FileName = $"BridgeTherapy_{_patient.LastName}_{_patient.FirstName}_{SurgeryDate:yyyyMMdd}.txt",
-            Filter = "File di testo|*.txt",
-            Title = "Esporta protocollo bridge therapy"
+            FileName = $"BridgeTherapy_{_patient.LastName}_{_patient.FirstName}_{SurgeryDate:yyyyMMdd}.pdf",
+            Filter = "Documento PDF|*.pdf",
+            Title = "Esporta protocollo bridge therapy in PDF"
         };
         
         if (saveDialog.ShowDialog() == true)
         {
             try
             {
-                await System.IO.File.WriteAllTextAsync(saveDialog.FileName, ProtocolText);
-                MessageBox.Show($"Protocollo esportato in:\n{saveDialog.FileName}", 
+                var recommendation = SelectedGuideline == GuidelineType.FCSA 
+                    ? FcsaRecommendation 
+                    : AccpRecommendation;
+                    
+                _pdfService.GeneratePdf(saveDialog.FileName, CurrentProtocol, _patient, recommendation!);
+                
+                MessageBox.Show($"Protocollo PDF esportato in:\n{saveDialog.FileName}", 
                     "Esportazione completata", 
                     MessageBoxButton.OK, 
                     MessageBoxImage.Information);
+                
+                // Apri il PDF con l'applicazione predefinita
+                try
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = saveDialog.FileName,
+                        UseShellExecute = true
+                    });
+                }
+                catch
+                {
+                    // Ignora errore apertura file
+                }
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Errore durante l'esportazione: {ex.Message}";
+                ErrorMessage = $"Errore durante l'esportazione PDF: {ex.Message}";
             }
         }
     }
