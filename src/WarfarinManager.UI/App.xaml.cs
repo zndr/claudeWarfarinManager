@@ -72,11 +72,12 @@ public partial class App : Application
 
         // Repositories & Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<WarfarinManager.Data.Repositories.Interfaces.IInteractionDrugRepository, InteractionDrugRepository>();
 
         // Core Business Services
+        services.AddScoped<IInteractionCheckerService, InteractionCheckerService>();
         services.AddScoped<IDosageCalculatorService, DosageCalculatorService>();
         services.AddScoped<ITTRCalculatorService, TTRCalculatorService>();
-        services.AddScoped<IInteractionCheckerService, InteractionCheckerService>();
 
         // UI Services
         services.AddSingleton<INavigationService, NavigationService>();
@@ -89,6 +90,7 @@ public partial class App : Application
         services.AddTransient<PatientDetailsViewModel>();
         services.AddTransient<IndicationFormViewModel>();
         services.AddTransient<INRControlViewModel>();
+        services.AddTransient<MedicationsViewModel>();  // Nuovo
 
         // Views
         services.AddTransient<PatientListView>();
@@ -96,6 +98,7 @@ public partial class App : Application
         services.AddTransient<PatientDetailsView>();
         services.AddTransient<IndicationFormView>();
         services.AddTransient<INRControlView>();
+        services.AddTransient<MedicationsView>();  // Nuovo
 
         // Main Window
         services.AddSingleton<MainWindow>();

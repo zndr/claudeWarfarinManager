@@ -3,6 +3,7 @@ using WarfarinManager.Core.Interfaces;
 using WarfarinManager.Core.Models;
 using WarfarinManager.Shared.Enums;
 using InteractionDrug = WarfarinManager.Data.Entities.InteractionDrug;
+using IInteractionDrugRepository = WarfarinManager.Data.Repositories.Interfaces.IInteractionDrugRepository;
 
 namespace WarfarinManager.Core.Services;
 

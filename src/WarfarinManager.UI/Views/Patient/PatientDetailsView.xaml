@@ -4,13 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
+             xmlns:local="clr-namespace:WarfarinManager.UI.Views.Patient"
+             xmlns:converters="clr-namespace:WarfarinManager.UI.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="1000"
              d:DataContext="{d:DesignInstance Type=vm:PatientDetailsViewModel}">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <local:CountToVisibilityConverter x:Key="CountToVisibilityConverter" xmlns:local="clr-namespace:WarfarinManager.UI.Converters"/>
+        <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
     </UserControl.Resources>
 
     <Grid>
@@ -81,29 +83,29 @@
 
                 <!-- Azioni -->
                 <StackPanel Grid.Column="2" 
-            Orientation="Horizontal">
+                            Orientation="Horizontal">
 
                     <!-- Pulsante Gestione INR -->
                     <Button Content="📊 Gestione INR"
-            Command="{Binding OpenINRControlCommand}"
-            Background="#107C10"
-            Foreground="White"
-            FontSize="13"
-            FontWeight="SemiBold"
-            Padding="15,8"
-            Margin="0,0,10,0"
-            BorderThickness="0"
-            Cursor="Hand">
+                            Command="{Binding OpenINRControlCommand}"
+                            Background="#107C10"
+                            Foreground="White"
+                            FontSize="13"
+                            FontWeight="SemiBold"
+                            Padding="15,8"
+                            Margin="0,0,10,0"
+                            BorderThickness="0"
+                            Cursor="Hand">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
                                             <Border Background="{TemplateBinding Background}"
-                                    CornerRadius="4"
-                                    Padding="{TemplateBinding Padding}">
+                                                    CornerRadius="4"
+                                                    Padding="{TemplateBinding Padding}">
                                                 <ContentPresenter HorizontalAlignment="Center"
-                                                VerticalAlignment="Center"/>
+                                                                VerticalAlignment="Center"/>
                                             </Border>
                                         </ControlTemplate>
                                     </Setter.Value>
@@ -122,24 +124,24 @@
 
                     <!-- Pulsante Modifica Anagrafica -->
                     <Button Content="✏ Modifica Anagrafica"
-            Command="{Binding EditPatientCommand}"
-            Background="White"
-            Foreground="#0078D4"
-            FontSize="13"
-            FontWeight="SemiBold"
-            Padding="15,8"
-            BorderThickness="0"
-            Cursor="Hand">
+                            Command="{Binding EditPatientCommand}"
+                            Background="White"
+                            Foreground="#0078D4"
+                            FontSize="13"
+                            FontWeight="SemiBold"
+                            Padding="15,8"
+                            BorderThickness="0"
+                            Cursor="Hand">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
                                             <Border Background="{TemplateBinding Background}"
-                                    CornerRadius="4"
-                                    Padding="{TemplateBinding Padding}">
+                                                    CornerRadius="4"
+                                                    Padding="{TemplateBinding Padding}">
                                                 <ContentPresenter HorizontalAlignment="Center"
-                                                VerticalAlignment="Center"/>
+                                                                VerticalAlignment="Center"/>
                                             </Border>
                                         </ControlTemplate>
                                     </Setter.Value>
@@ -419,15 +421,9 @@
                 </Grid>
             </TabItem>
 
-            <!-- Tab 3: Farmaci (placeholder) -->
+            <!-- Tab 3: Farmaci -->
             <TabItem Header="💊 Farmaci">
-                <Grid>
-                    <TextBlock Text="Gestione farmaci concomitanti - In sviluppo"
-                               FontSize="16"
-                               Foreground="#A0A0A0"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"/>
-                </Grid>
+                <local:MedicationsView DataContext="{Binding MedicationsViewModel}"/>
             </TabItem>
 
             <!-- Tab 4: Storico INR (placeholder) -->
