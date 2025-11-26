@@ -1,0 +1,84 @@
+================================================================================
+                    INSTALLAZIONE FILE TAOGEST
+================================================================================
+
+Hai scaricato i seguenti file per il sistema di versioning di TaoGEST:
+
+1. Update-Version.ps1          - Script aggiornamento versione
+2. Test-Versioning.ps1          - Script verifica configurazione  
+3. INDEX.md                     - Indice documentazione principale
+4. QUICK_VERSION_GUIDE.md       - Guida rapida versioning
+5. BUILD_INSTRUCTIONS.md        - Istruzioni build e distribuzione
+6. SETUP_COMPLETE.md            - Riepilogo setup
+7. VERSIONING.md                - Documentazione completa (per docs/)
+
+================================================================================
+                         DOVE COPIARLI
+================================================================================
+
+DIRECTORY PRINCIPALE (D:\Claude\winTaoGest\):
+-----------------------------------------------
+- Update-Version.ps1
+- Test-Versioning.ps1
+- INDEX.md
+- QUICK_VERSION_GUIDE.md
+- BUILD_INSTRUCTIONS.md
+- SETUP_COMPLETE.md
+
+DIRECTORY DOCS (D:\Claude\winTaoGest\docs\):
+--------------------------------------------
+- VERSIONING.md
+
+================================================================================
+                    PROCEDURA INSTALLAZIONE
+================================================================================
+
+1. Apri Esplora Risorse
+2. Vai in D:\Claude\winTaoGest\
+3. Copia i file 1-6 nella directory principale
+4. Crea la cartella "docs" se non esiste
+5. Copia VERSIONING.md nella cartella docs\
+
+================================================================================
+                         VERIFICA
+================================================================================
+
+Apri PowerShell nella directory del progetto:
+
+    cd D:\Claude\winTaoGest
+    
+Esegui il test:
+
+    Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+    .\Test-Versioning.ps1
+
+Se vedi "✓ SISTEMA PRONTO!" tutto è configurato correttamente!
+
+================================================================================
+                       PRIMO UTILIZZO
+================================================================================
+
+Prova ad aggiornare la versione:
+
+    .\Update-Version.ps1 -NewVersion "1.0.0.0"
+
+Lo script aggiornerà automaticamente:
+- Version.props
+- MainWindow.xaml  
+- README.md
+
+================================================================================
+                      DOCUMENTAZIONE
+================================================================================
+
+Leggi INDEX.md per una panoramica completa di tutto il sistema.
+
+Per domande rapide: QUICK_VERSION_GUIDE.md
+Per build e deploy: BUILD_INSTRUCTIONS.md
+
+================================================================================
+
+                        Buon lavoro con TaoGEST!
+                            Versione 1.0.0.0
+
+================================================================================
