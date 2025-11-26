@@ -57,6 +57,28 @@ public class Patient : BaseEntity
     /// </summary>
     public bool IsSlowMetabolizer { get; set; }
     
+    // CHA₂DS₂-VASc Score Components (per calcolo rischio bridge therapy)
+    
+    /// <summary>
+    /// Presenza di scompenso cardiaco congestizio / disfunzione VS
+    /// </summary>
+    public bool HasCongestiveHeartFailure { get; set; }
+    
+    /// <summary>
+    /// Ipertensione arteriosa (in trattamento)
+    /// </summary>
+    public bool HasHypertension { get; set; }
+    
+    /// <summary>
+    /// Diabete mellito (in trattamento)
+    /// </summary>
+    public bool HasDiabetes { get; set; }
+    
+    /// <summary>
+    /// Presenza di malattia vascolare (pregresso IMA, PAD, placca aortica)
+    /// </summary>
+    public bool HasVascularDisease { get; set; }
+    
     // Navigation Properties
     
     /// <summary>

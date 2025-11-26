@@ -49,6 +49,12 @@ namespace WarfarinManager.UI.ViewModels
         [ObservableProperty]
         private MedicationsViewModel? _medicationsViewModel;
 
+        /// <summary>
+        /// ViewModel per la gestione bridge therapy (esposto per binding nel tab Bridge Therapy)
+        /// </summary>
+        [ObservableProperty]
+        private BridgeTherapyViewModel? _bridgeTherapyViewModel;
+
         public PatientDetailsViewModel(
             IUnitOfWork unitOfWork,
             INavigationService navigationService,
@@ -64,6 +70,9 @@ namespace WarfarinManager.UI.ViewModels
 
             // Inizializza il MedicationsViewModel dal DI
             MedicationsViewModel = _serviceProvider.GetRequiredService<MedicationsViewModel>();
+
+            // Inizializza il BridgeTherapyViewModel dal DI
+            BridgeTherapyViewModel = _serviceProvider.GetRequiredService<BridgeTherapyViewModel>();
         }
 
         /// <summary>
@@ -106,6 +115,12 @@ namespace WarfarinManager.UI.ViewModels
                 if (MedicationsViewModel != null)
                 {
                     await MedicationsViewModel.LoadMedicationsAsync(PatientId);
+                }
+
+                // Inizializza il BridgeTherapyViewModel
+                if (BridgeTherapyViewModel != null)
+                {
+                    await BridgeTherapyViewModel.InitializeAsync(PatientId);
                 }
 
                 _logger.LogInformation("Paziente caricato: {FullName}", Patient.FullName);
@@ -285,6 +300,11 @@ namespace WarfarinManager.UI.ViewModels
             if (value == 2 && PatientId > 0 && MedicationsViewModel != null)
             {
                 _ = MedicationsViewModel.LoadMedicationsAsync(PatientId);
+            }
+            // Tab 4 = Bridge Therapy (indice 4)
+            else if (value == 4 && PatientId > 0 && BridgeTherapyViewModel != null)
+            {
+                _ = BridgeTherapyViewModel.InitializeAsync(PatientId);
             }
         }
 

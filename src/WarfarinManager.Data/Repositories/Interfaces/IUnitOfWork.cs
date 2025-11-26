@@ -10,6 +10,8 @@ public interface IUnitOfWork : IDisposable
     IPatientRepository Patients { get; }
     IINRControlRepository INRControls { get; }
     IInteractionDrugRepository InteractionDrugs { get; }
+    IIndicationRepository Indications { get; }
+    IBridgeTherapyPlanRepository BridgeTherapyPlans { get; }
     
     /// <summary>
     /// Accesso diretto al DbContext per query complesse

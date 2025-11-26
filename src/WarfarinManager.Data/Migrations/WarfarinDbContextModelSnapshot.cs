@@ -1003,6 +1003,18 @@ namespace WarfarinManager.Data.Migrations
                     b.Property<string>("Gender")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("HasCongestiveHeartFailure")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HasDiabetes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HasHypertension")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HasVascularDisease")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("IsSlowMetabolizer")
                         .HasColumnType("INTEGER");
 

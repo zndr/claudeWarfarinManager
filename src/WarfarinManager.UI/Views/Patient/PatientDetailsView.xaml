@@ -437,7 +437,12 @@
                 </Grid>
             </TabItem>
 
-            <!-- Tab 5: Eventi Avversi (placeholder) -->
+            <!-- Tab 5: Bridge Therapy -->
+            <TabItem Header="💉 Bridge Therapy">
+                <local:BridgeTherapyView DataContext="{Binding BridgeTherapyViewModel}"/>
+            </TabItem>
+
+            <!-- Tab 6: Eventi Avversi (placeholder) -->
             <TabItem Header="⚠ Eventi Avversi">
                 <Grid>
                     <TextBlock Text="Gestione eventi avversi - In sviluppo"

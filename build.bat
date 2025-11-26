@@ -1,3 +1,6 @@
 @echo off
 cd /d D:\Claude\winTaoGest
-dotnet build src\WarfarinManager.UI\WarfarinManager.UI.csproj > build_output.txt 2>&1
+dotnet build WarfarinManager.sln 2>&1
+echo.
+echo Return code: %ERRORLEVEL%
+pause
