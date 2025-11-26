@@ -16,9 +16,11 @@ public class InteractionDrugRepository : Repository<InteractionDrug>, IInteracti
 
     public async Task<InteractionDrug?> FindByNameAsync(string drugName, CancellationToken cancellationToken = default)
     {
+        // Confronto case-insensitive usando ToLower() per SQLite
+        var drugNameLower = drugName.ToLower();
         return await _context.InteractionDrugs
             .AsNoTracking()
-            .FirstOrDefaultAsync(d => d.DrugName == drugName, cancellationToken);
+            .FirstOrDefaultAsync(d => d.DrugName.ToLower() == drugNameLower, cancellationToken);
     }
 
     public async Task<List<InteractionDrug>> SearchByNameAsync(
@@ -26,9 +28,11 @@ public class InteractionDrugRepository : Repository<InteractionDrug>, IInteracti
         int maxResults, 
         CancellationToken cancellationToken = default)
     {
+        // Confronto case-insensitive usando ToLower() per SQLite
+        var searchTermLower = searchTerm.ToLower();
         return await _context.InteractionDrugs
             .AsNoTracking()
-            .Where(d => d.DrugName.Contains(searchTerm))
+            .Where(d => d.DrugName.ToLower().Contains(searchTermLower))
             .OrderBy(d => d.DrugName)
             .Take(maxResults)
             .ToListAsync(cancellationToken);

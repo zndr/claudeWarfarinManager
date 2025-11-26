@@ -223,6 +223,7 @@
                     <StackPanel Grid.Column="2" Margin="0,0,15,0" Width="150">
                         <TextBlock Text="Frequenza" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,4"/>
                         <ComboBox SelectedValue="{Binding NewFrequency}"
+                                  SelectedValuePath="Content"
                                   Padding="10,8"
                                   FontSize="13"
                                   IsEditable="True">
