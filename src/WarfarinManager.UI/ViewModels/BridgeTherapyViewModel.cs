@@ -29,6 +29,9 @@ public partial class BridgeTherapyViewModel : ObservableObject
     [ObservableProperty]
     private string _errorMessage = string.Empty;
     
+    [ObservableProperty]
+    private bool _hasSurgeryTypeError;
+    
     // === Parametri Intervento ===
     
     [ObservableProperty]
@@ -207,6 +210,9 @@ public partial class BridgeTherapyViewModel : ObservableObject
         if (value.HasValue)
         {
             BleedingRisk = _bridgeTherapyService.DetermineBleedingRisk(value.Value);
+            // Reset errore di validazione quando viene selezionato un tipo
+            HasSurgeryTypeError = false;
+            ErrorMessage = string.Empty;
         }
         
         // Reset risultato quando cambia il tipo di chirurgia
@@ -247,6 +253,10 @@ public partial class BridgeTherapyViewModel : ObservableObject
     [RelayCommand]
     private void CalculateBridge()
     {
+        // Reset errori
+        HasSurgeryTypeError = false;
+        ErrorMessage = string.Empty;
+        
         if (_patient == null)
         {
             ErrorMessage = "Paziente non caricato";
@@ -255,7 +265,9 @@ public partial class BridgeTherapyViewModel : ObservableObject
         
         if (!SelectedSurgeryType.HasValue)
         {
-            ErrorMessage = "Selezionare un tipo di chirurgia";
+            HasSurgeryTypeError = true;
+            ErrorMessage = "⚠ Selezionare il tipo di chirurgia per calcolare il protocollo";
+            // Il focus verrà gestito dalla View tramite binding
             return;
         }
         
@@ -264,8 +276,6 @@ public partial class BridgeTherapyViewModel : ObservableObject
             ErrorMessage = "La data dell'intervento deve essere nel futuro";
             return;
         }
-        
-        ErrorMessage = string.Empty;
         
         try
         {

@@ -4,12 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
+             xmlns:converters="clr-namespace:WarfarinManager.UI.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="1000"
              d:DataContext="{d:DesignInstance Type=vm:BridgeTherapyViewModel}">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:InverseBoolToVisibility x:Key="InverseBoolToVisibilityConverter"/>
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
         
         <!-- Stile per i bordi delle sezioni -->
         <Style x:Key="SectionBorderStyle" TargetType="Border">
@@ -67,13 +70,27 @@
                         <!-- Tipo di Chirurgia -->
                         <TextBlock Text="Tipo di chirurgia:" 
                                    Style="{StaticResource LabelStyle}"/>
-                        <ComboBox ItemsSource="{Binding SurgeryTypes}"
+                        <ComboBox x:Name="SurgeryTypeComboBox"
+                                  ItemsSource="{Binding SurgeryTypes}"
                                   SelectedValue="{Binding SelectedSurgeryType}"
                                   SelectedValuePath="Type"
                                   DisplayMemberPath="DisplayText"
                                   Margin="0,0,0,15"
                                   FontSize="13"
-                                  Padding="10,8"/>
+                                  Padding="10,8">
+                            <ComboBox.Style>
+                                <Style TargetType="ComboBox">
+                                    <Setter Property="BorderBrush" Value="#CCCCCC"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasSurgeryTypeError}" Value="True">
+                                            <Setter Property="BorderBrush" Value="#D13438"/>
+                                            <Setter Property="BorderThickness" Value="2"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ComboBox.Style>
+                        </ComboBox>
                         
                         <!-- Rischio Emorragico (calcolato) -->
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
@@ -257,9 +274,10 @@
                 <TextBlock Text="{Binding ErrorMessage}"
                            Foreground="#D13438"
                            FontSize="13"
+                           FontWeight="SemiBold"
                            TextWrapping="Wrap"
                            Margin="0,10,0,0"
-                           Visibility="{Binding ErrorMessage, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                           Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}"/>
             </StackPanel>
         </ScrollViewer>
 
@@ -270,8 +288,8 @@
                       Background="White">
             <StackPanel>
                 
-                <!-- Placeholder quando non c'è risultato -->
-                <StackPanel Visibility="{Binding HasResult, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}"
+                <!-- Placeholder quando non c'è risultato (visibile di default) -->
+                <StackPanel Visibility="{Binding HasResult, Converter={StaticResource InverseBoolToVisibilityConverter}}"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Center"
                             Margin="0,100,0,0">
