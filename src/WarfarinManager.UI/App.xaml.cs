@@ -93,6 +93,7 @@ public partial class App : Application
         services.AddTransient<INRControlViewModel>();
         services.AddTransient<MedicationsViewModel>();
         services.AddTransient<BridgeTherapyViewModel>();
+        services.AddTransient<INRHistoryViewModel>();
 
         // Views
         services.AddTransient<PatientListView>();
@@ -101,6 +102,7 @@ public partial class App : Application
         services.AddTransient<IndicationFormView>();
         services.AddTransient<INRControlView>();
         services.AddTransient<MedicationsView>();
+        services.AddTransient<INRHistoryView>();
 
         // Main Window
         services.AddSingleton<MainWindow>();

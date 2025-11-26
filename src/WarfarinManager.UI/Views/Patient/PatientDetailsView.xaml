@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="WarfarinManager.UI.Views.Patient.PatientDetailsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -523,16 +523,9 @@
                 <local:MedicationsView DataContext="{Binding MedicationsViewModel}" />
             </TabItem>
 
-            <!--  Tab 4: Storico INR (placeholder)  -->
+            <!--  Tab 4: Storico INR  -->
             <TabItem Header="📊 Storico INR">
-                <Grid>
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        FontSize="16"
-                        Foreground="#A0A0A0"
-                        Text="Storico controlli INR - In sviluppo" />
-                </Grid>
+                <local:INRHistoryView DataContext="{Binding InrHistoryViewModel}" />
             </TabItem>
 
             <!--  Tab 5: Bridge Therapy  -->

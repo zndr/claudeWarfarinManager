@@ -130,3 +130,39 @@ public class InverseBoolToVisibility : IValueConverter
         throw new NotImplementedException();
     }
 }
+
+/// <summary>
+/// Converte una percentuale (0-100) in larghezza basata su un valore massimo.
+/// ConverterParameter: larghezza massima in pixel (default 100)
+/// </summary>
+public class PercentageToWidthConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        decimal percentage = 0;
+        double maxWidth = 100;
+
+        // Ottieni la percentuale
+        if (value is decimal decValue)
+            percentage = decValue;
+        else if (value is double dblValue)
+            percentage = (decimal)dblValue;
+        else if (value is int intValue)
+            percentage = intValue;
+
+        // Ottieni larghezza massima dal parametro
+        if (parameter != null && double.TryParse(parameter.ToString(), out double parsedWidth))
+        {
+            maxWidth = parsedWidth;
+        }
+
+        // Calcola larghezza proporzionale (clamp a 0-100)
+        percentage = Math.Max(0, Math.Min(100, percentage));
+        return (double)percentage / 100.0 * maxWidth;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}

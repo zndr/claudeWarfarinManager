@@ -55,6 +55,12 @@ namespace WarfarinManager.UI.ViewModels
         [ObservableProperty]
         private BridgeTherapyViewModel? _bridgeTherapyViewModel;
 
+        /// <summary>
+        /// ViewModel per lo storico INR (esposto per binding nel tab Storico INR)
+        /// </summary>
+        [ObservableProperty]
+        private INRHistoryViewModel? _inrHistoryViewModel;
+
         public PatientDetailsViewModel(
             IUnitOfWork unitOfWork,
             INavigationService navigationService,
@@ -73,6 +79,9 @@ namespace WarfarinManager.UI.ViewModels
 
             // Inizializza il BridgeTherapyViewModel dal DI
             BridgeTherapyViewModel = _serviceProvider.GetRequiredService<BridgeTherapyViewModel>();
+
+            // Inizializza il INRHistoryViewModel dal DI
+            InrHistoryViewModel = _serviceProvider.GetRequiredService<INRHistoryViewModel>();
         }
 
         /// <summary>
@@ -121,6 +130,21 @@ namespace WarfarinManager.UI.ViewModels
                 if (BridgeTherapyViewModel != null)
                 {
                     await BridgeTherapyViewModel.InitializeAsync(PatientId);
+                }
+
+                // Inizializza lo storico INR
+                if (InrHistoryViewModel != null)
+                {
+                    // Ottieni target INR dall'indicazione attiva
+                    var activeIndication = Indications.FirstOrDefault(i => i.IsActive);
+                    if (activeIndication != null)
+                    {
+                        await InrHistoryViewModel.InitializeAsync(PatientId, activeIndication.TargetINRMin, activeIndication.TargetINRMax);
+                    }
+                    else
+                    {
+                        await InrHistoryViewModel.InitializeAsync(PatientId);
+                    }
                 }
 
                 _logger.LogInformation("Paziente caricato: {FullName}", Patient.FullName);
@@ -300,6 +324,20 @@ namespace WarfarinManager.UI.ViewModels
             if (value == 2 && PatientId > 0 && MedicationsViewModel != null)
             {
                 _ = MedicationsViewModel.LoadMedicationsAsync(PatientId);
+            }
+            // Tab 3 = Storico INR (indice 3)
+            else if (value == 3 && PatientId > 0 && InrHistoryViewModel != null)
+            {
+                // Ottieni target INR dall'indicazione attiva
+                var activeIndication = Indications.FirstOrDefault(i => i.IsActive);
+                if (activeIndication != null)
+                {
+                    _ = InrHistoryViewModel.InitializeAsync(PatientId, activeIndication.TargetINRMin, activeIndication.TargetINRMax);
+                }
+                else
+                {
+                    _ = InrHistoryViewModel.InitializeAsync(PatientId);
+                }
             }
             // Tab 4 = Bridge Therapy (indice 4)
             else if (value == 4 && PatientId > 0 && BridgeTherapyViewModel != null)
