@@ -1,154 +1,182 @@
-<UserControl x:Class="WarfarinManager.UI.Views.Patient.PatientDetailsView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
-             xmlns:local="clr-namespace:WarfarinManager.UI.Views.Patient"
-             xmlns:converters="clr-namespace:WarfarinManager.UI.Converters"
-             mc:Ignorable="d" 
-             d:DesignHeight="700" d:DesignWidth="1000"
-             d:DataContext="{d:DesignInstance Type=vm:PatientDetailsViewModel}">
+﻿<UserControl
+    x:Class="WarfarinManager.UI.Views.Patient.PatientDetailsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:WarfarinManager.UI.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:WarfarinManager.UI.Views.Patient"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
+    d:DataContext="{d:DesignInstance Type=vm:PatientDetailsViewModel}"
+    d:DesignHeight="700"
+    d:DesignWidth="1000"
+    mc:Ignorable="d">
 
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
     </UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Header con info paziente -->
-        <Border Grid.Row="0" 
-                Background="#0078D4" 
-                Padding="20,15">
+        <!--  Header con info paziente  -->
+        <Border
+            Grid.Row="0"
+            Padding="20,15"
+            Background="#0078D4">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <!-- Pulsante Indietro -->
-                <Button Grid.Column="0"
-                        Content="◄ Torna alla Lista"
-                        Command="{Binding GoBackCommand}"
-                        Background="Transparent"
-                        Foreground="White"
-                        FontSize="13"
-                        BorderThickness="0"
-                        Padding="10,8"
-                        Margin="0,0,20,0"
-                        Cursor="Hand">
+                <!--  Pulsante Indietro  -->
+                <Button
+                    Grid.Column="0"
+                    Margin="0,0,20,0"
+                    Padding="10,8"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Command="{Binding GoBackCommand}"
+                    Content="◄ Torna alla Lista"
+                    Cursor="Hand"
+                    FontSize="13"
+                    Foreground="White">
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}"
-                                                Padding="{TemplateBinding Padding}">
-                                            <ContentPresenter HorizontalAlignment="Center"
-                                                            VerticalAlignment="Center"/>
+                                        <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                                         </Border>
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#005A9E"/>
+                                    <Setter Property="Background" Value="#005A9E" />
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
                 </Button>
 
-                <!-- Info Paziente -->
+                <!--  Info Paziente  -->
                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding Patient.FullName, Mode=OneWay}"
-                               FontSize="20" 
-                               FontWeight="SemiBold" 
-                               Foreground="White"/>
-                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                        <TextBlock Text="CF: " FontSize="12" Foreground="White" Opacity="0.9"/>
-                        <TextBlock Text="{Binding Patient.FiscalCode, Mode=OneWay}" FontSize="12" Foreground="White" Opacity="0.9"/>
-                        <TextBlock Text=" | Età: " FontSize="12" Foreground="White" Opacity="0.9"/>
-                        <TextBlock Text="{Binding Patient.Age, Mode=OneWay}" FontSize="12" Foreground="White" Opacity="0.9"/>
-                        <TextBlock Text=" anni | Nato il: " FontSize="12" Foreground="White" Opacity="0.9"/>
-                        <TextBlock Text="{Binding Patient.BirthDate, StringFormat=dd/MM/yyyy, Mode=OneWay}" FontSize="12" Foreground="White" Opacity="0.9"/>
+                    <TextBlock
+                        FontSize="20"
+                        FontWeight="SemiBold"
+                        Foreground="White"
+                        Text="{Binding Patient.FullName, Mode=OneWay}" />
+                    <StackPanel Margin="0,4,0,0" Orientation="Horizontal">
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="White"
+                            Opacity="0.9"
+                            Text="CF: " />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="White"
+                            Opacity="0.9"
+                            Text="{Binding Patient.FiscalCode, Mode=OneWay}" />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="White"
+                            Opacity="0.9"
+                            Text=" | Età: " />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="White"
+                            Opacity="0.9"
+                            Text="{Binding Patient.Age, Mode=OneWay}" />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="White"
+                            Opacity="0.9"
+                            Text=" anni | Nato il: " />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="White"
+                            Opacity="0.9"
+                            Text="{Binding Patient.BirthDate, StringFormat=dd/MM/yyyy, Mode=OneWay}" />
                     </StackPanel>
                 </StackPanel>
 
-                <!-- Azioni -->
-                <StackPanel Grid.Column="2" 
-                            Orientation="Horizontal">
+                <!--  Azioni  -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
 
-                    <!-- Pulsante Gestione INR -->
-                    <Button Content="📊 Gestione INR"
-                            Command="{Binding OpenINRControlCommand}"
-                            Background="#107C10"
-                            Foreground="White"
-                            FontSize="13"
-                            FontWeight="SemiBold"
-                            Padding="15,8"
-                            Margin="0,0,10,0"
-                            BorderThickness="0"
-                            Cursor="Hand">
+                    <!--  Pulsante Gestione INR  -->
+                    <Button
+                        Margin="0,0,10,0"
+                        Padding="15,8"
+                        Background="#107C10"
+                        BorderThickness="0"
+                        Command="{Binding OpenINRControlCommand}"
+                        Content="📊 Aggiungi INR"
+                        Cursor="Hand"
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Foreground="White">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}"
-                                                    CornerRadius="4"
-                                                    Padding="{TemplateBinding Padding}">
-                                                <ContentPresenter HorizontalAlignment="Center"
-                                                                VerticalAlignment="Center"/>
+                                            <Border
+                                                Padding="{TemplateBinding Padding}"
+                                                Background="{TemplateBinding Background}"
+                                                CornerRadius="4">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                                             </Border>
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#0E6B0E"/>
+                                        <Setter Property="Background" Value="#0E6B0E" />
                                     </Trigger>
                                     <Trigger Property="IsPressed" Value="True">
-                                        <Setter Property="Background" Value="#0C5A0C"/>
+                                        <Setter Property="Background" Value="#0C5A0C" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
                     </Button>
 
-                    <!-- Pulsante Modifica Anagrafica -->
-                    <Button Content="✏ Modifica Anagrafica"
-                            Command="{Binding EditPatientCommand}"
-                            Background="White"
-                            Foreground="#0078D4"
-                            FontSize="13"
-                            FontWeight="SemiBold"
-                            Padding="15,8"
-                            BorderThickness="0"
-                            Cursor="Hand">
+                    <!--  Pulsante Modifica Anagrafica  -->
+                    <Button
+                        Padding="15,8"
+                        Background="White"
+                        BorderThickness="0"
+                        Command="{Binding EditPatientCommand}"
+                        Content="✏ Modifica Anagrafica"
+                        Cursor="Hand"
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Foreground="#0078D4">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}"
-                                                    CornerRadius="4"
-                                                    Padding="{TemplateBinding Padding}">
-                                                <ContentPresenter HorizontalAlignment="Center"
-                                                                VerticalAlignment="Center"/>
+                                            <Border
+                                                Padding="{TemplateBinding Padding}"
+                                                Background="{TemplateBinding Background}"
+                                                CornerRadius="4">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                                             </Border>
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#F0F0F0"/>
+                                        <Setter Property="Background" Value="#F0F0F0" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -159,164 +187,225 @@
             </Grid>
         </Border>
 
-        <!-- TabControl con sezioni -->
-        <TabControl Grid.Row="1" 
-                    SelectedIndex="{Binding SelectedTabIndex}"
-                    Padding="0"
-                    BorderThickness="0">
+        <!--  TabControl con sezioni  -->
+        <TabControl
+            Grid.Row="1"
+            Padding="0"
+            BorderThickness="0"
+            SelectedIndex="{Binding SelectedTabIndex}">
             <TabControl.Resources>
                 <Style TargetType="TabItem">
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="TabItem">
-                                <Border Name="Border" 
-                                        Background="Transparent" 
-                                        BorderThickness="0"
-                                        Padding="20,12">
-                                    <ContentPresenter ContentSource="Header"
-                                                    VerticalAlignment="Center"
-                                                    HorizontalAlignment="Center"/>
+                                <Border
+                                    Name="Border"
+                                    Padding="20,12"
+                                    Background="Transparent"
+                                    BorderThickness="0">
+                                    <ContentPresenter
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        ContentSource="Header" />
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
-                                        <Setter TargetName="Border" Property="Background" Value="White"/>
-                                        <Setter TargetName="Border" Property="BorderThickness" Value="0,0,0,3"/>
-                                        <Setter TargetName="Border" Property="BorderBrush" Value="#0078D4"/>
+                                        <Setter TargetName="Border" Property="Background" Value="White" />
+                                        <Setter TargetName="Border" Property="BorderThickness" Value="0,0,0,3" />
+                                        <Setter TargetName="Border" Property="BorderBrush" Value="#0078D4" />
                                     </Trigger>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="Border" Property="Background" Value="#F5F5F5"/>
+                                        <Setter TargetName="Border" Property="Background" Value="#F5F5F5" />
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
-                    <Setter Property="FontSize" Value="14"/>
-                    <Setter Property="FontWeight" Value="SemiBold"/>
+                    <Setter Property="FontSize" Value="14" />
+                    <Setter Property="FontWeight" Value="SemiBold" />
                 </Style>
             </TabControl.Resources>
 
-            <!-- Tab 1: Anagrafica -->
+            <!--  Tab 1: Anagrafica  -->
             <TabItem Header="📋 Anagrafica">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="30">
+                <ScrollViewer Padding="30" VerticalScrollBarVisibility="Auto">
                     <StackPanel MaxWidth="700">
-                        <TextBlock Text="DATI PERSONALI" 
-                                   FontSize="14" 
-                                   FontWeight="SemiBold" 
-                                   Foreground="#0078D4"
-                                   Margin="0,0,0,15"/>
+                        <TextBlock
+                            Margin="0,0,0,15"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Foreground="#0078D4"
+                            Text="DATI PERSONALI" />
 
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="150"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="150" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Nome:" FontWeight="SemiBold" Margin="0,8"/>
-                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Patient.FirstName}" Margin="0,8"/>
+                            <TextBlock
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Margin="0,8"
+                                FontWeight="SemiBold"
+                                Text="Nome:" />
+                            <TextBlock
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Margin="0,8"
+                                Text="{Binding Patient.FirstName}" />
 
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Cognome:" FontWeight="SemiBold" Margin="0,8"/>
-                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Patient.LastName}" Margin="0,8"/>
+                            <TextBlock
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                Margin="0,8"
+                                FontWeight="SemiBold"
+                                Text="Cognome:" />
+                            <TextBlock
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Margin="0,8"
+                                Text="{Binding Patient.LastName}" />
 
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Codice Fiscale:" FontWeight="SemiBold" Margin="0,8"/>
-                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Patient.FiscalCode}" Margin="0,8"/>
+                            <TextBlock
+                                Grid.Row="2"
+                                Grid.Column="0"
+                                Margin="0,8"
+                                FontWeight="SemiBold"
+                                Text="Codice Fiscale:" />
+                            <TextBlock
+                                Grid.Row="2"
+                                Grid.Column="1"
+                                Margin="0,8"
+                                Text="{Binding Patient.FiscalCode}" />
 
-                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Sesso:" FontWeight="SemiBold" Margin="0,8"/>
-                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Patient.Gender}" Margin="0,8"/>
+                            <TextBlock
+                                Grid.Row="3"
+                                Grid.Column="0"
+                                Margin="0,8"
+                                FontWeight="SemiBold"
+                                Text="Sesso:" />
+                            <TextBlock
+                                Grid.Row="3"
+                                Grid.Column="1"
+                                Margin="0,8"
+                                Text="{Binding Patient.Gender}" />
 
-                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Telefono:" FontWeight="SemiBold" Margin="0,8"/>
-                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Patient.Phone}" Margin="0,8"/>
+                            <TextBlock
+                                Grid.Row="4"
+                                Grid.Column="0"
+                                Margin="0,8"
+                                FontWeight="SemiBold"
+                                Text="Telefono:" />
+                            <TextBlock
+                                Grid.Row="4"
+                                Grid.Column="1"
+                                Margin="0,8"
+                                Text="{Binding Patient.Phone}" />
 
-                            <TextBlock Grid.Row="5" Grid.Column="0" Text="Email:" FontWeight="SemiBold" Margin="0,8"/>
-                            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Patient.Email}" Margin="0,8"/>
+                            <TextBlock
+                                Grid.Row="5"
+                                Grid.Column="0"
+                                Margin="0,8"
+                                FontWeight="SemiBold"
+                                Text="Email:" />
+                            <TextBlock
+                                Grid.Row="5"
+                                Grid.Column="1"
+                                Margin="0,8"
+                                Text="{Binding Patient.Email}" />
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
 
-            <!-- Tab 2: Indicazioni Terapeutiche -->
-            <TabItem Header="🎯 Indicazioni Terapeutiche">
+            <!--  Tab 2: Indicazione alla TAO  -->
+            <TabItem Header="🎯 Indicazione alla TAO">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <!-- Toolbar -->
-                    <Border Grid.Row="0" 
-                            Background="#F5F5F5" 
-                            Padding="20,15"
-                            BorderBrush="#E0E0E0"
-                            BorderThickness="0,0,0,1">
+                    <!--  Toolbar  -->
+                    <Border
+                        Grid.Row="0"
+                        Padding="20,15"
+                        Background="#F5F5F5"
+                        BorderBrush="#E0E0E0"
+                        BorderThickness="0,0,0,1">
                         <StackPanel Orientation="Horizontal">
-                            <Button Content="➕ Nuova Indicazione"
-                                    Command="{Binding AddIndicationCommand}"
-                                    Background="#107C10"
-                                    Foreground="White"
-                                    FontWeight="SemiBold"
-                                    Padding="15,8"
-                                    Margin="0,0,10,0"
-                                    BorderThickness="0"
-                                    Cursor="Hand">
+                            <Button
+                                Margin="0,0,10,0"
+                                Padding="15,8"
+                                Background="#107C10"
+                                BorderThickness="0"
+                                Command="{Binding AddIndicationCommand}"
+                                Content="➕ Nuova Indicazione"
+                                Cursor="Hand"
+                                FontWeight="SemiBold"
+                                Foreground="White">
                                 <Button.Style>
                                     <Style TargetType="Button">
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="Button">
-                                                    <Border Background="{TemplateBinding Background}"
-                                                            CornerRadius="4"
-                                                            Padding="{TemplateBinding Padding}">
-                                                        <ContentPresenter HorizontalAlignment="Center"
-                                                                        VerticalAlignment="Center"/>
+                                                    <Border
+                                                        Padding="{TemplateBinding Padding}"
+                                                        Background="{TemplateBinding Background}"
+                                                        CornerRadius="4">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                                                     </Border>
                                                 </ControlTemplate>
                                             </Setter.Value>
                                         </Setter>
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#0F6B0D"/>
+                                                <Setter Property="Background" Value="#0F6B0D" />
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Button.Style>
                             </Button>
 
-                            <Button Content="⏹ Termina Indicazione"
-                                    Command="{Binding EndIndicationCommand}"
-                                    Background="#D13438"
-                                    Foreground="White"
-                                    FontWeight="SemiBold"
-                                    Padding="15,8"
-                                    BorderThickness="0"
-                                    Cursor="Hand">
+                            <Button
+                                Padding="15,8"
+                                Background="#D13438"
+                                BorderThickness="0"
+                                Command="{Binding EndIndicationCommand}"
+                                Content="⏹ Termina Indicazione"
+                                Cursor="Hand"
+                                FontWeight="SemiBold"
+                                Foreground="White">
                                 <Button.Style>
                                     <Style TargetType="Button">
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="Button">
-                                                    <Border Background="{TemplateBinding Background}"
-                                                            CornerRadius="4"
-                                                            Padding="{TemplateBinding Padding}">
-                                                        <ContentPresenter HorizontalAlignment="Center"
-                                                                        VerticalAlignment="Center"/>
+                                                    <Border
+                                                        Padding="{TemplateBinding Padding}"
+                                                        Background="{TemplateBinding Background}"
+                                                        CornerRadius="4">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                                                     </Border>
                                                 </ControlTemplate>
                                             </Setter.Value>
                                         </Setter>
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#A72B2E"/>
+                                                <Setter Property="Background" Value="#A72B2E" />
                                             </Trigger>
                                             <Trigger Property="IsEnabled" Value="False">
-                                                <Setter Property="Background" Value="#C0C0C0"/>
-                                                <Setter Property="Cursor" Value="Arrow"/>
+                                                <Setter Property="Background" Value="#C0C0C0" />
+                                                <Setter Property="Cursor" Value="Arrow" />
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>
@@ -325,145 +414,157 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- Lista Indicazioni -->
-                    <DataGrid Grid.Row="1"
-                              ItemsSource="{Binding Indications}"
-                              SelectedItem="{Binding SelectedIndication}"
-                              AutoGenerateColumns="False"
-                              IsReadOnly="True"
-                              SelectionMode="Single"
-                              GridLinesVisibility="Horizontal"
-                              HeadersVisibility="Column"
-                              RowHeight="50"
-                              FontSize="13"
-                              AlternatingRowBackground="#F9F9F9"
-                              CanUserResizeRows="False"
-                              CanUserSortColumns="True">
+                    <!--  Lista Indicazioni  -->
+                    <DataGrid
+                        Grid.Row="1"
+                        AlternatingRowBackground="#F9F9F9"
+                        AutoGenerateColumns="False"
+                        CanUserResizeRows="False"
+                        CanUserSortColumns="True"
+                        FontSize="13"
+                        GridLinesVisibility="Horizontal"
+                        HeadersVisibility="Column"
+                        IsReadOnly="True"
+                        ItemsSource="{Binding Indications}"
+                        RowHeight="50"
+                        SelectedItem="{Binding SelectedIndication}"
+                        SelectionMode="Single">
 
                         <DataGrid.ColumnHeaderStyle>
                             <Style TargetType="DataGridColumnHeader">
-                                <Setter Property="Background" Value="#E8E8E8"/>
-                                <Setter Property="Foreground" Value="#333333"/>
-                                <Setter Property="FontWeight" Value="SemiBold"/>
-                                <Setter Property="Padding" Value="12,10"/>
-                                <Setter Property="BorderThickness" Value="0,0,1,1"/>
-                                <Setter Property="BorderBrush" Value="#D0D0D0"/>
-                                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                <Setter Property="Background" Value="#E8E8E8" />
+                                <Setter Property="Foreground" Value="#333333" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                                <Setter Property="Padding" Value="12,10" />
+                                <Setter Property="BorderThickness" Value="0,0,1,1" />
+                                <Setter Property="BorderBrush" Value="#D0D0D0" />
+                                <Setter Property="HorizontalContentAlignment" Value="Left" />
                             </Style>
                         </DataGrid.ColumnHeaderStyle>
 
                         <DataGrid.CellStyle>
                             <Style TargetType="DataGridCell">
-                                <Setter Property="Padding" Value="12,0"/>
-                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Padding" Value="12,0" />
+                                <Setter Property="BorderThickness" Value="0" />
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="DataGridCell">
-                                            <Border Padding="{TemplateBinding Padding}"
-                                                    Background="{TemplateBinding Background}">
-                                                <ContentPresenter VerticalAlignment="Center"/>
+                                            <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                                                <ContentPresenter VerticalAlignment="Center" />
                                             </Border>
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="Background" Value="#E3F2FD"/>
-                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Setter Property="Background" Value="#E3F2FD" />
+                                        <Setter Property="Foreground" Value="Black" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
                         </DataGrid.CellStyle>
 
                         <DataGrid.Columns>
-                            <!-- Stato -->
-                            <DataGridTextColumn Header="Stato" 
-                                                Binding="{Binding Status}"
-                                                Width="100"/>
+                            <!--  Stato  -->
+                            <DataGridTextColumn
+                                Width="100"
+                                Binding="{Binding Status}"
+                                Header="Stato" />
 
-                            <!-- Categoria -->
-                            <DataGridTextColumn Header="Categoria" 
-                                                Binding="{Binding Category}"
-                                                Width="200"/>
+                            <!--  Categoria  -->
+                            <DataGridTextColumn
+                                Width="200"
+                                Binding="{Binding Category}"
+                                Header="Categoria" />
 
-                            <!-- Descrizione -->
-                            <DataGridTextColumn Header="Indicazione" 
-                                                Binding="{Binding Description}"
-                                                Width="*"/>
+                            <!--  Descrizione  -->
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding Description}"
+                                Header="Indicazione" />
 
-                            <!-- Target INR -->
-                            <DataGridTextColumn Header="Target INR" 
-                                                Binding="{Binding TargetINRRange}"
-                                                Width="120"/>
+                            <!--  Target INR  -->
+                            <DataGridTextColumn
+                                Width="120"
+                                Binding="{Binding TargetINRRange}"
+                                Header="Target INR" />
 
-                            <!-- Periodo -->
-                            <DataGridTextColumn Header="Periodo" 
-                                                Binding="{Binding Period}"
-                                                Width="250"/>
+                            <!--  Periodo  -->
+                            <DataGridTextColumn
+                                Width="250"
+                                Binding="{Binding Period}"
+                                Header="Periodo" />
                         </DataGrid.Columns>
                     </DataGrid>
 
-                    <!-- Messaggio lista vuota -->
-                    <StackPanel Grid.Row="1"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center"
-                               Visibility="{Binding Indications.Count, Converter={StaticResource CountToVisibilityConverter}}">
-                        <TextBlock Text="📋 Nessuna indicazione registrata"
-                                   FontSize="16"
-                                   Foreground="#A0A0A0"
-                                   HorizontalAlignment="Center"
-                                   Margin="0,0,0,10"/>
-                        <TextBlock Text="Clicca su 'Nuova Indicazione' per aggiungerne una"
-                                   FontSize="13"
-                                   Foreground="#A0A0A0"
-                                   HorizontalAlignment="Center"/>
+                    <!--  Messaggio lista vuota  -->
+                    <StackPanel
+                        Grid.Row="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding Indications.Count, Converter={StaticResource CountToVisibilityConverter}}">
+                        <TextBlock
+                            Margin="0,0,0,10"
+                            HorizontalAlignment="Center"
+                            FontSize="16"
+                            Foreground="#A0A0A0"
+                            Text="📋 Nessuna indicazione registrata" />
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            FontSize="13"
+                            Foreground="#A0A0A0"
+                            Text="Clicca su 'Nuova Indicazione' per aggiungerne una" />
                     </StackPanel>
                 </Grid>
             </TabItem>
 
-            <!-- Tab 3: Farmaci -->
+            <!--  Tab 3: Farmaci  -->
             <TabItem Header="💊 Farmaci">
-                <local:MedicationsView DataContext="{Binding MedicationsViewModel}"/>
+                <local:MedicationsView DataContext="{Binding MedicationsViewModel}" />
             </TabItem>
 
-            <!-- Tab 4: Storico INR (placeholder) -->
+            <!--  Tab 4: Storico INR (placeholder)  -->
             <TabItem Header="📊 Storico INR">
                 <Grid>
-                    <TextBlock Text="Storico controlli INR - In sviluppo"
-                               FontSize="16"
-                               Foreground="#A0A0A0"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"/>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontSize="16"
+                        Foreground="#A0A0A0"
+                        Text="Storico controlli INR - In sviluppo" />
                 </Grid>
             </TabItem>
 
-            <!-- Tab 5: Bridge Therapy -->
+            <!--  Tab 5: Bridge Therapy  -->
             <TabItem Header="💉 Bridge Therapy">
-                <local:BridgeTherapyView DataContext="{Binding BridgeTherapyViewModel}"/>
+                <local:BridgeTherapyView DataContext="{Binding BridgeTherapyViewModel}" />
             </TabItem>
 
-            <!-- Tab 6: Eventi Avversi (placeholder) -->
+            <!--  Tab 6: Eventi Avversi (placeholder)  -->
             <TabItem Header="⚠ Eventi Avversi">
                 <Grid>
-                    <TextBlock Text="Gestione eventi avversi - In sviluppo"
-                               FontSize="16"
-                               Foreground="#A0A0A0"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"/>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontSize="16"
+                        Foreground="#A0A0A0"
+                        Text="Gestione eventi avversi - In sviluppo" />
                 </Grid>
             </TabItem>
         </TabControl>
 
-        <!-- Loading Overlay -->
-        <Grid Grid.RowSpan="2" 
-              Background="#80FFFFFF"
-              Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock Text="⏳ Caricamento dati paziente..."
-                           FontSize="16"
-                           FontWeight="SemiBold"
-                           Foreground="#0078D4"
-                           HorizontalAlignment="Center"/>
+        <!--  Loading Overlay  -->
+        <Grid
+            Grid.RowSpan="2"
+            Background="#80FFFFFF"
+            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    FontSize="16"
+                    FontWeight="SemiBold"
+                    Foreground="#0078D4"
+                    Text="⏳ Caricamento dati paziente..." />
             </StackPanel>
         </Grid>
     </Grid>

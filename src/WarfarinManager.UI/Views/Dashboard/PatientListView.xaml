@@ -1,115 +1,121 @@
-<UserControl x:Class="WarfarinManager.UI.Views.Dashboard.PatientListView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
-             mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="1000"
-             d:DataContext="{d:DesignInstance Type=vm:PatientListViewModel}">
-    
-    <!-- Resources -->
+﻿<UserControl
+    x:Class="WarfarinManager.UI.Views.Dashboard.PatientListView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
+    d:DataContext="{d:DesignInstance Type=vm:PatientListViewModel}"
+    d:DesignHeight="600"
+    d:DesignWidth="1000"
+    mc:Ignorable="d">
+
+    <!--  Resources  -->
     <UserControl.Resources>
-        <!-- Converter BoolToVisibility -->
-        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <!--  Converter BoolToVisibility  -->
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </UserControl.Resources>
-    
+
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Header con titolo e statistiche -->
-        <Border Grid.Row="0" 
-                Background="#0078D4" 
-                Padding="20,15">
+        <!--  Header con titolo e statistiche  -->
+        <Border
+            Grid.Row="0"
+            Padding="20,15"
+            Background="#0078D4">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0">
-                    <TextBlock Text="Gestione Pazienti" 
-                               FontSize="20" 
-                               FontWeight="SemiBold" 
-                               Foreground="White"/>
-                    <TextBlock FontSize="12" 
-                               Foreground="White" 
-                               Opacity="0.9"
-                               Margin="0,4,0,0">
-                        <Run Text="Pazienti totali:"/>
-                        <Run Text="{Binding TotalPatientsCount, Mode=OneWay}" 
-                             FontWeight="SemiBold"/>
-                        <Run Text=" | Visualizzati:"/>
-                        <Run Text="{Binding FilteredPatientsCount, Mode=OneWay}" 
-                             FontWeight="SemiBold"/>
+                    <TextBlock
+                        FontSize="20"
+                        FontWeight="SemiBold"
+                        Foreground="White"
+                        Text="Gestione Pazienti" />
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        FontSize="12"
+                        Foreground="White"
+                        Opacity="0.9">
+                        <Run Text="Pazienti totali:" />
+                        <Run FontWeight="SemiBold" Text="{Binding TotalPatientsCount, Mode=OneWay}" />
+                        <Run Text=" | Visualizzati:" />
+                        <Run FontWeight="SemiBold" Text="{Binding FilteredPatientsCount, Mode=OneWay}" />
                     </TextBlock>
                 </StackPanel>
 
-                <StackPanel Grid.Column="1" 
-                            Orientation="Horizontal" 
-                            VerticalAlignment="Center">
-                    <Button Content="➕ Nuovo Paziente"
-                            Command="{Binding AddNewPatientCommand}"
-                            Background="#107C10"
-                            Foreground="White"
-                            FontWeight="SemiBold"
-                            Padding="15,8"
-                            Margin="0,0,10,0"
-                            BorderThickness="0"
-                            Cursor="Hand">
+                <StackPanel
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <Button
+                        Margin="0,0,10,0"
+                        Padding="15,8"
+                        Background="#107C10"
+                        BorderThickness="0"
+                        Command="{Binding AddNewPatientCommand}"
+                        Content="➕ Nuovo Paziente"
+                        Cursor="Hand"
+                        FontWeight="SemiBold"
+                        Foreground="White">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}"
-                                                    CornerRadius="4"
-                                                    Padding="{TemplateBinding Padding}">
-                                                <ContentPresenter HorizontalAlignment="Center"
-                                                                VerticalAlignment="Center"/>
+                                            <Border
+                                                Padding="{TemplateBinding Padding}"
+                                                Background="{TemplateBinding Background}"
+                                                CornerRadius="4">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                                             </Border>
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#0F6B0D"/>
+                                        <Setter Property="Background" Value="#0F6B0D" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
                     </Button>
 
-                    <Button Content="🔄 Aggiorna"
-                            Command="{Binding RefreshCommand}"
-                            Background="White"
-                            Foreground="#0078D4"
-                            FontWeight="SemiBold"
-                            Padding="15,8"
-                            BorderThickness="0"
-                            Cursor="Hand">
+                    <Button
+                        Padding="15,8"
+                        Background="White"
+                        BorderThickness="0"
+                        Command="{Binding RefreshCommand}"
+                        Content="🔄 Aggiorna"
+                        Cursor="Hand"
+                        FontWeight="SemiBold"
+                        Foreground="#0078D4">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}"
-                                                    CornerRadius="4"
-                                                    Padding="{TemplateBinding Padding}">
-                                                <ContentPresenter HorizontalAlignment="Center"
-                                                                VerticalAlignment="Center"/>
+                                            <Border
+                                                Padding="{TemplateBinding Padding}"
+                                                Background="{TemplateBinding Background}"
+                                                CornerRadius="4">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                                             </Border>
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#F0F0F0"/>
+                                        <Setter Property="Background" Value="#F0F0F0" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -119,41 +125,45 @@
             </Grid>
         </Border>
 
-        <!-- Barra ricerca -->
-        <Border Grid.Row="1" 
-                Background="#F5F5F5" 
-                Padding="20,15"
-                BorderBrush="#E0E0E0"
-                BorderThickness="0,0,0,1">
+        <!--  Barra ricerca  -->
+        <Border
+            Grid.Row="1"
+            Padding="20,15"
+            Background="#F5F5F5"
+            BorderBrush="#E0E0E0"
+            BorderThickness="0,0,0,1">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <TextBlock Text="🔍" 
-                               FontSize="18" 
-                               VerticalAlignment="Center"
-                               Margin="0,0,10,0"/>
-                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                             Width="400"
-                             Padding="8"
-                             FontSize="13"
-                             VerticalContentAlignment="Center"
-                             BorderBrush="#D0D0D0"
-                             BorderThickness="1">
+                    <TextBlock
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center"
+                        FontSize="18"
+                        Text="🔍" />
+                    <TextBox
+                        Width="400"
+                        Padding="8"
+                        VerticalContentAlignment="Center"
+                        BorderBrush="#D0D0D0"
+                        BorderThickness="1"
+                        FontSize="13"
+                        Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
                         <TextBox.Resources>
                             <Style TargetType="TextBox">
                                 <Style.Triggers>
                                     <Trigger Property="Text" Value="">
                                         <Setter Property="Background">
                                             <Setter.Value>
-                                                <VisualBrush Stretch="None" AlignmentX="Left">
+                                                <VisualBrush AlignmentX="Left" Stretch="None">
                                                     <VisualBrush.Visual>
-                                                        <TextBlock Text="Cerca per nome, cognome o codice fiscale..."
-                                                                   Foreground="#A0A0A0"
-                                                                   Margin="5,0"/>
+                                                        <TextBlock
+                                                            Margin="5,0"
+                                                            Foreground="#A0A0A0"
+                                                            Text="Cerca per nome, cognome o codice fiscale..." />
                                                     </VisualBrush.Visual>
                                                 </VisualBrush>
                                             </Setter.Value>
@@ -167,200 +177,202 @@
             </Grid>
         </Border>
 
-        <!-- DataGrid Pazienti -->
-        <DataGrid Grid.Row="2"
-                  ItemsSource="{Binding FilteredPatients}"
-                  SelectedItem="{Binding SelectedPatient}"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  SelectionMode="Single"
-                  GridLinesVisibility="Horizontal"
-                  HeadersVisibility="Column"
-                  RowHeight="40"
-                  FontSize="13"
-                  AlternatingRowBackground="#F9F9F9"
-                  CanUserResizeRows="False"
-                  CanUserSortColumns="True">
-            
+        <!--  DataGrid Pazienti  -->
+        <DataGrid
+            Grid.Row="2"
+            AlternatingRowBackground="#F9F9F9"
+            AutoGenerateColumns="False"
+            CanUserResizeRows="False"
+            CanUserSortColumns="True"
+            FontSize="13"
+            GridLinesVisibility="Horizontal"
+            HeadersVisibility="Column"
+            IsReadOnly="True"
+            ItemsSource="{Binding FilteredPatients}"
+            RowHeight="40"
+            SelectedItem="{Binding SelectedPatient}"
+            SelectionMode="Single">
+
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
-                    <Setter Property="Background" Value="#E8E8E8"/>
-                    <Setter Property="Foreground" Value="#333333"/>
-                    <Setter Property="FontWeight" Value="SemiBold"/>
-                    <Setter Property="Padding" Value="12,10"/>
-                    <Setter Property="BorderThickness" Value="0,0,1,1"/>
-                    <Setter Property="BorderBrush" Value="#D0D0D0"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                    <Setter Property="Background" Value="#E8E8E8" />
+                    <Setter Property="Foreground" Value="#333333" />
+                    <Setter Property="FontWeight" Value="SemiBold" />
+                    <Setter Property="Padding" Value="12,10" />
+                    <Setter Property="BorderThickness" Value="0,0,1,1" />
+                    <Setter Property="BorderBrush" Value="#D0D0D0" />
+                    <Setter Property="HorizontalContentAlignment" Value="Left" />
                 </Style>
             </DataGrid.ColumnHeaderStyle>
 
             <DataGrid.CellStyle>
                 <Style TargetType="DataGridCell">
-                    <Setter Property="Padding" Value="12,0"/>
-                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Padding" Value="12,0" />
+                    <Setter Property="BorderThickness" Value="0" />
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="DataGridCell">
-                                <Border Padding="{TemplateBinding Padding}"
-                                        Background="{TemplateBinding Background}">
-                                    <ContentPresenter VerticalAlignment="Center"/>
+                                <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                                    <ContentPresenter VerticalAlignment="Center" />
                                 </Border>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="#E3F2FD"/>
-                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="Background" Value="#E3F2FD" />
+                            <Setter Property="Foreground" Value="Black" />
                         </Trigger>
                     </Style.Triggers>
                 </Style>
             </DataGrid.CellStyle>
 
             <DataGrid.Columns>
-                <!-- Cognome -->
-                <DataGridTextColumn Header="Cognome" 
-                                    Binding="{Binding LastName}"
-                                    Width="150"/>
+                <!--  Cognome  -->
+                <DataGridTextColumn
+                    Width="150"
+                    Binding="{Binding LastName}"
+                    Header="Cognome" />
 
-                <!-- Nome -->
-                <DataGridTextColumn Header="Nome" 
-                                    Binding="{Binding FirstName}"
-                                    Width="150"/>
+                <!--  Nome  -->
+                <DataGridTextColumn
+                    Width="150"
+                    Binding="{Binding FirstName}"
+                    Header="Nome" />
 
-                <!-- Età -->
-                <DataGridTextColumn Header="Età" 
-                                    Binding="{Binding Age}"
-                                    Width="60"/>
+                <!--  Età  -->
+                <DataGridTextColumn
+                    Width="60"
+                    Binding="{Binding Age}"
+                    Header="Età" />
 
-                <!-- Codice Fiscale -->
-                <DataGridTextColumn Header="Codice Fiscale" 
-                                    Binding="{Binding FiscalCode}"
-                                    Width="150"/>
+                <!--  Codice Fiscale  -->
+                <DataGridTextColumn
+                    Width="150"
+                    Binding="{Binding FiscalCode}"
+                    Header="Codice Fiscale" />
 
-                <!-- Indicazione Attiva -->
-                <DataGridTextColumn Header="Indicazione" 
-                                    Binding="{Binding ActiveIndication}"
-                                    Width="180">
+                <!--  Indicazione Attiva  -->
+                <DataGridTextColumn
+                    Width="180"
+                    Binding="{Binding ActiveIndication}"
+                    Header="Indicazione">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
-                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="Foreground" Value="Black" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ActiveIndication}" Value="{x:Null}">
-                                    <Setter Property="Text" Value="-"/>
-                                    <Setter Property="Foreground" Value="#A0A0A0"/>
-                                    <Setter Property="FontStyle" Value="Italic"/>
+                                    <Setter Property="Text" Value="-" />
+                                    <Setter Property="Foreground" Value="#A0A0A0" />
+                                    <Setter Property="FontStyle" Value="Italic" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
 
-                <!-- Ultimo INR -->
-                <DataGridTextColumn Header="Ultimo INR" 
-                                    Width="90">
+                <!--  Ultimo INR  -->
+                <DataGridTextColumn Width="90" Header="Ultimo INR">
                     <DataGridTextColumn.Binding>
-                        <Binding Path="LastINR" StringFormat="{}{0:F2}"/>
+                        <Binding Path="LastINR" StringFormat="{}{0:F2}" />
                     </DataGridTextColumn.Binding>
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
-                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="Foreground" Value="Black" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding LastINR}" Value="{x:Null}">
-                                    <Setter Property="Text" Value="-"/>
-                                    <Setter Property="Foreground" Value="#A0A0A0"/>
-                                    <Setter Property="FontStyle" Value="Italic"/>
+                                    <Setter Property="Text" Value="-" />
+                                    <Setter Property="Foreground" Value="#A0A0A0" />
+                                    <Setter Property="FontStyle" Value="Italic" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
 
-                <!-- Dose settimanale (mg/wk) -->
-                <DataGridTextColumn Header="mg/wk" 
-                                    Width="70">
+                <!--  Dose settimanale (mg/wk)  -->
+                <DataGridTextColumn Width="70" Header="mg/wk">
                     <DataGridTextColumn.Binding>
-                        <Binding Path="CurrentWeeklyDose" StringFormat="{}{0:F1}"/>
+                        <Binding Path="CurrentWeeklyDose" StringFormat="{}{0:F1}" />
                     </DataGridTextColumn.Binding>
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
-                            <Setter Property="HorizontalAlignment" Value="Right"/>
-                            <Setter Property="Foreground" Value="#333333"/>
+                            <Setter Property="HorizontalAlignment" Value="Right" />
+                            <Setter Property="Foreground" Value="#333333" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding CurrentWeeklyDose}" Value="{x:Null}">
-                                    <Setter Property="Text" Value="-"/>
-                                    <Setter Property="Foreground" Value="#A0A0A0"/>
-                                    <Setter Property="FontStyle" Value="Italic"/>
-                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="Text" Value="-" />
+                                    <Setter Property="Foreground" Value="#A0A0A0" />
+                                    <Setter Property="FontStyle" Value="Italic" />
+                                    <Setter Property="HorizontalAlignment" Value="Center" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
 
-                <!-- TTR % -->
-                <DataGridTextColumn Header="TTR %" 
-                                    Width="80">
+                <!--  TTR %  -->
+                <DataGridTextColumn Width="80" Header="TTR %">
                     <DataGridTextColumn.Binding>
-                        <Binding Path="TTRPercentage" StringFormat="{}{0:F1}%"/>
+                        <Binding Path="TTRPercentage" StringFormat="{}{0:F1}%" />
                     </DataGridTextColumn.Binding>
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
-                            <Setter Property="HorizontalAlignment" Value="Center"/>
-                            <Setter Property="FontWeight" Value="SemiBold"/>
-                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="FontWeight" Value="SemiBold" />
+                            <Setter Property="Foreground" Value="Black" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding TTRPercentage}" Value="{x:Null}">
-                                    <Setter Property="Text" Value="-"/>
-                                    <Setter Property="Foreground" Value="#A0A0A0"/>
-                                    <Setter Property="FontStyle" Value="Italic"/>
-                                    <Setter Property="FontWeight" Value="Normal"/>
+                                    <Setter Property="Text" Value="-" />
+                                    <Setter Property="Foreground" Value="#A0A0A0" />
+                                    <Setter Property="FontStyle" Value="Italic" />
+                                    <Setter Property="FontWeight" Value="Normal" />
                                 </DataTrigger>
-                                <!-- TTR >= 70% Verde -->
+                                <!--  TTR >= 70% Verde  -->
                                 <DataTrigger Binding="{Binding IsTTRCritical}" Value="False">
-                                    <Setter Property="Foreground" Value="#107C10"/>
+                                    <Setter Property="Foreground" Value="#107C10" />
                                 </DataTrigger>
-                                <!-- TTR < 60% Rosso -->
+                                <!--  TTR < 60% Rosso  -->
                                 <DataTrigger Binding="{Binding IsTTRCritical}" Value="True">
-                                    <Setter Property="Foreground" Value="#E81123"/>
+                                    <Setter Property="Foreground" Value="#E81123" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
 
-                <!-- Azioni -->
-                <DataGridTemplateColumn Header="Azioni" Width="100">
+                <!--  Azioni  -->
+                <DataGridTemplateColumn Width="100" Header="Azioni">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Content="Dettagli ►"
-                                    Command="{Binding DataContext.OpenPatientDetailsCommand, 
-                                            RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                    Background="#0078D4"
-                                    Foreground="White"
-                                    FontSize="11"
-                                    FontWeight="SemiBold"
-                                    Padding="8,4"
-                                    BorderThickness="0"
-                                    Cursor="Hand"
-                                    HorizontalAlignment="Center">
+                            <Button
+                                Padding="8,4"
+                                HorizontalAlignment="Center"
+                                Background="#0078D4"
+                                BorderThickness="0"
+                                Command="{Binding DataContext.OpenPatientDetailsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                Content="Visualizza ►"
+                                Cursor="Hand"
+                                FontSize="11"
+                                FontWeight="SemiBold"
+                                Foreground="White">
                                 <Button.Style>
                                     <Style TargetType="Button">
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="Button">
-                                                    <Border Background="{TemplateBinding Background}"
-                                                            CornerRadius="3"
-                                                            Padding="{TemplateBinding Padding}">
-                                                        <ContentPresenter HorizontalAlignment="Center"
-                                                                        VerticalAlignment="Center"/>
+                                                    <Border
+                                                        Padding="{TemplateBinding Padding}"
+                                                        Background="{TemplateBinding Background}"
+                                                        CornerRadius="3">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                                                     </Border>
                                                 </ControlTemplate>
                                             </Setter.Value>
                                         </Setter>
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#005A9E"/>
+                                                <Setter Property="Background" Value="#005A9E" />
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>
@@ -372,27 +384,30 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <!-- Loading Overlay -->
-        <Grid Grid.Row="2" 
-              Background="#80FFFFFF"
-              Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock Text="⏳ Caricamento pazienti in corso..."
-                           FontSize="16"
-                           FontWeight="SemiBold"
-                           Foreground="#0078D4"
-                           HorizontalAlignment="Center"/>
+        <!--  Loading Overlay  -->
+        <Grid
+            Grid.Row="2"
+            Background="#80FFFFFF"
+            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    FontSize="16"
+                    FontWeight="SemiBold"
+                    Foreground="#0078D4"
+                    Text="⏳ Caricamento pazienti in corso..." />
             </StackPanel>
         </Grid>
 
-        <!-- Status Bar -->
-        <Border Grid.Row="3" 
-                Background="#F5F5F5" 
-                Padding="15,8"
-                BorderBrush="#E0E0E0"
-                BorderThickness="0,1,0,0">
+        <!--  Status Bar  -->
+        <Border
+            Grid.Row="3"
+            Padding="15,8"
+            Background="#F5F5F5"
+            BorderBrush="#E0E0E0"
+            BorderThickness="0,1,0,0">
             <TextBlock FontSize="11" Foreground="#666666">
-                <Run Text="Doppio click su una riga per aprire i dettagli del paziente"/>
+                <Run Text="Doppio click su una riga per aprire i dettagli del paziente" />
             </TextBlock>
         </Border>
     </Grid>

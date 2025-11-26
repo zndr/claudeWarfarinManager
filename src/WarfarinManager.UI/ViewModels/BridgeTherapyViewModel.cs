@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -355,6 +355,7 @@ public partial class BridgeTherapyViewModel : ObservableObject
     {
         if (!string.IsNullOrEmpty(ProtocolText))
         {
+            Clipboard.Clear();
             Clipboard.SetText(ProtocolText);
             MessageBox.Show("Protocollo copiato negli appunti!", 
                 "Copia completata", 
