@@ -29,7 +29,7 @@
                 FontSize="18"
                 FontWeight="SemiBold"
                 Foreground="White"
-                Text="WarfarinManager Pro - Gestione Terapia Anticoagulante" />
+                Text="TaoGEST - Gestione Terapia Anticoagulante Orale" />
         </Border>
 
         <!--  Content Area  -->
@@ -43,7 +43,7 @@
             <TextBlock
                 FontSize="11"
                 Foreground="#7F8C8D"
-                Text="Versione 1.0.0 - Development Build" />
+                Text="Versione 1.0.0.0 - Beta" />
         </Border>
     </Grid>
 </Window>

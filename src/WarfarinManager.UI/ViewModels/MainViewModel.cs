@@ -8,7 +8,7 @@ namespace WarfarinManager.UI.ViewModels;
 public partial class MainViewModel : ObservableObject
 {
     [ObservableProperty]
-    private string _title = "WarfarinManager Pro";
+    private string _title = "TaoGEST";
 
     [ObservableProperty]
     private object? _currentView;
