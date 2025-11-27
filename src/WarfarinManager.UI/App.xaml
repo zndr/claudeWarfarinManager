@@ -12,5 +12,6 @@
         <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
         <converters:NullableBoolConverter x:Key="NullableBoolConverter"/>
         <converters:EnumToBoolConverter x:Key="EnumToBoolConverter"/>
+        <converters:SeverityToColorConverter x:Key="SeverityToColorConverter"/>
     </Application.Resources>
 </Application>

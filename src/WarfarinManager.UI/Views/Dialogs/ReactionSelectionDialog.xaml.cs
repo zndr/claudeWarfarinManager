@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using WarfarinManager.Shared.Enums;
 
@@ -23,7 +24,7 @@ namespace WarfarinManager.UI.Views.Dialogs
         }
 
         /// <summary>
-        /// Carica tutte le reazioni raggruppate per gravità
+        /// Carica tutte le reazioni raggruppate per gravità e prioritizzate per timing di insorgenza
         /// </summary>
         private void LoadReactions()
         {
@@ -46,14 +47,57 @@ namespace WarfarinManager.UI.Views.Dialogs
                 var groupHeader = CreateGroupHeader(group.Key);
                 ReactionsPanel.Children.Add(groupHeader);
 
-                // Reazioni del gruppo
-                foreach (var reaction in group.OrderBy(r => r.Description))
+                // Separa e ordina: prima reazioni "inizio terapia", poi altre
+                var earlyOnsetReactions = group.Where(r => r.Info.CanOccurAtStart).OrderBy(r => r.Description).ToList();
+                var lateOnsetReactions = group.Where(r => !r.Info.CanOccurAtStart).OrderBy(r => r.Description).ToList();
+
+                // Mostra prima le reazioni che possono insorgere all'inizio
+                if (earlyOnsetReactions.Any())
                 {
-                    var reactionButton = CreateReactionButton(
-                        reaction.Reaction,
-                        reaction.Description,
-                        reaction.Info);
-                    ReactionsPanel.Children.Add(reactionButton);
+                    var earlyHeader = new TextBlock
+                    {
+                        Text = "⚠️ POSSONO INSORGERE ALL'INIZIO DELLA TERAPIA",
+                        FontSize = 11,
+                        FontWeight = FontWeights.SemiBold,
+                        Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF6B00")),
+                        Margin = new Thickness(0, 8, 0, 6)
+                    };
+                    ReactionsPanel.Children.Add(earlyHeader);
+
+                    foreach (var reaction in earlyOnsetReactions)
+                    {
+                        var reactionButton = CreateReactionButton(
+                            reaction.Reaction,
+                            reaction.Description,
+                            reaction.Info);
+                        ReactionsPanel.Children.Add(reactionButton);
+                    }
+                }
+
+                // Poi mostra le reazioni che insorgono più tardi
+                if (lateOnsetReactions.Any())
+                {
+                    if (earlyOnsetReactions.Any())
+                    {
+                        var lateHeader = new TextBlock
+                        {
+                            Text = "• INSORGENZA TARDIVA (dopo settimane/mesi)",
+                            FontSize = 11,
+                            FontWeight = FontWeights.SemiBold,
+                            Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#666666")),
+                            Margin = new Thickness(0, 12, 0, 6)
+                        };
+                        ReactionsPanel.Children.Add(lateHeader);
+                    }
+
+                    foreach (var reaction in lateOnsetReactions)
+                    {
+                        var reactionButton = CreateReactionButton(
+                            reaction.Reaction,
+                            reaction.Description,
+                            reaction.Info);
+                        ReactionsPanel.Children.Add(reactionButton);
+                    }
                 }
 
                 // Spazio tra gruppi
@@ -190,6 +234,33 @@ namespace WarfarinManager.UI.Views.Dialogs
 
                 earlyBadge.Child = badgeText;
                 headerStack.Children.Add(earlyBadge);
+            }
+
+            // Info icon con tooltip meccanismo se disponibile
+            if (!string.IsNullOrEmpty(info.Mechanism))
+            {
+                var infoIcon = new TextBlock
+                {
+                    Text = "ℹ️",
+                    FontSize = 14,
+                    Margin = new Thickness(8, 0, 0, 0),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    ToolTip = new ToolTip
+                    {
+                        Content = new TextBlock
+                        {
+                            Text = $"Meccanismo:\n{info.Mechanism}",
+                            TextWrapping = TextWrapping.Wrap,
+                            MaxWidth = 350,
+                            FontSize = 12
+                        },
+                        Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2C2C2C")),
+                        Foreground = Brushes.White,
+                        Padding = new Thickness(12, 8, 12, 8),
+                        HasDropShadow = true
+                    }
+                };
+                headerStack.Children.Add(infoIcon);
             }
 
             stack.Children.Add(headerStack);
