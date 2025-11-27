@@ -61,6 +61,12 @@ namespace WarfarinManager.UI.ViewModels
         [ObservableProperty]
         private INRHistoryViewModel? _inrHistoryViewModel;
 
+        /// <summary>
+        /// ViewModel per la valutazione pre-TAO (esposto per binding nel tab Valutazione Pre-TAO)
+        /// </summary>
+        [ObservableProperty]
+        private PreTaoAssessmentViewModel? _preTaoAssessmentViewModel;
+
         public PatientDetailsViewModel(
             IUnitOfWork unitOfWork,
             INavigationService navigationService,
@@ -82,6 +88,9 @@ namespace WarfarinManager.UI.ViewModels
 
             // Inizializza il INRHistoryViewModel dal DI
             InrHistoryViewModel = _serviceProvider.GetRequiredService<INRHistoryViewModel>();
+
+            // Inizializza il PreTaoAssessmentViewModel dal DI
+            PreTaoAssessmentViewModel = _serviceProvider.GetRequiredService<PreTaoAssessmentViewModel>();
         }
 
         /// <summary>
@@ -145,6 +154,17 @@ namespace WarfarinManager.UI.ViewModels
                     {
                         await InrHistoryViewModel.InitializeAsync(PatientId);
                     }
+                }
+
+                // Inizializza la valutazione pre-TAO
+                if (PreTaoAssessmentViewModel != null)
+                {
+                    _logger.LogInformation("Inizializzazione PreTaoAssessmentViewModel per paziente {PatientId}", PatientId);
+                    await PreTaoAssessmentViewModel.InitializeAsync(PatientId);
+                }
+                else
+                {
+                    _logger.LogWarning("PreTaoAssessmentViewModel è NULL!");
                 }
 
                 _logger.LogInformation("Paziente caricato: {FullName}", Patient.FullName);

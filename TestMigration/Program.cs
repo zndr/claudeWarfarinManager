@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using WarfarinManager.Data.Context;
 using WarfarinManager.Data.Entities;
@@ -8,35 +11,50 @@ var dbPath = Path.Combine(
     "warfarin.db"
 );
 
+Console.WriteLine($"Database path: {dbPath}");
+Console.WriteLine($"Database exists: {File.Exists(dbPath)}");
+
 var optionsBuilder = new DbContextOptionsBuilder<WarfarinDbContext>();
 optionsBuilder.UseSqlite($"Data Source={dbPath}");
 
 using var context = new WarfarinDbContext(optionsBuilder.Options);
 
-// Test 1: Verifica schema
-Console.WriteLine("=== TEST 1: Verifica Schema Tabella Patients ===");
+// Apply pending migrations
+Console.WriteLine("\n=== Applying Migrations ===");
 try
 {
-    var connection = context.Database.GetDbConnection();
-    await connection.OpenAsync();
-    
-    using var command = connection.CreateCommand();
-    command.CommandText = "PRAGMA table_info(Patients)";
-    
-    using var reader = await command.ExecuteReaderAsync();
-    while (await reader.ReadAsync())
+    var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+    if (pendingMigrations.Any())
     {
-        var columnName = reader.GetString(1);
-        var columnType = reader.GetString(2);
-        if (columnName.StartsWith("Has"))
+        Console.WriteLine("Pending migrations:");
+        foreach (var m in pendingMigrations)
         {
-            Console.WriteLine($"✅ Colonna trovata: {columnName} ({columnType})");
+            Console.WriteLine($"  - {m}");
         }
+
+        await context.Database.MigrateAsync();
+        Console.WriteLine("✅ Migrations applied!");
+    }
+    else
+    {
+        Console.WriteLine("✅ No pending migrations");
     }
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"❌ Errore verifica schema: {ex.Message}");
+    Console.WriteLine($"❌ Error applying migrations: {ex.Message}");
+}
+
+// Test PreTaoAssessments table
+Console.WriteLine("\n=== Testing PreTaoAssessments Table ===");
+try
+{
+    var count = await context.PreTaoAssessments.CountAsync();
+    Console.WriteLine($"✅ PreTaoAssessments table exists! Count: {count}");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"❌ PreTaoAssessments table error: {ex.Message}");
 }
 
 // Test 2: Creazione paziente con nuovi campi

@@ -327,7 +327,18 @@
                 </ScrollViewer>
             </TabItem>
 
-            <!--  Tab 2: Indicazione alla TAO  -->
+            <!--  Tab 2: Valutazione Pre-TAO  -->
+            <TabItem Header="🩺 Valutazione Pre-TAO">
+                <TextBlock Text="Valutazione Pre-TAO - In sviluppo"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          FontSize="16"/>
+                <!-- Temporarily commented out due to crash
+                <local:PreTaoAssessmentView DataContext="{Binding PreTaoAssessmentViewModel}" />
+                -->
+            </TabItem>
+
+            <!--  Tab 3: Indicazione alla TAO  -->
             <TabItem Header="🎯 Indicazione alla TAO">
                 <Grid>
                     <Grid.RowDefinitions>

@@ -105,7 +105,12 @@ public class Patient : BaseEntity
     /// Piani di bridge therapy
     /// </summary>
     public ICollection<BridgeTherapyPlan> BridgeTherapyPlans { get; set; } = new List<BridgeTherapyPlan>();
-    
+
+    /// <summary>
+    /// Valutazioni pre-TAO
+    /// </summary>
+    public ICollection<PreTaoAssessment> PreTaoAssessments { get; set; } = new List<PreTaoAssessment>();
+
     // Computed Properties (non mappate su DB)
     
     /// <summary>

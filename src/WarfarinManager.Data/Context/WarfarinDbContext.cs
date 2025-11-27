@@ -14,7 +14,7 @@ public class WarfarinDbContext : DbContext
     }
     
     // DbSets - Entità principali
-    
+
     public DbSet<Patient> Patients => Set<Patient>();
     public DbSet<Indication> Indications => Set<Indication>();
     public DbSet<Medication> Medications => Set<Medication>();
@@ -23,6 +23,7 @@ public class WarfarinDbContext : DbContext
     public DbSet<DosageSuggestion> DosageSuggestions => Set<DosageSuggestion>();
     public DbSet<AdverseEvent> AdverseEvents => Set<AdverseEvent>();
     public DbSet<BridgeTherapyPlan> BridgeTherapyPlans => Set<BridgeTherapyPlan>();
+    public DbSet<PreTaoAssessment> PreTaoAssessments => Set<PreTaoAssessment>();
     
     // DbSets - Lookup tables
     
