@@ -67,6 +67,12 @@ namespace WarfarinManager.UI.ViewModels
         [ObservableProperty]
         private PreTaoAssessmentViewModel? _preTaoAssessmentViewModel;
 
+        /// <summary>
+        /// ViewModel per la gestione eventi avversi (esposto per binding nel tab Eventi Avversi)
+        /// </summary>
+        [ObservableProperty]
+        private AdverseEventsViewModel? _adverseEventsViewModel;
+
         public PatientDetailsViewModel(
             IUnitOfWork unitOfWork,
             INavigationService navigationService,
@@ -91,6 +97,9 @@ namespace WarfarinManager.UI.ViewModels
 
             // Inizializza il PreTaoAssessmentViewModel dal DI
             PreTaoAssessmentViewModel = _serviceProvider.GetRequiredService<PreTaoAssessmentViewModel>();
+
+            // Inizializza il AdverseEventsViewModel dal DI
+            AdverseEventsViewModel = _serviceProvider.GetRequiredService<AdverseEventsViewModel>();
         }
 
         /// <summary>
@@ -165,6 +174,13 @@ namespace WarfarinManager.UI.ViewModels
                 else
                 {
                     _logger.LogWarning("PreTaoAssessmentViewModel è NULL!");
+                }
+
+                // Inizializza gli eventi avversi
+                if (AdverseEventsViewModel != null)
+                {
+                    _logger.LogInformation("Caricamento eventi avversi per paziente {PatientId}", PatientId);
+                    await AdverseEventsViewModel.LoadAdverseEventsAsync(PatientId);
                 }
 
                 _logger.LogInformation("Paziente caricato: {FullName}", Patient.FullName);

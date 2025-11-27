@@ -17,26 +17,30 @@ public class UnitOfWork : IUnitOfWork
     private IInteractionDrugRepository? _interactionDrugs;
     private IIndicationRepository? _indications;
     private IBridgeTherapyPlanRepository? _bridgeTherapyPlans;
+    private IRepository<Entities.AdverseEvent>? _adverseEvents;
 
     public UnitOfWork(WarfarinDbContext context)
     {
         _context = context;
     }
 
-    public IPatientRepository Patients => 
+    public IPatientRepository Patients =>
         _patients ??= new PatientRepository(_context);
 
-    public IINRControlRepository INRControls => 
+    public IINRControlRepository INRControls =>
         _inrControls ??= new INRControlRepository(_context);
 
-    public IInteractionDrugRepository InteractionDrugs => 
+    public IInteractionDrugRepository InteractionDrugs =>
         _interactionDrugs ??= new InteractionDrugRepository(_context);
 
-    public IIndicationRepository Indications => 
+    public IIndicationRepository Indications =>
         _indications ??= new IndicationRepository(_context);
 
-    public IBridgeTherapyPlanRepository BridgeTherapyPlans => 
+    public IBridgeTherapyPlanRepository BridgeTherapyPlans =>
         _bridgeTherapyPlans ??= new BridgeTherapyPlanRepository(_context);
+
+    public IRepository<Entities.AdverseEvent> AdverseEvents =>
+        _adverseEvents ??= new Repository<Entities.AdverseEvent>(_context);
 
     public WarfarinDbContext Database => _context;
 

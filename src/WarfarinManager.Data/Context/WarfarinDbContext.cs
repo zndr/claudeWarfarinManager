@@ -67,19 +67,15 @@ public class WarfarinDbContext : DbContext
             .HasConversion<string>();
             
         modelBuilder.Entity<AdverseEvent>()
-            .Property(a => a.EventType)
+            .Property(a => a.ReactionType)
             .HasConversion<string>();
-            
-        modelBuilder.Entity<AdverseEvent>()
-            .Property(a => a.HemorrhagicCategory)
-            .HasConversion<string>();
-            
-        modelBuilder.Entity<AdverseEvent>()
-            .Property(a => a.ThromboticCategory)
-            .HasConversion<string>();
-            
+
         modelBuilder.Entity<AdverseEvent>()
             .Property(a => a.Severity)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<AdverseEvent>()
+            .Property(a => a.CertaintyLevel)
             .HasConversion<string>();
             
         modelBuilder.Entity<BridgeTherapyPlan>()
@@ -124,7 +120,7 @@ public class WarfarinDbContext : DbContext
             
         // AdverseEvent indexes
         modelBuilder.Entity<AdverseEvent>()
-            .HasIndex(a => new { a.PatientId, a.EventDate })
+            .HasIndex(a => new { a.PatientId, a.OnsetDate })
             .IsDescending(false, true);
             
         // IndicationType indexes

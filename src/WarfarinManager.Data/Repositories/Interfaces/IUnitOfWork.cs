@@ -12,7 +12,8 @@ public interface IUnitOfWork : IDisposable
     IInteractionDrugRepository InteractionDrugs { get; }
     IIndicationRepository Indications { get; }
     IBridgeTherapyPlanRepository BridgeTherapyPlans { get; }
-    
+    IRepository<Entities.AdverseEvent> AdverseEvents { get; }
+
     /// <summary>
     /// Accesso diretto al DbContext per query complesse
     /// </summary>

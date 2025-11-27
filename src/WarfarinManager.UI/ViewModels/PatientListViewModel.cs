@@ -181,11 +181,37 @@ public partial class PatientListViewModel : ObservableObject
     private bool CanOpenPatientDetails() => SelectedPatient != null;
 
     /// <summary>
+    /// Apre il riassunto clinico del paziente selezionato
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanOpenPatientSummary))]
+    private void OpenPatientSummary()
+    {
+        if (SelectedPatient == null)
+            return;
+
+        try
+        {
+            _logger.LogInformation("Apertura riassunto paziente ID: {PatientId}", SelectedPatient.Id);
+
+            // Naviga al riassunto passando l'ID del paziente
+            _navigationService.NavigateTo<PatientSummaryViewModel>(SelectedPatient.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Errore apertura riassunto paziente");
+            _dialogService.ShowError($"Errore: {ex.Message}", "Errore");
+        }
+    }
+
+    private bool CanOpenPatientSummary() => SelectedPatient != null;
+
+    /// <summary>
     /// Aggiorna il CanExecute quando cambia la selezione
     /// </summary>
     partial void OnSelectedPatientChanged(PatientDto? value)
     {
         OpenPatientDetailsCommand.NotifyCanExecuteChanged();
+        OpenPatientSummaryCommand.NotifyCanExecuteChanged();
     }
 
     /// <summary>

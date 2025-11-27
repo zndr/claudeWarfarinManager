@@ -27,7 +27,7 @@ public class PatientRepository : Repository<Patient>, IPatientRepository
                 .ThenInclude(i => i.IndicationType)
             .Include(p => p.Medications.Where(m => m.IsActive))
             .Include(p => p.INRControls.OrderByDescending(c => c.ControlDate).Take(10))
-            .Include(p => p.AdverseEvents.OrderByDescending(e => e.EventDate).Take(5))
+            .Include(p => p.AdverseEvents.OrderByDescending(e => e.OnsetDate).Take(5))
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 

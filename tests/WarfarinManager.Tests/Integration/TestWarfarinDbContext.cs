@@ -53,19 +53,15 @@ public class TestWarfarinDbContext : WarfarinDbContext
             .HasConversion<string>();
             
         modelBuilder.Entity<Data.Entities.AdverseEvent>()
-            .Property(a => a.EventType)
+            .Property(a => a.ReactionType)
             .HasConversion<string>();
-            
-        modelBuilder.Entity<Data.Entities.AdverseEvent>()
-            .Property(a => a.HemorrhagicCategory)
-            .HasConversion<string>();
-            
-        modelBuilder.Entity<Data.Entities.AdverseEvent>()
-            .Property(a => a.ThromboticCategory)
-            .HasConversion<string>();
-            
+
         modelBuilder.Entity<Data.Entities.AdverseEvent>()
             .Property(a => a.Severity)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Data.Entities.AdverseEvent>()
+            .Property(a => a.CertaintyLevel)
             .HasConversion<string>();
             
         modelBuilder.Entity<Data.Entities.BridgeTherapyPlan>()
@@ -105,7 +101,7 @@ public class TestWarfarinDbContext : WarfarinDbContext
             .HasIndex(i => new { i.PatientId, i.IsActive });
             
         modelBuilder.Entity<Data.Entities.AdverseEvent>()
-            .HasIndex(a => new { a.PatientId, a.EventDate })
+            .HasIndex(a => new { a.PatientId, a.OnsetDate })
             .IsDescending(false, true);
             
         modelBuilder.Entity<Data.Entities.IndicationType>()
