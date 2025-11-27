@@ -39,4 +39,14 @@ public interface INavigationService
     /// Indica se è possibile tornare indietro
     /// </summary>
     bool CanGoBack { get; }
+
+    /// <summary>
+    /// Naviga alla lista pazienti
+    /// </summary>
+    void NavigateToPatientList();
+
+    /// <summary>
+    /// Naviga al form nuovo paziente
+    /// </summary>
+    void NavigateToNewPatient();
 }

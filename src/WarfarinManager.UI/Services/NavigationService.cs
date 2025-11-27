@@ -83,6 +83,16 @@ public class NavigationService : INavigationService
 
         CurrentView = _navigationHistory.Pop();
     }
+
+    public void NavigateToPatientList()
+    {
+        NavigateTo<ViewModels.PatientListViewModel>();
+    }
+
+    public void NavigateToNewPatient()
+    {
+        NavigateTo<ViewModels.PatientFormViewModel>();
+    }
 }
 
 /// <summary>
