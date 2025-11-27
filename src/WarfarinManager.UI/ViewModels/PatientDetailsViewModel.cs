@@ -224,9 +224,18 @@ namespace WarfarinManager.UI.ViewModels
         [RelayCommand]
         private void EditPatient()
         {
-            _dialogService.ShowInformation(
-                "Modifica anagrafica paziente\n\n(Funzionalità in sviluppo)",
-                "Info");
+            try
+            {
+                _logger.LogInformation("Apertura form modifica anagrafica per paziente {PatientId}", PatientId);
+
+                // Naviga al form paziente passando l'ID per la modifica
+                _navigationService.NavigateTo<PatientFormViewModel>(PatientId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Errore apertura form modifica paziente");
+                _dialogService.ShowError($"Errore: {ex.Message}", "Errore");
+            }
         }
 
         /// <summary>

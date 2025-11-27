@@ -200,7 +200,7 @@
                             <ControlTemplate TargetType="TabItem">
                                 <Border
                                     Name="Border"
-                                    Padding="20,12"
+                                    Padding="12,10"
                                     Background="Transparent"
                                     BorderThickness="0">
                                     <ContentPresenter
@@ -221,7 +221,7 @@
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
-                    <Setter Property="FontSize" Value="14" />
+                    <Setter Property="FontSize" Value="12" />
                     <Setter Property="FontWeight" Value="SemiBold" />
                 </Style>
             </TabControl.Resources>
