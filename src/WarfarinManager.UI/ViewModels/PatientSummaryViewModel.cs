@@ -456,21 +456,18 @@ public partial class PatientSummaryViewModel : ObservableObject, INavigationAwar
 
             if (saveFileDialog.ShowDialog() == true)
             {
-                await Task.Run(() =>
-                {
-                    // Genera il PDF usando il servizio
-                    _pdfService.GeneratePdf(
-                        saveFileDialog.FileName,
-                        _currentPatient,
-                        _currentAssessment,
-                        _activeIndication,
-                        RecentINRControls.ToList(),
-                        BridgeTherapies.ToList(),
-                        CurrentTTR,
-                        TtrQualityLevel,
-                        TotalControlsCount,
-                        DaysInTherapy);
-                });
+                // Genera il PDF usando il servizio
+                await _pdfService.GeneratePdfAsync(
+                    saveFileDialog.FileName,
+                    _currentPatient,
+                    _currentAssessment,
+                    _activeIndication,
+                    RecentINRControls.ToList(),
+                    BridgeTherapies.ToList(),
+                    CurrentTTR,
+                    TtrQualityLevel,
+                    TotalControlsCount,
+                    DaysInTherapy);
 
                 _logger.LogInformation("PDF generato con successo: {FilePath}", saveFileDialog.FileName);
 

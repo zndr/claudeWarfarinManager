@@ -24,7 +24,8 @@ public class WarfarinDbContext : DbContext
     public DbSet<AdverseEvent> AdverseEvents => Set<AdverseEvent>();
     public DbSet<BridgeTherapyPlan> BridgeTherapyPlans => Set<BridgeTherapyPlan>();
     public DbSet<PreTaoAssessment> PreTaoAssessments => Set<PreTaoAssessment>();
-    
+    public DbSet<DoctorData> DoctorData => Set<DoctorData>();
+
     // DbSets - Lookup tables
     
     public DbSet<IndicationType> IndicationTypes => Set<IndicationType>();

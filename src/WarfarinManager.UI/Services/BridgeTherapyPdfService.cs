@@ -1,9 +1,12 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using WarfarinManager.Core.Services;
+using WarfarinManager.Data.Context;
 using WarfarinManager.Data.Entities;
 using WarfarinManager.Shared.Enums;
 
@@ -14,6 +17,8 @@ namespace WarfarinManager.UI.Services;
 /// </summary>
 public class BridgeTherapyPdfService
 {
+    private readonly WarfarinDbContext _context;
+
     // Colori corporate
     private static readonly string PrimaryBlue = "#0078D4";
     private static readonly string SuccessGreen = "#107C10";
@@ -21,9 +26,17 @@ public class BridgeTherapyPdfService
     private static readonly string DangerRed = "#D13438";
     private static readonly string LightGray = "#F5F5F5";
     private static readonly string DarkGray = "#333333";
-    
-    public void GeneratePdf(string filePath, BridgeProtocol protocol, Patient patient, BridgeRecommendation recommendation)
+
+    public BridgeTherapyPdfService(WarfarinDbContext context)
     {
+        _context = context;
+    }
+
+    public async Task GeneratePdfAsync(string filePath, BridgeProtocol protocol, Patient patient, BridgeRecommendation recommendation)
+    {
+        // Carica i dati del medico
+        var doctorData = await _context.DoctorData.FirstOrDefaultAsync();
+
         // Configura QuestPDF per uso community (gratuito)
         QuestPDF.Settings.License = LicenseType.Community;
         
@@ -37,7 +50,7 @@ public class BridgeTherapyPdfService
                 
                 page.Header().Element(c => ComposeHeader(c, patient, protocol));
                 page.Content().Element(c => ComposeContent(c, protocol, recommendation));
-                page.Footer().Element(ComposeFooter);
+                page.Footer().Element(c => ComposeFooter(c, doctorData));
             });
         });
         
@@ -287,14 +300,65 @@ public class BridgeTherapyPdfService
         }
     }
     
-    private void ComposeFooter(IContainer container)
+    private void ComposeFooter(IContainer container, DoctorData? doctorData)
     {
         container.Column(column =>
         {
             column.Item().Height(10);
             column.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
             column.Item().Height(10);
-            
+
+            // Dati del medico (se presenti)
+            if (doctorData != null)
+            {
+                column.Item().Background(LightGray).Padding(10).Column(doctorCol =>
+                {
+                    doctorCol.Item().Text(text =>
+                    {
+                        text.Span("Medico: ").FontSize(9).SemiBold().FontColor(DarkGray);
+                        text.Span($"dr. {doctorData.FullName}").FontSize(9).FontColor(DarkGray);
+                    });
+
+                    if (!string.IsNullOrWhiteSpace(doctorData.Street) ||
+                        !string.IsNullOrWhiteSpace(doctorData.City))
+                    {
+                        doctorCol.Item().Text(text =>
+                        {
+                            if (!string.IsNullOrWhiteSpace(doctorData.Street))
+                            {
+                                text.Span(doctorData.Street).FontSize(8).FontColor(Colors.Grey.Darken1);
+                                if (!string.IsNullOrWhiteSpace(doctorData.City))
+                                    text.Span(", ").FontSize(8).FontColor(Colors.Grey.Darken1);
+                            }
+                            if (!string.IsNullOrWhiteSpace(doctorData.City))
+                            {
+                                if (!string.IsNullOrWhiteSpace(doctorData.PostalCode))
+                                    text.Span($"{doctorData.PostalCode} ").FontSize(8).FontColor(Colors.Grey.Darken1);
+                                text.Span(doctorData.City).FontSize(8).FontColor(Colors.Grey.Darken1);
+                            }
+                        });
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(doctorData.Phone) ||
+                        !string.IsNullOrWhiteSpace(doctorData.Email))
+                    {
+                        doctorCol.Item().Text(text =>
+                        {
+                            if (!string.IsNullOrWhiteSpace(doctorData.Phone))
+                            {
+                                text.Span($"Tel: {doctorData.Phone}").FontSize(8).FontColor(Colors.Grey.Darken1);
+                                if (!string.IsNullOrWhiteSpace(doctorData.Email))
+                                    text.Span(" - ").FontSize(8).FontColor(Colors.Grey.Darken1);
+                            }
+                            if (!string.IsNullOrWhiteSpace(doctorData.Email))
+                                text.Span($"Email: {doctorData.Email}").FontSize(8).FontColor(Colors.Grey.Darken1);
+                        });
+                    }
+                });
+
+                column.Item().Height(10);
+            }
+
             // Disclaimer
             column.Item().Background("#FFF3E0").Padding(10).Column(col =>
             {
@@ -305,9 +369,9 @@ public class BridgeTherapyPdfService
                     "I calcoli devono essere verificati dal clinico prima dell'applicazione.")
                     .FontSize(8).FontColor("#E65100");
             });
-            
+
             column.Item().Height(8);
-            
+
             // Footer info
             column.Item().Row(row =>
             {
@@ -317,7 +381,7 @@ public class BridgeTherapyPdfService
                     text.Span("WarfarinManager Pro").FontSize(8).Bold().FontColor(PrimaryBlue);
                     text.Span($" | {DateTime.Now:dd/MM/yyyy HH:mm}").FontSize(8).FontColor(Colors.Grey.Medium);
                 });
-                
+
                 row.ConstantItem(100).AlignRight().Text(text =>
                 {
                     text.CurrentPageNumber().FontSize(8);

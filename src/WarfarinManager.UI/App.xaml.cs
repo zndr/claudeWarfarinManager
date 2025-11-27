@@ -15,6 +15,7 @@ using WarfarinManager.UI.ViewModels;
 using WarfarinManager.UI.Views.Dashboard;
 using WarfarinManager.UI.Views.Patient;
 using WarfarinManager.UI.Views.INR;
+using WarfarinManager.UI.Views.Dialogs;
 
 namespace WarfarinManager.UI;
 
@@ -84,6 +85,8 @@ public partial class App : Application
         services.AddSingleton<INavigationService, NavigationService>();
         services.AddSingleton<IDialogService, DialogService>();
         services.AddScoped<PatientSummaryPdfService>();
+        services.AddScoped<BridgeTherapyPdfService>();
+        services.AddScoped<WeeklySchedulePdfService>();
 
         // ViewModels
         services.AddTransient<MainViewModel>();
@@ -98,6 +101,7 @@ public partial class App : Application
         services.AddTransient<PreTaoAssessmentViewModel>();
         services.AddTransient<PatientSummaryViewModel>();
         services.AddTransient<AdverseEventsViewModel>();
+        services.AddTransient<DoctorDataViewModel>();
 
         // Views
         services.AddTransient<PatientListView>();
@@ -112,6 +116,7 @@ public partial class App : Application
         services.AddTransient<PreTaoAssessmentSummary>();
         services.AddTransient<PreTaoAssessmentDialog>();
         services.AddTransient<AdverseEventsView>();
+        services.AddTransient<DoctorDataDialog>();
 
         // Main Window
         services.AddSingleton<MainWindow>();

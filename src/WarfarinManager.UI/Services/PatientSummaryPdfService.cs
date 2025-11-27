@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using WarfarinManager.Data.Context;
 using WarfarinManager.Data.Entities;
 using WarfarinManager.UI.ViewModels;
 
@@ -14,6 +17,8 @@ namespace WarfarinManager.UI.Services;
 /// </summary>
 public class PatientSummaryPdfService
 {
+    private readonly WarfarinDbContext _context;
+
     // Colori corporate
     private static readonly string PrimaryBlue = "#0078D4";
     private static readonly string SuccessGreen = "#107C10";
@@ -22,10 +27,15 @@ public class PatientSummaryPdfService
     private static readonly string LightGray = "#F5F5F5";
     private static readonly string DarkGray = "#333333";
 
+    public PatientSummaryPdfService(WarfarinDbContext context)
+    {
+        _context = context;
+    }
+
     /// <summary>
     /// Genera il PDF del riassunto paziente
     /// </summary>
-    public void GeneratePdf(
+    public async Task GeneratePdfAsync(
         string filePath,
         Patient patient,
         PreTaoAssessment? assessment,
@@ -37,6 +47,9 @@ public class PatientSummaryPdfService
         int totalControlsCount,
         int daysInTherapy)
     {
+        // Carica i dati del medico
+        var doctorData = await _context.DoctorData.FirstOrDefaultAsync();
+
         // Configura QuestPDF per uso community (gratuito)
         QuestPDF.Settings.License = LicenseType.Community;
 
@@ -52,7 +65,7 @@ public class PatientSummaryPdfService
                 page.Content().Element(c => ComposeContent(c, patient, assessment, indication,
                     recentControls, bridgeTherapies, currentTTR, ttrQualityLevel,
                     totalControlsCount, daysInTherapy));
-                page.Footer().Element(ComposeFooter);
+                page.Footer().Element(c => ComposeFooter(c, doctorData));
             });
         });
 
@@ -382,13 +395,69 @@ public class PatientSummaryPdfService
         });
     }
 
-    private void ComposeFooter(IContainer container)
+    private void ComposeFooter(IContainer container, DoctorData? doctorData)
     {
-        container.AlignCenter().Text(text =>
+        container.Column(column =>
         {
-            text.Span("Documento generato il ").FontSize(9).FontColor(Colors.Grey.Medium);
-            text.Span($"{DateTime.Now:dd/MM/yyyy HH:mm}").FontSize(9).FontColor(Colors.Grey.Medium);
-            text.Span(" - TaoGEST").FontSize(9).FontColor(Colors.Grey.Medium).Italic();
+            // Dati del medico (se presenti)
+            if (doctorData != null)
+            {
+                column.Item().BorderTop(1).BorderColor(Colors.Grey.Lighten2).PaddingTop(10)
+                    .Background(LightGray).Padding(10).Column(doctorCol =>
+                    {
+                        doctorCol.Item().Text(text =>
+                        {
+                            text.Span("Medico: ").FontSize(9).SemiBold().FontColor(DarkGray);
+                            text.Span($"dr. {doctorData.FullName}").FontSize(9).FontColor(DarkGray);
+                        });
+
+                        if (!string.IsNullOrWhiteSpace(doctorData.Street) ||
+                            !string.IsNullOrWhiteSpace(doctorData.City))
+                        {
+                            doctorCol.Item().Text(text =>
+                            {
+                                if (!string.IsNullOrWhiteSpace(doctorData.Street))
+                                {
+                                    text.Span(doctorData.Street).FontSize(8).FontColor(Colors.Grey.Darken1);
+                                    if (!string.IsNullOrWhiteSpace(doctorData.City))
+                                        text.Span(", ").FontSize(8).FontColor(Colors.Grey.Darken1);
+                                }
+                                if (!string.IsNullOrWhiteSpace(doctorData.City))
+                                {
+                                    if (!string.IsNullOrWhiteSpace(doctorData.PostalCode))
+                                        text.Span($"{doctorData.PostalCode} ").FontSize(8).FontColor(Colors.Grey.Darken1);
+                                    text.Span(doctorData.City).FontSize(8).FontColor(Colors.Grey.Darken1);
+                                }
+                            });
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(doctorData.Phone) ||
+                            !string.IsNullOrWhiteSpace(doctorData.Email))
+                        {
+                            doctorCol.Item().Text(text =>
+                            {
+                                if (!string.IsNullOrWhiteSpace(doctorData.Phone))
+                                {
+                                    text.Span($"Tel: {doctorData.Phone}").FontSize(8).FontColor(Colors.Grey.Darken1);
+                                    if (!string.IsNullOrWhiteSpace(doctorData.Email))
+                                        text.Span(" - ").FontSize(8).FontColor(Colors.Grey.Darken1);
+                                }
+                                if (!string.IsNullOrWhiteSpace(doctorData.Email))
+                                    text.Span($"Email: {doctorData.Email}").FontSize(8).FontColor(Colors.Grey.Darken1);
+                            });
+                        }
+                    });
+
+                column.Item().Height(8);
+            }
+
+            // Info generazione documento
+            column.Item().AlignCenter().Text(text =>
+            {
+                text.Span("Documento generato il ").FontSize(9).FontColor(Colors.Grey.Medium);
+                text.Span($"{DateTime.Now:dd/MM/yyyy HH:mm}").FontSize(9).FontColor(Colors.Grey.Medium);
+                text.Span(" - TaoGEST").FontSize(9).FontColor(Colors.Grey.Medium).Italic();
+            });
         });
     }
 

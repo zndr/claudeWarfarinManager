@@ -95,12 +95,12 @@ public partial class BridgeTherapyViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<BridgeTherapyPlanDto> _previousPlans = new();
     
-    public BridgeTherapyViewModel(IUnitOfWork unitOfWork, IBridgeTherapyService bridgeTherapyService)
+    public BridgeTherapyViewModel(IUnitOfWork unitOfWork, IBridgeTherapyService bridgeTherapyService, BridgeTherapyPdfService pdfService)
     {
         _unitOfWork = unitOfWork;
         _bridgeTherapyService = bridgeTherapyService;
-        _pdfService = new BridgeTherapyPdfService();
-        
+        _pdfService = pdfService;
+
         InitializeSurgeryTypes();
     }
     
@@ -378,7 +378,7 @@ public partial class BridgeTherapyViewModel : ObservableObject
     }
     
     [RelayCommand]
-    private void ExportToPdf()
+    private async Task ExportToPdf()
     {
         if (_patient == null || CurrentProtocol == null || FcsaRecommendation == null)
         {
@@ -397,15 +397,15 @@ public partial class BridgeTherapyViewModel : ObservableObject
         {
             try
             {
-                var recommendation = SelectedGuideline == GuidelineType.FCSA 
-                    ? FcsaRecommendation 
+                var recommendation = SelectedGuideline == GuidelineType.FCSA
+                    ? FcsaRecommendation
                     : AccpRecommendation;
-                    
-                _pdfService.GeneratePdf(saveDialog.FileName, CurrentProtocol, _patient, recommendation!);
-                
-                MessageBox.Show($"Protocollo PDF esportato in:\n{saveDialog.FileName}", 
-                    "Esportazione completata", 
-                    MessageBoxButton.OK, 
+
+                await _pdfService.GeneratePdfAsync(saveDialog.FileName, CurrentProtocol, _patient, recommendation!);
+
+                MessageBox.Show($"Protocollo PDF esportato in:\n{saveDialog.FileName}",
+                    "Esportazione completata",
+                    MessageBoxButton.OK,
                     MessageBoxImage.Information);
                 
                 // Apri il PDF con l'applicazione predefinita

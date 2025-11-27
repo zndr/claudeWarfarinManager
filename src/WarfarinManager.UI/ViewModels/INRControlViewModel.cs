@@ -30,6 +30,7 @@ namespace WarfarinManager.UI.ViewModels
         private readonly ITTRCalculatorService _ttrCalculator;
         private readonly IDialogService _dialogService;
         private readonly INavigationService _navigationService;
+        private readonly WeeklySchedulePdfService _pdfService;
 
         #region Properties - Dati Paziente
 
@@ -200,13 +201,15 @@ namespace WarfarinManager.UI.ViewModels
             IDosageCalculatorService dosageCalculator,
             ITTRCalculatorService ttrCalculator,
             IDialogService dialogService,
-            INavigationService navigationService)
+            INavigationService navigationService,
+            WeeklySchedulePdfService pdfService)
         {
             _unitOfWork = unitOfWork;
             _dosageCalculator = dosageCalculator;
             _ttrCalculator = ttrCalculator;
             _dialogService = dialogService;
             _navigationService = navigationService;
+            _pdfService = pdfService;
 
             // Inizializza lista dosi disponibili e valori default
             UpdateAvailableDoses();
@@ -709,7 +712,7 @@ namespace WarfarinManager.UI.ViewModels
             {
                 var exportText = GenerateExportText();
                 var fileName = $"Warfarin_{PatientFiscalCode}_{ControlDate:yyyyMMdd}.txt";
-                
+
                 var dialog = new Microsoft.Win32.SaveFileDialog
                 {
                     FileName = fileName,
@@ -726,6 +729,93 @@ namespace WarfarinManager.UI.ViewModels
             catch (Exception ex)
             {
                 _dialogService.ShowError($"Errore nell'esportazione: {ex.Message}");
+            }
+        }
+
+        [RelayCommand]
+        private async Task ExportToPdfAsync()
+        {
+            if (ActiveSuggestion == null) return;
+
+            try
+            {
+                var fileName = $"SchemaSettimanale_{PatientFiscalCode}_{ControlDate:yyyyMMdd}.pdf";
+
+                var dialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    FileName = fileName,
+                    DefaultExt = ".pdf",
+                    Filter = "PDF files (*.pdf)|*.pdf"
+                };
+
+                if (dialog.ShowDialog() == true)
+                {
+                    // Carica il paziente
+                    var patient = await _unitOfWork.Patients.GetByIdAsync(PatientId);
+                    if (patient == null)
+                    {
+                        _dialogService.ShowError("Impossibile caricare i dati del paziente");
+                        return;
+                    }
+
+                    // Prepara i dati per il PDF
+                    var currentSchedule = GetCurrentScheduleArray();
+                    var currentScheduleDescriptions = new[]
+                    {
+                        MondayDose?.TabletDescription ?? "—",
+                        TuesdayDose?.TabletDescription ?? "—",
+                        WednesdayDose?.TabletDescription ?? "—",
+                        ThursdayDose?.TabletDescription ?? "—",
+                        FridayDose?.TabletDescription ?? "—",
+                        SaturdayDose?.TabletDescription ?? "—",
+                        SundayDose?.TabletDescription ?? "—"
+                    };
+
+                    // Genera il PDF
+                    await _pdfService.GeneratePdfAsync(
+                        dialog.FileName,
+                        patient,
+                        PatientFiscalCode,
+                        ActiveIndication,
+                        TargetINRMin,
+                        TargetINRMax,
+                        ControlDate,
+                        InrValue,
+                        InrStatusText,
+                        CurrentWeeklyDose,
+                        currentSchedule,
+                        currentScheduleDescriptions,
+                        ActiveSuggestion,
+                        SuggestedDistributedSchedule ?? new decimal[7],
+                        SuggestedScheduleText,
+                        SelectedGuideline.ToString(),
+                        FcsaSuggestion,
+                        AccpSuggestion);
+
+                    _dialogService.ShowInformation($"PDF generato: {dialog.FileName}");
+
+                    // Chiedi se aprire il file
+                    var result = _dialogService.ShowQuestion(
+                        $"PDF generato con successo!\n\nVuoi aprire il file?",
+                        "PDF Generato");
+
+                    if (result == System.Windows.MessageBoxResult.Yes)
+                    {
+                        var process = new System.Diagnostics.Process
+                        {
+                            StartInfo = new System.Diagnostics.ProcessStartInfo
+                            {
+                                FileName = dialog.FileName,
+                                UseShellExecute = true
+                            }
+                        };
+                        process.Start();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _dialogService.ShowError($"Errore nella generazione del PDF: {ex.Message}");
             }
         }
 
@@ -938,6 +1028,9 @@ Prossimo controllo: {controlInterval}";
         {
             if (ActiveSuggestion == null) return string.Empty;
 
+            // Carica i dati del medico (sincrono perché questo metodo deve rimanere sincrono)
+            var doctorData = _unitOfWork.Database.DoctorData.FirstOrDefault();
+
             var text = $@"═══════════════════════════════════════════════════════════════
   WARFARIN MANAGER PRO - SUGGERIMENTO DOSAGGIO
 ═══════════════════════════════════════════════════════════════
@@ -1026,7 +1119,40 @@ ACCP/ACC (USA):
 
             text += $@"
 
-═══════════════════════════════════════════════════════════════
+═══════════════════════════════════════════════════════════════";
+
+            // Aggiunge i dati del medico se presenti
+            if (doctorData != null)
+            {
+                text += $@"
+MEDICO: dr. {doctorData.FullName}";
+
+                if (!string.IsNullOrWhiteSpace(doctorData.Street) ||
+                    !string.IsNullOrWhiteSpace(doctorData.City))
+                {
+                    text += "\nIndirizzo: ";
+                    if (!string.IsNullOrWhiteSpace(doctorData.Street))
+                        text += doctorData.Street;
+                    if (!string.IsNullOrWhiteSpace(doctorData.City))
+                    {
+                        if (!string.IsNullOrWhiteSpace(doctorData.Street))
+                            text += ", ";
+                        if (!string.IsNullOrWhiteSpace(doctorData.PostalCode))
+                            text += $"{doctorData.PostalCode} ";
+                        text += doctorData.City;
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(doctorData.Phone))
+                    text += $"\nTel: {doctorData.Phone}";
+
+                if (!string.IsNullOrWhiteSpace(doctorData.Email))
+                    text += $"\nEmail: {doctorData.Email}";
+
+                text += "\n───────────────────────────────────────────────────────────────";
+            }
+
+            text += $@"
 Generato da: WarfarinManager Pro v1.0
 Data/Ora: {DateTime.Now:dd/MM/yyyy HH:mm}
 ═══════════════════════════════════════════════════════════════

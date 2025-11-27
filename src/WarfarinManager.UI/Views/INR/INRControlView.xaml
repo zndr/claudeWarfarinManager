@@ -482,7 +482,10 @@
                                     <Button Margin="0,0,10,0" Command="{Binding CopyShortToClipboardCommand}" Content="📝 Copia Breve" Style="{StaticResource SmallButtonStyle}" ToolTip="Copia versione concisa" />
                                     <Button Command="{Binding CopyToClipboardCommand}" Content="📋 Copia Completo" Style="{StaticResource SmallButtonStyle}" ToolTip="Copia report completo" />
                                 </StackPanel>
-                                <Button HorizontalAlignment="Right" Command="{Binding ExportToFileCommand}" Content="💾 Esporta TXT" Style="{StaticResource PrimaryButtonStyle}" />
+                                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                                    <Button Margin="0,0,10,0" Command="{Binding ExportToFileCommand}" Content="💾 Esporta TXT" Style="{StaticResource PrimaryButtonStyle}" />
+                                    <Button Command="{Binding ExportToPdfCommand}" Content="📄 Stampa PDF" Style="{StaticResource PrimaryButtonStyle}" />
+                                </StackPanel>
                             </StackPanel>
                         </StackPanel>
                     </Border>
