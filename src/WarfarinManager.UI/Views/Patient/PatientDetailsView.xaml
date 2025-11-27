@@ -329,7 +329,7 @@
 
             <!--  Tab 2: Valutazione Pre-TAO  -->
             <TabItem Header="🩺 Valutazione Pre-TAO">
-                <local:PreTaoAssessmentView DataContext="{Binding PreTaoAssessmentViewModel}" />
+                <local:PreTaoAssessmentSummary DataContext="{Binding PreTaoAssessmentViewModel}" />
             </TabItem>
 
             <!--  Tab 3: Indicazione alla TAO  -->

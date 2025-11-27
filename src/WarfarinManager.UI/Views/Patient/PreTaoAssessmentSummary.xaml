@@ -1,0 +1,209 @@
+<UserControl x:Class="WarfarinManager.UI.Views.Patient.PreTaoAssessmentSummary"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:PreTaoAssessmentViewModel}">
+
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header Compatto -->
+        <Border Grid.Row="0"
+                Background="#0078D4"
+                Padding="15,10">
+            <TextBlock Text="VALUTAZIONE PRE-TAO - Stratificazione del Rischio"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Foreground="White"/>
+        </Border>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="30">
+            <StackPanel MaxWidth="800">
+
+                <!-- Dashboard Scores Compatto -->
+                <Grid Margin="0,0,0,30">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- CHA2DS2VASc -->
+                    <Border Grid.Column="0" Background="#F0F8FF" BorderBrush="#0078D4" BorderThickness="2"
+                            CornerRadius="6" Padding="20" Margin="0,0,10,0">
+                        <StackPanel>
+                            <TextBlock Text="CHA₂DS₂-VASc"
+                                      FontWeight="Bold"
+                                      FontSize="13"
+                                      Foreground="#0078D4"
+                                      HorizontalAlignment="Center"/>
+                            <TextBlock Text="Rischio Trombotico"
+                                      FontSize="10"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,2"/>
+                            <TextBlock Text="{Binding CHA2DS2VAScScore, Mode=OneWay}"
+                                      FontSize="48"
+                                      FontWeight="Bold"
+                                      Foreground="#0078D4"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,10"/>
+                            <TextBlock Text="{Binding ThromboticRiskLevel, Mode=OneWay}"
+                                      FontSize="12"
+                                      FontWeight="SemiBold"
+                                      TextWrapping="Wrap"
+                                      TextAlignment="Center"
+                                      Margin="0,5,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- HAS-BLED -->
+                    <Border Grid.Column="1" Background="#FFF5F5" BorderBrush="#E81123" BorderThickness="2"
+                            CornerRadius="6" Padding="20" Margin="0,0,10,0">
+                        <StackPanel>
+                            <TextBlock Text="HAS-BLED"
+                                      FontWeight="Bold"
+                                      FontSize="13"
+                                      Foreground="#E81123"
+                                      HorizontalAlignment="Center"/>
+                            <TextBlock Text="Rischio Emorragico"
+                                      FontSize="10"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,2"/>
+                            <TextBlock Text="{Binding HASBLEDScore, Mode=OneWay}"
+                                      FontSize="48"
+                                      FontWeight="Bold"
+                                      Foreground="#E81123"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,10"/>
+                            <TextBlock Text="{Binding BleedingRiskLevel, Mode=OneWay}"
+                                      FontSize="12"
+                                      FontWeight="SemiBold"
+                                      TextWrapping="Wrap"
+                                      TextAlignment="Center"
+                                      Margin="0,5,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Overall -->
+                    <Border Grid.Column="2" Background="#F0FFF0" BorderBrush="#107C10" BorderThickness="2"
+                            CornerRadius="6" Padding="20">
+                        <StackPanel>
+                            <TextBlock Text="VALUTAZIONE"
+                                      FontWeight="Bold"
+                                      FontSize="13"
+                                      Foreground="#107C10"
+                                      HorizontalAlignment="Center"/>
+                            <TextBlock Text="Globale"
+                                      FontSize="10"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,2,0,15"/>
+                            <TextBlock Text="{Binding OverallAssessment, Mode=OneWay}"
+                                      FontSize="13"
+                                      FontWeight="SemiBold"
+                                      TextWrapping="Wrap"
+                                      TextAlignment="Center"
+                                      LineHeight="18"
+                                      Margin="0,0,0,10"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Info Box -->
+                <Border Background="#FFF9E6" BorderBrush="#F7A800" BorderThickness="1"
+                        CornerRadius="4" Padding="20" Margin="0,0,0,20">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <TextBlock Text="ℹ️" FontSize="16" Margin="0,0,10,0" VerticalAlignment="Top"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="13" LineHeight="20">
+                                <Run Text="La valutazione Pre-TAO è uno strumento clinico per stratificare il rischio prima di iniziare la terapia anticoagulante orale con warfarin."/>
+                                <LineBreak/><LineBreak/>
+                                <Run Text="Include:" FontWeight="SemiBold"/>
+                                <LineBreak/>
+                                <Run Text="• Calcolo automatico di CHA₂DS₂-VASc (rischio trombotico) e HAS-BLED (rischio emorragico)"/>
+                                <LineBreak/>
+                                <Run Text="• Verifica controindicazioni assolute e relative"/>
+                                <LineBreak/>
+                                <Run Text="• Identificazione fattori di rischio per eventi avversi"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Pulsante Apri Valutazione Completa -->
+                <Button Command="{Binding OpenAssessmentDialogCommand}"
+                        Background="#0078D4"
+                        Foreground="White"
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Padding="30,20"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        HorizontalAlignment="Center"
+                        MinWidth="400">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                CornerRadius="6"
+                                                Padding="{TemplateBinding Padding}">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock Text="📋" FontSize="20" Margin="0,0,10,0"/>
+                                                <TextBlock Text="Apri Valutazione Completa"
+                                                          FontSize="16" FontWeight="SemiBold"
+                                                          VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#005A9E"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <!-- Contatori -->
+                <StackPanel Margin="0,30,0,0">
+                    <Border Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="1"
+                            CornerRadius="4" Padding="20">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                <TextBlock Text="Controindicazioni Relative"
+                                          FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                                <TextBlock FontSize="24" FontWeight="Bold" Foreground="#F7630C">
+                                    <Run Text="{Binding RelativeContraindicationsCount, Mode=OneWay}"/>
+                                </TextBlock>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                <TextBlock Text="Fattori Rischio Eventi Avversi"
+                                          FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                                <TextBlock FontSize="24" FontWeight="Bold" Foreground="#E81123">
+                                    <Run Text="{Binding AdverseEventRiskFactorsCount, Mode=OneWay}"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

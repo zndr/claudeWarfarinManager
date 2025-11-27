@@ -1,0 +1,482 @@
+<Window x:Class="WarfarinManager.UI.Views.Patient.PreTaoAssessmentDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
+        mc:Ignorable="d"
+        Title="Valutazione Pre-TAO - Stratificazione del Rischio"
+        Height="900" Width="1200"
+        WindowStartupLocation="CenterOwner"
+        WindowState="Maximized"
+        d:DataContext="{d:DesignInstance Type=vm:PreTaoAssessmentViewModel}">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
+        <Style x:Key="AssessmentCheckBox" TargetType="CheckBox">
+            <Setter Property="Margin" Value="0,5"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <Style x:Key="SectionHeader" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#0078D4"/>
+            <Setter Property="Margin" Value="0,15,0,10"/>
+        </Style>
+
+        <Style x:Key="ScoreBox" TargetType="Border">
+            <Setter Property="Background" Value="#F5F5F5"/>
+            <Setter Property="BorderBrush" Value="#0078D4"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0"
+                Background="#0078D4"
+                Padding="20,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="VALUTAZIONE PRE-TAO"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Foreground="White"/>
+                    <TextBlock Text="Stratificazione del rischio trombotico ed emorragico prima di iniziare la terapia anticoagulante"
+                               FontSize="11"
+                               Foreground="White"
+                               Opacity="0.9"
+                               Margin="0,3,0,0"/>
+                </StackPanel>
+
+                <!-- Scores Dashboard - Compact -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="20,0,0,0">
+                    <!-- CHA2DS2VASc -->
+                    <Border Background="White" CornerRadius="4" Padding="15,8" Margin="0,0,10,0">
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Margin="0,0,10,0">
+                                <TextBlock Text="CHA₂DS₂-VASc" FontSize="11" FontWeight="Bold" Foreground="#0078D4"/>
+                                <TextBlock Text="{Binding CHA2DS2VAScScore, Mode=OneWay}"
+                                          FontSize="24" FontWeight="Bold"
+                                          Foreground="#0078D4" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding ThromboticRiskLevel, Mode=OneWay}"
+                                      FontSize="10" VerticalAlignment="Center"
+                                      TextWrapping="Wrap" MaxWidth="80"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- HAS-BLED -->
+                    <Border Background="White" CornerRadius="4" Padding="15,8" Margin="0,0,10,0">
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Margin="0,0,10,0">
+                                <TextBlock Text="HAS-BLED" FontSize="11" FontWeight="Bold" Foreground="#E81123"/>
+                                <TextBlock Text="{Binding HASBLEDScore, Mode=OneWay}"
+                                          FontSize="24" FontWeight="Bold"
+                                          Foreground="#E81123" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding BleedingRiskLevel, Mode=OneWay}"
+                                      FontSize="10" VerticalAlignment="Center"
+                                      TextWrapping="Wrap" MaxWidth="80"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Overall -->
+                    <Border Background="White" CornerRadius="4" Padding="15,8">
+                        <StackPanel>
+                            <TextBlock Text="VALUTAZIONE" FontSize="11" FontWeight="Bold" Foreground="#107C10" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding OverallAssessment, Mode=OneWay}"
+                                      FontSize="11" FontWeight="SemiBold"
+                                      TextWrapping="Wrap" TextAlignment="Center"
+                                      MaxWidth="120" Margin="0,3,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1"
+                     VerticalScrollBarVisibility="Auto"
+                     Padding="20">
+            <Grid MaxWidth="1400">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left Column -->
+                <StackPanel Grid.Column="0">
+
+                    <!-- CHA2DS2VASc Components -->
+                    <TextBlock Text="CHA₂DS₂-VASc SCORE - Componenti" Style="{StaticResource SectionHeader}"/>
+                    <Border Background="#F9F9F9" BorderBrush="#E0E0E0" BorderThickness="1" Padding="15" CornerRadius="4">
+                        <StackPanel>
+                            <CheckBox Content="C - Scompenso cardiaco congestizio / disfunzione VS (1pt)"
+                                     IsChecked="{Binding CongestiveHeartFailure}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="H - Ipertensione arteriosa (1pt)"
+                                     IsChecked="{Binding Hypertension}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="A₂ - Età ≥75 anni (2pt)"
+                                     IsChecked="{Binding Age75OrMore}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="D - Diabete mellito (1pt)"
+                                     IsChecked="{Binding Diabetes}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="S₂ - Stroke/TIA/TE pregresso (2pt)"
+                                     IsChecked="{Binding PriorStrokeTiaTE}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="V - Malattia vascolare (IMA, PAD, placca aortica) (1pt)"
+                                     IsChecked="{Binding VascularDisease}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="A - Età 65-74 anni (1pt)"
+                                     IsChecked="{Binding Age65To74}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="Sc - Sesso femminile (1pt)"
+                                     IsChecked="{Binding Female}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- HAS-BLED Components -->
+                    <TextBlock Text="HAS-BLED SCORE - Componenti" Style="{StaticResource SectionHeader}"/>
+                    <Border Background="#FFF9F9" BorderBrush="#E0E0E0" BorderThickness="1" Padding="15" CornerRadius="4">
+                        <StackPanel>
+                            <CheckBox Content="H - Ipertensione: PAS &gt;160 mmHg (1pt)"
+                                     IsChecked="{Binding HasBledHypertension}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="A - Funzione renale anomala: dialisi, trapianto, Cr &gt;2.26 mg/dL (1pt)"
+                                     IsChecked="{Binding AbnormalRenalFunction}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="A - Funzione epatica anomala: cirrosi, bilirubina &gt;2x (1pt)"
+                                     IsChecked="{Binding AbnormalLiverFunction}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="S - Stroke: storia di stroke (1pt)"
+                                     IsChecked="{Binding StrokeHistory}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="B - Bleeding: storia di sanguinamento maggiore (1pt)"
+                                     IsChecked="{Binding BleedingHistory}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="L - Labile INR: TTR &lt;60% (se già in TAO) (1pt)"
+                                     IsChecked="{Binding LabileINR}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="E - Elderly: Età &gt;65 anni (1pt)"
+                                     IsChecked="{Binding Elderly}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="D - Drugs: antiaggreganti, FANS (1pt)"
+                                     IsChecked="{Binding DrugsPredisposing}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="D - Drugs/Alcohol: abuso alcol ≥8 drink/sett (1pt)"
+                                     IsChecked="{Binding AlcoholAbuse}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Fattori Favorenti Eventi Avversi -->
+                    <TextBlock Style="{StaticResource SectionHeader}">
+                        <Run Text="FATTORI FAVORENTI EVENTI AVVERSI"/>
+                        <Run Text="{Binding AdverseEventRiskFactorsCount, Mode=OneWay, StringFormat='({0})'}" Foreground="#E81123" FontWeight="Bold"/>
+                    </TextBlock>
+                    <Border Background="#FFFEF9" BorderBrush="#E0E0E0" BorderThickness="1" Padding="15" CornerRadius="4">
+                        <StackPanel>
+                            <CheckBox Content="Politerapia (&gt;5 farmaci concomitanti)"
+                                     IsChecked="{Binding Polypharmacy}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="Isolamento sociale / difficoltà follow-up"
+                                     IsChecked="{Binding SocialIsolation}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="Interazioni farmacologiche note"
+                                     IsChecked="{Binding KnownDrugInteractions}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="Dieta irregolare o ricca di vitamina K"
+                                     IsChecked="{Binding IrregularDietOrHighVitaminK}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="IMC estremo (&lt;18 o &gt;35 kg/m²)"
+                                     IsChecked="{Binding ExtremeBMI}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="Anemia cronica (Hb &lt;10 g/dL)"
+                                     IsChecked="{Binding ChronicAnemia}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="Patologie oncologiche attive"
+                                     IsChecked="{Binding ActiveCancer}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="Procedura invasiva programmata (entro 3 mesi)"
+                                     IsChecked="{Binding ScheduledInvasiveProcedure}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="Varianti genetiche note (CYP2C9, VKORC1)"
+                                     IsChecked="{Binding KnownGeneticVariants}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Note Cliniche -->
+                    <TextBlock Text="NOTE CLINICHE" Style="{StaticResource SectionHeader}"/>
+                    <TextBox Text="{Binding ClinicalNotes, UpdateSourceTrigger=PropertyChanged}"
+                            Height="100"
+                            TextWrapping="Wrap"
+                            AcceptsReturn="True"
+                            VerticalScrollBarVisibility="Auto"
+                            Padding="8"
+                            FontSize="13"
+                            BorderBrush="#D0D0D0"
+                            BorderThickness="1"/>
+
+                </StackPanel>
+
+                <!-- Right Column -->
+                <StackPanel Grid.Column="2">
+
+                    <!-- Controindicazioni Assolute -->
+                    <TextBlock Style="{StaticResource SectionHeader}">
+                        <Run Text="CONTROINDICAZIONI ASSOLUTE"/>
+                        <Run Text="(escludere)" Foreground="#E81123" FontWeight="Bold"/>
+                    </TextBlock>
+                    <Border Background="#FFEBEE" BorderBrush="#E81123" BorderThickness="2" Padding="15" CornerRadius="4">
+                        <StackPanel>
+                            <TextBlock Text="Presenza di QUALSIASI di questi criteri ESCLUDE la TAO"
+                                      FontSize="11"
+                                      FontStyle="Italic"
+                                      Foreground="#E81123"
+                                      TextWrapping="Wrap"
+                                      Margin="0,0,0,10"/>
+                            <CheckBox Content="Emorragia maggiore in atto o recente (&lt;3 mesi)"
+                                     IsChecked="{Binding ActiveMajorBleeding}"
+                                     Style="{StaticResource AssessmentCheckBox}"
+                                     Foreground="#E81123" FontWeight="SemiBold"/>
+                            <CheckBox Content="Gravidanza in corso"
+                                     IsChecked="{Binding Pregnancy}"
+                                     Style="{StaticResource AssessmentCheckBox}"
+                                     Foreground="#E81123" FontWeight="SemiBold"/>
+                            <CheckBox Content="Discrasia ematica severa (piastrine &lt;50.000/μL)"
+                                     IsChecked="{Binding SevereBloodDyscrasia}"
+                                     Style="{StaticResource AssessmentCheckBox}"
+                                     Foreground="#E81123" FontWeight="SemiBold"/>
+                            <CheckBox Content="Recente intervento neurochirurgico/oculare (&lt;1 mese)"
+                                     IsChecked="{Binding RecentNeurosurgery}"
+                                     Style="{StaticResource AssessmentCheckBox}"
+                                     Foreground="#E81123" FontWeight="SemiBold"/>
+                            <CheckBox Content="Emorragia intracranica o malformazione vascolare"
+                                     IsChecked="{Binding IntracranialBleedingOrMalformation}"
+                                     Style="{StaticResource AssessmentCheckBox}"
+                                     Foreground="#E81123" FontWeight="SemiBold"/>
+                            <CheckBox Content="Ulcera peptica attiva o varici esofagee a rischio"
+                                     IsChecked="{Binding ActivePepticUlcerOrVarices}"
+                                     Style="{StaticResource AssessmentCheckBox}"
+                                     Foreground="#E81123" FontWeight="SemiBold"/>
+                            <CheckBox Content="Endocardite batterica acuta"
+                                     IsChecked="{Binding AcuteBacterialEndocarditis}"
+                                     Style="{StaticResource AssessmentCheckBox}"
+                                     Foreground="#E81123" FontWeight="SemiBold"/>
+                            <CheckBox Content="Ipertensione severa non controllata (&gt;200/120 mmHg)"
+                                     IsChecked="{Binding SevereUncontrolledHypertension}"
+                                     Style="{StaticResource AssessmentCheckBox}"
+                                     Foreground="#E81123" FontWeight="SemiBold"/>
+                            <CheckBox Content="Allergia documentata al warfarin"
+                                     IsChecked="{Binding WarfarinAllergy}"
+                                     Style="{StaticResource AssessmentCheckBox}"
+                                     Foreground="#E81123" FontWeight="SemiBold"/>
+                            <CheckBox Content="Mancanza di compliance/supervisione"
+                                     IsChecked="{Binding LackOfCompliance}"
+                                     Style="{StaticResource AssessmentCheckBox}"
+                                     Foreground="#E81123" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Controindicazioni Relative -->
+                    <TextBlock Style="{StaticResource SectionHeader}">
+                        <Run Text="CONTROINDICAZIONI RELATIVE"/>
+                        <Run Text="{Binding RelativeContraindicationsCount, Mode=OneWay, StringFormat='({0})'}" Foreground="#F7630C" FontWeight="Bold"/>
+                    </TextBlock>
+                    <Border Background="#FFF4E6" BorderBrush="#F7630C" BorderThickness="1" Padding="15" CornerRadius="4">
+                        <StackPanel>
+                            <TextBlock Text="Richiedono valutazione attenta del rapporto rischio/beneficio"
+                                      FontSize="11"
+                                      FontStyle="Italic"
+                                      Foreground="#F7630C"
+                                      TextWrapping="Wrap"
+                                      Margin="0,0,0,10"/>
+                            <CheckBox Content="Recente emorragia gastrointestinale (3-6 mesi)"
+                                     IsChecked="{Binding RecentGIBleeding}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="Storia di sanguinamenti maggiori (&gt;6 mesi)"
+                                     IsChecked="{Binding HistoryOfMajorBleeding}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="Insufficienza renale moderata (GFR 30-60 mL/min)"
+                                     IsChecked="{Binding ModerateRenalFailure}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="Insufficienza epatica moderata (Child-Pugh B)"
+                                     IsChecked="{Binding ModerateHepaticFailure}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="Piastrinopenia moderata (50.000-100.000/μL)"
+                                     IsChecked="{Binding ModerateThrombocytopenia}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="Cadute frequenti / rischio traumatico elevato"
+                                     IsChecked="{Binding FrequentFalls}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="Demenza o deficit cognitivo"
+                                     IsChecked="{Binding CognitiveImpairment}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="Recente chirurgia maggiore (1-3 mesi)"
+                                     IsChecked="{Binding RecentMajorSurgery}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="Lesioni organiche a rischio (aneurismi, neoplasie)"
+                                     IsChecked="{Binding OrganicLesionsAtRisk}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                            <CheckBox Content="Pericardite acuta"
+                                     IsChecked="{Binding AcutePericarditis}"
+                                     Style="{StaticResource AssessmentCheckBox}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Raccomandazioni -->
+                    <TextBlock Text="RACCOMANDAZIONI" Style="{StaticResource SectionHeader}"/>
+                    <TextBox Text="{Binding Recommendations, UpdateSourceTrigger=PropertyChanged}"
+                            Height="100"
+                            TextWrapping="Wrap"
+                            AcceptsReturn="True"
+                            VerticalScrollBarVisibility="Auto"
+                            Padding="8"
+                            FontSize="13"
+                            BorderBrush="#D0D0D0"
+                            BorderThickness="1"/>
+
+                    <!-- Medico e Approvazione -->
+                    <Grid Margin="0,15,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,15,0">
+                            <TextBlock Text="Medico Valutatore" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                            <TextBox Text="{Binding AssessingPhysician, UpdateSourceTrigger=PropertyChanged}"
+                                    Padding="8"
+                                    FontSize="13"
+                                    BorderBrush="#D0D0D0"
+                                    BorderThickness="1"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Bottom">
+                            <CheckBox Content="Valutazione Approvata&#x0a;(paziente idoneo per TAO)"
+                                     IsChecked="{Binding IsApproved}"
+                                     FontWeight="SemiBold"
+                                     Foreground="#107C10"
+                                     FontSize="12"/>
+                        </StackPanel>
+                    </Grid>
+
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- Action Buttons -->
+        <Border Grid.Row="2"
+                Background="#F5F5F5"
+                Padding="20,12"
+                BorderBrush="#E0E0E0"
+                BorderThickness="0,1,0,0">
+            <StackPanel Orientation="Horizontal"
+                       HorizontalAlignment="Right">
+                <Button Content="Annulla"
+                        Click="CancelButton_Click"
+                        Background="#808080"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        Padding="20,10"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        MinWidth="120"
+                        Margin="0,0,10,0">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                CornerRadius="4"
+                                                Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#606060"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button Content="Salva e Chiudi"
+                        Click="SaveButton_Click"
+                        Background="#107C10"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        Padding="25,10"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        MinWidth="180">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                CornerRadius="4"
+                                                Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#0F6B0D"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Background" Value="#A0A0A0"/>
+                                    <Setter Property="Cursor" Value="Wait"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- Loading Overlay -->
+        <Grid Grid.RowSpan="3"
+              Background="#CC000000"
+              Visibility="{Binding IsSaving, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="Salvataggio in corso..."
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="White"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

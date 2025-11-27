@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using WarfarinManager.Data.Entities;
 using WarfarinManager.Data.Repositories.Interfaces;
 using WarfarinManager.Shared.Enums;
 using WarfarinManager.UI.Services;
+using WarfarinManager.UI.Views.Patient;
 
 namespace WarfarinManager.UI.ViewModels;
 
@@ -500,10 +502,24 @@ public partial class PreTaoAssessmentViewModel : ObservableObject
     partial void OnKnownGeneticVariantsChanged(bool value) => UpdateScores();
 
     /// <summary>
+    /// Apre la finestra di dialogo per la valutazione completa
+    /// </summary>
+    [RelayCommand]
+    private void OpenAssessmentDialog()
+    {
+        var dialog = new PreTaoAssessmentDialog(this)
+        {
+            Owner = Application.Current.MainWindow
+        };
+
+        dialog.ShowDialog();
+    }
+
+    /// <summary>
     /// Salva la valutazione
     /// </summary>
     [RelayCommand]
-    private async Task SaveAsync()
+    public async Task SaveAsync()
     {
         try
         {

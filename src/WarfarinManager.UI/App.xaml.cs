@@ -105,6 +105,8 @@ public partial class App : Application
         services.AddTransient<MedicationsView>();
         services.AddTransient<INRHistoryView>();
         services.AddTransient<PreTaoAssessmentView>();
+        services.AddTransient<PreTaoAssessmentSummary>();
+        services.AddTransient<PreTaoAssessmentDialog>();
 
         // Main Window
         services.AddSingleton<MainWindow>();
