@@ -145,6 +145,7 @@
                         FontSize="18"
                         Text="🔍" />
                     <TextBox
+                        x:Name="SearchTextBox"
                         Width="400"
                         Padding="8"
                         VerticalContentAlignment="Center"
@@ -189,6 +190,7 @@
             HeadersVisibility="Column"
             IsReadOnly="True"
             ItemsSource="{Binding FilteredPatients}"
+            MouseDoubleClick="DataGrid_MouseDoubleClick"
             RowHeight="40"
             SelectedItem="{Binding SelectedPatient}"
             SelectionMode="Single">
@@ -230,13 +232,13 @@
             <DataGrid.Columns>
                 <!--  Cognome  -->
                 <DataGridTextColumn
-                    Width="150"
+                    Width="100"
                     Binding="{Binding LastName}"
                     Header="Cognome" />
 
                 <!--  Nome  -->
                 <DataGridTextColumn
-                    Width="150"
+                    Width="100"
                     Binding="{Binding FirstName}"
                     Header="Nome" />
 
@@ -272,7 +274,7 @@
                 </DataGridTextColumn>
 
                 <!--  Ultimo INR  -->
-                <DataGridTextColumn Width="90" Header="Ultimo INR">
+                <DataGridTextColumn Width="60" Header="Ultimo&#10;INR">
                     <DataGridTextColumn.Binding>
                         <Binding Path="LastINR" StringFormat="{}{0:F2}" />
                     </DataGridTextColumn.Binding>
@@ -353,7 +355,7 @@
                                     Background="#0078D4"
                                     BorderThickness="0"
                                     Command="{Binding DataContext.OpenPatientDetailsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                    Content="Dettagli"
+                                    Content="Vedi"
                                     Cursor="Hand"
                                     FontSize="10"
                                     FontWeight="SemiBold"

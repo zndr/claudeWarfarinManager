@@ -22,110 +22,50 @@
         </Grid.ColumnDefinitions>
 
         <!--  Grafico principale  -->
-        <Grid Grid.Column="0" Margin="0,0,15,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+        <Border
+            Grid.Column="0"
+            Margin="0,0,15,0"
+            Background="White"
+            BorderBrush="#E0E0E0"
+            BorderThickness="1"
+            CornerRadius="8">
+            <Grid>
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="14"
+                    Foreground="#999999"
+                    Text="Nessun controllo INR disponibile"
+                    Visibility="{Binding HasNoData, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-            <!--  Header  -->
-            <TextBlock
-                Grid.Row="0"
-                Margin="0,0,0,15"
-                FontSize="18"
-                FontWeight="SemiBold"
-                Foreground="#333333"
-                Text="Andamento INR" />
-
-            <!--  Grafico  -->
-            <Border
-                Grid.Row="1"
-                Background="White"
-                BorderBrush="#E0E0E0"
-                BorderThickness="1"
-                CornerRadius="8">
-                <Grid>
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        FontSize="14"
-                        Foreground="#999999"
-                        Text="Nessun controllo INR disponibile"
-                        Visibility="{Binding HasNoData, Converter={StaticResource BoolToVisibilityConverter}}" />
-
-                    <lvc:CartesianChart
-                        x:Name="ChartControl"
-                        Margin="10"
-                        ChartPointPointerDown="ChartControl_ChartPointPointerDown"
-                        Series="{Binding Series}"
-                        TooltipPosition="Hidden"
-                        Visibility="{Binding HasData, Converter={StaticResource BoolToVisibilityConverter}}"
-                        XAxes="{Binding XAxes}"
-                        YAxes="{Binding YAxes}"
-                        ZoomMode="X" />
-                </Grid>
-            </Border>
-
-            <!--  Statistiche  -->
-            <Grid Grid.Row="2" Margin="0,15,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Grid.Column="0">
-                    <TextBlock
-                        FontSize="11"
-                        Foreground="#999999"
-                        Text="N° Controlli" />
-                    <TextBlock
-                        FontSize="18"
-                        FontWeight="SemiBold"
-                        Foreground="#333333"
-                        Text="{Binding ControlCount}" />
-                </StackPanel>
-
-                <StackPanel Grid.Column="1">
-                    <TextBlock
-                        FontSize="11"
-                        Foreground="#999999"
-                        Text="INR Medio" />
-                    <TextBlock
-                        FontSize="18"
-                        FontWeight="SemiBold"
-                        Foreground="#333333"
-                        Text="{Binding AverageINR, StringFormat=F2}" />
-                </StackPanel>
-
-                <StackPanel Grid.Column="2">
-                    <TextBlock
-                        FontSize="11"
-                        Foreground="#999999"
-                        Text="In Range" />
-                    <TextBlock
-                        FontSize="18"
-                        FontWeight="SemiBold"
-                        Foreground="#107C10"
-                        Text="{Binding InRangePercentage, StringFormat={}{0:F0}%}" />
-                </StackPanel>
+                <lvc:CartesianChart
+                    x:Name="ChartControl"
+                    Margin="10"
+                    ChartPointPointerDown="ChartControl_ChartPointPointerDown"
+                    Series="{Binding Series}"
+                    TooltipPosition="Hidden"
+                    Visibility="{Binding HasData, Converter={StaticResource BoolToVisibilityConverter}}"
+                    XAxes="{Binding XAxes}"
+                    YAxes="{Binding YAxes}"
+                    ZoomMode="X" />
             </Grid>
-        </Grid>
+        </Border>
 
         <!--  Pannello laterale dettagli  -->
         <Border
             Grid.Column="1"
-            Padding="15"
+            MinHeight="380"
+            Padding="10"
+            VerticalAlignment="Top"
             Background="White"
             BorderBrush="#E0E0E0"
             BorderThickness="1"
             CornerRadius="8"
             Visibility="{Binding HasSelectedPoint, Converter={StaticResource BoolToVisibilityConverter}}">
             <StackPanel>
-                <Grid Margin="0,0,0,15">
+                <Grid Margin="0,0,0,10">
                     <TextBlock
-                        FontSize="16"
+                        FontSize="13"
                         FontWeight="SemiBold"
                         Foreground="#333333"
                         Text="Dettagli Controllo" />
@@ -141,69 +81,94 @@
                         FontSize="14" />
                 </Grid>
 
-                <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
                     <!--  Data  -->
-                    <StackPanel Margin="0,0,0,15">
-                        <TextBlock
-                            FontSize="10"
-                            Foreground="#999999"
-                            Text="DATA" />
-                        <TextBlock
-                            Margin="0,4,0,0"
-                            FontSize="14"
-                            FontWeight="SemiBold"
-                            Foreground="#333333"
-                            Text="{Binding SelectedDate}" />
-                    </StackPanel>
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="0,0,8,6"
+                        FontSize="10"
+                        Foreground="#999999"
+                        Text="DATA:" />
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Margin="0,0,0,6"
+                        FontSize="11"
+                        FontWeight="SemiBold"
+                        Foreground="#333333"
+                        Text="{Binding SelectedDate}" />
 
                     <!--  INR  -->
-                    <StackPanel Margin="0,0,0,15">
-                        <TextBlock
-                            FontSize="10"
-                            Foreground="#999999"
-                            Text="VALORE INR" />
-                        <TextBlock
-                            Margin="0,4,0,0"
-                            FontSize="28"
-                            FontWeight="Bold"
-                            Foreground="#0078D4"
-                            Text="{Binding SelectedINR}" />
-                    </StackPanel>
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="0,0,8,6"
+                        VerticalAlignment="Center"
+                        FontSize="10"
+                        Foreground="#999999"
+                        Text="INR:" />
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="0,0,0,6"
+                        FontSize="18"
+                        FontWeight="Bold"
+                        Foreground="#0078D4"
+                        Text="{Binding SelectedINR}" />
 
                     <!--  Dose  -->
-                    <StackPanel Margin="0,0,0,15">
-                        <TextBlock
-                            FontSize="10"
-                            Foreground="#999999"
-                            Text="DOSE SETTIMANALE" />
-                        <TextBlock
-                            Margin="0,4,0,0"
-                            FontSize="14"
-                            FontWeight="SemiBold"
-                            Foreground="#333333"
-                            Text="{Binding SelectedDose}" />
-                    </StackPanel>
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Margin="0,0,8,6"
+                        FontSize="10"
+                        Foreground="#999999"
+                        Text="DOSE:" />
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Margin="0,0,0,6"
+                        FontSize="11"
+                        FontWeight="SemiBold"
+                        Foreground="#333333"
+                        Text="{Binding SelectedDose}" />
 
                     <!--  Fase  -->
-                    <StackPanel>
-                        <TextBlock
-                            FontSize="10"
-                            Foreground="#999999"
-                            Text="FASE TERAPIA" />
-                        <TextBlock
-                            Margin="0,4,0,0"
-                            FontSize="13"
-                            Foreground="#666666"
-                            Text="{Binding SelectedPhase}" />
-                    </StackPanel>
-                </StackPanel>
+                    <TextBlock
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Margin="0,0,8,0"
+                        FontSize="10"
+                        Foreground="#999999"
+                        Text="FASE:" />
+                    <TextBlock
+                        Grid.Row="3"
+                        Grid.Column="1"
+                        FontSize="11"
+                        Foreground="#666666"
+                        Text="{Binding SelectedPhase}" />
+                </Grid>
             </StackPanel>
         </Border>
 
         <!--  Messaggio quando nessun punto selezionato  -->
         <Border
             Grid.Column="1"
+            MinHeight="380"
             Padding="20"
+            VerticalAlignment="Top"
             Background="#F5F5F5"
             BorderBrush="#E0E0E0"
             BorderThickness="1"

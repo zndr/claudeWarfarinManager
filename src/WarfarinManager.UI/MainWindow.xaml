@@ -82,9 +82,6 @@
             <!--  Strumenti Menu  -->
             <MenuItem Header="_Strumenti">
                 <MenuItem
-                    Command="{Binding ShowTTRCalculatorCommand}"
-                    Header="Calcolatore TTR" />
-                <MenuItem
                     Command="{Binding ShowInteractionCheckerCommand}"
                     Header="Verifica interazioni farmacologiche" />
                 <MenuItem

@@ -84,6 +84,7 @@ public partial class App : Application
         // UI Services
         services.AddSingleton<INavigationService, NavigationService>();
         services.AddSingleton<IDialogService, DialogService>();
+        services.AddScoped<IDatabaseService, DatabaseService>();
         services.AddScoped<PatientSummaryPdfService>();
         services.AddScoped<BridgeTherapyPdfService>();
         services.AddScoped<WeeklySchedulePdfService>();
@@ -102,6 +103,7 @@ public partial class App : Application
         services.AddTransient<PatientSummaryViewModel>();
         services.AddTransient<AdverseEventsViewModel>();
         services.AddTransient<DoctorDataViewModel>();
+        services.AddTransient<DatabaseManagementViewModel>();
 
         // Views
         services.AddTransient<PatientListView>();
@@ -117,6 +119,7 @@ public partial class App : Application
         services.AddTransient<PreTaoAssessmentDialog>();
         services.AddTransient<AdverseEventsView>();
         services.AddTransient<DoctorDataDialog>();
+        services.AddTransient<DatabaseManagementDialog>();
 
         // Main Window
         services.AddSingleton<MainWindow>();

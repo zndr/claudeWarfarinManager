@@ -22,11 +22,28 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private object? _currentView;
 
+    [ObservableProperty]
+    private bool _isInHomePage = true;
+
     public MainViewModel(INavigationService navigationService, IDialogService dialogService, IServiceProvider serviceProvider)
     {
         _navigationService = navigationService;
         _dialogService = dialogService;
         _serviceProvider = serviceProvider;
+
+        // Sottoscrivi agli eventi di navigazione
+        _navigationService.CurrentViewChanged += OnCurrentViewChanged;
+    }
+
+    private void OnCurrentViewChanged(object? sender, EventArgs e)
+    {
+        // Aggiorna lo stato in base alla view corrente
+        IsInHomePage = _navigationService.CurrentView is Views.Dashboard.PatientListView;
+
+        // Notifica i comandi che dipendono dallo stato della navigazione
+        ShowInteractionCheckerCommand.NotifyCanExecuteChanged();
+        ShowBridgeTherapyCommand.NotifyCanExecuteChanged();
+        ShowDrugDatabaseCommand.NotifyCanExecuteChanged();
     }
 
     #region File Menu Commands
@@ -68,7 +85,21 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void SearchPatient()
     {
-        _dialogService.ShowInformation("Funzionalità in fase di sviluppo", "Cerca paziente");
+        // Se siamo già nella homepage, sposta il focus sul campo ricerca
+        if (IsInHomePage)
+        {
+            // Invia un messaggio al ViewModel della PatientList per settare il focus
+            if (_navigationService.CurrentView is Views.Dashboard.PatientListView view &&
+                view.DataContext is PatientListViewModel vm)
+            {
+                vm.FocusSearchBox();
+            }
+        }
+        else
+        {
+            // Altrimenti naviga alla homepage
+            _navigationService.NavigateToPatientList();
+        }
     }
 
     [RelayCommand]
@@ -81,29 +112,25 @@ public partial class MainViewModel : ObservableObject
 
     #region Strumenti Menu Commands
 
-    [RelayCommand]
-    private void ShowTTRCalculator()
-    {
-        _dialogService.ShowInformation("Funzionalità in fase di sviluppo", "Calcolatore TTR");
-    }
-
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanExecutePatientSpecificCommand))]
     private void ShowInteractionChecker()
     {
         _dialogService.ShowInformation("Funzionalità in fase di sviluppo", "Verifica interazioni");
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanExecutePatientSpecificCommand))]
     private void ShowBridgeTherapy()
     {
         _dialogService.ShowInformation("Funzionalità in fase di sviluppo", "Bridge Therapy");
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanExecutePatientSpecificCommand))]
     private void ShowDrugDatabase()
     {
         _dialogService.ShowInformation("Funzionalità in fase di sviluppo", "Database farmaci");
     }
+
+    private bool CanExecutePatientSpecificCommand() => !IsInHomePage;
 
     #endregion
 
@@ -125,7 +152,8 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void ShowDatabaseSettings()
     {
-        _dialogService.ShowInformation("Funzionalità in fase di sviluppo", "Impostazioni database");
+        var dialog = _serviceProvider.GetRequiredService<DatabaseManagementDialog>();
+        dialog.ShowDialog();
     }
 
     #endregion

@@ -46,6 +46,9 @@ public partial class PatientListViewModel : ObservableObject
     [ObservableProperty]
     private int _filteredPatientsCount;
 
+    [ObservableProperty]
+    private bool _shouldFocusSearchBox;
+
     public PatientListViewModel(
         IUnitOfWork unitOfWork,
         ITTRCalculatorService ttrCalculator,
@@ -319,5 +322,14 @@ public partial class PatientListViewModel : ObservableObject
         }
 
         return dto;
+    }
+
+    /// <summary>
+    /// Richiede il focus sul campo di ricerca
+    /// </summary>
+    public void FocusSearchBox()
+    {
+        ShouldFocusSearchBox = false; // Reset
+        ShouldFocusSearchBox = true;  // Trigger
     }
 }
