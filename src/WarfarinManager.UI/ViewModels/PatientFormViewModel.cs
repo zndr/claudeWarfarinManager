@@ -14,12 +14,19 @@ namespace WarfarinManager.UI.ViewModels;
 /// <summary>
 /// ViewModel per il form di creazione/modifica paziente
 /// </summary>
-public partial class PatientFormViewModel : ObservableObject
+public partial class PatientFormViewModel : ObservableObject, Services.INavigationAware
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
     private readonly ILogger<PatientFormViewModel> _logger;
+    private int? _patientId; // null = nuovo paziente, valore = modifica
+
+    [ObservableProperty]
+    private bool _isEditMode;
+
+    [ObservableProperty]
+    private string _pageTitle = "Nuovo Paziente";
 
     [ObservableProperty]
     private string _firstName = string.Empty;
@@ -79,12 +86,69 @@ public partial class PatientFormViewModel : ObservableObject
     }
 
     /// <summary>
+    /// Chiamato quando si naviga verso questa view
+    /// </summary>
+    public void OnNavigatedTo(object parameter)
+    {
+        if (parameter is int patientId)
+        {
+            _ = LoadPatientAsync(patientId);
+        }
+        else
+        {
+            // Modalità creazione nuovo paziente
+            IsEditMode = false;
+            PageTitle = "Nuovo Paziente";
+        }
+    }
+
+    /// <summary>
+    /// Carica i dati di un paziente esistente per la modifica
+    /// </summary>
+    public async Task LoadPatientAsync(int patientId)
+    {
+        try
+        {
+            var patient = await _unitOfWork.Patients.GetByIdAsync(patientId);
+            if (patient == null)
+            {
+                _dialogService.ShowError("Paziente non trovato", "Errore");
+                _navigationService.NavigateTo<PatientListViewModel>();
+                return;
+            }
+
+            _patientId = patientId;
+            IsEditMode = true;
+            PageTitle = "Modifica Paziente";
+
+            // Carica i dati nei campi
+            FirstName = patient.FirstName;
+            LastName = patient.LastName;
+            BirthDate = patient.BirthDate;
+            FiscalCode = patient.FiscalCode;
+            SelectedGender = patient.Gender;
+            Phone = patient.Phone ?? string.Empty;
+            Email = patient.Email ?? string.Empty;
+            Address = patient.Address ?? string.Empty;
+            Notes = patient.Notes ?? string.Empty;
+
+            _logger.LogInformation("Caricati dati paziente per modifica: {PatientId}", patientId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Errore durante il caricamento del paziente {PatientId}", patientId);
+            _dialogService.ShowError($"Errore durante il caricamento:\n{ex.Message}", "Errore");
+            _navigationService.NavigateTo<PatientListViewModel>();
+        }
+    }
+
+    /// <summary>
     /// Lista valori Gender per ComboBox
     /// </summary>
     public Gender[] GenderValues { get; } = new[] { Gender.Male, Gender.Female, Gender.Other };
 
     /// <summary>
-    /// Salva il nuovo paziente
+    /// Salva il paziente (nuovo o modifica)
     /// </summary>
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync()
@@ -100,9 +164,10 @@ public partial class PatientFormViewModel : ObservableObject
                 return;
             }
 
-            // Verifica se il codice fiscale esiste già
+            // Verifica se il codice fiscale esiste già (escludendo il paziente corrente se in modifica)
             var existingPatient = await _unitOfWork.Patients.FindAsync(p => p.FiscalCode == FiscalCode.ToUpperInvariant());
-            if (existingPatient.Any())
+            var duplicate = existingPatient.FirstOrDefault(p => p.Id != _patientId);
+            if (duplicate != null)
             {
                 _dialogService.ShowError(
                     $"Esiste già un paziente con codice fiscale {FiscalCode}",
@@ -110,31 +175,64 @@ public partial class PatientFormViewModel : ObservableObject
                 return;
             }
 
-            // Crea nuova entità paziente
-            var patient = new Patient
+            if (IsEditMode && _patientId.HasValue)
             {
-                FirstName = FirstName.Trim(),
-                LastName = LastName.Trim(),
-                BirthDate = BirthDate.Date,
-                FiscalCode = FiscalCode.ToUpperInvariant(),
-                Gender = SelectedGender,
-                Phone = string.IsNullOrWhiteSpace(Phone) ? null : Phone.Trim(),
-                Email = string.IsNullOrWhiteSpace(Email) ? null : Email.Trim().ToLowerInvariant(),
-                Address = string.IsNullOrWhiteSpace(Address) ? null : Address.Trim(),
-                Notes = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim(),
-                IsSlowMetabolizer = false // Verrà calcolato automaticamente in base ai dosaggi
-            };
+                // Modalità modifica
+                var patient = await _unitOfWork.Patients.GetByIdAsync(_patientId.Value);
+                if (patient == null)
+                {
+                    _dialogService.ShowError("Paziente non trovato", "Errore");
+                    return;
+                }
 
-            // Salva nel database
-            await _unitOfWork.Patients.AddAsync(patient);
-            await _unitOfWork.SaveChangesAsync();
+                // Aggiorna i dati
+                patient.FirstName = FirstName.Trim();
+                patient.LastName = LastName.Trim();
+                patient.BirthDate = BirthDate.Date;
+                patient.FiscalCode = FiscalCode.ToUpperInvariant();
+                patient.Gender = SelectedGender;
+                patient.Phone = string.IsNullOrWhiteSpace(Phone) ? null : Phone.Trim();
+                patient.Email = string.IsNullOrWhiteSpace(Email) ? null : Email.Trim().ToLowerInvariant();
+                patient.Address = string.IsNullOrWhiteSpace(Address) ? null : Address.Trim();
+                patient.Notes = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim();
 
-            _logger.LogInformation("Nuovo paziente creato: {FiscalCode} - {FullName}", 
-                patient.FiscalCode, $"{patient.LastName} {patient.FirstName}");
+                await _unitOfWork.Patients.UpdateAsync(patient);
+                await _unitOfWork.SaveChangesAsync();
 
-            _dialogService.ShowInformation(
-                $"Paziente {patient.LastName} {patient.FirstName} creato con successo!",
-                "Salvataggio Completato");
+                _logger.LogInformation("Paziente aggiornato: {PatientId} - {FiscalCode} - {FullName}",
+                    patient.Id, patient.FiscalCode, $"{patient.LastName} {patient.FirstName}");
+
+                _dialogService.ShowInformation(
+                    $"Paziente {patient.LastName} {patient.FirstName} aggiornato con successo!",
+                    "Salvataggio Completato");
+            }
+            else
+            {
+                // Modalità creazione
+                var patient = new Patient
+                {
+                    FirstName = FirstName.Trim(),
+                    LastName = LastName.Trim(),
+                    BirthDate = BirthDate.Date,
+                    FiscalCode = FiscalCode.ToUpperInvariant(),
+                    Gender = SelectedGender,
+                    Phone = string.IsNullOrWhiteSpace(Phone) ? null : Phone.Trim(),
+                    Email = string.IsNullOrWhiteSpace(Email) ? null : Email.Trim().ToLowerInvariant(),
+                    Address = string.IsNullOrWhiteSpace(Address) ? null : Address.Trim(),
+                    Notes = string.IsNullOrWhiteSpace(Notes) ? null : Notes.Trim(),
+                    IsSlowMetabolizer = false // Verrà calcolato automaticamente in base ai dosaggi
+                };
+
+                await _unitOfWork.Patients.AddAsync(patient);
+                await _unitOfWork.SaveChangesAsync();
+
+                _logger.LogInformation("Nuovo paziente creato: {FiscalCode} - {FullName}",
+                    patient.FiscalCode, $"{patient.LastName} {patient.FirstName}");
+
+                _dialogService.ShowInformation(
+                    $"Paziente {patient.LastName} {patient.FirstName} creato con successo!",
+                    "Salvataggio Completato");
+            }
 
             // Torna alla lista pazienti
             _navigationService.NavigateTo<PatientListViewModel>();
