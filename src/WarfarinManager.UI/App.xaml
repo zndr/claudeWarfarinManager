@@ -13,5 +13,7 @@
         <converters:NullableBoolConverter x:Key="NullableBoolConverter"/>
         <converters:EnumToBoolConverter x:Key="EnumToBoolConverter"/>
         <converters:SeverityToColorConverter x:Key="SeverityToColorConverter"/>
+        <converters:AdverseReactionTypeConverter x:Key="AdverseReactionTypeConverter"/>
+        <converters:CertaintyLevelConverter x:Key="CertaintyLevelConverter"/>
     </Application.Resources>
 </Application>

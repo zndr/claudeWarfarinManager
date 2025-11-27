@@ -12,16 +12,20 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+        <converters:AdverseReactionTypeConverter x:Key="AdverseReactionTypeConverter"/>
+        <converters:CertaintyLevelConverter x:Key="CertaintyLevelConverter"/>
+        <converters:SeverityToColorConverter x:Key="SeverityToColorConverter"/>
     </UserControl.Resources>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <!-- Toolbar -->
+            <!-- Toolbar -->
         <Border Grid.Row="0"
                 Background="#F5F5F5"
                 Padding="20,15"
@@ -95,6 +99,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <!-- Data comparsa -->
@@ -112,7 +117,7 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBox Grid.Column="0"
-                                     Text="{Binding SelectedReactionType, Mode=OneWay}"
+                                     Text="{Binding SelectedReactionType, Mode=OneWay, Converter={StaticResource AdverseReactionTypeConverter}}"
                                      IsReadOnly="True"
                                      Background="#F5F5F5"/>
                             <Button Grid.Column="1"
@@ -215,35 +220,109 @@
 
         <!-- Lista eventi avversi -->
         <Border Grid.Row="2" Background="White" Padding="20">
-            <DataGrid ItemsSource="{Binding AdverseEvents}"
-                      SelectedItem="{Binding SelectedEvent}"
-                      AutoGenerateColumns="False"
-                      CanUserAddRows="False"
-                      CanUserDeleteRows="False"
-                      IsReadOnly="True"
-                      SelectionMode="Single"
-                      GridLinesVisibility="Horizontal"
-                      HeadersVisibility="Column"
-                      RowHeight="40"
-                      AlternatingRowBackground="#F9F9F9">
+            <Grid>
+                <!-- Messaggio quando non ci sono eventi -->
+                <Border Visibility="{Binding AdverseEvents.Count, Converter={StaticResource CountToVisibilityConverter}}"
+                        Background="#F9F9F9"
+                        BorderBrush="#E0E0E0"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="40"
+                        VerticalAlignment="Center">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="📋" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,15"/>
+                        <TextBlock Text="Nessun evento avverso registrato"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"
+                                   Foreground="#666666"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,8"/>
+                        <TextBlock Text="Clicca su 'Nuovo Evento Avverso' per iniziare"
+                                   FontSize="13"
+                                   Foreground="#999999"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- DataGrid -->
+                <DataGrid ItemsSource="{Binding AdverseEvents}"
+                          SelectedItem="{Binding SelectedEvent}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          IsReadOnly="True"
+                          SelectionMode="Single"
+                          GridLinesVisibility="Horizontal"
+                          HeadersVisibility="Column"
+                          RowHeight="45"
+                          AlternatingRowBackground="#FAFAFA"
+                          BorderThickness="1"
+                          BorderBrush="#E0E0E0"
+                          MinHeight="200"
+                          Visibility="{Binding AdverseEvents.Count, Converter={StaticResource CountToVisibilityInverseConverter}}">
+
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="#0078D4"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Setter Property="FontSize" Value="13"/>
+                        <Setter Property="Padding" Value="12,10"/>
+                        <Setter Property="BorderThickness" Value="0,0,1,0"/>
+                        <Setter Property="BorderBrush" Value="#005A9E"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="Background" Value="White"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E3F2FD"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#BBDEFB"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
 
                 <DataGrid.Columns>
                     <!-- Data -->
-                    <DataGridTextColumn Header="Data" Binding="{Binding OnsetDate, StringFormat=dd/MM/yyyy}" Width="100"/>
+                    <DataGridTextColumn Header="Data" Binding="{Binding OnsetDate, StringFormat=dd/MM/yyyy}" Width="110">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
 
-                    <!-- Tipo reazione -->
-                    <DataGridTextColumn Header="Reazione" Binding="{Binding ReactionType}" Width="*" MinWidth="200"/>
+                    <!-- Tipo reazione con descrizione -->
+                    <DataGridTextColumn Header="Reazione" Binding="{Binding ReactionType, Converter={StaticResource AdverseReactionTypeConverter}}" Width="*" MinWidth="220">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="TextWrapping" Value="NoWrap"/>
+                                <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
 
                     <!-- Gravità con colore -->
-                    <DataGridTemplateColumn Header="Gravità" Width="150">
+                    <DataGridTemplateColumn Header="Gravità" Width="120">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Border Background="{Binding Severity, Converter={StaticResource SeverityToColorConverter}}"
                                         CornerRadius="3"
-                                        Padding="6,3">
+                                        Padding="8,4"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
                                     <TextBlock Text="{Binding Severity}"
                                                Foreground="White"
                                                FontWeight="SemiBold"
+                                               FontSize="11"
                                                TextAlignment="Center"/>
                                 </Border>
                             </DataTemplate>
@@ -251,10 +330,39 @@
                     </DataGridTemplateColumn>
 
                     <!-- Certezza -->
-                    <DataGridTextColumn Header="Certezza" Binding="{Binding CertaintyLevel}" Width="100"/>
+                    <DataGridTextColumn Header="Certezza" Binding="{Binding CertaintyLevel, Converter={StaticResource CertaintyLevelConverter}}" Width="90">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
 
                     <!-- INR -->
-                    <DataGridTextColumn Header="INR" Binding="{Binding INRAtEvent, StringFormat=N2}" Width="80"/>
+                    <DataGridTextColumn Header="INR" Binding="{Binding INRAtEvent, StringFormat=N2}" Width="70">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="Foreground" Value="#0078D4"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Provvedimenti adottati -->
+                    <DataGridTextColumn Header="Provvedimenti" Binding="{Binding MeasuresTaken}" Width="*" MinWidth="200">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="TextWrapping" Value="NoWrap"/>
+                                <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                <Setter Property="FontSize" Value="12"/>
+                                <Setter Property="ToolTip" Value="{Binding MeasuresTaken}"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
 
                     <!-- Azioni -->
                     <DataGridTemplateColumn Header="Azioni" Width="150">
@@ -304,6 +412,7 @@
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
+            </Grid>
         </Border>
 
         <!-- Loading overlay -->
@@ -315,5 +424,6 @@
                 <TextBlock Text="Caricamento..." Foreground="White" FontSize="14" Margin="0,10,0,0" HorizontalAlignment="Center"/>
             </StackPanel>
         </Grid>
-    </Grid>
+        </Grid>
+    </ScrollViewer>
 </UserControl>
