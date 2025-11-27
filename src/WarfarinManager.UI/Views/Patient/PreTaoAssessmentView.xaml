@@ -86,13 +86,13 @@
                                       FontSize="11"
                                       HorizontalAlignment="Center"
                                       Margin="0,2"/>
-                            <TextBlock Text="{Binding CHA2DS2VAScScore}"
+                            <TextBlock Text="{Binding CHA2DS2VAScScore, Mode=OneWay}"
                                       FontSize="36"
                                       FontWeight="Bold"
                                       Foreground="#0078D4"
                                       HorizontalAlignment="Center"
                                       Margin="0,5"/>
-                            <TextBlock Text="{Binding ThromboticRiskLevel}"
+                            <TextBlock Text="{Binding ThromboticRiskLevel, Mode=OneWay}"
                                       FontSize="12"
                                       TextWrapping="Wrap"
                                       TextAlignment="Center"
@@ -112,13 +112,13 @@
                                       FontSize="11"
                                       HorizontalAlignment="Center"
                                       Margin="0,2"/>
-                            <TextBlock Text="{Binding HASBLEDScore}"
+                            <TextBlock Text="{Binding HASBLEDScore, Mode=OneWay}"
                                       FontSize="36"
                                       FontWeight="Bold"
                                       Foreground="#E81123"
                                       HorizontalAlignment="Center"
                                       Margin="0,5"/>
-                            <TextBlock Text="{Binding BleedingRiskLevel}"
+                            <TextBlock Text="{Binding BleedingRiskLevel, Mode=OneWay}"
                                       FontSize="12"
                                       TextWrapping="Wrap"
                                       TextAlignment="Center"
@@ -138,7 +138,7 @@
                                       FontSize="11"
                                       HorizontalAlignment="Center"
                                       Margin="0,2,0,10"/>
-                            <TextBlock Text="{Binding OverallAssessment}"
+                            <TextBlock Text="{Binding OverallAssessment, Mode=OneWay}"
                                       FontSize="13"
                                       FontWeight="SemiBold"
                                       TextWrapping="Wrap"
@@ -229,7 +229,7 @@
                         <!-- Fattori Favorenti Eventi Avversi -->
                         <TextBlock Style="{StaticResource SectionHeader}">
                             <Run Text="FATTORI FAVORENTI EVENTI AVVERSI"/>
-                            <Run Text="{Binding AdverseEventRiskFactorsCount, StringFormat='({0})'}" Foreground="#E81123" FontWeight="Bold"/>
+                            <Run Text="{Binding AdverseEventRiskFactorsCount, Mode=OneWay, StringFormat='({0})'}" Foreground="#E81123" FontWeight="Bold"/>
                         </TextBlock>
                         <Border Background="#FFFEF9" BorderBrush="#E0E0E0" BorderThickness="1" Padding="15" CornerRadius="4">
                             <StackPanel>
@@ -326,7 +326,7 @@
                         <!-- Controindicazioni Relative -->
                         <TextBlock Style="{StaticResource SectionHeader}">
                             <Run Text="CONTROINDICAZIONI RELATIVE"/>
-                            <Run Text="{Binding RelativeContraindicationsCount, StringFormat='({0})'}" Foreground="#F7630C" FontWeight="Bold"/>
+                            <Run Text="{Binding RelativeContraindicationsCount, Mode=OneWay, StringFormat='({0})'}" Foreground="#F7630C" FontWeight="Bold"/>
                         </TextBlock>
                         <Border Background="#FFF4E6" BorderBrush="#F7630C" BorderThickness="1" Padding="15" CornerRadius="4">
                             <StackPanel>
