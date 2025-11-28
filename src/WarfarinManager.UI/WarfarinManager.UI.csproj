@@ -47,4 +47,11 @@
     <ProjectReference Include="..\WarfarinManager.Shared\WarfarinManager.Shared.csproj" />
   </ItemGroup>
 
+  <!-- Guide HTML - Copia tutti i file nella cartella di output -->
+  <ItemGroup>
+    <None Update="Resources\Guides\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

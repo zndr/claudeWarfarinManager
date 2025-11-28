@@ -116,6 +116,16 @@
                 <Separator />
                 <MenuItem Header="Linee guida professionali">
                     <MenuItem
+                        Command="{Binding ShowProfessionalGuideCommand}"
+                        CommandParameter="index.html"
+                        Header="📚 Indice Guide" />
+                    <Separator />
+                    <MenuItem
+                        Command="{Binding ShowProfessionalGuideCommand}"
+                        CommandParameter="interactions.html"
+                        Header="💊 Interazioni Farmacologiche Warfarin" />
+                    <Separator />
+                    <MenuItem
                         Command="{Binding ShowGuidelineCommand}"
                         CommandParameter="FCSA2016"
                         Header="Linee guida FCSA 2016" />

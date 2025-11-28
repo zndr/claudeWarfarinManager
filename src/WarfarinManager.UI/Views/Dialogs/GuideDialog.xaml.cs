@@ -1,0 +1,98 @@
+using System.Windows;
+using Microsoft.Web.WebView2.Core;
+using WarfarinManager.UI.ViewModels;
+
+namespace WarfarinManager.UI.Views.Dialogs;
+
+/// <summary>
+/// Interaction logic for GuideDialog.xaml
+/// </summary>
+public partial class GuideDialog : Window
+{
+    private readonly GuideViewModel _viewModel;
+
+    public GuideDialog(GuideViewModel viewModel)
+    {
+        InitializeComponent();
+        _viewModel = viewModel;
+        DataContext = viewModel;
+
+        // Inizializza WebView2
+        InitializeAsync();
+    }
+
+    private async void InitializeAsync()
+    {
+        try
+        {
+            await webView.EnsureCoreWebView2Async(null);
+
+            // Configura le impostazioni di WebView2
+            webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = true;
+            webView.CoreWebView2.Settings.AreDevToolsEnabled = false;
+            webView.CoreWebView2.Settings.IsStatusBarEnabled = false;
+            webView.CoreWebView2.Settings.IsZoomControlEnabled = true;
+
+            // Eventi per la navigazione
+            webView.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
+            webView.CoreWebView2.NavigationCompleted += CoreWebView2_NavigationCompleted;
+
+            // Aggiorna lo stato dei pulsanti
+            UpdateNavigationButtons();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"Errore durante l'inizializzazione del visualizzatore guide:\n{ex.Message}",
+                "Errore",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
+    private void CoreWebView2_NavigationStarting(object? sender, CoreWebView2NavigationStartingEventArgs e)
+    {
+        StatusText.Text = "Caricamento in corso...";
+    }
+
+    private void CoreWebView2_NavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
+    {
+        StatusText.Text = e.IsSuccess ? "Guida caricata" : "Errore nel caricamento";
+        UpdateNavigationButtons();
+    }
+
+    private void UpdateNavigationButtons()
+    {
+        if (webView?.CoreWebView2 != null)
+        {
+            BackButton.IsEnabled = webView.CoreWebView2.CanGoBack;
+            ForwardButton.IsEnabled = webView.CoreWebView2.CanGoForward;
+        }
+    }
+
+    private void BackButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (webView?.CoreWebView2?.CanGoBack == true)
+        {
+            webView.CoreWebView2.GoBack();
+        }
+    }
+
+    private void ForwardButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (webView?.CoreWebView2?.CanGoForward == true)
+        {
+            webView.CoreWebView2.GoForward();
+        }
+    }
+
+    private void RefreshButton_Click(object sender, RoutedEventArgs e)
+    {
+        webView?.Reload();
+    }
+
+    private void CloseButton_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+}

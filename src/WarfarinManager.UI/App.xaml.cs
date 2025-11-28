@@ -104,6 +104,7 @@ public partial class App : Application
         services.AddTransient<AdverseEventsViewModel>();
         services.AddTransient<DoctorDataViewModel>();
         services.AddTransient<DatabaseManagementViewModel>();
+        services.AddTransient<GuideViewModel>();
 
         // Views
         services.AddTransient<PatientListView>();

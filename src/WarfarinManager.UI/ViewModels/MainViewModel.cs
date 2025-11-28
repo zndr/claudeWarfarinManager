@@ -167,6 +167,32 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void ShowProfessionalGuide(string fileName)
+    {
+        try
+        {
+            // Determina il titolo della guida in base al file
+            var title = fileName switch
+            {
+                "index.html" => "Indice Guide Professionali",
+                "interactions.html" => "Interazioni Farmacologiche Warfarin",
+                _ => "Guida Professionale"
+            };
+
+            // Crea il ViewModel e il Dialog
+            var guideViewModel = _serviceProvider.GetRequiredService<GuideViewModel>();
+            guideViewModel.Initialize(fileName, title);
+
+            var dialog = new GuideDialog(guideViewModel);
+            dialog.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            _dialogService.ShowError($"Errore nell'apertura della guida:\n{ex.Message}", "Errore");
+        }
+    }
+
+    [RelayCommand]
     private void ShowGuideline(string guidelineType)
     {
         var message = guidelineType switch

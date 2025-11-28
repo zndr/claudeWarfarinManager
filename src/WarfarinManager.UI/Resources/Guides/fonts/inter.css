@@ -1,0 +1,28 @@
+/* Inter Font Fallback - Using system fonts for offline compatibility */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 300;
+    src: local('Segoe UI Light'), local('Arial'), local('Helvetica');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Segoe UI'), local('Arial'), local('Helvetica');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    src: local('Segoe UI Semibold'), local('Arial Bold'), local('Helvetica Bold');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    src: local('Segoe UI Bold'), local('Arial Bold'), local('Helvetica Bold');
+}
