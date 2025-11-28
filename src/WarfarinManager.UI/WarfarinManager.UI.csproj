@@ -36,6 +36,9 @@
     
     <!-- PDF Generation -->
     <PackageReference Include="QuestPDF" Version="2024.10.2" />
+
+    <!-- WebView2 for HTML Guides -->
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2792.45" />
   </ItemGroup>
 
   <ItemGroup>

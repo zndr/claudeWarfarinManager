@@ -7,8 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
     Title="Gestione Database"
-    Width="700"
-    Height="600"
+    Width="800"
+    Height="580"
     d:DataContext="{d:DesignInstance Type=vm:DatabaseManagementViewModel}"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner"
@@ -18,7 +18,7 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Window.Resources>
 
-    <Grid Margin="20">
+    <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -27,36 +27,43 @@
         </Grid.RowDefinitions>
 
         <!--  Header  -->
-        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+        <StackPanel Grid.Row="0" Margin="0,0,0,12">
             <TextBlock
-                FontSize="18"
+                FontSize="16"
                 FontWeight="Bold"
                 Text="💾 Gestione Database" />
             <TextBlock
-                Margin="0,5,0,0"
-                FontSize="12"
+                Margin="0,3,0,0"
+                FontSize="11"
                 Foreground="#666"
                 Text="Backup, ripristino e manutenzione del database TaoGEST"
                 TextWrapping="Wrap" />
         </StackPanel>
 
-        <!--  Content  -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <StackPanel>
+        <!--  Content - Layout a 2 colonne  -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!--  Colonna Sinistra  -->
+            <StackPanel Grid.Column="0">
                 <!--  Informazioni Database  -->
                 <Border
-                    Padding="15"
+                    Padding="12"
                     Background="#F5F5F5"
                     BorderBrush="#DDDDDD"
                     BorderThickness="1"
                     CornerRadius="4">
                     <StackPanel>
                         <TextBlock
-                            FontSize="14"
+                            FontSize="13"
                             FontWeight="SemiBold"
                             Text="ℹ️ Informazioni Database" />
 
-                        <Grid Margin="0,15,0,0">
+                        <Grid Margin="0,10,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
@@ -70,15 +77,15 @@
                             <TextBlock
                                 Grid.Row="0"
                                 Grid.Column="0"
-                                Margin="0,0,15,8"
-                                FontSize="12"
+                                Margin="0,0,10,6"
+                                FontSize="11"
                                 FontWeight="SemiBold"
                                 Text="Percorso:" />
                             <TextBlock
                                 Grid.Row="0"
                                 Grid.Column="1"
-                                Margin="0,0,0,8"
-                                FontSize="12"
+                                Margin="0,0,0,6"
+                                FontSize="11"
                                 Text="{Binding DatabasePath}"
                                 TextTrimming="CharacterEllipsis"
                                 ToolTip="{Binding DatabasePath}" />
@@ -86,15 +93,15 @@
                             <TextBlock
                                 Grid.Row="1"
                                 Grid.Column="0"
-                                Margin="0,0,15,8"
-                                FontSize="12"
+                                Margin="0,0,10,6"
+                                FontSize="11"
                                 FontWeight="SemiBold"
                                 Text="Dimensione:" />
                             <TextBlock
                                 Grid.Row="1"
                                 Grid.Column="1"
-                                Margin="0,0,0,8"
-                                FontSize="12">
+                                Margin="0,0,0,6"
+                                FontSize="11">
                                 <Run Text="{Binding DatabaseSizeMB, StringFormat={}{0:F2}}" />
                                 <Run Text="MB" />
                             </TextBlock>
@@ -102,42 +109,42 @@
                             <TextBlock
                                 Grid.Row="2"
                                 Grid.Column="0"
-                                Margin="0,0,15,0"
-                                FontSize="12"
+                                Margin="0,0,10,0"
+                                FontSize="11"
                                 FontWeight="SemiBold"
                                 Text="Ultimo backup:" />
                             <TextBlock
                                 Grid.Row="2"
                                 Grid.Column="1"
-                                FontSize="12"
+                                FontSize="11"
                                 Text="{Binding LastBackupDate, StringFormat={}{0:dd/MM/yyyy HH:mm}, TargetNullValue=Mai eseguito}" />
                         </Grid>
 
                         <Button
-                            Margin="0,10,0,0"
-                            Padding="8,5"
+                            Margin="0,8,0,0"
+                            Padding="6,4"
                             HorizontalAlignment="Left"
                             Command="{Binding OpenDatabaseFolderCommand}"
-                            Content="📁 Apri cartella database"
-                            FontSize="11" />
+                            Content="📁 Apri cartella"
+                            FontSize="10" />
                     </StackPanel>
                 </Border>
 
                 <!--  Statistiche  -->
                 <Border
-                    Margin="0,15,0,0"
-                    Padding="15"
+                    Margin="0,10,0,0"
+                    Padding="12"
                     Background="White"
                     BorderBrush="#DDDDDD"
                     BorderThickness="1"
                     CornerRadius="4">
                     <StackPanel>
                         <TextBlock
-                            FontSize="14"
+                            FontSize="13"
                             FontWeight="SemiBold"
                             Text="📊 Statistiche" />
 
-                        <Grid Margin="0,15,0,0">
+                        <Grid Margin="0,10,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
@@ -151,19 +158,19 @@
                             <Border
                                 Grid.Row="0"
                                 Grid.Column="0"
-                                Margin="0,0,5,5"
-                                Padding="10"
+                                Margin="0,0,4,4"
+                                Padding="8"
                                 Background="#EEF7FF"
                                 BorderBrush="#0078D4"
                                 BorderThickness="1"
                                 CornerRadius="3">
                                 <StackPanel>
                                     <TextBlock
-                                        FontSize="11"
+                                        FontSize="10"
                                         Foreground="#666"
                                         Text="Pazienti" />
                                     <TextBlock
-                                        FontSize="20"
+                                        FontSize="18"
                                         FontWeight="Bold"
                                         Foreground="#0078D4"
                                         Text="{Binding TotalPatients}" />
@@ -174,19 +181,19 @@
                             <Border
                                 Grid.Row="0"
                                 Grid.Column="1"
-                                Margin="5,0,0,5"
-                                Padding="10"
+                                Margin="4,0,0,4"
+                                Padding="8"
                                 Background="#F0F9F0"
                                 BorderBrush="#107C10"
                                 BorderThickness="1"
                                 CornerRadius="3">
                                 <StackPanel>
                                     <TextBlock
-                                        FontSize="11"
+                                        FontSize="10"
                                         Foreground="#666"
                                         Text="Controlli INR" />
                                     <TextBlock
-                                        FontSize="20"
+                                        FontSize="18"
                                         FontWeight="Bold"
                                         Foreground="#107C10"
                                         Text="{Binding TotalINRControls}" />
@@ -197,19 +204,19 @@
                             <Border
                                 Grid.Row="1"
                                 Grid.Column="0"
-                                Margin="0,5,5,0"
-                                Padding="10"
+                                Margin="0,4,4,0"
+                                Padding="8"
                                 Background="#FFF8F0"
                                 BorderBrush="#FF8C00"
                                 BorderThickness="1"
                                 CornerRadius="3">
                                 <StackPanel>
                                     <TextBlock
-                                        FontSize="11"
+                                        FontSize="10"
                                         Foreground="#666"
                                         Text="Indicazioni" />
                                     <TextBlock
-                                        FontSize="20"
+                                        FontSize="18"
                                         FontWeight="Bold"
                                         Foreground="#FF8C00"
                                         Text="{Binding TotalIndications}" />
@@ -220,19 +227,19 @@
                             <Border
                                 Grid.Row="1"
                                 Grid.Column="1"
-                                Margin="5,5,0,0"
-                                Padding="10"
+                                Margin="4,4,0,0"
+                                Padding="8"
                                 Background="#FFF0F0"
                                 BorderBrush="#D13438"
                                 BorderThickness="1"
                                 CornerRadius="3">
                                 <StackPanel>
                                     <TextBlock
-                                        FontSize="11"
+                                        FontSize="10"
                                         Foreground="#666"
                                         Text="Eventi Avversi" />
                                     <TextBlock
-                                        FontSize="20"
+                                        FontSize="18"
                                         FontWeight="Bold"
                                         Foreground="#D13438"
                                         Text="{Binding TotalAdverseEvents}" />
@@ -241,144 +248,144 @@
                         </Grid>
                     </StackPanel>
                 </Border>
-
-                <!--  Operazioni  -->
-                <Border
-                    Margin="0,15,0,0"
-                    Padding="15"
-                    Background="White"
-                    BorderBrush="#DDDDDD"
-                    BorderThickness="1"
-                    CornerRadius="4">
-                    <StackPanel>
-                        <TextBlock
-                            FontSize="14"
-                            FontWeight="SemiBold"
-                            Text="⚙️ Operazioni" />
-
-                        <Grid Margin="0,15,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <!--  Backup  -->
-                            <Button
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                Height="70"
-                                Margin="0,0,5,5"
-                                Command="{Binding BackupCommand}">
-                                <Button.Content>
-                                    <StackPanel>
-                                        <TextBlock
-                                            FontSize="16"
-                                            Text="💾" />
-                                        <TextBlock
-                                            FontSize="12"
-                                            FontWeight="SemiBold"
-                                            Text="Backup" />
-                                        <TextBlock
-                                            FontSize="10"
-                                            Foreground="#666"
-                                            Text="Salva una copia" />
-                                    </StackPanel>
-                                </Button.Content>
-                            </Button>
-
-                            <!--  Ripristino  -->
-                            <Button
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                Height="70"
-                                Margin="5,0,0,5"
-                                Command="{Binding RestoreCommand}">
-                                <Button.Content>
-                                    <StackPanel>
-                                        <TextBlock
-                                            FontSize="16"
-                                            Text="📂" />
-                                        <TextBlock
-                                            FontSize="12"
-                                            FontWeight="SemiBold"
-                                            Text="Ripristino" />
-                                        <TextBlock
-                                            FontSize="10"
-                                            Foreground="#666"
-                                            Text="Carica un backup" />
-                                    </StackPanel>
-                                </Button.Content>
-                            </Button>
-
-                            <!--  Compattazione  -->
-                            <Button
-                                Grid.Row="1"
-                                Grid.Column="0"
-                                Height="70"
-                                Margin="0,5,5,0"
-                                Command="{Binding CompactCommand}">
-                                <Button.Content>
-                                    <StackPanel>
-                                        <TextBlock
-                                            FontSize="16"
-                                            Text="🗜️" />
-                                        <TextBlock
-                                            FontSize="12"
-                                            FontWeight="SemiBold"
-                                            Text="Compatta" />
-                                        <TextBlock
-                                            FontSize="10"
-                                            Foreground="#666"
-                                            Text="Ottimizza spazio" />
-                                    </StackPanel>
-                                </Button.Content>
-                            </Button>
-
-                            <!--  Verifica Integrità  -->
-                            <Button
-                                Grid.Row="1"
-                                Grid.Column="1"
-                                Height="70"
-                                Margin="5,5,0,0"
-                                Command="{Binding CheckIntegrityCommand}">
-                                <Button.Content>
-                                    <StackPanel>
-                                        <TextBlock
-                                            FontSize="16"
-                                            Text="✔️" />
-                                        <TextBlock
-                                            FontSize="12"
-                                            FontWeight="SemiBold"
-                                            Text="Verifica" />
-                                        <TextBlock
-                                            FontSize="10"
-                                            Foreground="#666"
-                                            Text="Controlla integrità" />
-                                    </StackPanel>
-                                </Button.Content>
-                            </Button>
-                        </Grid>
-                    </StackPanel>
-                </Border>
             </StackPanel>
-        </ScrollViewer>
+
+            <!--  Colonna Destra - Operazioni  -->
+            <Border
+                Grid.Column="2"
+                Padding="12"
+                Background="White"
+                BorderBrush="#DDDDDD"
+                BorderThickness="1"
+                CornerRadius="4">
+                <StackPanel>
+                    <TextBlock
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Text="⚙️ Operazioni" />
+
+                    <Grid Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!--  Backup  -->
+                        <Button
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Height="65"
+                            Margin="0,0,4,4"
+                            Command="{Binding BackupCommand}">
+                            <Button.Content>
+                                <StackPanel>
+                                    <TextBlock
+                                        FontSize="14"
+                                        Text="💾" />
+                                    <TextBlock
+                                        FontSize="11"
+                                        FontWeight="SemiBold"
+                                        Text="Backup" />
+                                    <TextBlock
+                                        FontSize="9"
+                                        Foreground="#666"
+                                        Text="Salva una copia" />
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+
+                        <!--  Ripristino  -->
+                        <Button
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Height="65"
+                            Margin="4,0,0,4"
+                            Command="{Binding RestoreCommand}">
+                            <Button.Content>
+                                <StackPanel>
+                                    <TextBlock
+                                        FontSize="14"
+                                        Text="📂" />
+                                    <TextBlock
+                                        FontSize="11"
+                                        FontWeight="SemiBold"
+                                        Text="Ripristino" />
+                                    <TextBlock
+                                        FontSize="9"
+                                        Foreground="#666"
+                                        Text="Carica backup" />
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+
+                        <!--  Compattazione  -->
+                        <Button
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Height="65"
+                            Margin="0,4,4,0"
+                            Command="{Binding CompactCommand}">
+                            <Button.Content>
+                                <StackPanel>
+                                    <TextBlock
+                                        FontSize="14"
+                                        Text="🗜️" />
+                                    <TextBlock
+                                        FontSize="11"
+                                        FontWeight="SemiBold"
+                                        Text="Compatta" />
+                                    <TextBlock
+                                        FontSize="9"
+                                        Foreground="#666"
+                                        Text="Ottimizza spazio" />
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+
+                        <!--  Verifica Integrità  -->
+                        <Button
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Height="65"
+                            Margin="4,4,0,0"
+                            Command="{Binding CheckIntegrityCommand}">
+                            <Button.Content>
+                                <StackPanel>
+                                    <TextBlock
+                                        FontSize="14"
+                                        Text="✔️" />
+                                    <TextBlock
+                                        FontSize="11"
+                                        FontWeight="SemiBold"
+                                        Text="Verifica" />
+                                    <TextBlock
+                                        FontSize="9"
+                                        Foreground="#666"
+                                        Text="Integrità DB" />
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
 
         <!--  Status Bar  -->
         <Border
             Grid.Row="2"
-            Margin="0,15,0,0"
-            Padding="10,8"
+            Margin="0,10,0,0"
+            Padding="8,6"
             Background="#F0F0F0"
             BorderBrush="#CCCCCC"
             BorderThickness="1"
             CornerRadius="3">
             <Grid>
                 <TextBlock
-                    FontSize="11"
+                    FontSize="10"
                     Foreground="#666"
                     Text="{Binding StatusMessage}" />
                 <StackPanel
@@ -386,9 +393,9 @@
                     Orientation="Horizontal"
                     Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
                     <TextBlock
-                        Margin="0,0,8,0"
+                        Margin="0,0,6,0"
                         VerticalAlignment="Center"
-                        FontSize="11"
+                        FontSize="10"
                         Foreground="#0078D4"
                         Text="⏳ Elaborazione..." />
                 </StackPanel>
@@ -398,13 +405,13 @@
         <!--  Close Button  -->
         <Button
             Grid.Row="3"
-            Width="100"
-            Height="35"
-            Margin="0,15,0,0"
+            Width="90"
+            Height="30"
+            Margin="0,10,0,0"
             HorizontalAlignment="Right"
             Click="CloseButton_Click"
             Content="Chiudi"
-            FontSize="13"
+            FontSize="12"
             IsCancel="True" />
     </Grid>
 </Window>

@@ -16,6 +16,11 @@ public partial class DoctorDataViewModel : ObservableObject
     private readonly IDialogService _dialogService;
     private DoctorData? _doctorData;
 
+    /// <summary>
+    /// Evento che viene scatenato quando il salvataggio è completato con successo
+    /// </summary>
+    public event EventHandler? SaveCompleted;
+
     [ObservableProperty]
     private string _fullName = string.Empty;
 
@@ -99,6 +104,9 @@ public partial class DoctorDataViewModel : ObservableObject
             await _context.SaveChangesAsync();
 
             _dialogService.ShowInformation("Dati del medico salvati correttamente", "Successo");
+
+            // Notifica che il salvataggio è completato con successo
+            SaveCompleted?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception ex)
         {
