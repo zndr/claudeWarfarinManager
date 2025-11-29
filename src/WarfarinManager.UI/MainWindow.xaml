@@ -124,6 +124,10 @@
                         Command="{Binding ShowProfessionalGuideCommand}"
                         CommandParameter="interactions.html"
                         Header="💊 Interazioni Farmacologiche Warfarin" />
+                    <MenuItem
+                        Command="{Binding ShowProfessionalGuideCommand}"
+                        CommandParameter="algoritmo-gestione-inr.html"
+                        Header="📊 Flowchart Gestione INR" />
                     <Separator />
                     <MenuItem
                         Command="{Binding ShowGuidelineCommand}"

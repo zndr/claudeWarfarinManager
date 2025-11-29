@@ -176,6 +176,7 @@ public partial class MainViewModel : ObservableObject
             {
                 "index.html" => "Indice Guide Professionali",
                 "interactions.html" => "Interazioni Farmacologiche Warfarin",
+                "algoritmo-gestione-inr.html" => "Flowchart Gestione INR",
                 _ => "Guida Professionale"
             };
 

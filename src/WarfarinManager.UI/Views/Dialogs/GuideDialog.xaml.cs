@@ -29,13 +29,22 @@ public partial class GuideDialog : Window
 
             // Configura le impostazioni di WebView2
             webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = true;
-            webView.CoreWebView2.Settings.AreDevToolsEnabled = false;
+            webView.CoreWebView2.Settings.AreDevToolsEnabled = true; // Abilita DevTools per debug
             webView.CoreWebView2.Settings.IsStatusBarEnabled = false;
             webView.CoreWebView2.Settings.IsZoomControlEnabled = true;
+            webView.CoreWebView2.Settings.IsScriptEnabled = true; // Abilita JavaScript
+            webView.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = true; // Abilita alert/confirm
 
             // Eventi per la navigazione
             webView.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
             webView.CoreWebView2.NavigationCompleted += CoreWebView2_NavigationCompleted;
+
+            // Aggiungi handler per errori JavaScript
+            webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(@"
+                window.addEventListener('error', function(e) {
+                    console.error('JavaScript Error:', e.message, e.filename, e.lineno);
+                });
+            ");
 
             // Aggiorna lo stato dei pulsanti
             UpdateNavigationButtons();
