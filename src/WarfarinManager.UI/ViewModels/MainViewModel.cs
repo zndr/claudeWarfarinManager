@@ -163,7 +163,18 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void ShowUserGuide()
     {
-        _dialogService.ShowInformation("Funzionalità in fase di sviluppo", "Guida utente");
+        try
+        {
+            var guideViewModel = _serviceProvider.GetRequiredService<GuideViewModel>();
+            guideViewModel.Initialize("user-guide.html", "Guida Utente - TaoGEST");
+
+            var dialog = new GuideDialog(guideViewModel);
+            dialog.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            _dialogService.ShowError($"Errore nell'apertura della guida:\n{ex.Message}", "Errore");
+        }
     }
 
     [RelayCommand]

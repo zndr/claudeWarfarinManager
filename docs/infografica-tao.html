@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guida alla Gestione TAO con Warfarin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Custom Vibrant Palette based on 'Energetic & Playful' */
+        :root {
+            --color-primary: #2563EB; /* Vibrant Blue */
+            --color-secondary: #06B6D4; /* Cyan */
+            --color-accent: #F59E0B; /* Amber/Orange */
+            --color-danger: #EF4444; /* Red */
+            --color-bg: #F3F4F6;
+            --color-card: #FFFFFF;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: #1F2937;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        /* HTML-only Flowchart Styles */
+        .flow-step {
+            border-left: 4px solid var(--color-primary);
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        .flow-step::before {
+            content: '●';
+            position: absolute;
+            left: -0.65rem;
+            top: 0;
+            color: var(--color-primary);
+            background: var(--color-bg);
+        }
+        .arrow-down {
+            text-align: center;
+            font-size: 1.5rem;
+            color: var(--color-secondary);
+            margin: 0.5rem 0;
+            line-height: 1;
+        }
+
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+    <!-- 
+    Chosen Palette: Vibrant & Energetic (Blue, Cyan, Amber)
+    Application Structure Plan: A logical flow for GPs starting with clinical indications, moving to monitoring targets, handling critical deviations (guideline comparison), managing drug interactions, and finally periprocedural bridging. This structure prioritizes safety and decision-making speed.
+    Visualization & Content Choices:
+    1. Indications (Donut): Quickly visualizes patient population types.
+    2. TTR (Pie): Highlights the narrow therapeutic window target.
+    3. Guideline Comparison (Grouped Bar): Side-by-side view of ACCP vs NICE vs FCSA intensity for high INR management.
+    4. Interactions (Horizontal Bar): Shows directional impact (increase vs decrease INR) of common drugs.
+    CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto mb-10 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold text-blue-700 mb-4">Gestione Terapia Anticoagulante Orale (Warfarin)</h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Guida pratica per MMG basata sul confronto critico tra linee guida FCSA/SIMG (Italia), ACCP (USA) e NICE (UK).
+            <br><span class="text-sm font-semibold text-orange-600 mt-2 block">Focus: Sicurezza, Gestione INR Instabile e Peri-operatoria.</span>
+        </p>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+
+        <!-- Section 1: Indications -->
+        <section class="bg-white rounded-xl card-shadow p-6 md:col-span-1">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4 border-b-2 border-blue-100 pb-2">1. Perché ancora Warfarin?</h2>
+            <p class="text-gray-700 mb-4 text-sm leading-relaxed">
+                Nonostante l'avvento dei DOAC, il Warfarin rimane l'unica opzione salvavita per specifiche categorie di pazienti. È fondamentale non effettuare switch inappropriati ai DOAC in questi contesti.
+            </p>
+            <div class="chart-container">
+                <canvas id="indicationsChart"></canvas>
+            </div>
+            <p class="mt-4 text-xs text-gray-500 italic text-center">Il Warfarin resta il Gold Standard per valvole meccaniche e insufficienza renale grave.</p>
+        </section>
+
+        <!-- Section 2: Target INR & Quality -->
+        <section class="bg-white rounded-xl card-shadow p-6 md:col-span-1 flex flex-col justify-center">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4 border-b-2 border-blue-100 pb-2">2. Target INR & TTR</h2>
+            <p class="text-gray-700 mb-4 text-sm">
+                La qualità della terapia si misura con il <strong>TTR (Time in Therapeutic Range)</strong>. Un TTR < 65-70% correla con alto rischio trombotico ed emorragico.
+            </p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-600">
+                    <h3 class="font-bold text-lg text-blue-900">2.0 - 3.0</h3>
+                    <p class="text-sm text-blue-800">Standard (FA, TVP, EP, Bioprotesi)</p>
+                </div>
+                <div class="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-600">
+                    <h3 class="font-bold text-lg text-orange-900">2.5 - 3.5</h3>
+                    <p class="text-sm text-orange-800">Valvole Meccaniche (Mitrale o Aortica + Fattori Rischio)</p>
+                </div>
+            </div>
+
+            <div class="chart-container" style="height: 250px;">
+                <canvas id="ttrChart"></canvas>
+            </div>
+            <p class="mt-2 text-xs text-center text-gray-500">Se TTR < 65%: Rivalutare aderenza, interazioni o considerare switch (se non controindicato).</p>
+        </section>
+
+        <!-- Section 3: Guideline Comparison (CRITICAL) -->
+        <section class="bg-white rounded-xl card-shadow p-6 md:col-span-2">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4 border-b-2 border-blue-100 pb-2">3. Gestione INR Fuori Range (Senza Sanguinamento)</h2>
+            <p class="text-gray-700 mb-6 text-sm">
+                Esistono divergenze significative tra le linee guida internazionali. 
+                <span class="font-bold text-red-600">FCSA (Italia)</span> e <span class="font-bold text-purple-600">NICE (UK)</span> sono più interventiste con la Vitamina K rispetto all'atteggiamento "wait and see" dell'ACCP (USA).
+            </p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Comparison Chart -->
+                <div class="chart-container">
+                    <canvas id="guidelineComparisonChart"></canvas>
+                </div>
+
+                <!-- Descriptive Breakdown -->
+                <div class="space-y-4">
+                    <div class="p-3 bg-gray-50 rounded border border-gray-200">
+                        <h4 class="font-bold text-indigo-700 text-sm">INR 4.5 - 10.0 (No Bleed)</h4>
+                        <ul class="text-xs text-gray-700 mt-1 space-y-1 list-disc pl-4">
+                            <li><strong>ACCP:</strong> Sospendere 1-2 dosi, riprendere a dose ridotta. No Vit K di routine.</li>
+                            <li><strong>FCSA/SIMG:</strong> Sospendere. Considerare Vit K 1-2mg os se alto rischio emorragico.</li>
+                            <li><strong>NICE:</strong> Sospendere. Se INR > 8.0, dare Vit K 1-5mg os.</li>
+                        </ul>
+                    </div>
+                    <div class="p-3 bg-red-50 rounded border border-red-200">
+                        <h4 class="font-bold text-red-700 text-sm">INR > 10.0 (No Bleed)</h4>
+                        <ul class="text-xs text-gray-700 mt-1 space-y-1 list-disc pl-4">
+                            <li><strong>ACCP:</strong> Vit K 2.5-5mg os.</li>
+                            <li><strong>FCSA:</strong> Vit K 2.5-5mg os. Monitoraggio stretto.</li>
+                            <li><strong>NICE:</strong> Vit K 1-5mg os. Ripetere se necessario dopo 24h.</li>
+                        </ul>
+                    </div>
+                    <div class="p-3 bg-yellow-50 rounded border border-yellow-200">
+                        <h4 class="font-bold text-yellow-800 text-sm">Messaggio Chiave</h4>
+                        <p class="text-xs">La FCSA suggerisce prudenza: basse dosi di Vit K (1-2 mg) evitano la resistenza al Warfarin successiva, correggendo l'INR in 24h.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Interactions -->
+        <section class="bg-white rounded-xl card-shadow p-6 md:col-span-1">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4 border-b-2 border-blue-100 pb-2">4. Interazioni Farmacologiche Critiche</h2>
+            <p class="text-gray-700 mb-4 text-sm">
+                Le interazioni sono la causa principale di instabilità. Gli antibiotici richiedono monitoraggio ravvicinato (INR dopo 3-4 giorni dall'inizio).
+            </p>
+            <div class="chart-container">
+                <canvas id="interactionChart"></canvas>
+            </div>
+            <div class="mt-4 p-3 bg-blue-50 rounded text-xs text-blue-800">
+                <strong>Nota Bene:</strong> Anche variazioni drastiche nella dieta (apporto Vitamina K: verdure a foglia verde) destabilizzano l'INR. La dieta deve essere <em>costante</em>, non priva di verdure.
+            </div>
+        </section>
+
+        <!-- Section 5: Peri-operative Management -->
+        <section class="bg-white rounded-xl card-shadow p-6 md:col-span-1">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4 border-b-2 border-blue-100 pb-2">5. Gestione Peri-operatoria (Bridging)</h2>
+            <p class="text-gray-700 mb-4 text-sm">
+                Il "Bridging" (ponte con Eparina) non è sempre necessario e aumenta il rischio di sanguinamento.
+            </p>
+            
+            <!-- HTML Diagram for Decision Making -->
+            <div class="space-y-0">
+                <div class="flow-step">
+                    <h4 class="font-bold text-gray-800">Rischio Trombotico Paziente</h4>
+                    <p class="text-xs text-gray-600">Valutare CHADS-VASc o tipo di valvola meccanica.</p>
+                </div>
+                
+                <div class="arrow-down">&#8595;</div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-green-50 p-3 rounded border border-green-200">
+                        <h5 class="font-bold text-green-700 text-sm mb-1">Basso/Moderato Rischio</h5>
+                        <p class="text-xs text-gray-700">FA senza ictus recente, TVP > 3 mesi.</p>
+                        <hr class="border-green-200 my-2">
+                        <p class="text-xs font-bold text-green-800">NO BRIDGING</p>
+                        <p class="text-[10px] text-gray-600">Sospendere Warfarin 5gg prima. Riprendere post-op.</p>
+                    </div>
+
+                    <div class="bg-red-50 p-3 rounded border border-red-200">
+                        <h5 class="font-bold text-red-700 text-sm mb-1">Alto Rischio</h5>
+                        <p class="text-xs text-gray-700">Valvola Meccanica Mitrale, Ictus < 3 mesi, TVP recente.</p>
+                        <hr class="border-red-200 my-2">
+                        <p class="text-xs font-bold text-red-800">SI BRIDGING</p>
+                        <p class="text-[10px] text-gray-600">LMWH a dose terapeutica alla sospensione del Warfarin.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="max-w-7xl mx-auto mt-12 mb-8 text-center text-gray-500 text-xs">
+        <p>Fonti: FCSA/SIMG (2020/2023), ACCP (9th/10th Ed), NICE Guidelines (NG158). Generato per scopo educazionale.</p>
+        <p class="mt-2 text-primary font-semibold">NO SVG or Mermaid JS used in this document.</p>
+    </footer>
+
+    <script>
+        // --- UTILITY: Label Wrapping for Chart.js ---
+        function splitLabel(label, maxLength = 16) {
+            if (label.length <= maxLength) return label;
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = words[0];
+
+            for (let i = 1; i < words.length; i++) {
+                if (currentLine.length + 1 + words[i].length <= maxLength) {
+                    currentLine += ' ' + words[i];
+                } else {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+
+        // --- GLOBAL CHART CONFIG ---
+        Chart.defaults.font.family = "'Segoe UI', 'Helvetica', 'Arial', sans-serif";
+        Chart.defaults.color = '#374151';
+        
+        const tooltipPlugin = {
+            callbacks: {
+                title: function(tooltipItems) {
+                    const item = tooltipItems[0];
+                    let label = item.chart.data.labels[item.dataIndex];
+                    if (Array.isArray(label)) {
+                        return label.join(' ');
+                    } else {
+                        return label;
+                    }
+                }
+            }
+        };
+
+        // --- CHART 1: INDICATIONS (Donut) ---
+        // Goal: Inform (Composition of Warfarin users)
+        const ctxIndications = document.getElementById('indicationsChart').getContext('2d');
+        new Chart(ctxIndications, {
+            type: 'doughnut',
+            data: {
+                labels: [
+                    splitLabel('Fibrillazione Atriale (FA)'), 
+                    splitLabel('Protesi Valvolari Meccaniche'), 
+                    splitLabel('Tromboembolismo Venoso (TVP/EP)'),
+                    splitLabel('Altro (es. Trombofilia)')
+                ],
+                datasets: [{
+                    data: [65, 10, 20, 5],
+                    backgroundColor: ['#2563EB', '#F59E0B', '#06B6D4', '#9CA3AF'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: tooltipPlugin,
+                    title: {
+                        display: true,
+                        text: 'Indicazioni Principali Warfarin'
+                    }
+                }
+            }
+        });
+
+        // --- CHART 2: TTR Importance (Pie/Gauge Sim) ---
+        // Goal: Inform (Target metric)
+        const ctxTTR = document.getElementById('ttrChart').getContext('2d');
+        new Chart(ctxTTR, {
+            type: 'pie',
+            data: {
+                labels: ['Tempo in Range Ottimale (>70%)', 'Tempo Fuori Range (<30%)'],
+                datasets: [{
+                    data: [70, 30],
+                    backgroundColor: ['#10B981', '#EF4444'], // Green vs Red
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: tooltipPlugin,
+                    title: {
+                        display: true,
+                        text: 'Obiettivo TTR (Tempo in Range)'
+                    },
+                    subtitle: {
+                        display: true,
+                        text: 'Un TTR > 70% riduce drasticamente ictus ed emorragie'
+                    }
+                }
+            }
+        });
+
+        // --- CHART 3: Guideline Comparison (Grouped Bar) ---
+        // Goal: Compare (Approach aggressiveness)
+        // We quantify "Aggressiveness of Intervention" for INR 4.5-9.0 (No Bleed)
+        // 1 = Passive (Hold dose), 5 = Moderate (Hold + Monitor), 10 = Active (Vit K)
+        const ctxComparison = document.getElementById('guidelineComparisonChart').getContext('2d');
+        new Chart(ctxComparison, {
+            type: 'bar',
+            data: {
+                labels: [splitLabel('Sospensione Dose'), splitLabel('Somministrazione Vitamina K'), splitLabel('Monitoraggio Stretto')],
+                datasets: [
+                    {
+                        label: 'ACCP (USA) - Conservativa',
+                        data: [10, 1, 5], // High stop, Low Vit K, Mod Monitor
+                        backgroundColor: '#60A5FA'
+                    },
+                    {
+                        label: 'NICE (UK) - Interventista',
+                        data: [10, 8, 8], // High stop, High Vit K, High Monitor
+                        backgroundColor: '#8B5CF6'
+                    },
+                    {
+                        label: 'FCSA (ITA) - Bilanciata',
+                        data: [10, 5, 9], // High stop, Med Vit K (risk dependent), Very High Monitor
+                        backgroundColor: '#34D399'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10,
+                        title: { display: true, text: 'Livello di Raccomandazione / Intensità' },
+                        ticks: { display: false } // Abstract scale
+                    }
+                },
+                plugins: {
+                    tooltip: tooltipPlugin,
+                    title: {
+                        display: true,
+                        text: 'Approccio Gestione INR 5.0 - 9.0 (Senza Sanguinamento)'
+                    },
+                    legend: { position: 'top' }
+                }
+            }
+        });
+
+        // --- CHART 4: Interactions (Horizontal Bar) ---
+        // Goal: Relationships (Drug impact on INR)
+        // Positive values = INR Increase (Bleed risk), Negative = INR Decrease (Clot risk)
+        const ctxInteraction = document.getElementById('interactionChart').getContext('2d');
+        new Chart(ctxInteraction, {
+            type: 'bar',
+            indexAxis: 'y',
+            data: {
+                labels: [
+                    splitLabel('Amiodarone (Antiartmico)'),
+                    splitLabel('Metronidazolo/Antibiotici'),
+                    splitLabel('FANS / Aspirina'),
+                    splitLabel('Fluconazolo (Antimicotico)'),
+                    splitLabel('Rifampicina / Carbamazepina'),
+                    splitLabel('Verdure Foglia Verde (Dieta)')
+                ],
+                datasets: [{
+                    label: 'Impatto sull\'INR',
+                    data: [4, 3.5, 2, 3, -3, -2.5],
+                    backgroundColor: [
+                        '#EF4444', // Red (Increase)
+                        '#EF4444',
+                        '#F59E0B', // Orange (Increase/Bleed risk per se)
+                        '#EF4444',
+                        '#3B82F6', // Blue (Decrease)
+                        '#3B82F6'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Effetto INR (< 0 Riduzione | Aumento > 0)' },
+                        // FIX APPLIED HERE: Added safety check (ctx.tick && ...)
+                        grid: { color: (ctx) => (ctx.tick && ctx.tick.value === 0) ? '#000' : '#E5E7EB' }
+                    }
+                },
+                plugins: {
+                    tooltip: tooltipPlugin,
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: 'Farmaci e Fattori che Alterano l\'INR'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

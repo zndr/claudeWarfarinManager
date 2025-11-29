@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guida Utente - TaoGEST</title>
+
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="css/tailwind-custom.css">
+
+    <style>
+        @import url('fonts/inter.css');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            color: #0078D4;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #0078D4;
+        }
+
+        .subsection-title {
+            color: #1e293b;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 16px;
+            margin-bottom: 8px;
+        }
+
+        .step {
+            background: #f1f5f9;
+            border-left: 4px solid #0078D4;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 4px;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #0078D4;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            margin-right: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .tip {
+            background: #fffbeb;
+            border-left: 4px solid #FFA500;
+            padding: 12px 16px;
+            margin: 12px 0;
+            border-radius: 4px;
+        }
+
+        .tip-icon {
+            color: #FFA500;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .warning {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 12px 16px;
+            margin: 12px 0;
+            border-radius: 4px;
+        }
+
+        .warning-icon {
+            color: #ef4444;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .feature-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 16px;
+        }
+
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .feature-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .feature-desc {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .kbd {
+            background: #334155;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        ul {
+            margin: 8px 0;
+            padding-left: 24px;
+        }
+
+        li {
+            margin: 4px 0;
+        }
+
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div style="max-width: 1000px; margin: 0 auto; padding: 24px;">
+
+        <!-- Header -->
+        <div style="background: linear-gradient(135deg, #0078D4 0%, #005a9e 100%); color: white; padding: 32px; border-radius: 12px; margin-bottom: 32px; text-align: center;">
+            <h1 style="font-size: 32px; font-weight: 700; margin: 0 0 12px 0;">📘 TaoGEST - Guida Utente</h1>
+            <p style="font-size: 16px; opacity: 0.9; margin: 0;">Sistema Professionale per la Gestione della Terapia Anticoagulante Orale</p>
+        </div>
+
+        <!-- Indice -->
+        <div class="section">
+            <div class="section-title">📑 Indice</div>
+            <ul style="list-style: none; padding: 0;">
+                <li style="margin: 8px 0;"><a href="#intro" style="color: #0078D4; text-decoration: none;">1. Introduzione</a></li>
+                <li style="margin: 8px 0;"><a href="#primo-utilizzo" style="color: #0078D4; text-decoration: none;">2. Primo Utilizzo</a></li>
+                <li style="margin: 8px 0;"><a href="#gestione-pazienti" style="color: #0078D4; text-decoration: none;">3. Gestione Pazienti</a></li>
+                <li style="margin: 8px 0;"><a href="#controllo-inr" style="color: #0078D4; text-decoration: none;">4. Controllo INR</a></li>
+                <li style="margin: 8px 0;"><a href="#valutazione-4d" style="color: #0078D4; text-decoration: none;">5. Valutazione 4D</a></li>
+                <li style="margin: 8px 0;"><a href="#storico" style="color: #0078D4; text-decoration: none;">6. Storico e Statistiche</a></li>
+                <li style="margin: 8px 0;"><a href="#guide-professionali" style="color: #0078D4; text-decoration: none;">7. Guide Professionali</a></li>
+                <li style="margin: 8px 0;"><a href="#scorciatoie" style="color: #0078D4; text-decoration: none;">8. Scorciatoie da Tastiera</a></li>
+            </ul>
+        </div>
+
+        <!-- 1. Introduzione -->
+        <div id="intro" class="section">
+            <div class="section-title">🎯 1. Introduzione</div>
+            <p><strong>TaoGEST</strong> è un software professionale per la gestione completa della terapia anticoagulante orale (TAO) con Warfarin. Progettato per medici, ambulatori e centri TAO, offre strumenti avanzati per:</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <div class="feature-title">Gestione Anagrafica</div>
+                    <div class="feature-desc">Schede complete con indicazioni, target INR e valutazioni pre-TAO</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">Controlli INR</div>
+                    <div class="feature-desc">Registrazione controlli con calcolo automatico dosaggio</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">Algoritmi Intelligenti</div>
+                    <div class="feature-desc">Linee guida FCSA e ACCP integrate</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <div class="feature-title">Statistiche TTR</div>
+                    <div class="feature-desc">Calcolo automatico Time in Therapeutic Range</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚠️</div>
+                    <div class="feature-title">Valutazione 4D</div>
+                    <div class="feature-desc">Analisi cause INR fuori range (Diet, Dosage, Drugs, Diseases)</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📄</div>
+                    <div class="feature-title">Export PDF</div>
+                    <div class="feature-desc">Stampa schema posologico per paziente</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Primo Utilizzo -->
+        <div id="primo-utilizzo" class="section">
+            <div class="section-title">🚀 2. Primo Utilizzo</div>
+
+            <div class="subsection-title">Configurazione Iniziale</div>
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Accesso al Menu Opzioni</strong><br>
+                Click su <code>Opzioni</code> nel menu principale
+            </div>
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>Dati Medico/Centro</strong><br>
+                Compilare Nome, Cognome, Specializzazione e Contatti del medico/centro
+            </div>
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>Gestione Database</strong><br>
+                Verificare il percorso del database o crearne uno nuovo
+            </div>
+
+            <div class="tip">
+                <span class="tip-icon">💡</span>
+                <strong>Suggerimento:</strong> Configurare i dati del medico è fondamentale per la stampa dei PDF con schema posologico.
+            </div>
+        </div>
+
+        <!-- 3. Gestione Pazienti -->
+        <div id="gestione-pazienti" class="section">
+            <div class="section-title">👥 3. Gestione Pazienti</div>
+
+            <div class="subsection-title">Aggiungere un Nuovo Paziente</div>
+            <div class="step">
+                <span class="step-number">1</span>
+                Click sul pulsante <strong style="color: #FFA500;">➕ Nuovo Paziente</strong>
+            </div>
+            <div class="step">
+                <span class="step-number">2</span>
+                Compilare i dati anagrafici: Nome, Cognome, CF, Data di Nascita
+            </div>
+            <div class="step">
+                <span class="step-number">3</span>
+                Inserire contatti (telefono, email) e note
+            </div>
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>Indicazione TAO:</strong> Selezionare patologia (es. Fibrillazione Atriale)
+            </div>
+            <div class="step">
+                <span class="step-number">5</span>
+                <strong>Target INR:</strong> Impostare range terapeutico (es. 2.0 - 3.0)
+            </div>
+            <div class="step">
+                <span class="step-number">6</span>
+                <strong>Valutazione Pre-TAO:</strong> Compilare questionario rischio emorragico/trombotico
+            </div>
+
+            <div class="subsection-title">Ricerca Pazienti</div>
+            <p>Utilizzare la barra di ricerca per filtrare per:</p>
+            <ul>
+                <li>Nome o Cognome</li>
+                <li>Codice Fiscale</li>
+                <li>Indicazione TAO</li>
+            </ul>
+
+            <div class="tip">
+                <span class="tip-icon">⌨️</span>
+                <strong>Scorciatoia:</strong> Premere <span class="kbd">Ctrl+F</span> per accedere rapidamente alla ricerca.
+            </div>
+        </div>
+
+        <!-- 4. Controllo INR -->
+        <div id="controllo-inr" class="section">
+            <div class="section-title">📊 4. Controllo INR</div>
+
+            <div class="subsection-title">Registrare un Nuovo Controllo</div>
+            <div class="step">
+                <span class="step-number">1</span>
+                Dalla scheda paziente, click su <strong style="color: #FFA500;">📊 Aggiungi INR</strong>
+            </div>
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>Data Prelievo:</strong> Selezionare data controllo
+            </div>
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>Valore INR:</strong> Inserire valore misurato (es. 2.5)
+            </div>
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>Fase Terapia:</strong> Selezionare fase (Induzione/Mantenimento/Stabilizzazione)
+            </div>
+            <div class="step">
+                <span class="step-number">5</span>
+                <strong>Compliance:</strong> Indicare se paziente assume regolarmente la terapia
+            </div>
+            <div class="step">
+                <span class="step-number">6</span>
+                <strong>Dosaggio Corrente:</strong> Inserire dose settimanale attuale (pulsante "Carica ultimo" per velocizzare)
+            </div>
+
+            <div class="subsection-title">Suggerimento Dosaggio Automatico</div>
+            <p>Il sistema calcola automaticamente il nuovo dosaggio basandosi su:</p>
+            <ul>
+                <li><strong>Linee Guida:</strong> FCSA-SIMG (Italia) o ACCP (USA)</li>
+                <li><strong>Valore INR:</strong> Rispetto al target terapeutico</li>
+                <li><strong>Fase Terapia:</strong> Induzione richiede aggiustamenti più cauti</li>
+                <li><strong>Metabolismo:</strong> Paziente lento/normale</li>
+            </ul>
+
+            <div class="tip">
+                <span class="tip-icon">✅</span>
+                <strong>Applica Schema Suggerito:</strong> Il pulsante verde applica automaticamente il dosaggio distribuito equilibratamente nei 7 giorni.
+            </div>
+
+            <div class="subsection-title">Esportazione Schema Posologico</div>
+            <p>Dopo aver salvato il controllo:</p>
+            <ul>
+                <li><strong>📋 Copia Breve:</strong> Testo conciso per appunti</li>
+                <li><strong>📋 Copia Completo:</strong> Report dettagliato</li>
+                <li><strong>💾 Esporta TXT:</strong> File di testo</li>
+                <li><strong>📄 Stampa PDF:</strong> Schema professionale con intestazione medico</li>
+            </ul>
+        </div>
+
+        <!-- 5. Valutazione 4D -->
+        <div id="valutazione-4d" class="section">
+            <div class="section-title">⚠️ 5. Valutazione 4D (INR Fuori Range)</div>
+
+            <p>Quando l'INR è <strong>significativamente fuori range</strong> (±0.5 dal target), compare automaticamente un dialog per valutare le cause:</p>
+
+            <div class="subsection-title">Le 4 D</div>
+            <ul>
+                <li><strong>🥗 Diet (Dieta):</strong> Cambiamenti alimentari (Vitamina K, verdure a foglia verde)</li>
+                <li><strong>💊 Dosage (Dosaggio):</strong> Dosi saltate o errori posologici</li>
+                <li><strong>💉 Drugs (Farmaci):</strong> Nuove terapie o interazioni farmacologiche</li>
+                <li><strong>🏥 Diseases (Patologie):</strong> Nuove condizioni cliniche, febbre, diarrea</li>
+            </ul>
+
+            <div class="step">
+                <span class="step-number">1</span>
+                Selezionare uno o più fattori rilevanti
+            </div>
+            <div class="step">
+                <span class="step-number">2</span>
+                Inserire spiegazione (max 100 caratteri per fattore)
+            </div>
+            <div class="step">
+                <span class="step-number">3</span>
+                Click su <strong>Salva</strong> - il testo viene aggiunto automaticamente alle Note Cliniche
+            </div>
+
+            <div class="warning">
+                <span class="warning-icon">⚠️</span>
+                <strong>Attenzione:</strong> La valutazione 4D è fondamentale per tracciare le cause di instabilità e migliorare la gestione futura.
+            </div>
+        </div>
+
+        <!-- 6. Storico -->
+        <div id="storico" class="section">
+            <div class="section-title">📈 6. Storico e Statistiche</div>
+
+            <div class="subsection-title">Storico INR</div>
+            <p>Dalla scheda paziente, il tab <strong>Storico INR</strong> mostra:</p>
+            <ul>
+                <li>Tabella cronologica di tutti i controlli</li>
+                <li>Grafico andamento INR con evidenza range terapeutico</li>
+                <li>Box "Dettagli Controllo" con info completo (data, INR, dose, note, compliance)</li>
+            </ul>
+
+            <div class="subsection-title">TTR (Time in Therapeutic Range)</div>
+            <p>Indicatore chiave della qualità del controllo:</p>
+            <ul>
+                <li><strong>TTR > 70%:</strong> Controllo eccellente</li>
+                <li><strong>TTR 60-70%:</strong> Controllo buono</li>
+                <li><strong>TTR < 60%:</strong> Controllo subottimale - rivalutare terapia</li>
+            </ul>
+
+            <div class="tip">
+                <span class="tip-icon">📊</span>
+                <strong>Grafico Interattivo:</strong> Utilizzare i pulsanti "Mostra/Nascondi grafico" per visualizzare l'andamento temporale.
+            </div>
+        </div>
+
+        <!-- 7. Guide Professionali -->
+        <div id="guide-professionali" class="section">
+            <div class="section-title">📚 7. Guide Professionali</div>
+
+            <p>TaoGEST include guide cliniche integrate, accessibili dal menu <strong>Aiuto</strong>:</p>
+
+            <div class="subsection-title">Guide Disponibili</div>
+            <ul>
+                <li><strong>💊 Interazioni Farmacologiche Warfarin:</strong> Database completo con 13+ interazioni documentate</li>
+                <li><strong>📊 Flowchart Gestione INR:</strong> Algoritmo decisionale interattivo per gestione INR e sanguinamenti</li>
+                <li><strong>Linee Guida FCSA 2016:</strong> Raccomandazioni italiane</li>
+                <li><strong>Linee Guida ESC 2020:</strong> Raccomandazioni europee</li>
+                <li><strong>Linee Guida CHEST:</strong> Raccomandazioni americane</li>
+                <li><strong>Gestione Perioperatoria:</strong> Bridge therapy e sospensione TAO</li>
+            </ul>
+
+            <div class="tip">
+                <span class="tip-icon">🔍</span>
+                <strong>Guide Interattive:</strong> Le guide HTML includono ricerca, filtri e grafici interattivi per facilitare la consultazione.
+            </div>
+        </div>
+
+        <!-- 8. Scorciatoie -->
+        <div id="scorciatoie" class="section">
+            <div class="section-title">⌨️ 8. Scorciatoie da Tastiera</div>
+
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #f1f5f9; border-bottom: 2px solid #cbd5e1;">
+                        <th style="padding: 12px; text-align: left;">Comando</th>
+                        <th style="padding: 12px; text-align: left;">Tasto</th>
+                        <th style="padding: 12px; text-align: left;">Descrizione</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 12px;">Guida Utente</td>
+                        <td style="padding: 12px;"><span class="kbd">F1</span></td>
+                        <td style="padding: 12px;">Apre questa guida</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 12px;">Elenco Pazienti</td>
+                        <td style="padding: 12px;"><span class="kbd">Ctrl+L</span></td>
+                        <td style="padding: 12px;">Torna alla lista pazienti</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 12px;">Ricerca Paziente</td>
+                        <td style="padding: 12px;"><span class="kbd">Ctrl+F</span></td>
+                        <td style="padding: 12px;">Focus sulla barra di ricerca</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 12px;">DevTools Guide</td>
+                        <td style="padding: 12px;"><span class="kbd">F12</span></td>
+                        <td style="padding: 12px;">Strumenti sviluppatore (nelle guide HTML)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer -->
+        <div style="background: #f1f5f9; padding: 24px; border-radius: 8px; text-align: center; margin-top: 32px;">
+            <p style="color: #64748b; margin: 0 0 8px 0;">
+                <strong>TaoGEST</strong> - Sistema Professionale per la Gestione TAO
+            </p>
+            <p style="color: #94a3b8; font-size: 14px; margin: 0;">
+                Per supporto tecnico o segnalazioni, consultare il repository del progetto
+            </p>
+        </div>
+
+    </div>
+</body>
+</html>
