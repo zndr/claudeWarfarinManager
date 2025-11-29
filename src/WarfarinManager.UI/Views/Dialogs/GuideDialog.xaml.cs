@@ -45,9 +45,6 @@ public partial class GuideDialog : Window
                     console.error('JavaScript Error:', e.message, e.filename, e.lineno);
                 });
             ");
-
-            // Aggiorna lo stato dei pulsanti
-            UpdateNavigationButtons();
         }
         catch (Exception ex)
         {
@@ -67,32 +64,6 @@ public partial class GuideDialog : Window
     private void CoreWebView2_NavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
     {
         StatusText.Text = e.IsSuccess ? "Guida caricata" : "Errore nel caricamento";
-        UpdateNavigationButtons();
-    }
-
-    private void UpdateNavigationButtons()
-    {
-        if (webView?.CoreWebView2 != null)
-        {
-            BackButton.IsEnabled = webView.CoreWebView2.CanGoBack;
-            ForwardButton.IsEnabled = webView.CoreWebView2.CanGoForward;
-        }
-    }
-
-    private void BackButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (webView?.CoreWebView2?.CanGoBack == true)
-        {
-            webView.CoreWebView2.GoBack();
-        }
-    }
-
-    private void ForwardButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (webView?.CoreWebView2?.CanGoForward == true)
-        {
-            webView.CoreWebView2.GoForward();
-        }
     }
 
     private void RefreshButton_Click(object sender, RoutedEventArgs e)

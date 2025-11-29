@@ -55,26 +55,6 @@
                     Orientation="Horizontal"
                     HorizontalAlignment="Right">
                     <Button
-                        x:Name="BackButton"
-                        Width="100"
-                        Height="30"
-                        Margin="0,0,10,0"
-                        Background="#005A9E"
-                        Click="BackButton_Click"
-                        Content="⬅ Indietro"
-                        FontSize="12"
-                        Foreground="White" />
-                    <Button
-                        x:Name="ForwardButton"
-                        Width="100"
-                        Height="30"
-                        Margin="0,0,10,0"
-                        Background="#005A9E"
-                        Click="ForwardButton_Click"
-                        Content="Avanti ➡"
-                        FontSize="12"
-                        Foreground="White" />
-                    <Button
                         x:Name="RefreshButton"
                         Width="100"
                         Height="30"

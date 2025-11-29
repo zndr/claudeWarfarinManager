@@ -54,4 +54,11 @@
     </None>
   </ItemGroup>
 
+  <!-- Pre-build: Sincronizza guide da docs a Resources/Guides -->
+  <Target Name="SyncGuidesFromDocs" BeforeTargets="PreBuildEvent">
+    <Exec Command="powershell -ExecutionPolicy Bypass -NoProfile -File &quot;$(MSBuildProjectDirectory)\..\..\scripts\sync-guides.ps1&quot;"
+          ContinueOnError="true"
+          IgnoreExitCode="false" />
+  </Target>
+
 </Project>

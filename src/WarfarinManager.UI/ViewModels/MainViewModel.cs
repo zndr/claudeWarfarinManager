@@ -178,6 +178,21 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void ShowProfessionalGuidesDialog()
+    {
+        try
+        {
+            var dialog = new ProfessionalGuidesDialog(_serviceProvider);
+            dialog.Owner = Application.Current.MainWindow;
+            dialog.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            _dialogService.ShowError($"Errore nell'apertura del dialog guide professionali:\n{ex.Message}", "Errore");
+        }
+    }
+
+    [RelayCommand]
     private void ShowProfessionalGuide(string fileName)
     {
         try
@@ -185,9 +200,10 @@ public partial class MainViewModel : ObservableObject
             // Determina il titolo della guida in base al file
             var title = fileName switch
             {
-                "index.html" => "Indice Guide Professionali",
                 "interactions.html" => "Interazioni Farmacologiche Warfarin",
                 "algoritmo-gestione-inr.html" => "Flowchart Gestione INR",
+                "infografica-tao.html" => "Infografica Gestione TAO",
+                "linee-guida-tao.html" => "Guida alla TAO con Warfarin per MMG",
                 _ => "Guida Professionale"
             };
 
@@ -205,17 +221,33 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ShowGuideline(string guidelineType)
+    private void OpenPdfGuide(string pdfFileName)
     {
-        var message = guidelineType switch
+        try
         {
-            "FCSA2016" => "Linee guida FCSA 2016\n\nFunzionalità in fase di sviluppo",
-            "ESC2020" => "Linee guida ESC 2020\n\nFunzionalità in fase di sviluppo",
-            "CHEST" => "Linee guida CHEST\n\nFunzionalità in fase di sviluppo",
-            "Perioperative" => "Gestione perioperatoria\n\nFunzionalità in fase di sviluppo",
-            _ => "Linee guida professionali\n\nFunzionalità in fase di sviluppo"
-        };
-        _dialogService.ShowInformation(message, "Linee guida");
+            // Costruisce il percorso completo del PDF
+            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var pdfPath = System.IO.Path.Combine(baseDirectory, "Resources", "Guides", pdfFileName);
+
+            // Verifica che il file esista
+            if (!System.IO.File.Exists(pdfPath))
+            {
+                _dialogService.ShowError($"File PDF non trovato:\n{pdfPath}", "Errore");
+                return;
+            }
+
+            // Apre il PDF con l'applicazione predefinita
+            var processStartInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = pdfPath,
+                UseShellExecute = true
+            };
+            System.Diagnostics.Process.Start(processStartInfo);
+        }
+        catch (Exception ex)
+        {
+            _dialogService.ShowError($"Errore nell'apertura del PDF:\n{ex.Message}", "Errore");
+        }
     }
 
     [RelayCommand]

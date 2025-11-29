@@ -19,6 +19,7 @@
         <KeyBinding Key="L" Modifiers="Ctrl" Command="{Binding ShowPatientListCommand}" />
         <KeyBinding Key="F" Modifiers="Ctrl" Command="{Binding SearchPatientCommand}" />
         <KeyBinding Key="F1" Command="{Binding ShowUserGuideCommand}" />
+        <KeyBinding Key="F1" Modifiers="Shift" Command="{Binding ShowProfessionalGuidesDialogCommand}" />
     </Window.InputBindings>
 
     <Grid>
@@ -114,12 +115,11 @@
                     Header="Guida utente"
                     InputGestureText="F1" />
                 <Separator />
+                <MenuItem
+                    Command="{Binding ShowProfessionalGuidesDialogCommand}"
+                    Header="Guide professionali"
+                    InputGestureText="Shift+F1" />
                 <MenuItem Header="Linee guida professionali">
-                    <MenuItem
-                        Command="{Binding ShowProfessionalGuideCommand}"
-                        CommandParameter="index.html"
-                        Header="📚 Indice Guide" />
-                    <Separator />
                     <MenuItem
                         Command="{Binding ShowProfessionalGuideCommand}"
                         CommandParameter="interactions.html"
@@ -128,23 +128,25 @@
                         Command="{Binding ShowProfessionalGuideCommand}"
                         CommandParameter="algoritmo-gestione-inr.html"
                         Header="📊 Flowchart Gestione INR" />
+                    <MenuItem
+                        Command="{Binding ShowProfessionalGuideCommand}"
+                        CommandParameter="infografica-tao.html"
+                        Header="📋 Infografica Gestione TAO" />
+                    <MenuItem Header="📖 Guida alla TAO con Warfarin per MMG">
+                        <MenuItem
+                            Command="{Binding ShowProfessionalGuideCommand}"
+                            CommandParameter="linee-guida-tao.html"
+                            Header="📄 Testo" />
+                        <MenuItem
+                            Command="{Binding OpenPdfGuideCommand}"
+                            CommandParameter="LineeGuida.pdf"
+                            Header="📕 PDF" />
+                    </MenuItem>
                     <Separator />
                     <MenuItem
-                        Command="{Binding ShowGuidelineCommand}"
-                        CommandParameter="FCSA2016"
-                        Header="Linee guida FCSA 2016" />
-                    <MenuItem
-                        Command="{Binding ShowGuidelineCommand}"
-                        CommandParameter="ESC2020"
-                        Header="Linee guida ESC 2020" />
-                    <MenuItem
-                        Command="{Binding ShowGuidelineCommand}"
-                        CommandParameter="CHEST"
-                        Header="Linee guida CHEST" />
-                    <MenuItem
-                        Command="{Binding ShowGuidelineCommand}"
-                        CommandParameter="Perioperative"
-                        Header="Gestione perioperatoria" />
+                        Command="{Binding OpenPdfGuideCommand}"
+                        CommandParameter="Guida Warfarin per pazienti.pdf"
+                        Header="👥 Guida per pazienti" />
                 </MenuItem>
                 <Separator />
                 <MenuItem
