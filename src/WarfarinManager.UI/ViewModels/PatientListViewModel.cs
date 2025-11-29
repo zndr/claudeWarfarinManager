@@ -170,9 +170,14 @@ public partial class PatientListViewModel : ObservableObject
         try
         {
             _logger.LogInformation("Apertura dettagli paziente ID: {PatientId}", SelectedPatient.Id);
-            
-            // Naviga ai dettagli passando l'ID del paziente
-            _navigationService.NavigateTo<PatientDetailsViewModel>(SelectedPatient.Id);
+
+            // Naviga ai dettagli aprendo il tab "Storico INR" (indice 4)
+            var navParam = new PatientNavigationParameter
+            {
+                PatientId = SelectedPatient.Id,
+                TabIndex = 4 // Tab Storico INR (0=Anagrafica, 1=Valutazione Pre-TAO, 2=Indicazione, 3=Farmaci, 4=Storico INR)
+            };
+            _navigationService.NavigateTo<PatientDetailsViewModel>(navParam);
         }
         catch (Exception ex)
         {

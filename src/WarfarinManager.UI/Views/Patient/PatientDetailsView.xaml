@@ -115,7 +115,7 @@
                     <Button
                         Margin="0,0,10,0"
                         Padding="15,8"
-                        Background="#107C10"
+                        Background="#FFA500"
                         BorderThickness="0"
                         Command="{Binding OpenINRControlCommand}"
                         Content="📊 Aggiungi INR"
@@ -139,10 +139,10 @@
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#0E6B0E" />
+                                        <Setter Property="Background" Value="#E59400" />
                                     </Trigger>
                                     <Trigger Property="IsPressed" Value="True">
-                                        <Setter Property="Background" Value="#0C5A0C" />
+                                        <Setter Property="Background" Value="#CC8400" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>

@@ -257,9 +257,10 @@
                             <!--  Valore INR  -->
                             <TextBlock Style="{StaticResource InputLabelStyle}" Text="Valore INR" />
                             <TextBox
+                                x:Name="InrValueTextBox"
                                 Margin="0,0,0,5"
                                 Style="{StaticResource InputTextBoxStyle}"
-                                Text="{Binding InrValue, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=LostFocus}" />
+                                Text="{Binding InrValue, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBlock
                                 Margin="0,0,0,15"
                                 FontSize="10"

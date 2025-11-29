@@ -1,0 +1,230 @@
+<Window
+    x:Class="WarfarinManager.UI.Views.Dialogs.FourDEvaluationDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Valutazione 4D - INR Fuori Range"
+    Width="550"
+    Height="500"
+    WindowStartupLocation="CenterOwner"
+    ResizeMode="NoResize"
+    BorderBrush="#FFA500"
+    BorderThickness="2"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <Style x:Key="HeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#0078D4" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+
+        <Style x:Key="SectionStyle" TargetType="Border">
+            <Setter Property="Background" Value="#F8F9FA" />
+            <Setter Property="BorderBrush" Value="#E0E0E0" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+
+        <Style x:Key="CheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+
+        <Style x:Key="ExplanationTextBoxStyle" TargetType="TextBox">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Padding" Value="6" />
+            <Setter Property="Margin" Value="20,0,0,0" />
+            <Setter Property="MaxLength" Value="100" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="AcceptsReturn" Value="False" />
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--  Header  -->
+        <Border
+            Grid.Row="0"
+            Padding="20,15"
+            Background="#FFA500">
+            <StackPanel>
+                <TextBlock
+                    FontSize="16"
+                    FontWeight="Bold"
+                    Foreground="#1A1A1A"
+                    Text="⚠️ Valutazione 4D" />
+                <TextBlock
+                    Margin="0,5,0,0"
+                    FontSize="11"
+                    Foreground="#333333"
+                    Text="Il valore INR è significativamente fuori dal range terapeutico." />
+                <TextBlock
+                    Margin="0,2,0,0"
+                    FontSize="11"
+                    Foreground="#333333"
+                    Text="Valuta i seguenti fattori per identificare la causa:" />
+            </StackPanel>
+        </Border>
+
+        <!--  Form  -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="20,15">
+                <!--  Diet  -->
+                <Border Style="{StaticResource SectionStyle}">
+                    <StackPanel>
+                        <CheckBox
+                            x:Name="DietCheckBox"
+                            Style="{StaticResource CheckBoxStyle}"
+                            Content="🥗 Diet (Dieta)"
+                            Checked="OnCheckBoxChanged"
+                            Unchecked="OnCheckBoxChanged" />
+                        <TextBox
+                            x:Name="DietTextBox"
+                            Style="{StaticResource ExplanationTextBoxStyle}"
+                            Visibility="Collapsed" />
+                        <TextBlock
+                            x:Name="DietCharCount"
+                            Margin="20,2,0,0"
+                            FontSize="9"
+                            Foreground="#666666"
+                            Text="0/100 caratteri"
+                            Visibility="Collapsed" />
+                    </StackPanel>
+                </Border>
+
+                <!--  Dosage  -->
+                <Border Style="{StaticResource SectionStyle}">
+                    <StackPanel>
+                        <CheckBox
+                            x:Name="DosageCheckBox"
+                            Style="{StaticResource CheckBoxStyle}"
+                            Content="💊 Dosage (Dosaggio)"
+                            Checked="OnCheckBoxChanged"
+                            Unchecked="OnCheckBoxChanged" />
+                        <TextBox
+                            x:Name="DosageTextBox"
+                            Style="{StaticResource ExplanationTextBoxStyle}"
+                            Visibility="Collapsed" />
+                        <TextBlock
+                            x:Name="DosageCharCount"
+                            Margin="20,2,0,0"
+                            FontSize="9"
+                            Foreground="#666666"
+                            Text="0/100 caratteri"
+                            Visibility="Collapsed" />
+                    </StackPanel>
+                </Border>
+
+                <!--  Drugs  -->
+                <Border Style="{StaticResource SectionStyle}">
+                    <StackPanel>
+                        <CheckBox
+                            x:Name="DrugsCheckBox"
+                            Style="{StaticResource CheckBoxStyle}"
+                            Content="💉 Drugs (Farmaci/Interazioni)"
+                            Checked="OnCheckBoxChanged"
+                            Unchecked="OnCheckBoxChanged" />
+                        <TextBox
+                            x:Name="DrugsTextBox"
+                            Style="{StaticResource ExplanationTextBoxStyle}"
+                            Visibility="Collapsed" />
+                        <TextBlock
+                            x:Name="DrugsCharCount"
+                            Margin="20,2,0,0"
+                            FontSize="9"
+                            Foreground="#666666"
+                            Text="0/100 caratteri"
+                            Visibility="Collapsed" />
+                    </StackPanel>
+                </Border>
+
+                <!--  Diseases  -->
+                <Border Style="{StaticResource SectionStyle}">
+                    <StackPanel>
+                        <CheckBox
+                            x:Name="DiseasesCheckBox"
+                            Style="{StaticResource CheckBoxStyle}"
+                            Content="🏥 Diseases (Patologie)"
+                            Checked="OnCheckBoxChanged"
+                            Unchecked="OnCheckBoxChanged" />
+                        <TextBox
+                            x:Name="DiseasesTextBox"
+                            Style="{StaticResource ExplanationTextBoxStyle}"
+                            Visibility="Collapsed" />
+                        <TextBlock
+                            x:Name="DiseasesCharCount"
+                            Margin="20,2,0,0"
+                            FontSize="9"
+                            Foreground="#666666"
+                            Text="0/100 caratteri"
+                            Visibility="Collapsed" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!--  Buttons  -->
+        <Border
+            Grid.Row="2"
+            Padding="20,12"
+            Background="#F5F5F5"
+            BorderBrush="#E0E0E0"
+            BorderThickness="0,1,0,0">
+            <StackPanel
+                HorizontalAlignment="Right"
+                Orientation="Horizontal">
+                <Button
+                    Width="100"
+                    Height="32"
+                    Margin="0,0,10,0"
+                    Click="CancelButton_Click"
+                    Content="Annulla" />
+                <Button
+                    Width="100"
+                    Height="32"
+                    Click="SaveButton_Click"
+                    Content="Salva"
+                    IsDefault="True">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#0078D4" />
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="FontWeight" Value="SemiBold" />
+                            <Setter Property="Cursor" Value="Hand" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border
+                                            Background="{TemplateBinding Background}"
+                                            CornerRadius="3">
+                                            <ContentPresenter
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center" />
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#005A9E" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

@@ -1,4 +1,7 @@
+using System.Threading.Tasks;
 using System.Windows;
+using WarfarinManager.Data.Entities;
+using WarfarinManager.UI.Views.Dialogs;
 
 namespace WarfarinManager.UI.Services;
 
@@ -52,5 +55,31 @@ public class DialogService : IDialogService
             title,
             MessageBoxButton.YesNoCancel,
             MessageBoxImage.Question);
+    }
+
+    public async Task<INRControl?> ShowINREditDialogAsync(INRControl control)
+    {
+        var dialog = new INREditDialog(control);
+        var result = dialog.ShowDialog();
+
+        if (result == true)
+        {
+            return dialog.EditedControl;
+        }
+
+        return null;
+    }
+
+    public async Task<string?> ShowFourDEvaluationDialogAsync()
+    {
+        var dialog = new FourDEvaluationDialog();
+        var result = dialog.ShowDialog();
+
+        if (result == true)
+        {
+            return dialog.EvaluationText;
+        }
+
+        return null;
     }
 }

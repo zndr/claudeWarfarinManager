@@ -60,7 +60,7 @@
                     <Button
                         Margin="0,0,10,0"
                         Padding="15,8"
-                        Background="#107C10"
+                        Background="#FFA500"
                         BorderThickness="0"
                         Command="{Binding AddNewPatientCommand}"
                         Content="➕ Nuovo Paziente"
@@ -83,7 +83,7 @@
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#0F6B0D" />
+                                        <Setter Property="Background" Value="#E59400" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>

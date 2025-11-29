@@ -220,6 +220,8 @@ namespace WarfarinManager.UI.ViewModels
 
         private void OnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine($"[PropertyChanged] Property={e.PropertyName}, InrValue={InrValue}, _isApplyingSchedule={_isApplyingSchedule}");
+
             // Ricalcola dose settimanale quando cambiano le dosi giornaliere
             if (e.PropertyName == nameof(MondayDose) ||
                 e.PropertyName == nameof(TuesdayDose) ||
@@ -245,9 +247,20 @@ namespace WarfarinManager.UI.ViewModels
                 (e.PropertyName == nameof(InrValue) ||
                  e.PropertyName == nameof(SelectedPhase)))
             {
-                if (InrValue > 0 && CurrentWeeklyDose > 0)
+                System.Diagnostics.Debug.WriteLine($"[PropertyChanged] INR or Phase changed. InrValue={InrValue}");
+
+                if (InrValue > 0)
                 {
-                    _ = CalculateSuggestionsAsync();
+                    System.Diagnostics.Debug.WriteLine($"[PropertyChanged] Calling CheckAndShowFourDEvaluationAsync()");
+
+                    // Verifica valutazione 4D anche se non c'è dosaggio
+                    _ = CheckAndShowFourDEvaluationAsync();
+
+                    // Calcola suggerimenti solo se c'è un dosaggio
+                    if (CurrentWeeklyDose > 0)
+                    {
+                        _ = CalculateSuggestionsAsync();
+                    }
                 }
             }
         }
@@ -551,7 +564,7 @@ namespace WarfarinManager.UI.ViewModels
                 if (ActiveSuggestion != null)
                 {
                     SuggestedDistributedSchedule = DoseDistributionHelper.DistributeWeeklyDose(
-                        ActiveSuggestion.SuggestedWeeklyDoseMg, 
+                        ActiveSuggestion.SuggestedWeeklyDoseMg,
                         ExcludeQuarterTablets);
                     SuggestedScheduleText = DoseDistributionHelper.GenerateShortSchedule(SuggestedDistributedSchedule);
                 }
@@ -1211,6 +1224,46 @@ valutazione clinica finale e della decisione terapeutica.
                 NextControlDays_ACCP = control.DosageSuggestions
                     .FirstOrDefault(s => s.GuidelineUsed == Guideline.ACCP_ACC)?.NextControlDays
             };
+        }
+
+        /// <summary>
+        /// Verifica se l'INR è significativamente fuori range e mostra il dialog di valutazione 4D
+        /// </summary>
+        public async Task CheckAndShowFourDEvaluationAsync()
+        {
+            // Verifica che ci sia un target INR valido
+            if (TargetINRMin <= 0 || TargetINRMax <= 0)
+                return;
+
+            // Soglia: INR molto fuori range (± 0.5 dal target)
+            const decimal THRESHOLD = 0.5m;
+
+            bool isSignificantlyOutOfRange =
+                InrValue < (TargetINRMin - THRESHOLD) ||
+                InrValue > (TargetINRMax + THRESHOLD);
+
+            System.Diagnostics.Debug.WriteLine($"[4D Check] INR={InrValue}, Target={TargetINRMin}-{TargetINRMax}, Threshold={THRESHOLD}, OutOfRange={isSignificantlyOutOfRange}");
+
+            if (!isSignificantlyOutOfRange)
+                return;
+
+            // Mostra dialog di valutazione 4D
+            var evaluationText = await _dialogService.ShowFourDEvaluationDialogAsync();
+
+            if (!string.IsNullOrWhiteSpace(evaluationText))
+            {
+                // Aggiungi il testo della valutazione 4D alle note cliniche
+                if (!string.IsNullOrWhiteSpace(Notes))
+                {
+                    // Aggiungi in coda alle note esistenti
+                    Notes += "\n\n" + evaluationText;
+                }
+                else
+                {
+                    // Nessuna nota esistente, imposta direttamente
+                    Notes = evaluationText;
+                }
+            }
         }
 
         #endregion

@@ -112,6 +112,12 @@ namespace WarfarinManager.UI.ViewModels
                 PatientId = patientId;
                 _ = LoadPatientDataAsync(PatientId);
             }
+            else if (parameter is PatientNavigationParameter navParam)
+            {
+                PatientId = navParam.PatientId;
+                SelectedTabIndex = navParam.TabIndex;
+                _ = LoadPatientDataAsync(PatientId);
+            }
         }
 
         /// <summary>
@@ -365,13 +371,13 @@ namespace WarfarinManager.UI.ViewModels
         /// </summary>
         partial void OnSelectedTabIndexChanged(int value)
         {
-            // Tab 2 = Farmaci (indice 2)
-            if (value == 2 && PatientId > 0 && MedicationsViewModel != null)
+            // Tab 3 = Farmaci (indice 3)
+            if (value == 3 && PatientId > 0 && MedicationsViewModel != null)
             {
                 _ = MedicationsViewModel.LoadMedicationsAsync(PatientId);
             }
-            // Tab 3 = Storico INR (indice 3)
-            else if (value == 3 && PatientId > 0 && InrHistoryViewModel != null)
+            // Tab 4 = Storico INR (indice 4)
+            else if (value == 4 && PatientId > 0 && InrHistoryViewModel != null)
             {
                 // Ottieni target INR dall'indicazione attiva
                 var activeIndication = Indications.FirstOrDefault(i => i.IsActive);
@@ -384,8 +390,8 @@ namespace WarfarinManager.UI.ViewModels
                     _ = InrHistoryViewModel.InitializeAsync(PatientId);
                 }
             }
-            // Tab 4 = Bridge Therapy (indice 4)
-            else if (value == 4 && PatientId > 0 && BridgeTherapyViewModel != null)
+            // Tab 5 = Bridge Therapy (indice 5)
+            else if (value == 5 && PatientId > 0 && BridgeTherapyViewModel != null)
             {
                 _ = BridgeTherapyViewModel.InitializeAsync(PatientId);
             }
@@ -438,5 +444,14 @@ namespace WarfarinManager.UI.ViewModels
                 TypicalDuration = indication.IndicationType?.TypicalDuration
             };
         }
+    }
+
+    /// <summary>
+    /// Parametro per la navigazione ai dettagli paziente con selezione tab
+    /// </summary>
+    public class PatientNavigationParameter
+    {
+        public int PatientId { get; set; }
+        public int TabIndex { get; set; } = 0; // Default: tab Anagrafica
     }
 }

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Interattiva TAO (Warfarin)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        
+        /* Custom Styles for Flow Visualization (CSS-only Tree) */
+        .flow-node {
+            transition: all 0.3s ease;
+        }
+        .flow-node.active {
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        .flow-line {
+            width: 2px;
+            background-color: #cbd5e1;
+            margin: 0 auto;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
+            max-height: 250px;
+        }
+        
+        /* Transition utilities */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <!-- Chosen Palette: Slate (Backgrounds/Text), Blue (Primary Actions), Red/Orange/Green (Clinical Status) -->
+    <!-- Application Structure Plan: 
+         1. Header: Context and Reset.
+         2. Main Interactive Zone (Split Layout):
+            - Left/Top: "Clinical Triage" - A wizard-style input section where the user answers questions (Bleeding? INR? Risk?).
+            - Right/Bottom: "Live Status Dashboard" - Updates in real-time. Contains the "Action Plan" (Output) and the "INR Gauge" (Visualization).
+         3. Protocol Explorer: A collapsible, structured list representation of the source flowchart logic for quick reference, highlighting the active path.
+         Why this structure? It converts a complex branching flowchart into a linear, easy-to-follow decision process for the user, reducing cognitive load during clinical decision-making.
+    -->
+
+    <div class="max-w-6xl mx-auto p-4 md:p-6 lg:p-8">
+        
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">Assistente Clinico TAO</h1>
+                <p class="text-slate-500 text-sm mt-1">Protocollo di gestione Warfarin basato su INR e rischio emorragico</p>
+            </div>
+            <button onclick="resetApp()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-sm font-medium transition-colors">
+                Nuova Valutazione
+            </button>
+        </header>
+
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- LEFT COLUMN: Input & Triage Wizard -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- Introduction Context -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <h2 class="font-semibold text-lg mb-2 text-slate-800">Triage Clinico</h2>
+                    <p class="text-slate-600 text-sm mb-4">
+                        Rispondi alle domande sequenziali per determinare l'azione corretta secondo il protocollo. Il sistema calcolerà automaticamente le raccomandazioni basate sui dati inseriti.
+                    </p>
+                    
+                    <!-- Progress Indicator -->
+                    <div class="w-full bg-slate-200 rounded-full h-1.5 mb-6">
+                        <div id="progressBar" class="bg-blue-600 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+
+                    <!-- STEP 1: Bleeding Check -->
+                    <div id="step1" class="step-container">
+                        <h3 class="text-md font-medium text-slate-900 mb-4">1. Il paziente presenta sanguinamento in atto?</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button onclick="handleBleeding(true)" class="p-4 border-2 border-red-100 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl font-semibold transition-all">
+                                ⚠️ SÌ, Presente
+                            </button>
+                            <button onclick="handleBleeding(false)" class="p-4 border-2 border-green-100 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl font-semibold transition-all">
+                                NO, Assente
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2A: Bleeding Type (Hidden by default) -->
+                    <div id="step2-bleeding" class="step-container hidden">
+                        <h3 class="text-md font-medium text-slate-900 mb-4">2. Classificazione Emorragia</h3>
+                        <div class="space-y-3">
+                            <button onclick="handleBleedingType('major')" class="w-full text-left p-4 border border-red-200 bg-white hover:bg-red-50 rounded-xl transition-all group">
+                                <span class="font-bold text-red-700 block mb-1">Maggiore / Organi Critici</span>
+                                <span class="text-sm text-slate-500">Intracranica, Gastrointestinale, Oculare</span>
+                            </button>
+                            <button onclick="handleBleedingType('minor')" class="w-full text-left p-4 border border-orange-200 bg-white hover:bg-orange-50 rounded-xl transition-all">
+                                <span class="font-bold text-orange-700 block mb-1">Minore</span>
+                                <span class="text-sm text-slate-500">Epistassi controllabile, ematomi superficiali</span>
+                            </button>
+                        </div>
+                        <button onclick="goToStep(1)" class="mt-4 text-sm text-slate-400 hover:text-slate-600 underline">← Indietro</button>
+                    </div>
+
+                    <!-- STEP 2B: INR Input (Hidden by default) -->
+                    <div id="step2-inr" class="step-container hidden">
+                        <h3 class="text-md font-medium text-slate-900 mb-4">2. Inserisci il valore INR rilevato</h3>
+                        
+                        <div class="mb-6">
+                            <input type="number" id="inrInput" step="0.1" placeholder="Es. 2.5" 
+                                class="w-full p-4 text-3xl font-bold text-center border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none text-slate-800"
+                                oninput="updateINRGauge(this.value)">
+                            <p class="text-center text-xs text-slate-400 mt-2">Target standard: 2.0 - 3.0</p>
+                        </div>
+
+                        <button onclick="processINR()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors shadow-lg shadow-blue-200">
+                            Analizza Valore
+                        </button>
+                        <button onclick="goToStep(1)" class="mt-4 text-sm text-slate-400 hover:text-slate-600 underline block text-center mx-auto">← Indietro</button>
+                    </div>
+
+                    <!-- STEP 3: Contextual Questions (Dynamic) -->
+                    <div id="step3-context" class="step-container hidden">
+                        <h3 id="contextQuestion" class="text-md font-medium text-slate-900 mb-4">Domanda di contesto...</h3>
+                        <div id="contextOptions" class="grid grid-cols-1 gap-3">
+                            <!-- Buttons injected by JS -->
+                        </div>
+                        <button onclick="goToStep(2)" class="mt-4 text-sm text-slate-400 hover:text-slate-600 underline">← Indietro</button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Results & Visualization -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <!-- INR Visualization Card -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="font-semibold text-lg text-slate-800">Visualizzazione Stato</h2>
+                        <span id="statusBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-500">
+                            IN ATTESA DATI
+                        </span>
+                    </div>
+                    
+                    <!-- Chart Container with strict sizing logic -->
+                    <div class="chart-container flex justify-center items-center bg-slate-50 rounded-lg border border-slate-100 mb-4">
+                        <canvas id="inrChart"></canvas>
+                        <div id="emptyStateMsg" class="absolute text-slate-400 text-sm">Inserisci INR per visualizzare</div>
+                    </div>
+                    
+                    <p class="text-xs text-slate-400 text-center">
+                        Il grafico mostra la posizione del paziente rispetto al range terapeutico (2.0-3.0) e le zone di rischio.
+                    </p>
+                </div>
+
+                <!-- ACTION PLAN (The Result) -->
+                <div id="actionPlan" class="hidden fade-in bg-white p-6 rounded-xl shadow-lg border-l-8 border-l-blue-500 border border-slate-100">
+                    <h2 class="font-bold text-xl mb-4 text-slate-800 flex items-center gap-2">
+                        <span id="planIcon">📋</span> Protocollo Raccomandato
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-lg bg-slate-50 border border-slate-100">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Azione Principale</p>
+                            <p id="primaryAction" class="text-lg font-medium text-slate-900">...</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Gestione Vitamina K</p>
+                                <p id="vitKAction" class="text-sm text-slate-700">...</p>
+                            </div>
+                            <div class="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Follow-up</p>
+                                <p id="followUpAction" class="text-sm text-slate-700">...</p>
+                            </div>
+                        </div>
+
+                        <div id="warningBox" class="hidden p-3 rounded-lg bg-red-50 border border-red-100 text-red-800 text-sm flex items-start gap-2">
+                            <span class="text-lg">⚠️</span>
+                            <span id="warningText">...</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- REFERENCE SECTION: Protocol Logic Visualization (No SVG) -->
+        <div class="mt-12">
+            <div class="mb-4">
+                <h2 class="text-xl font-bold text-slate-900">Riferimento Protocollo Completo</h2>
+                <p class="text-slate-500 text-sm">Visione d'insieme del diagramma decisionale. La selezione corrente è evidenziata.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <!-- Column 1: Low INR -->
+                <div id="ref-low" class="flow-node p-4 rounded-lg border border-slate-200 bg-white opacity-50">
+                    <div class="font-bold text-blue-800 mb-2 border-b pb-2">INR &lt; 2.0 (Basso)</div>
+                    <ul class="space-y-2 list-disc list-inside text-slate-600">
+                        <li>Cercare causa (Dieta, Farmaci)</li>
+                        <li>Se causa nota: Correggere + piccola dose extra</li>
+                        <li>Se causa ignota: Aumentare dose settimanale 5-15%</li>
+                    </ul>
+                </div>
+
+                <!-- Column 2: Target Range -->
+                <div id="ref-target" class="flow-node p-4 rounded-lg border border-green-200 bg-green-50 opacity-50">
+                    <div class="font-bold text-green-800 mb-2 border-b border-green-200 pb-2">INR 2.0 - 3.0 (Target)</div>
+                    <ul class="space-y-2 list-disc list-inside text-slate-700">
+                        <li>Paziente Stabile: Controllo 4-8 settimane</li>
+                        <li>Paziente Instabile: Controllo 1-2 settimane</li>
+                        <li>Non modificare dose per piccole oscillazioni</li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: High INR -->
+                <div class="space-y-4">
+                    <div id="ref-high1" class="flow-node p-3 rounded-lg border border-orange-200 bg-white opacity-50">
+                        <div class="font-bold text-orange-800">INR 3.1 - 4.5</div>
+                        <p class="text-slate-600">Ridurre dose o saltare 1 dose. NO Vit K.</p>
+                    </div>
+                    <div id="ref-high2" class="flow-node p-3 rounded-lg border border-orange-300 bg-white opacity-50">
+                        <div class="font-bold text-orange-800">INR 4.5 - 8.0</div>
+                        <p class="text-slate-600">Sospendere 1-2 dosi. Vit K solo se alto rischio (1-2mg os).</p>
+                    </div>
+                    <div id="ref-crit" class="flow-node p-3 rounded-lg border border-red-300 bg-white opacity-50">
+                        <div class="font-bold text-red-800">INR &gt; 8.0</div>
+                        <p class="text-slate-600">Stop Warfarin. Vit K 2.5-5mg os. Controllo 24h.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Visualization & Content Choices:
+         1. Interactive Triage (Left Col): Goal is strictly operational. Replaces reading the flowchart with answering questions.
+         2. Gauge Chart (Right Col): Goal is context. Shows "how far" the patient is from the target. Justified as it provides immediate visual risk assessment.
+         3. Action Plan Card (Right Col): Goal is instruction. Provides the specific "What to do" text from the report.
+         4. Reference Grid (Bottom): Goal is transparency. Shows the logic map so the doctor trusts the tool.
+         
+         CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+
+    <script>
+        // --- DATA & STATE ---
+        const state = {
+            bleeding: null, // true/false
+            bleedingType: null, // 'major', 'minor'
+            inr: null,
+            subStep: null // specific sub-questions
+        };
+
+        let inrChartInstance = null;
+
+        // --- CHART INITIALIZATION ---
+        function initChart() {
+            const ctx = document.getElementById('inrChart').getContext('2d');
+            
+            // Doughnut chart simulating a gauge
+            inrChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Basso Risk', 'Target', 'Alto Risk', 'Pericoloso', 'Critico'],
+                    datasets: [{
+                        data: [2, 1, 1.5, 3.5, 2], // Proportions representing ranges roughly
+                        backgroundColor: [
+                            '#93c5fd', // Blue (Low)
+                            '#22c55e', // Green (Target)
+                            '#fbbf24', // Yellow (High)
+                            '#f97316', // Orange (Danger)
+                            '#ef4444'  // Red (Critical)
+                        ],
+                        borderWidth: 0,
+                        circumference: 180,
+                        rotation: 270,
+                        cutout: '75%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    animation: { animateScale: true, animateRotate: true }
+                }
+            });
+
+            // Add center text plugin manually for simplicity in vanilla JS
+            Chart.register({
+                id: 'centerText',
+                beforeDraw: function(chart) {
+                    if (state.inr !== null) {
+                        var width = chart.width,
+                            height = chart.height,
+                            ctx = chart.ctx;
+                        
+                        ctx.restore();
+                        var fontSize = (height / 114).toFixed(2);
+                        ctx.font = "bold " + fontSize + "em sans-serif";
+                        ctx.textBaseline = "middle";
+                        ctx.fillStyle = "#1e293b";
+                        
+                        var text = state.inr,
+                            textX = Math.round((width - ctx.measureText(text).width) / 2),
+                            textY = height / 1.5;
+                        
+                        ctx.fillText(text, textX, textY);
+                        ctx.save();
+                    }
+                }
+            });
+        }
+
+        // --- CORE NAVIGATION LOGIC ---
+
+        function resetApp() {
+            state.bleeding = null;
+            state.bleedingType = null;
+            state.inr = null;
+            state.subStep = null;
+            
+            document.getElementById('inrInput').value = '';
+            document.getElementById('emptyStateMsg').style.display = 'block';
+            document.getElementById('actionPlan').classList.add('hidden');
+            
+            hideAllSteps();
+            document.getElementById('step1').classList.remove('hidden');
+            updateProgressBar(0);
+            resetRefHighlights();
+            
+            if(inrChartInstance) {
+                state.inr = null; // clear internal state
+                inrChartInstance.update();
+            }
+        }
+
+        function hideAllSteps() {
+            document.querySelectorAll('.step-container').forEach(el => el.classList.add('hidden'));
+        }
+
+        function goToStep(stepNum) {
+            hideAllSteps();
+            if (stepNum === 1) document.getElementById('step1').classList.remove('hidden');
+            if (stepNum === 2) {
+                if(state.bleeding) document.getElementById('step2-bleeding').classList.remove('hidden');
+                else document.getElementById('step2-inr').classList.remove('hidden');
+            }
+        }
+
+        function updateProgressBar(percent) {
+            document.getElementById('progressBar').style.width = percent + '%';
+        }
+
+        // --- INTERACTION HANDLERS ---
+
+        function handleBleeding(hasBleeding) {
+            state.bleeding = hasBleeding;
+            updateProgressBar(33);
+            hideAllSteps();
+            
+            if (hasBleeding) {
+                document.getElementById('step2-bleeding').classList.remove('hidden');
+            } else {
+                document.getElementById('step2-inr').classList.remove('hidden');
+            }
+        }
+
+        function handleBleedingType(type) {
+            state.bleedingType = type;
+            updateProgressBar(100);
+            displayBleedingResult(type);
+        }
+
+        function updateINRGauge(val) {
+            const numVal = parseFloat(val);
+            if (!isNaN(numVal)) {
+                state.inr = numVal;
+                document.getElementById('emptyStateMsg').style.display = 'none';
+                inrChartInstance.update();
+            }
+        }
+
+        function processINR() {
+            const val = parseFloat(document.getElementById('inrInput').value);
+            if (isNaN(val)) {
+                alert("Inserisci un valore INR valido");
+                return;
+            }
+            state.inr = val;
+            updateProgressBar(66);
+            hideAllSteps();
+
+            // Logic Tree based on INR ranges
+            if (val < 2.0) {
+                askContext("cause_low");
+            } else if (val >= 2.0 && val <= 3.0) {
+                askContext("stable_check");
+            } else if (val > 3.0 && val <= 4.5) {
+                displayResult("high_mild");
+            } else if (val > 4.5 && val <= 8.0) {
+                askContext("risk_eval");
+            } else if (val > 8.0) {
+                displayResult("critical");
+            }
+        }
+
+        function askContext(contextType) {
+            const container = document.getElementById('step3-context');
+            const title = document.getElementById('contextQuestion');
+            const optionsDiv = document.getElementById('contextOptions');
+            container.classList.remove('hidden');
+            optionsDiv.innerHTML = '';
+
+            if (contextType === 'cause_low') {
+                title.innerText = "C'è una causa identificabile per l'INR basso?";
+                title.innerHTML += '<br><span class="text-sm font-normal text-slate-500">(Es. Dieta ricca di Vit K, farmaci, dose saltata)</span>';
+                
+                createBtn(optionsDiv, "Sì, causa nota", () => displayResult('low_cause_known'));
+                createBtn(optionsDiv, "No, causa ignota / costante", () => displayResult('low_no_cause'));
+            }
+            else if (contextType === 'stable_check') {
+                title.innerText = "Il paziente è stabile?";
+                createBtn(optionsDiv, "Sì, stabile da mesi", () => displayResult('target_stable'));
+                createBtn(optionsDiv, "No, fase di stabilizzazione", () => displayResult('target_unstable'));
+            }
+            else if (contextType === 'risk_eval') {
+                title.innerText = "Valutazione Rischio Emorragico";
+                createBtn(optionsDiv, "Basso Rischio", () => displayResult('high_mod_lowrisk'));
+                createBtn(optionsDiv, "Alto Rischio / Anziano Fragile", () => displayResult('high_mod_highrisk'));
+            }
+        }
+
+        function createBtn(parent, text, onClick) {
+            const btn = document.createElement('button');
+            btn.className = "w-full p-3 bg-white border border-slate-200 hover:bg-blue-50 hover:border-blue-300 rounded-lg text-slate-700 font-medium transition-all text-left";
+            btn.innerText = text;
+            btn.onclick = onClick;
+            parent.appendChild(btn);
+        }
+
+        // --- RESULT DISPLAY LOGIC ---
+
+        function displayBleedingResult(type) {
+            resetRefHighlights();
+            const resultData = {
+                major: {
+                    color: 'red',
+                    title: 'EMERGENZA MEDICA',
+                    primary: 'Ospedalizzazione Immediata',
+                    vitK: 'Somministrare Vitamina K 5-10 mg EV lenta',
+                    follow: 'Obiettivo: INR < 1.5 subito',
+                    warning: 'Richiede PCC a 4 fattori + Vitamina K. La sola Vitamina K non basta.',
+                    ref: null // Emergency not fully mapped in the bottom grid
+                },
+                minor: {
+                    color: 'orange',
+                    title: 'Gestione Sanguinamento Minore',
+                    primary: 'Valutare sospensione temporanea Warfarin',
+                    vitK: 'Eventuale uso locale / Misure emostatiche',
+                    follow: 'Monitoraggio stretto',
+                    warning: 'Valutare la causa del sanguinamento.',
+                    ref: null
+                }
+            }[type];
+            renderCard(resultData);
+        }
+
+        function displayResult(scenario) {
+            resetRefHighlights();
+            updateProgressBar(100);
+            
+            const scenarios = {
+                'low_cause_known': {
+                    color: 'blue', title: 'INR Sub-terapeutico (Causa Nota)',
+                    primary: 'Correggere la causa (es. dieta, aderenza). Considerare piccola dose extra.',
+                    vitK: 'Non necessaria.',
+                    follow: 'Ricontrollo tra 1-2 settimane.',
+                    warning: 'Verificare che il paziente abbia capito la causa.',
+                    refId: 'ref-low'
+                },
+                'low_no_cause': {
+                    color: 'blue', title: 'INR Sub-terapeutico (Costante)',
+                    primary: 'Aumentare la dose settimanale del 5-15%.',
+                    vitK: 'Non necessaria.',
+                    follow: 'Monitoraggio ravvicinato.',
+                    warning: 'Evitare correzioni eccessive se INR vicino al range (es. 1.8-1.9).',
+                    refId: 'ref-low'
+                },
+                'target_stable': {
+                    color: 'green', title: 'Target Terapeutico (Stabile)',
+                    primary: 'Mantenere dose attuale.',
+                    vitK: 'Non applicabile.',
+                    follow: 'Controllo tra 4-8 settimane (fino a 12 se molto stabile).',
+                    warning: 'Nessuna modifica dose necessaria.',
+                    refId: 'ref-target'
+                },
+                'target_unstable': {
+                    color: 'green', title: 'Target Terapeutico (Instabile)',
+                    primary: 'Mantenere dose attuale.',
+                    vitK: 'Non applicabile.',
+                    follow: 'Controllo tra 1-2 settimane.',
+                    warning: 'Monitorare per confermare stabilità.',
+                    refId: 'ref-target'
+                },
+                'high_mild': {
+                    color: 'orange', title: 'Sovra-terapeutico Lieve (3.1 - 4.5)',
+                    primary: 'Ridurre dose settimanale OPPURE saltare 1 dose.',
+                    vitK: 'NO Vitamina K.',
+                    follow: 'Ricontrollo in 2-3 giorni.',
+                    warning: 'Non usare Vit K per evitare resistenza al riavvio.',
+                    refId: 'ref-high1'
+                },
+                'high_mod_lowrisk': {
+                    color: 'orange', title: 'Rischio Moderato (4.5 - 8.0)',
+                    primary: 'Sospendere Warfarin per 1-2 dosi.',
+                    vitK: 'Nessuna Vitamina K.',
+                    follow: 'Monitoraggio ravvicinato fino a rientro in range.',
+                    warning: 'Riprendere a dose ridotta quando INR < 3.0.',
+                    refId: 'ref-high2'
+                },
+                'high_mod_highrisk': {
+                    color: 'orange', title: 'Rischio Moderato in Paziente Fragile',
+                    primary: 'Sospendere Warfarin per 1-2 dosi.',
+                    vitK: 'Considerare Vitamina K orale (1 - 2 mg).',
+                    follow: 'Monitoraggio ravvicinato.',
+                    warning: 'Usare la forma orale (fiale bevibili).',
+                    refId: 'ref-high2'
+                },
+                'critical': {
+                    color: 'red', title: 'Rischio Alto (INR > 8.0)',
+                    primary: 'Sospendere Warfarin immediatemente.',
+                    vitK: 'Somministrare Vitamina K orale (2.5 - 5 mg).',
+                    follow: 'Ricontrollo INR tassativo a 24 ore.',
+                    warning: 'Non usare via IM (rischio ematoma).',
+                    refId: 'ref-crit'
+                }
+            };
+
+            const data = scenarios[scenario];
+            if(data) {
+                renderCard(data);
+                if(data.refId) {
+                    highlightRef(data.refId);
+                }
+            }
+        }
+
+        function renderCard(data) {
+            const planDiv = document.getElementById('actionPlan');
+            const borderColor = {
+                'red': 'border-l-red-500',
+                'orange': 'border-l-orange-500',
+                'green': 'border-l-green-500',
+                'blue': 'border-l-blue-500'
+            }[data.color];
+
+            // Reset classes
+            planDiv.className = `fade-in bg-white p-6 rounded-xl shadow-lg border-l-8 border border-slate-100 ${borderColor}`;
+            
+            // Set content
+            document.getElementById('planIcon').innerText = data.color === 'red' ? '🚨' : (data.color === 'green' ? '✅' : '⚠️');
+            
+            // Status Badge update
+            const badge = document.getElementById('statusBadge');
+            badge.className = `px-3 py-1 rounded-full text-xs font-bold text-white bg-${data.color === 'orange' ? 'yellow-500' : (data.color === 'blue' ? 'blue-500' : (data.color === 'green' ? 'green-500' : 'red-500'))}`;
+            badge.innerText = data.title;
+
+            document.getElementById('primaryAction').innerText = data.primary;
+            document.getElementById('vitKAction').innerText = data.vitK;
+            document.getElementById('followUpAction').innerText = data.follow;
+            document.getElementById('warningText').innerText = data.warning;
+            document.getElementById('warningBox').classList.remove('hidden');
+
+            planDiv.classList.remove('hidden');
+        }
+
+        function highlightRef(id) {
+            document.getElementById(id).classList.remove('opacity-50');
+            document.getElementById(id).classList.add('active', 'opacity-100');
+        }
+
+        function resetRefHighlights() {
+            document.querySelectorAll('.flow-node').forEach(el => {
+                el.classList.remove('active', 'opacity-100');
+                el.classList.add('opacity-50');
+            });
+        }
+
+        // Initialize Chart on load
+        window.onload = initChart;
+
+    </script>
+</body>
+</html>

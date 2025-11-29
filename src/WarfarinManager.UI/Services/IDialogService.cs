@@ -1,4 +1,6 @@
+using System.Threading.Tasks;
 using System.Windows;
+using WarfarinManager.Data.Entities;
 
 namespace WarfarinManager.UI.Services;
 
@@ -32,4 +34,17 @@ public interface IDialogService
     /// Mostra una richiesta con tre opzioni (Sì/No/Annulla)
     /// </summary>
     MessageBoxResult ShowQuestion(string message, string title = "Domanda");
+
+    /// <summary>
+    /// Mostra dialog per modificare un record INR
+    /// </summary>
+    /// <param name="control">Record INR da modificare</param>
+    /// <returns>Record modificato o null se annullato</returns>
+    Task<INRControl?> ShowINREditDialogAsync(INRControl control);
+
+    /// <summary>
+    /// Mostra dialog per valutazione 4D quando INR è significativamente fuori range
+    /// </summary>
+    /// <returns>Testo della valutazione 4D o null se annullato</returns>
+    Task<string?> ShowFourDEvaluationDialogAsync();
 }

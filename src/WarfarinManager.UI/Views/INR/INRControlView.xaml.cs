@@ -1,4 +1,5 @@
 using System.Windows;
+using WarfarinManager.UI.ViewModels;
 
 namespace WarfarinManager.UI.Views.INR
 {

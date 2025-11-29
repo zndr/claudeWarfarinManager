@@ -161,19 +161,16 @@ public class WeeklySchedulePdfService
                     text.Span("Scostamento: ").SemiBold();
                     text.Span($"{deviation:+0.0;-0.0}").FontColor(deviation > 0 ? DangerRed : SuccessGreen);
                 });
-            });
 
-            column.Item().Height(15);
-
-            // Dosaggio attuale
-            column.Item().Background(LightGray).Padding(8).Text("DOSAGGIO ATTUALE")
-                .FontSize(14).SemiBold().FontColor(PrimaryBlue);
-
-            column.Item().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(12).Column(content =>
-            {
-                content.Item().Text($"Dose settimanale: {currentWeeklyDose:F1} mg").SemiBold();
                 content.Item().Height(10);
 
+                // Dosaggio precedente
+                content.Item().Text("Dosaggio precedente (PRIMA della modifica):").SemiBold().FontSize(11);
+                content.Item().Height(5);
+                content.Item().Text($"• Dose settimanale: {currentWeeklyDose:F1} mg/settimana");
+                content.Item().Height(3);
+                content.Item().Text("• Schema quotidiano:");
+                content.Item().Height(5);
                 content.Item().Element(c => ComposeWeeklyScheduleTable(c, currentSchedule, currentScheduleDescriptions));
             });
 
@@ -228,23 +225,6 @@ public class WeeklySchedulePdfService
 
                 column.Item().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(12)
                     .Text(suggestion.ClinicalNotes).FontSize(11);
-
-                column.Item().Height(15);
-            }
-
-            // Alert speciali
-            if (suggestion.Warnings?.Any() == true)
-            {
-                column.Item().Background(DangerRed).Padding(8).Text("⚠ ALERT SPECIALI")
-                    .FontSize(14).SemiBold().FontColor(Colors.White);
-
-                column.Item().Background("#FFEBEE").Border(1).BorderColor(DangerRed).Padding(12).Column(alerts =>
-                {
-                    foreach (var warning in suggestion.Warnings)
-                    {
-                        alerts.Item().Text($"• {warning}").FontSize(11).FontColor("#C62828");
-                    }
-                });
 
                 column.Item().Height(15);
             }
@@ -372,18 +352,6 @@ public class WeeklySchedulePdfService
 
                 column.Item().Height(8);
             }
-
-            // Disclaimer
-            column.Item().Background("#FFF3E0").Padding(10).Column(col =>
-            {
-                col.Item().Text("DISCLAIMER").FontSize(9).Bold().FontColor("#E65100");
-                col.Item().Height(3);
-                col.Item().Text("Questo documento è uno strumento di supporto decisionale. " +
-                    "Il medico prescrittore è SEMPRE responsabile della valutazione clinica finale e della decisione terapeutica.")
-                    .FontSize(8).FontColor("#E65100");
-            });
-
-            column.Item().Height(8);
 
             // Info generazione documento
             column.Item().AlignCenter().Text(text =>

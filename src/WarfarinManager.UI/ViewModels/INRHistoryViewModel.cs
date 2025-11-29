@@ -268,6 +268,7 @@ public partial class INRHistoryViewModel : ObservableObject
                 FormattedDose = $"{control.CurrentWeeklyDose:F1} mg",
                 Phase = control.Phase,
                 PhaseDescription = control.PhaseDescription,
+                IsCompliant = control.IsCompliant,
                 Notes = control.Notes,
                 TargetINRMin = _targetINRMin,
                 TargetINRMax = _targetINRMax
@@ -277,6 +278,11 @@ public partial class INRHistoryViewModel : ObservableObject
             if (i > 0)
             {
                 var previousControl = orderedAsc[i - 1];
+
+                // Imposta dosaggio precedente
+                row.PreviousWeeklyDose = previousControl.CurrentWeeklyDose;
+                row.FormattedPreviousDose = $"{previousControl.CurrentWeeklyDose:F1} mg";
+
                 if (previousControl.CurrentWeeklyDose > 0)
                 {
                     decimal variation = ((control.CurrentWeeklyDose - previousControl.CurrentWeeklyDose)
@@ -296,6 +302,7 @@ public partial class INRHistoryViewModel : ObservableObject
                 row.DoseVariationDisplay = "-";
                 row.VariationColor = "#666666";
                 row.DaysSincePreviousDisplay = "-";
+                row.FormattedPreviousDose = "-";
             }
 
             rows.Add(row);
@@ -480,6 +487,136 @@ public partial class INRHistoryViewModel : ObservableObject
     }
 
     /// <summary>
+    /// Modifica un record INR esistente
+    /// </summary>
+    [RelayCommand]
+    private async Task EditINRRecord(INRHistoryRowDto? row)
+    {
+        if (row == null) return;
+
+        try
+        {
+            _logger.LogInformation("Modifica record INR {Id}", row.Id);
+
+            // Carica il record completo con tutte le relazioni
+            var control = await _unitOfWork.Database.INRControls
+                .Include(c => c.DailyDoses)
+                .FirstOrDefaultAsync(c => c.Id == row.Id);
+
+            if (control == null)
+            {
+                _dialogService.ShowWarning("Record non trovato", "Modifica");
+                return;
+            }
+
+            // Apri dialog di modifica
+            var result = await _dialogService.ShowINREditDialogAsync(control);
+
+            if (result != null)
+            {
+                // Aggiorna il record nel database
+                control.ControlDate = result.ControlDate;
+                control.INRValue = result.INRValue;
+                control.CurrentWeeklyDose = result.CurrentWeeklyDose;
+                control.PhaseOfTherapy = result.PhaseOfTherapy;
+                control.IsCompliant = result.IsCompliant;
+                control.Notes = result.Notes;
+
+                // Aggiorna dosi giornaliere
+                if (result.DailyDoses != null && result.DailyDoses.Any())
+                {
+                    // Rimuovi dosi esistenti
+                    _unitOfWork.Database.DailyDoses.RemoveRange(control.DailyDoses);
+
+                    // Aggiungi nuove dosi
+                    control.DailyDoses = result.DailyDoses;
+                }
+
+                await _unitOfWork.SaveChangesAsync();
+
+                _dialogService.ShowInformation("Record INR modificato con successo", "Modifica Completata");
+
+                // Ricarica i dati
+                await LoadAllControlsAsync();
+                UpdateFilteredData();
+
+                _logger.LogInformation("Record INR {Id} modificato con successo", row.Id);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Errore durante la modifica del record INR {Id}", row?.Id);
+            _dialogService.ShowError($"Errore durante la modifica: {ex.Message}", "Errore");
+        }
+    }
+
+    /// <summary>
+    /// Cancella un record INR
+    /// </summary>
+    [RelayCommand]
+    private async Task DeleteINRRecord(INRHistoryRowDto? row)
+    {
+        if (row == null) return;
+
+        try
+        {
+            _logger.LogInformation("Richiesta cancellazione record INR {Id}", row.Id);
+
+            // Conferma cancellazione
+            var confirmed = _dialogService.ShowConfirmation(
+                $"Sei sicuro di voler eliminare il controllo INR del {row.FormattedDate}?\n\n" +
+                $"INR: {row.FormattedINR}\n" +
+                $"Dose: {row.FormattedDose}\n\n" +
+                "Questa operazione non può essere annullata.",
+                "Conferma Cancellazione");
+
+            if (!confirmed) return;
+
+            // Carica il record con tutte le relazioni
+            var control = await _unitOfWork.Database.INRControls
+                .Include(c => c.DailyDoses)
+                .Include(c => c.DosageSuggestions)
+                .FirstOrDefaultAsync(c => c.Id == row.Id);
+
+            if (control == null)
+            {
+                _dialogService.ShowWarning("Record non trovato", "Cancellazione");
+                return;
+            }
+
+            // Rimuovi dosi giornaliere associate
+            if (control.DailyDoses.Any())
+            {
+                _unitOfWork.Database.DailyDoses.RemoveRange(control.DailyDoses);
+            }
+
+            // Rimuovi suggerimenti dosaggio associati
+            if (control.DosageSuggestions.Any())
+            {
+                _unitOfWork.Database.DosageSuggestions.RemoveRange(control.DosageSuggestions);
+            }
+
+            // Rimuovi il controllo
+            _unitOfWork.Database.INRControls.Remove(control);
+
+            await _unitOfWork.SaveChangesAsync();
+
+            _dialogService.ShowInformation("Record INR eliminato con successo", "Cancellazione Completata");
+
+            // Ricarica i dati
+            await LoadAllControlsAsync();
+            UpdateFilteredData();
+
+            _logger.LogInformation("Record INR {Id} eliminato con successo", row.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Errore durante la cancellazione del record INR {Id}", row?.Id);
+            _dialogService.ShowError($"Errore durante la cancellazione: {ex.Message}", "Errore");
+        }
+    }
+
+    /// <summary>
     /// Esporta storico in CSV
     /// </summary>
     [RelayCommand]
@@ -505,7 +642,7 @@ public partial class INRHistoryViewModel : ObservableObject
             var sb = new StringBuilder();
 
             // Header
-            sb.AppendLine("Data;INR;Stato;Dose Sett. (mg);Variazione %;Giorni;Fase;Note");
+            sb.AppendLine("Data;INR;Stato;Dosaggio precedente (mg);Nuovo dosaggio (mg);Variazione %;Giorni;Note");
 
             // Righe
             foreach (var row in InrHistoryRows)
@@ -514,10 +651,10 @@ public partial class INRHistoryViewModel : ObservableObject
                     row.ControlDate.ToString("dd/MM/yyyy"),
                     row.INRValue.ToString("F2").Replace(".", ","),
                     row.StatusText,
+                    row.PreviousWeeklyDose?.ToString("F1").Replace(".", ",") ?? "-",
                     row.CurrentWeeklyDose.ToString("F1").Replace(".", ","),
                     row.DoseVariationPercent?.ToString("F1").Replace(".", ",") ?? "",
                     row.DaysSincePrevious?.ToString() ?? "",
-                    row.PhaseDescription,
                     (row.Notes ?? "").Replace(";", ",").Replace("\n", " ")
                 ));
             }
@@ -626,6 +763,8 @@ public class INRHistoryRowDto
     public bool IsInRange { get; set; }
     public decimal CurrentWeeklyDose { get; set; }
     public string FormattedDose { get; set; } = string.Empty;
+    public decimal? PreviousWeeklyDose { get; set; }
+    public string FormattedPreviousDose { get; set; } = "-";
     public decimal? DoseVariationPercent { get; set; }
     public string DoseVariationDisplay { get; set; } = "-";
     public string VariationColor { get; set; } = "#666666";
@@ -633,6 +772,7 @@ public class INRHistoryRowDto
     public string DaysSincePreviousDisplay { get; set; } = "-";
     public Shared.Enums.TherapyPhase Phase { get; set; }
     public string PhaseDescription { get; set; } = string.Empty;
+    public bool IsCompliant { get; set; }
     public string? Notes { get; set; }
     public decimal TargetINRMin { get; set; }
     public decimal TargetINRMax { get; set; }
