@@ -25,6 +25,7 @@ public class WarfarinDbContext : DbContext
     public DbSet<BridgeTherapyPlan> BridgeTherapyPlans => Set<BridgeTherapyPlan>();
     public DbSet<PreTaoAssessment> PreTaoAssessments => Set<PreTaoAssessment>();
     public DbSet<DoctorData> DoctorData => Set<DoctorData>();
+    public DbSet<TherapySwitch> TherapySwitches => Set<TherapySwitch>();
 
     // DbSets - Lookup tables
     
@@ -94,6 +95,18 @@ public class WarfarinDbContext : DbContext
         modelBuilder.Entity<InteractionDrug>()
             .Property(i => i.InteractionLevel)
             .HasConversion<string>();
+
+        modelBuilder.Entity<TherapySwitch>()
+            .Property(t => t.Direction)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<TherapySwitch>()
+            .Property(t => t.DoacType)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<TherapySwitch>()
+            .Property(t => t.WarfarinType)
+            .HasConversion<string>();
     }
     
     private static void ConfigureIndexes(ModelBuilder modelBuilder)
@@ -133,6 +146,14 @@ public class WarfarinDbContext : DbContext
         modelBuilder.Entity<InteractionDrug>()
             .HasIndex(id => id.DrugName)
             .IsUnique();
+
+        // TherapySwitch indexes
+        modelBuilder.Entity<TherapySwitch>()
+            .HasIndex(ts => new { ts.PatientId, ts.SwitchDate })
+            .IsDescending(false, true);
+
+        modelBuilder.Entity<TherapySwitch>()
+            .HasIndex(ts => new { ts.FirstFollowUpDate, ts.FollowUpCompleted });
     }
     
     private static void SeedData(ModelBuilder modelBuilder)

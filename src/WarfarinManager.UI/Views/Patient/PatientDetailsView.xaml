@@ -542,6 +542,11 @@
             <TabItem Header="⚠ Eventi Avversi">
                 <local:AdverseEventsView DataContext="{Binding AdverseEventsViewModel}" />
             </TabItem>
+
+            <!--  Tab 7: Switch Terapia  -->
+            <TabItem Header="🔄 Switch Terapia">
+                <local:SwitchTherapyTabView DataContext="{Binding SwitchTherapyViewModel}" />
+            </TabItem>
         </TabControl>
 
         <!--  Loading Overlay  -->

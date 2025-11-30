@@ -73,6 +73,12 @@ namespace WarfarinManager.UI.ViewModels
         [ObservableProperty]
         private AdverseEventsViewModel? _adverseEventsViewModel;
 
+        /// <summary>
+        /// ViewModel per lo switch terapia (esposto per binding nel tab Switch Terapia)
+        /// </summary>
+        [ObservableProperty]
+        private SwitchTherapyViewModel? _switchTherapyViewModel;
+
         public PatientDetailsViewModel(
             IUnitOfWork unitOfWork,
             INavigationService navigationService,
@@ -100,6 +106,9 @@ namespace WarfarinManager.UI.ViewModels
 
             // Inizializza il AdverseEventsViewModel dal DI
             AdverseEventsViewModel = _serviceProvider.GetRequiredService<AdverseEventsViewModel>();
+
+            // Inizializza il SwitchTherapyViewModel dal DI
+            SwitchTherapyViewModel = _serviceProvider.GetRequiredService<SwitchTherapyViewModel>();
         }
 
         /// <summary>
@@ -187,6 +196,13 @@ namespace WarfarinManager.UI.ViewModels
                 {
                     _logger.LogInformation("Caricamento eventi avversi per paziente {PatientId}", PatientId);
                     await AdverseEventsViewModel.LoadAdverseEventsAsync(PatientId);
+                }
+
+                // Inizializza lo Switch Terapia
+                if (SwitchTherapyViewModel != null)
+                {
+                    _logger.LogInformation("Inizializzazione Switch Terapia per paziente {PatientId}", PatientId);
+                    SwitchTherapyViewModel.SetCurrentPatient(PatientId);
                 }
 
                 _logger.LogInformation("Paziente caricato: {FullName}", Patient.FullName);

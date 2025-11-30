@@ -80,6 +80,7 @@ public partial class App : Application
         services.AddScoped<IDosageCalculatorService, DosageCalculatorService>();
         services.AddScoped<ITTRCalculatorService, TTRCalculatorService>();
         services.AddScoped<IBridgeTherapyService, BridgeTherapyService>();
+        services.AddScoped<ISwitchCalculatorService, SwitchCalculatorService>();
 
         // UI Services
         services.AddSingleton<INavigationService, NavigationService>();
@@ -105,6 +106,7 @@ public partial class App : Application
         services.AddTransient<DoctorDataViewModel>();
         services.AddTransient<DatabaseManagementViewModel>();
         services.AddTransient<GuideViewModel>();
+        services.AddTransient<SwitchTherapyViewModel>();
 
         // Views
         services.AddTransient<PatientListView>();

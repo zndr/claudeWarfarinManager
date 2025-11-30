@@ -88,6 +88,9 @@
                 <MenuItem
                     Command="{Binding ShowBridgeTherapyCommand}"
                     Header="Gestione bridge therapy" />
+                <MenuItem
+                    Command="{Binding ShowSwitchTherapyCommand}"
+                    Header="🔄 Switch Terapia (Warfarin ↔ DOAC)" />
                 <Separator />
                 <MenuItem
                     Command="{Binding ShowDrugDatabaseCommand}"

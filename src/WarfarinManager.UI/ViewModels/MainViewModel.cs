@@ -44,6 +44,7 @@ public partial class MainViewModel : ObservableObject
         ShowInteractionCheckerCommand.NotifyCanExecuteChanged();
         ShowBridgeTherapyCommand.NotifyCanExecuteChanged();
         ShowDrugDatabaseCommand.NotifyCanExecuteChanged();
+        ShowSwitchTherapyCommand.NotifyCanExecuteChanged();
     }
 
     #region File Menu Commands
@@ -128,6 +129,27 @@ public partial class MainViewModel : ObservableObject
     private void ShowDrugDatabase()
     {
         _dialogService.ShowInformation("Funzionalità in fase di sviluppo", "Database farmaci");
+    }
+
+    [RelayCommand]
+    private void ShowSwitchTherapy()
+    {
+        try
+        {
+            var switchViewModel = _serviceProvider.GetRequiredService<SwitchTherapyViewModel>();
+            var switchView = new Views.Switch.SwitchTherapyView(switchViewModel);
+
+            // Se c'è un paziente selezionato, pre-compila i dati
+            // Qui potresti passare l'ID del paziente corrente se disponibile
+            // switchView.SetPatient(currentPatientId);
+
+            switchView.Owner = Application.Current.MainWindow;
+            switchView.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            _dialogService.ShowError($"Errore nell'apertura dello strumento Switch:\n{ex.Message}", "Errore");
+        }
     }
 
     private bool CanExecutePatientSpecificCommand() => !IsInHomePage;
