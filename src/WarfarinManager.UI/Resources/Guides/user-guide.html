@@ -170,8 +170,9 @@
                 <li style="margin: 8px 0;"><a href="#controllo-inr" style="color: #0078D4; text-decoration: none;">4. Controllo INR</a></li>
                 <li style="margin: 8px 0;"><a href="#valutazione-4d" style="color: #0078D4; text-decoration: none;">5. Valutazione 4D</a></li>
                 <li style="margin: 8px 0;"><a href="#storico" style="color: #0078D4; text-decoration: none;">6. Storico e Statistiche</a></li>
-                <li style="margin: 8px 0;"><a href="#guide-professionali" style="color: #0078D4; text-decoration: none;">7. Guide Professionali</a></li>
-                <li style="margin: 8px 0;"><a href="#scorciatoie" style="color: #0078D4; text-decoration: none;">8. Scorciatoie da Tastiera</a></li>
+                <li style="margin: 8px 0;"><a href="#switch-terapia" style="color: #0078D4; text-decoration: none;">7. Switch Terapia Anticoagulante</a></li>
+                <li style="margin: 8px 0;"><a href="#guide-professionali" style="color: #0078D4; text-decoration: none;">8. Guide Professionali</a></li>
+                <li style="margin: 8px 0;"><a href="#scorciatoie" style="color: #0078D4; text-decoration: none;">9. Scorciatoie da Tastiera</a></li>
             </ul>
         </div>
 
@@ -398,9 +399,110 @@
             </div>
         </div>
 
-        <!-- 7. Guide Professionali -->
+        <!-- 7. Switch Terapia -->
+        <div id="switch-terapia" class="section">
+            <div class="section-title">🔄 7. Switch Terapia Anticoagulante</div>
+
+            <p>Il tab <strong>Switch Terapia</strong> fornisce un protocollo guidato per lo switch bidirezionale tra Warfarin/Acenocumarolo e DOAC (Direct Oral Anticoagulants).</p>
+
+            <div class="subsection-title">Quando Utilizzare lo Switch</div>
+            <ul>
+                <li>Passaggio da TAO tradizionale (Warfarin/Sintrom) a DOAC</li>
+                <li>Passaggio da DOAC a TAO tradizionale</li>
+                <li>Difficoltà nel mantenimento del range terapeutico INR</li>
+                <li>Scarsa compliance o problemi con controlli frequenti</li>
+                <li>Preferenza del paziente o necessità clinica</li>
+            </ul>
+
+            <div class="subsection-title">Come Utilizzare il Protocollo</div>
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Direzione Switch:</strong> Selezionare se da Warfarin→DOAC o DOAC→Warfarin
+            </div>
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>Tipo DOAC:</strong> Scegliere il farmaco (Apixaban, Rivaroxaban, Dabigatran, Edoxaban)
+            </div>
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>Tipo Cumarinico:</strong> Selezionare Warfarin (Coumadin) o Acenocumarolo (Sintrom)
+            </div>
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>Dati Paziente:</strong> Il sistema pre-compila automaticamente età, peso, sesso dalla scheda paziente
+            </div>
+            <div class="step">
+                <span class="step-number">5</span>
+                <strong>Clearance Creatinina:</strong> Calcolo automatico con formula Cockcroft-Gault o inserimento manuale
+            </div>
+            <div class="step">
+                <span class="step-number">6</span>
+                <strong>INR Attuale:</strong> Inserire se disponibile (opzionale ma consigliato)
+            </div>
+            <div class="step">
+                <span class="step-number">7</span>
+                <strong>Fattori di Rischio:</strong> Selezionare eventuali condizioni particolari
+            </div>
+            <div class="step">
+                <span class="step-number">8</span>
+                <strong>Calcola Protocollo:</strong> Il sistema genera il protocollo personalizzato
+            </div>
+
+            <div class="subsection-title">Protocollo Generato</div>
+            <p>Il sistema fornisce:</p>
+            <ul>
+                <li><strong>💊 Dosaggio Raccomandato:</strong> Con motivazione basata su età, peso, ClCr</li>
+                <li><strong>📅 Timeline Temporale:</strong> Cronologia giorno per giorno delle azioni da compiere</li>
+                <li><strong>📋 Piano Monitoraggio:</strong> Indicazioni per follow-up e controlli</li>
+                <li><strong>⚠️ Controindicazioni:</strong> Eventuali situazioni che sconsigliano lo switch</li>
+                <li><strong>🔴 Avvertenze:</strong> Precauzioni specifiche per il paziente</li>
+            </ul>
+
+            <div class="subsection-title">Storico Switch e Monitoraggio</div>
+            <p>Dopo aver salvato un protocollo, viene visualizzato automaticamente:</p>
+
+            <div class="warning">
+                <span class="warning-icon">⚠️</span>
+                <strong>Alert Switch Attivo:</strong> Quando un paziente ha uno switch in corso (non completato), compare un alert giallo ben visibile con animazione e l'icona del tab diventa ⚠️ arancione.
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <div class="feature-title">Storico Switch</div>
+                    <div class="feature-desc">Lista di tutti gli switch effettuati con stato (In corso/Follow-up/Completato)</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <div class="feature-title">Note Follow-up</div>
+                    <div class="feature-desc">Campo note per tracciare l'evoluzione dello switch e eventuali complicanze</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <div class="feature-title">Esito Switch</div>
+                    <div class="feature-desc">Selezione esito: Successo, Complicazioni minori/maggiori, Sospeso</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🗑️</div>
+                    <div class="feature-title">Eliminazione</div>
+                    <div class="feature-desc">Possibilità di eliminare protocolli salvati per errore (con conferma)</div>
+                </div>
+            </div>
+
+            <div class="tip">
+                <span class="tip-icon">💡</span>
+                <strong>Espansione Card:</strong> Cliccare su una card dello storico per espandere e visualizzare tutti i dettagli del protocollo (dosaggio, timeline, monitoraggio, avvertenze).
+            </div>
+
+            <div class="tip">
+                <span class="tip-icon">🔍</span>
+                <strong>Consultare Guida Professionale:</strong> Per approfondimenti clinici, consultare la guida "Switch DOAC↔Warfarin" dal menu Aiuto → Guide Professionali.
+            </div>
+        </div>
+
+        <!-- 8. Guide Professionali -->
         <div id="guide-professionali" class="section">
-            <div class="section-title">📚 7. Guide Professionali</div>
+            <div class="section-title">📚 8. Guide Professionali</div>
 
             <p>TaoGEST include guide cliniche integrate, accessibili dal menu <strong>Aiuto</strong>:</p>
 
@@ -420,9 +522,9 @@
             </div>
         </div>
 
-        <!-- 8. Scorciatoie -->
+        <!-- 9. Scorciatoie -->
         <div id="scorciatoie" class="section">
-            <div class="section-title">⌨️ 8. Scorciatoie da Tastiera</div>
+            <div class="section-title">⌨️ 9. Scorciatoie da Tastiera</div>
 
             <table style="width: 100%; border-collapse: collapse;">
                 <thead>

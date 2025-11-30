@@ -53,6 +53,18 @@ public partial class ProfessionalGuidesDialog : Window
         Close();
     }
 
+    private void OpenSwitchGuidePdf_Click(object sender, RoutedEventArgs e)
+    {
+        OpenPdfGuide("Switch_Doac_Warf.pdf");
+        Close();
+    }
+
+    private void OpenSwitchInfographic_Click(object sender, RoutedEventArgs e)
+    {
+        OpenGuide("guida-switch-infografica.html", "Infografica Switch DOAC ↔ Warfarin");
+        Close();
+    }
+
     private void OpenGuide(string fileName, string title)
     {
         try
