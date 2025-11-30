@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
@@ -27,6 +28,12 @@ public partial class SwitchTherapyViewModel : ObservableObject
 
     [ObservableProperty]
     private int? _currentPatientId;
+
+    [ObservableProperty]
+    private bool _hasActiveSwitches = false;
+
+    [ObservableProperty]
+    private string _tabHeader = "🔄 Switch Terapia";
 
     private CoreWebView2? _webView;
 
@@ -99,7 +106,7 @@ public partial class SwitchTherapyViewModel : ObservableObject
     /// <summary>
     /// Aggiorna i dati del paziente nel form (chiamato dopo il caricamento della pagina)
     /// </summary>
-    public void RefreshPatientData()
+    public async void RefreshPatientData()
     {
         // Se c'è un paziente selezionato, pre-compila i dati nel form HTML
         if (CurrentPatientId.HasValue && _webView != null)
@@ -107,12 +114,169 @@ public partial class SwitchTherapyViewModel : ObservableObject
             var patient = _dbContext.Patients.Find(CurrentPatientId.Value);
             if (patient != null)
             {
-                PreFillPatientData(patient);
+                await PreFillPatientDataAsync(patient);
+                // Aspetta che il pre-fill sia completato prima di caricare lo storico
+                await Task.Delay(500);
+                LoadSwitchHistory();
             }
         }
     }
 
-    private async void PreFillPatientData(Patient patient)
+    /// <summary>
+    /// Carica lo storico degli switch del paziente corrente
+    /// </summary>
+    public async void LoadSwitchHistory()
+    {
+        try
+        {
+            if (!CurrentPatientId.HasValue || _webView == null)
+            {
+                _logger.LogWarning("Cannot load switch history: no patient or webview not ready");
+                return;
+            }
+
+            _logger.LogInformation($"Loading switch history for patient {CurrentPatientId}");
+
+            var switches = _dbContext.TherapySwitches
+                .Where(s => s.PatientId == CurrentPatientId.Value)
+                .OrderByDescending(s => s.SwitchDate)
+                .Select(s => new
+                {
+                    s.Id,
+                    SwitchDate = s.SwitchDate.ToString("dd/MM/yyyy"),
+                    s.Direction,
+                    s.DoacType,
+                    s.WarfarinType,
+                    s.RecommendedDosage,
+                    s.DosageRationale,
+                    s.InrAtSwitch,
+                    s.CreatinineClearance,
+                    s.AgeAtSwitch,
+                    s.WeightAtSwitch,
+                    s.ProtocolTimeline,
+                    s.Contraindications,
+                    s.Warnings,
+                    s.ClinicalNotes,
+                    s.MonitoringPlan,
+                    FirstFollowUpDate = s.FirstFollowUpDate.HasValue ? s.FirstFollowUpDate.Value.ToString("dd/MM/yyyy") : null,
+                    s.FollowUpCompleted,
+                    s.FollowUpNotes,
+                    s.SwitchCompleted,
+                    CompletionDate = s.CompletionDate.HasValue ? s.CompletionDate.Value.ToString("dd/MM/yyyy") : null,
+                    s.Outcome
+                })
+                .ToList();
+
+            _logger.LogInformation($"Found {switches.Count} switch records in database");
+
+            // Verifica se ci sono switch attivi (non completati)
+            var hasActive = switches.Any(s => !s.SwitchCompleted);
+            HasActiveSwitches = hasActive;
+            TabHeader = hasActive ? "⚠️ Switch Terapia" : "🔄 Switch Terapia";
+            _logger.LogInformation($"Active switches: {hasActive}, TabHeader updated to: {TabHeader}");
+
+            var switchesJson = JsonSerializer.Serialize(switches, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+
+            // Aspetta che il DOM sia completamente caricato
+            await Task.Delay(1000);
+
+            var script = $@"
+                console.log('Attempting to load switch history...');
+                if (typeof loadSwitchHistory === 'function') {{
+                    console.log('loadSwitchHistory function found, calling with data');
+                    loadSwitchHistory({switchesJson});
+                }} else {{
+                    console.error('loadSwitchHistory function not found!');
+                }}
+            ";
+
+            // Esegui lo script sul thread UI
+            await System.Windows.Application.Current.Dispatcher.InvokeAsync(async () =>
+            {
+                await _webView.ExecuteScriptAsync(script);
+            });
+
+            _logger.LogInformation($"Switch history script executed: {switches.Count} records sent to UI");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading switch history");
+        }
+    }
+
+    /// <summary>
+    /// Aggiorna le note di follow-up per uno switch
+    /// </summary>
+    public async Task<bool> UpdateFollowUpAsync(int switchId, string followUpNotes, bool completed, string? outcome)
+    {
+        try
+        {
+            var therapySwitch = await _dbContext.TherapySwitches.FindAsync(switchId);
+            if (therapySwitch == null)
+            {
+                _logger.LogWarning($"Switch {switchId} not found");
+                return false;
+            }
+
+            therapySwitch.FollowUpNotes = followUpNotes;
+            therapySwitch.FollowUpCompleted = completed;
+
+            if (completed && !therapySwitch.SwitchCompleted)
+            {
+                therapySwitch.SwitchCompleted = true;
+                therapySwitch.CompletionDate = DateTime.Now;
+                therapySwitch.Outcome = outcome ?? "Completato";
+            }
+
+            await _dbContext.SaveChangesAsync();
+            _logger.LogInformation($"Follow-up updated for switch {switchId}");
+
+            // Ricarica lo storico
+            LoadSwitchHistory();
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating follow-up");
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Elimina un protocollo di switch
+    /// </summary>
+    public async Task<bool> DeleteSwitchAsync(int switchId)
+    {
+        try
+        {
+            var therapySwitch = await _dbContext.TherapySwitches.FindAsync(switchId);
+            if (therapySwitch == null)
+            {
+                _logger.LogWarning($"Switch {switchId} not found");
+                return false;
+            }
+
+            _dbContext.TherapySwitches.Remove(therapySwitch);
+            await _dbContext.SaveChangesAsync();
+            _logger.LogInformation($"Switch {switchId} deleted successfully");
+
+            // Ricarica lo storico
+            LoadSwitchHistory();
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error deleting switch {switchId}");
+            return false;
+        }
+    }
+
+    private async Task PreFillPatientDataAsync(Patient patient)
     {
         try
         {
@@ -242,7 +406,7 @@ public partial class SwitchTherapyViewModel : ObservableObject
     /// <summary>
     /// Salva il protocollo nel database
     /// </summary>
-    public async Task<bool> SaveProtocolAsync(string protocolJson)
+    public async Task<bool> SaveProtocolAsync(string saveDataJson)
     {
         try
         {
@@ -252,15 +416,19 @@ public partial class SwitchTherapyViewModel : ObservableObject
                 return false;
             }
 
-            var protocol = JsonSerializer.Deserialize<SwitchProtocol>(protocolJson, new JsonSerializerOptions
+            var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
+            };
 
-            if (protocol == null)
+            var saveData = JsonSerializer.Deserialize<SaveProtocolData>(saveDataJson, options);
+            if (saveData?.Protocol == null || saveData.PatientParams == null)
             {
-                throw new ArgumentException("Invalid protocol JSON");
+                throw new ArgumentException("Invalid save data JSON");
             }
+
+            var protocol = saveData.Protocol;
+            var patientParams = saveData.PatientParams;
 
             // Crea l'entità TherapySwitch
             var therapySwitch = new TherapySwitch
@@ -271,9 +439,9 @@ public partial class SwitchTherapyViewModel : ObservableObject
                 DoacType = protocol.DoacType.ToString(),
                 WarfarinType = protocol.WarfarinType.ToString(),
                 InrAtSwitch = protocol.InrThreshold,
-                CreatinineClearance = 0, // Will be set from patient parameters
-                AgeAtSwitch = 0, // Will be set from patient parameters
-                WeightAtSwitch = 0, // Will be set from patient parameters
+                CreatinineClearance = patientParams.CreatinineClearance,
+                AgeAtSwitch = patientParams.Age,
+                WeightAtSwitch = patientParams.Weight,
                 RecommendedDosage = protocol.RecommendedDoacDosage,
                 DosageRationale = protocol.DosageRationale,
                 ProtocolTimeline = JsonSerializer.Serialize(protocol.Timeline),
@@ -296,6 +464,7 @@ public partial class SwitchTherapyViewModel : ObservableObject
             await _dbContext.SaveChangesAsync();
 
             _logger.LogInformation($"Protocol saved successfully for patient {CurrentPatientId}");
+
             return true;
         }
         catch (Exception ex)
@@ -329,7 +498,28 @@ public partial class SwitchTherapyViewModel : ObservableObject
         {
             // Nota: questo viene chiamato da JavaScript in modo sincrono,
             // quindi non possiamo usare async qui. Usiamo Task.Run per non bloccare.
-            Task.Run(async () => await _viewModel.SaveProtocolAsync(protocolJson));
+            Task.Run(async () =>
+            {
+                await _viewModel.SaveProtocolAsync(protocolJson);
+                // Dopo il salvataggio, ricarica lo storico
+                await Task.Delay(200); // Piccolo delay per assicurarsi che il DB sia aggiornato
+                _viewModel.LoadSwitchHistory();
+            });
+        }
+
+        public void UpdateFollowUp(int switchId, string followUpNotes, bool completed, string outcome)
+        {
+            Task.Run(async () => await _viewModel.UpdateFollowUpAsync(switchId, followUpNotes, completed, outcome));
+        }
+
+        public void DeleteSwitch(int switchId)
+        {
+            Task.Run(async () => await _viewModel.DeleteSwitchAsync(switchId));
+        }
+
+        public void RefreshHistory()
+        {
+            _viewModel.LoadSwitchHistory();
         }
     }
 
@@ -381,5 +571,11 @@ public partial class SwitchTherapyViewModel : ObservableObject
         public string DoacType { get; set; } = string.Empty;
         public string WarfarinType { get; set; } = string.Empty;
         public SwitchPatientParameters PatientParameters { get; set; } = new();
+    }
+
+    private class SaveProtocolData
+    {
+        public SwitchProtocol Protocol { get; set; } = null!;
+        public SwitchPatientParameters PatientParams { get; set; } = null!;
     }
 }

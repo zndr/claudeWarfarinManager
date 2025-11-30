@@ -544,7 +544,30 @@
             </TabItem>
 
             <!--  Tab 7: Switch Terapia  -->
-            <TabItem Header="🔄 Switch Terapia">
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            Text="{Binding SwitchTherapyViewModel.HasActiveSwitches, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Visibility="Collapsed" />
+                        <TextBlock
+                            FontSize="14"
+                            Foreground="#f59e0b"
+                            FontWeight="Bold">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="🔄" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SwitchTherapyViewModel.HasActiveSwitches}" Value="True">
+                                            <Setter Property="Text" Value="⚠️" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock Text=" Switch Terapia" Margin="4,0,0,0" />
+                    </StackPanel>
+                </TabItem.Header>
                 <local:SwitchTherapyTabView DataContext="{Binding SwitchTherapyViewModel}" />
             </TabItem>
         </TabControl>
