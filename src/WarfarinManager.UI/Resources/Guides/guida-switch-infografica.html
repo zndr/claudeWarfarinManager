@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Switch TAO (Warfarin ↔ DOAC) – Guida rapida per MMG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-soft: #020617;
+      --card: #0b1220;
+      --accent: #22c55e;
+      --accent-soft: rgba(34,197,94,0.1);
+      --accent2: #38bdf8;
+      --accent2-soft: rgba(56,189,248,0.1);
+      --warning: #f97316;
+      --warning-soft: rgba(249,115,22,0.12);
+      --danger: #ef4444;
+      --danger-soft: rgba(239,68,68,0.12);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border-soft: rgba(148,163,184,0.35);
+      --shadow-soft: 0 18px 45px rgba(15,23,42,0.85);
+      --radius-xl: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #0f766e 0, #020617 45%, #020617 100%);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 16px 48px;
+    }
+
+    header.hero {
+      background: radial-gradient(circle at top left, rgba(56,189,248,0.14), rgba(15,23,42,0.96));
+      border-radius: 32px;
+      padding: 28px 24px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148,163,184,0.4);
+      display: grid;
+      grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.6fr);
+      gap: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header.hero::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(56,189,248,0.16), transparent 55%),
+        radial-gradient(circle at 90% 0%, rgba(34,197,94,0.18), transparent 55%);
+      opacity: 0.7;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .hero-main h1 {
+      margin: 0 0 12px;
+      font-size: clamp(1.8rem, 3vw, 2.3rem);
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+      background: rgba(15,23,42,0.7);
+    }
+
+    .hero-main p {
+      color: var(--muted);
+      margin: 0 0 14px;
+      font-size: 0.94rem;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid rgba(148,163,184,0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+    }
+
+    .hero-badges {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .hero-badge {
+      background: rgba(15,23,42,0.85);
+      border-radius: 18px;
+      padding: 10px 11px;
+      border: 1px solid rgba(148,163,184,0.45);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 0.8rem;
+    }
+
+    .hero-badge span {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .hero-badge strong {
+      font-size: 0.9rem;
+    }
+
+    .hero-right {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dial-card {
+      width: 100%;
+      max-width: 260px;
+      background: linear-gradient(145deg, rgba(15,23,42,0.96), rgba(15,23,42,0.86));
+      border-radius: 28px;
+      padding: 16px 16px 18px;
+      border: 1px solid rgba(148,163,184,0.55);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.85);
+    }
+
+    .dial-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .pill-small {
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid rgba(148,163,184,0.5);
+      font-size: 0.7rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .dial-svg {
+      width: 100%;
+      margin: 6px 0;
+    }
+
+    .dial-legend {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .badge-status {
+      margin-top: 8px;
+      font-size: 0.78rem;
+      padding: 6px 8px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.7);
+      color: #bbf7d0;
+    }
+
+    main {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.9fr) minmax(0, 1.2fr);
+      gap: 22px;
+    }
+
+    @media (max-width: 900px) {
+      header.hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        padding-inline: 12px;
+      }
+      header.hero {
+        padding: 20px 16px;
+      }
+    }
+
+    .section {
+      background: rgba(15,23,42,0.96);
+      border-radius: var(--radius-xl);
+      padding: 18px 18px 20px;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 16px 40px rgba(15,23,42,0.9);
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(56,189,248,0.13), transparent 55%);
+      opacity: 0.45;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .section > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .section h2 {
+      margin: 0 0 6px;
+      font-size: 1.08rem;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section h3 {
+      margin: 14px 0 4px;
+      font-size: 0.96rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section p {
+      font-size: 0.86rem;
+      color: var(--muted);
+      margin: 4px 0;
+    }
+
+    .pill-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.45);
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    ul.clean {
+      list-style: none;
+      padding-left: 0;
+      margin: 6px 0 0;
+    }
+
+    ul.clean li {
+      font-size: 0.85rem;
+      color: var(--muted);
+      padding: 4px 0;
+      display: flex;
+      gap: 6px;
+      align-items: flex-start;
+    }
+
+    ul.clean li span.bullet {
+      font-size: 0.9rem;
+      margin-top: 0;
+      min-width: 16px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 10px;
+    }
+
+    @media (max-width: 720px) {
+      .grid-2 {
+        grid-template-columns: minmax(0,1fr);
+      }
+    }
+
+    .card-soft {
+      background: rgba(15,23,42,0.9);
+      border-radius: 18px;
+      padding: 10px 11px;
+      border: 1px solid rgba(148,163,184,0.5);
+      font-size: 0.82rem;
+    }
+
+    .card-soft h4 {
+      margin: 0 0 4px;
+      font-size: 0.9rem;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.6);
+      color: var(--muted);
+      gap: 6px;
+      align-items: center;
+    }
+
+    .badge.badge-green {
+      background: var(--accent-soft);
+      border-color: rgba(34,197,94,0.8);
+      color: #bbf7d0;
+    }
+
+    .badge.badge-orange {
+      background: var(--warning-soft);
+      border-color: rgba(249,115,22,0.85);
+      color: #fed7aa;
+    }
+
+    .badge.badge-red {
+      background: var(--danger-soft);
+      border-color: rgba(239,68,68,0.9);
+      color: #fecaca;
+    }
+
+    .table-wrapper {
+      margin-top: 8px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(148,163,184,0.6);
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 0.8rem;
+      background: rgba(15,23,42,0.96);
+    }
+
+    thead {
+      background: linear-gradient(90deg, #0ea5e9, #22c55e);
+    }
+
+    thead th {
+      padding: 6px 8px;
+      text-align: left;
+      color: #e5f3ff;
+      font-weight: 600;
+      border-bottom: 1px solid rgba(15,23,42,0.4);
+    }
+
+    tbody td {
+      padding: 6px 8px;
+      border-top: 1px solid rgba(51,65,85,0.7);
+      color: var(--muted);
+    }
+
+    tbody tr:nth-child(even) {
+      background: rgba(15,23,42,0.92);
+    }
+
+    tbody tr:nth-child(odd) {
+      background: rgba(15,23,42,0.86);
+    }
+
+    .timeline {
+      margin-top: 10px;
+      position: relative;
+      padding-left: 18px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, rgba(56,189,248,0.2), rgba(34,197,94,0.7));
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 10px;
+      padding-left: 12px;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -3px;
+      top: 4px;
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: #0f172a;
+      border: 3px solid var(--accent2);
+      box-shadow: 0 0 0 4px rgba(56,189,248,0.15);
+    }
+
+    .timeline-item h4 {
+      margin: 0 0 2px;
+      font-size: 0.86rem;
+    }
+
+    .timeline-item p {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .alert {
+      margin-top: 8px;
+      border-radius: 16px;
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .alert.alert-warning {
+      background: var(--warning-soft);
+      border: 1px solid rgba(249,115,22,0.9);
+      color: #fed7aa;
+    }
+
+    .alert.alert-danger {
+      background: var(--danger-soft);
+      border: 1px solid rgba(239,68,68,0.9);
+      color: #fecaca;
+    }
+
+    .alert strong {
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .checklist {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 640px) {
+      .checklist {
+        grid-template-columns: minmax(0,1fr);
+      }
+    }
+
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      font-size: 0.83rem;
+      color: var(--muted);
+    }
+
+    .check-box {
+      width: 18px;
+      height: 18px;
+      border-radius: 6px;
+      border: 1px solid rgba(148,163,184,0.7);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: var(--accent2);
+      margin-top: 1px;
+    }
+
+    footer {
+      margin-top: 10px;
+      font-size: 0.76rem;
+      color: var(--muted);
+      text-align: right;
+      opacity: 0.75;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- HERO -->
+    <header class="hero">
+      <div class="hero-main">
+        <div class="hero-pill">
+          🧭 Guida pratica allo <strong>switch Warfarin ↔ DOAC</strong> per MMG
+        </div>
+        <h1>🩺 TAO – Switch sicuro tra AVK e DOAC</h1>
+        <p>
+          Schema operativo per gestire i passaggi Warfarin/Acenocumarolo ↔ DOAC
+          minimizzando il rischio di <strong>finestra scoperta</strong> (ictus) e
+          <strong>sovrapposizione eccessiva</strong> (emorragia maggiore).
+        </p>
+
+        <div class="hero-tags">
+          <div class="tag">📌 FANV – pratica ambulatoriale MMG</div>
+          <div class="tag">🧪 INR–centrico per switch da/verso Warfarin</div>
+          <div class="tag">🧮 Cockcroft–Gault per la funzione renale</div>
+        </div>
+
+        <div class="hero-badges">
+          <div class="hero-badge">
+            <span>Da AVK ➜ DOAC</span>
+            <strong>Regola chiave: <br>iniziare DOAC solo a INR sotto soglia.</strong>
+          </div>
+          <div class="hero-badge">
+            <span>Da DOAC ➜ AVK</span>
+            <strong>Overlap / EBPM per coprire l’emivita breve.</strong>
+          </div>
+          <div class="hero-badge">
+            <span>Popolazioni speciali</span>
+            <strong>CKD, anziani fragili, obesità, APS, valvole.</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="dial-card">
+          <div class="dial-header">
+            <span>Visualizzatore INR per switch</span>
+            <span class="pill-small">Range TAO <strong>2–3</strong></span>
+          </div>
+          <!-- Simple semicircle dial SVG -->
+          <svg class="dial-svg" viewBox="0 0 220 110">
+            <!-- semicircle background -->
+            <defs>
+              <linearGradient id="gradRisk" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#22c55e" />
+                <stop offset="50%" stop-color="#eab308" />
+                <stop offset="100%" stop-color="#ef4444" />
+              </linearGradient>
+            </defs>
+            <path d="M15 100 A95 95 0 0 1 205 100" fill="none" stroke="url(#gradRisk)" stroke-width="14" />
+            <!-- ticks -->
+            <g stroke="#1f2937" stroke-width="2">
+              <line x1="60" y1="92" x2="60" y2="78" />
+              <line x1="110" y1="92" x2="110" y2="72" />
+              <line x1="160" y1="92" x2="160" y2="78" />
+            </g>
+            <!-- labels -->
+            <text x="60" y="72" fill="#9ca3af" font-size="10" text-anchor="middle">1.5</text>
+            <text x="110" y="62" fill="#e5e7eb" font-size="11" text-anchor="middle">2.0–3.0</text>
+            <text x="160" y="72" fill="#fca5a5" font-size="10" text-anchor="middle">>3.5</text>
+            <!-- indicator dot (example near INR 2.2) -->
+            <circle cx="118" cy="80" r="6" fill="#e5e7eb" />
+          </svg>
+          <div class="dial-legend">
+            <span>🟢 Sotto–anticoagulato</span>
+            <span>🟡 Range terapeutico</span>
+            <span>🔴 Sovradosaggio</span>
+          </div>
+          <div class="badge-status">
+            ✅ Focus switch: <strong>entra col DOAC quando il Warfarin “molla”</strong>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- COLONNA SINISTRA -->
+      <div>
+
+        <!-- SEZIONE 1: PRINCIPI -->
+        <section class="section">
+          <h2>🎯 1. Principi generali per lo switch TAO</h2>
+          <p>
+            Prima di modificare terapia, verificare che il paziente sia un candidato idoneo al nuovo
+            farmaco (FANV non valvolare, assenza di protesi meccaniche, APS ad alto rischio, gravidanza, ecc.).
+          </p>
+          <div class="grid-2" style="margin-top:8px;">
+            <div class="card-soft">
+              <h4>🧬 AVK (Warfarin / Acenocumarolo)</h4>
+              <p>
+                • Lunga emivita, ampia “coda” farmacologica<br>
+                • Monitoraggio necessario tramite <strong>INR</strong><br>
+                • Effetto protettivo residuo nello switch ➜ DOAC
+              </p>
+            </div>
+            <div class="card-soft">
+              <h4>💊 DOAC (Dabigatran / Apixaban / Rivaroxaban / Edoxaban)</h4>
+              <p>
+                • Onset rapido (picco 1–4h), emivita breve<br>
+                • Nessun monitoraggio di routine (no INR)<br>
+                • Salti o sospensioni = rischio di “finestra scoperta”
+              </p>
+            </div>
+          </div>
+
+          <div class="alert alert-danger">
+            <div>⚠️</div>
+            <div>
+              <strong>Punti critici della transizione</strong>
+              <ul class="clean">
+                <li><span class="bullet">⏱️</span><span><b>Timing errato</b> ➜ scopertura trombotica (ictus/TEV).</span></li>
+                <li><span class="bullet">💉</span><span><b>Sovrapposizione eccessiva</b> ➜ sanguinamento maggiore.</span></li>
+                <li><span class="bullet">📏</span><span><b>INR falsato</b> dalla presenza di DOAC se misurato fuori “valle”.</span></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- SEZIONE 2: VKA -> DOAC -->
+        <section class="section">
+          <h2>🔄 2. Switch da Warfarin / Acenocumarolo ➜ DOAC</h2>
+          <div class="pill-label">Regola generale: <strong>“stop &amp; wait”</strong> con monitoraggio INR</div>
+          <p>
+            Sospendere AVK e controllare l’INR: il DOAC si avvia solo quando l’INR è sceso sotto la soglia
+            specifica per evitare somma di anticoagulazione.
+          </p>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>DOAC</th>
+                  <th>Soglia INR per inizio</th>
+                  <th>Note operative</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Apixaban</strong></td>
+                  <td><strong>&lt; 2.0</strong></td>
+                  <td>FA: 5 mg BID (2,5 mg BID se ≥80 anni + peso ≤60 kg + creatinina ≥1,5 mg/dL).</td>
+                </tr>
+                <tr>
+                  <td><strong>Dabigatran</strong></td>
+                  <td><strong>&lt; 2.0</strong></td>
+                  <td>150 mg BID (110 mg BID ≥80 anni o alto rischio sanguinamento). <b>Controindicato se ClCr &lt;30</b>.</td>
+                </tr>
+                <tr>
+                  <td><strong>Edoxaban</strong></td>
+                  <td><strong>≤ 2.5</strong></td>
+                  <td>60 mg OD; ridurre a 30 mg OD se peso ≤60 kg, ClCr 30–50 o inibitori P-gp.</td>
+                </tr>
+                <tr>
+                  <td><strong>Rivaroxaban</strong></td>
+                  <td><strong>≤ 2.5–3.0</strong></td>
+                  <td>FA: 20 mg OD con il pasto principale (15 mg se ClCr 15–49 ml/min).</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="grid-2" style="margin-top:10px;">
+            <div class="card-soft">
+              <h4>⏳ Aspettarsi la discesa dell’INR</h4>
+              <ul class="clean">
+                <li><span class="bullet">💊</span><span><b>Warfarin</b>: l’INR cala di ~0,5–1 punto in 2–3 giorni (variabile).</span></li>
+                <li><span class="bullet">💊</span><span><b>Acenocumarolo</b>: discesa più rapida; spesso DOAC avviabile entro 24–48h.</span></li>
+              </ul>
+            </div>
+            <div class="card-soft">
+              <h4>🚫 Cosa evitare</h4>
+              <ul class="clean">
+                <li><span class="bullet">❌</span><span>Non utilizzare <b>dosi di carico</b> dei DOAC (protocolli TVP/EP) per lo switch FA.</span></li>
+                <li><span class="bullet">❌</span><span>Non iniziare il DOAC con INR ancora nettamente sopra soglia.</span></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- SEZIONE 3: DOAC -> VKA -->
+        <section class="section">
+          <h2>🔁 3. Switch da DOAC ➜ Warfarin</h2>
+          <p>
+            Transizione più delicata: si passa da farmaco a <strong>emivita breve</strong> a farmaco a
+            <strong>latenza lunga</strong>. Serve copertura con overlap DOAC–warfarin o bridging con EBPM.
+          </p>
+
+          <div class="alert alert-warning">
+            <div>🧪</div>
+            <div>
+              <strong>INR e DOAC</strong>
+              <p>
+                I DOAC (anti-Xa e dabigatran) possono <b>falsare verso l’alto l’INR</b>. Misurare sempre l’INR
+                <b>al valle</b>, cioè immediatamente prima della dose successiva di DOAC durante la
+                sovrapposizione.
+              </p>
+            </div>
+          </div>
+
+          <h3>💉 3.1 Dabigatran ➜ Warfarin (overlap modulato su ClCr)</h3>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <h4>ClCr ≥ 50 ml/min – overlap 3 giorni</h4>
+              <p>Iniziare warfarin mentre si prosegue dabigatran per 3 giorni, poi sospendere dabigatran.</p>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <h4>ClCr 30–49 ml/min – overlap 2 giorni</h4>
+              <p>Funzione renale ridotta ➜ dabigatran si elimina più lentamente: overlap più breve.</p>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <h4>ClCr 15–29 ml/min – overlap 1 giorno</h4>
+              <p>Alto rischio di accumulo ➜ sovrapposizione minima.</p>
+            </div>
+          </div>
+          <p style="margin-top:6px;">
+            Misurare INR pre-dose durante overlap; dopo sospensione di dabigatran continuare warfarin
+            con controlli ravvicinati finché INR stabile 2–3.
+          </p>
+
+          <h3>🌓 3.2 Edoxaban ➜ Warfarin (“half-dose protocol”)</h3>
+          <div class="grid-2">
+            <div class="card-soft">
+              <h4>Schema pratico</h4>
+              <ul class="clean">
+                <li><span class="bullet">1️⃣</span><span>Ridurre <b>edoxaban alla metà</b> (60→30 mg; 30→15 mg).</span></li>
+                <li><span class="bullet">2️⃣</span><span>Iniziare warfarin in contemporanea.</span></li>
+                <li><span class="bullet">3️⃣</span><span>Controllare INR (sempre pre-dose) ogni 2–3 giorni.</span></li>
+                <li><span class="bullet">4️⃣</span><span>Sospendere edoxaban quando INR ≥2,0 ➜ proseguire solo warfarin.</span></li>
+              </ul>
+            </div>
+            <div class="card-soft">
+              <h4>💡 Perché metà dose?</h4>
+              <p>
+                Edoxaban a dose ridotta mantiene copertura evitando eccessiva interferenza sull’INR e limita il rischio
+                emorragico durante la salita dell’effetto di warfarin.
+              </p>
+            </div>
+          </div>
+
+          <h3>🩸 3.3 Apixaban / Rivaroxaban ➜ Warfarin (bridging con EBPM)</h3>
+          <p>
+            Per gli inibitori del Xa le linee guida suggeriscono, nella pratica MMG, l’uso di EBPM a dose terapeutica
+            durante la fase di passaggio.
+          </p>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <h4>Step 1 – Stop DOAC</h4>
+              <p>Sospendere apixaban o rivaroxaban alla data prevista.</p>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <h4>Step 2 – EBPM + Warfarin</h4>
+              <p>
+                Al momento della dose successiva di DOAC: iniziare <b>EBPM terapeutica</b> (es. enoxaparina 1 mg/kg x2/die)
+                + <b>warfarin</b> (dose d’attacco adattata all’età).
+              </p>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <h4>Step 3 – Monitoraggio INR</h4>
+              <p>Controllo INR quotidiano o ogni 2 giorni.</p>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <h4>Step 4 – Stop EBPM</h4>
+              <p>Sospendere EBPM quando INR ≥2 per almeno 2 determinazioni consecutive (e ≥5 giorni di warfarin totali).</p>
+            </div>
+          </div>
+
+          <div class="alert alert-warning">
+            <div>💡</div>
+            <div>
+              <strong>Alternativa (solo dove davvero necessario)</strong>
+              <p>
+                In pazienti selezionati si può valutare co-somministrazione DOAC–warfarin senza EBPM, con INR misurato
+                a valle DOAC; alto rischio di interpretazione errata dell’INR ➜ da riservare a setting controllati.
+              </p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- COLONNA DESTRA -->
+      <div>
+
+        <!-- SEZIONE 4: POPOLAZIONI SPECIALI -->
+        <section class="section">
+          <h2>👥 4. Popolazioni particolari</h2>
+
+          <div class="card-soft">
+            <h4>🚰 4.1 Insufficienza renale (ClCr – Cockcroft–Gault)</h4>
+            <p>La funzione renale condiziona <b>scelta del DOAC</b> e <b>schema di switch</b>.</p>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>DOAC</th>
+                    <th>ClCr 30–50</th>
+                    <th>ClCr 15–29</th>
+                    <th>&lt;15 ml/min / dialisi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Dabigatran</td>
+                    <td>110 mg BID; usare cautela.</td>
+                    <td>❌ Controindicato.</td>
+                    <td>❌ Non usare.</td>
+                  </tr>
+                  <tr>
+                    <td>Rivaroxaban</td>
+                    <td>15 mg OD (FA).</td>
+                    <td>Usare con estrema prudenza.</td>
+                    <td>Non raccomandato.</td>
+                  </tr>
+                  <tr>
+                    <td>Apixaban</td>
+                    <td>5 mg BID (o 2,5 mg BID se criteri riduzione).</td>
+                    <td>Spesso 2,5 mg BID (con cautela).</td>
+                    <td>Off-label in dialisi; in genere meglio AVK.</td>
+                  </tr>
+                  <tr>
+                    <td>Edoxaban</td>
+                    <td>30 mg OD.</td>
+                    <td>30 mg OD.</td>
+                    <td>Non raccomandato.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top:10px;">
+            <div class="card-soft">
+              <h4>👴 4.2 Grandi anziani e fragili</h4>
+              <ul class="clean">
+                <li><span class="bullet">✅</span><span><b>Apixaban / Edoxaban</b> in genere meglio tollerati (meno sanguinamenti maggiori).</span></li>
+                <li><span class="bullet">💊</span><span><b>Dabigatran</b> 110 mg BID ≥80 anni, se scelto.</span></li>
+                <li><span class="bullet">🧠</span><span>Valutare cadute, aderenza, supporto familiare.</span></li>
+              </ul>
+            </div>
+            <div class="card-soft">
+              <h4>⚖️ 4.3 Obesità e peso estremo</h4>
+              <ul class="clean">
+                <li><span class="bullet">⚠️</span><span>Dati limitati se peso &gt;120–150 kg (BMI &gt;40).</span></li>
+                <li><span class="bullet">📏</span><span>In questi casi si può preferire <b>warfarin</b> (monitorabile con INR).</span></li>
+                <li><span class="bullet">🧪</span><span>Eventuale dosaggio anti-Xa se persiste dubbio su livelli DOAC.</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card-soft" style="margin-top:10px;">
+            <h4>❤️ 4.4 Valvulopatie &amp; APS</h4>
+            <ul class="clean">
+              <li><span class="bullet">🚫</span><span><b>Protesi meccaniche</b> e stenosi mitralica reumatica moderato–severa: DOAC controindicati ➜ mantenere o tornare a <b>warfarin</b>.</span></li>
+              <li><span class="bullet">🧬</span><span><b>APS ad alto rischio (tripla positività)</b>: preferibile warfarin; se su DOAC, considerare switch a AVK con bridging adeguato.</span></li>
+            </ul>
+          </div>
+
+        </section>
+
+        <!-- SEZIONE 5: INTERAZIONI -->
+        <section class="section">
+          <h2>🧩 5. Interazioni e farmaci “nemici” dei DOAC</h2>
+          <p>
+            Valutare sempre interazioni P-gp / CYP3A4 prima dello switch: possono mandare fuori
+            range i livelli dei DOAC.
+          </p>
+          <div class="grid-2">
+            <div class="card-soft">
+              <h4>⬇️ Induttori forti (rischio trombosi)</h4>
+              <ul class="clean">
+                <li><span class="bullet">💊</span><span>Carbamazepina, fenitoina, fenobarbital.</span></li>
+                <li><span class="bullet">💊</span><span>Rifampicina.</span></li>
+                <li><span class="bullet">📌</span><span>In genere: <b>evitare DOAC</b>, preferire warfarin.</span></li>
+              </ul>
+            </div>
+            <div class="card-soft">
+              <h4>⬆️ Inibitori forti (rischio sanguinamento)</h4>
+              <ul class="clean">
+                <li><span class="bullet">💊</span><span>Ketoconazolo, itraconazolo, alcuni antivirali (es. ritonavir).</span></li>
+                <li><span class="bullet">💊</span><span>Dronedarone, verapamil: ridurre dose di alcuni DOAC (es. edoxaban).</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="alert alert-danger">
+            <div>❗</div>
+            <div>
+              <strong>Errore frequente</strong>
+              <p>
+                Valutare solo le interazioni del warfarin e “dimenticare” quelle del DOAC in arrivo.
+                Prima dello switch, rivedere sempre terapia cronica (antiepilettici, anti–HIV, antimicotici,
+                antiaritmici) e scegliere l’anticoagulante più compatibile.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SEZIONE 6: CHECKLIST -->
+        <section class="section">
+          <h2>📝 6. Checklist rapida per MMG</h2>
+          <p>Da usare ogni volta che si valuta uno switch TAO in ambulatorio.</p>
+          <div class="checklist">
+            <div class="check-item">
+              <div class="check-box">✔</div>
+              <div>Definita la <b>direzione dello switch</b> (AVK ➜ DOAC o DOAC ➜ AVK).</div>
+            </div>
+            <div class="check-item">
+              <div class="check-box">✔</div>
+              <div>Calcolata la <b>ClCr (Cockcroft–Gault)</b> e scelta molecola/dose di conseguenza.</div>
+            </div>
+            <div class="check-item">
+              <div class="check-box">✔</div>
+              <div>Escluse <b>controindicazioni a DOAC</b> (valvole meccaniche, APS ad alto rischio, gravidanza).</div>
+            </div>
+            <div class="check-item">
+              <div class="check-box">✔</div>
+              <div>Riviste <b>interazioni farmacologiche</b> (induttori/inibitori P-gp/CYP3A4).</div>
+            </div>
+            <div class="check-item">
+              <div class="check-box">✔</div>
+              <div>Stabilita la <b>soglia INR</b> per avviare il DOAC o per sospendere il DOAC (in switch verso warfarin).</div>
+            </div>
+            <div class="check-item">
+              <div class="check-box">✔</div>
+              <div>Decisa la necessità di <b>overlap o bridging</b> (dabigatran/edoxaban vs apixaban/rivaroxaban).</div>
+            </div>
+            <div class="check-item">
+              <div class="check-box">✔</div>
+              <div>Pianificato il <b>follow-up</b>: creatinina + emocromo a 1 mese, poi ogni 3–6 mesi.</div>
+            </div>
+            <div class="check-item">
+              <div class="check-box">✔</div>
+              <div>Informato il paziente su <b>aderenza</b>, cosa fare in caso di dimenticanza dose, segni di allarme.</div>
+            </div>
+          </div>
+        </section>
+
+        <footer>
+          Materiale di supporto per MMG – adattabile come scheda digitale, stampa A4 o contenuto web.
+        </footer>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>
