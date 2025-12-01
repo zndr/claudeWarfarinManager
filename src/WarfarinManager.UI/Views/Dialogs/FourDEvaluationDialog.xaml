@@ -171,6 +171,14 @@
                             Visibility="Collapsed" />
                     </StackPanel>
                 </Border>
+
+                <!--  Motivo Sconosciuto  -->
+                <Border Style="{StaticResource SectionStyle}">
+                    <CheckBox
+                        x:Name="UnknownReasonCheckBox"
+                        Style="{StaticResource CheckBoxStyle}"
+                        Content="❓ Motivo Sconosciuto" />
+                </Border>
             </StackPanel>
         </ScrollViewer>
 

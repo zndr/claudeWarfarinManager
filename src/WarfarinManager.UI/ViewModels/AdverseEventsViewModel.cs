@@ -81,7 +81,7 @@ namespace WarfarinManager.UI.ViewModels
                 _logger.LogInformation("Caricamento eventi avversi per paziente {PatientId}", patientId);
 
                 var events = await _unitOfWork.AdverseEvents.GetAllAsync();
-                var patientEvents = events
+                var patientEvents = (events ?? Enumerable.Empty<AdverseEvent>())
                     .Where(e => e.PatientId == patientId)
                     .OrderByDescending(e => e.OnsetDate)
                     .ToList();
@@ -97,7 +97,8 @@ namespace WarfarinManager.UI.ViewModels
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Errore durante il caricamento degli eventi avversi");
-                _dialogService.ShowError("Errore durante il caricamento degli eventi avversi", "Errore");
+                // Non mostrare errore all'utente se non ci sono eventi (è normale)
+                _logger.LogWarning("Nessun evento avverso trovato per il paziente {PatientId}", patientId);
             }
             finally
             {

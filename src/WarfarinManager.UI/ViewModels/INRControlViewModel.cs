@@ -583,9 +583,9 @@ namespace WarfarinManager.UI.ViewModels
             try
             {
                 // Validazione INR
-                if (InrValue <= 0 || InrValue < 0.5m || InrValue > 10.0m)
+                if (InrValue <= 0 || InrValue < 0.5m || InrValue > 15.0m)
                 {
-                    _dialogService.ShowWarning("Inserire un valore INR valido (tra 0.5 e 10.0).");
+                    _dialogService.ShowWarning("Inserire un valore INR valido (tra 0.5 e 15.0).");
                     return;
                 }
 

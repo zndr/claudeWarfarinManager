@@ -260,12 +260,12 @@
                                 x:Name="InrValueTextBox"
                                 Margin="0,0,0,5"
                                 Style="{StaticResource InputTextBoxStyle}"
-                                Text="{Binding InrValue, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=PropertyChanged}" />
+                                Text="{Binding InrValue, Converter={StaticResource DecimalConverter}, UpdateSourceTrigger=LostFocus}" />
                             <TextBlock
                                 Margin="0,0,0,15"
                                 FontSize="10"
                                 Foreground="#999999"
-                                Text="(Range valido: 0.5 - 10.0)" />
+                                Text="(Range valido: 0.5 - 15.0)" />
 
                             <!--  Fase terapia  -->
                             <TextBlock Style="{StaticResource InputLabelStyle}" Text="Fase terapia" />

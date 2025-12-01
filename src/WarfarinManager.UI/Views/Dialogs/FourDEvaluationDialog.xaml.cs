@@ -105,6 +105,12 @@ public partial class FourDEvaluationDialog : Window
             hasAnyEntry = true;
         }
 
+        if (UnknownReasonCheckBox.IsChecked == true)
+        {
+            sb.AppendLine("Motivo: Sconosciuto");
+            hasAnyEntry = true;
+        }
+
         return hasAnyEntry ? sb.ToString().TrimEnd() : string.Empty;
     }
 
@@ -123,6 +129,9 @@ public partial class FourDEvaluationDialog : Window
             return true;
 
         if (DiseasesCheckBox.IsChecked == true && !string.IsNullOrWhiteSpace(DiseasesTextBox.Text))
+            return true;
+
+        if (UnknownReasonCheckBox.IsChecked == true)
             return true;
 
         return false;
