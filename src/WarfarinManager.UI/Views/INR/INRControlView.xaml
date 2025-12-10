@@ -404,8 +404,11 @@
                                 </Border>
                             </Grid>
 
-                            <!--  Pulsante Carica Ultimo  -->
-                            <Button Margin="0,15,0,0" Command="{Binding LoadLastDosageCommand}" Content="📋 Carica ultimo dosaggio" Style="{StaticResource SecondaryButtonStyle}" />
+                            <!--  Pulsanti Azioni Dosaggio  -->
+                            <StackPanel Margin="0,15,0,0" Orientation="Horizontal">
+                                <Button Margin="0,0,10,0" Command="{Binding LoadLastDosageCommand}" Content="📋 Carica ultimo dosaggio" Style="{StaticResource SecondaryButtonStyle}" />
+                                <Button Command="{Binding RecalculateScheduleCommand}" Content="🔄 Ricalcola schema" Style="{StaticResource PrimaryButtonStyle}" ToolTip="Ridistribuisce equilibratamente il dosaggio settimanale corrente" />
+                            </StackPanel>
                         </StackPanel>
                     </Border>
 

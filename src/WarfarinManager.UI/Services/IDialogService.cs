@@ -5,6 +5,16 @@ using WarfarinManager.Data.Entities;
 namespace WarfarinManager.UI.Services;
 
 /// <summary>
+/// Scelta dell'utente per la cancellazione di un paziente
+/// </summary>
+public enum DeletePatientChoice
+{
+    Cancel,
+    SoftDelete,
+    HardDelete
+}
+
+/// <summary>
 /// Servizio per gestire dialoghi e messaggi all'utente
 /// </summary>
 public interface IDialogService
@@ -47,4 +57,12 @@ public interface IDialogService
     /// </summary>
     /// <returns>Testo della valutazione 4D o null se annullato</returns>
     Task<string?> ShowFourDEvaluationDialogAsync();
+
+    /// <summary>
+    /// Mostra dialog per conferma cancellazione paziente con opzioni soft/hard delete
+    /// </summary>
+    /// <param name="patientName">Nome completo del paziente</param>
+    /// <param name="fiscalCode">Codice fiscale del paziente</param>
+    /// <returns>Scelta dell'utente</returns>
+    DeletePatientChoice ShowDeletePatientDialog(string patientName, string fiscalCode);
 }

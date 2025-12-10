@@ -35,18 +35,28 @@ public class WarfarinDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
+
         // Applicazione configurazioni
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(WarfarinDbContext).Assembly);
-        
+
         // Conversioni enum to string per readability
         ConfigureEnumConversions(modelBuilder);
-        
+
         // Indici per performance
         ConfigureIndexes(modelBuilder);
-        
+
+        // Query filter globale per soft delete pazienti
+        ConfigureQueryFilters(modelBuilder);
+
         // Seeding dati lookup
         SeedData(modelBuilder);
+    }
+
+    private static void ConfigureQueryFilters(ModelBuilder modelBuilder)
+    {
+        // Escludi automaticamente i pazienti con IsDeleted = true da tutte le query
+        modelBuilder.Entity<Patient>()
+            .HasQueryFilter(p => !p.IsDeleted);
     }
     
     private static void ConfigureEnumConversions(ModelBuilder modelBuilder)

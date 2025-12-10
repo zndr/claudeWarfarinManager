@@ -220,6 +220,7 @@ public partial class PatientListViewModel : ObservableObject
     {
         OpenPatientDetailsCommand.NotifyCanExecuteChanged();
         OpenPatientSummaryCommand.NotifyCanExecuteChanged();
+        DeletePatientCommand.NotifyCanExecuteChanged();
     }
 
     /// <summary>
@@ -251,6 +252,63 @@ public partial class PatientListViewModel : ObservableObject
         await LoadPatientsAsync();
         _dialogService.ShowInformation($"Lista aggiornata: {TotalPatientsCount} pazienti", "Aggiornamento");
     }
+
+    /// <summary>
+    /// Elimina il paziente selezionato (mostra dialog con opzioni soft/hard delete)
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanDeletePatient))]
+    private async Task DeletePatientAsync()
+    {
+        if (SelectedPatient == null) return;
+
+        try
+        {
+            // Mostra dialog con opzioni di cancellazione
+            var result = _dialogService.ShowDeletePatientDialog(
+                SelectedPatient.FullName,
+                SelectedPatient.FiscalCode);
+
+            if (result == DeletePatientChoice.Cancel)
+                return;
+
+            _logger.LogInformation(
+                "Eliminazione paziente ID: {PatientId}, Tipo: {DeleteType}",
+                SelectedPatient.Id,
+                result);
+
+            if (result == DeletePatientChoice.SoftDelete)
+            {
+                // Soft delete: marca come eliminato
+                await _unitOfWork.Patients.SoftDeleteAsync(SelectedPatient.Id);
+                await _unitOfWork.SaveChangesAsync();
+
+                _dialogService.ShowInformation(
+                    $"Il paziente {SelectedPatient.FullName} è stato archiviato.\n\n" +
+                    "I dati sono ancora nel database e potranno essere ripristinati.",
+                    "Paziente archiviato");
+            }
+            else if (result == DeletePatientChoice.HardDelete)
+            {
+                // Hard delete: elimina definitivamente
+                await _unitOfWork.Patients.HardDeleteAsync(SelectedPatient.Id);
+                await _unitOfWork.SaveChangesAsync();
+
+                _dialogService.ShowInformation(
+                    $"Il paziente {SelectedPatient.FullName} e tutti i suoi dati sono stati eliminati definitivamente.",
+                    "Paziente eliminato");
+            }
+
+            // Ricarica la lista
+            await LoadPatientsAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Errore durante l'eliminazione del paziente");
+            _dialogService.ShowError($"Errore durante l'eliminazione:\n{ex.Message}", "Errore");
+        }
+    }
+
+    private bool CanDeletePatient() => SelectedPatient != null;
 
     /// <summary>
     /// Mappa un'entità Patient a PatientDto con statistiche INR e TTR

@@ -344,7 +344,7 @@
                 </DataGridTextColumn>
 
                 <!--  Azioni  -->
-                <DataGridTemplateColumn Width="180" Header="Azioni">
+                <DataGridTemplateColumn Width="220" Header="Azioni">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -386,6 +386,7 @@
                                 <!-- Bottone Riassunto -->
                                 <Button
                                     Padding="6,3"
+                                    Margin="0,0,4,0"
                                     Background="#28A745"
                                     BorderThickness="0"
                                     Command="{Binding DataContext.OpenPatientSummaryCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
@@ -411,6 +412,41 @@
                                             <Style.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
                                                     <Setter Property="Background" Value="#218838" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+
+                                <!-- Bottone Elimina -->
+                                <Button
+                                    Padding="6,3"
+                                    Background="#E81123"
+                                    BorderThickness="0"
+                                    Command="{Binding DataContext.DeletePatientCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    Content="Elimina"
+                                    Cursor="Hand"
+                                    FontSize="10"
+                                    FontWeight="SemiBold"
+                                    Foreground="White"
+                                    ToolTip="Elimina o archivia il paziente">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border
+                                                            Padding="{TemplateBinding Padding}"
+                                                            Background="{TemplateBinding Background}"
+                                                            CornerRadius="3">
+                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#C4000A" />
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>

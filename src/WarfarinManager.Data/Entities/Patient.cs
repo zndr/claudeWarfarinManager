@@ -56,6 +56,16 @@ public class Patient : BaseEntity
     /// Flag metabolizzatore lento (calcolato automaticamente se dose settimanale <15 mg)
     /// </summary>
     public bool IsSlowMetabolizer { get; set; }
+
+    /// <summary>
+    /// Flag per soft delete - se true il paziente è "eliminato" ma i dati restano nel DB
+    /// </summary>
+    public bool IsDeleted { get; set; }
+
+    /// <summary>
+    /// Data di eliminazione (soft delete)
+    /// </summary>
+    public DateTime? DeletedAt { get; set; }
     
     // CHA₂DS₂-VASc Score Components (per calcolo rischio bridge therapy)
     

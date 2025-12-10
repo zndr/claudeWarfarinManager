@@ -89,4 +89,59 @@ public class PatientRepository : Repository<Patient>, IPatientRepository
         // Alias per SearchByNameAsync - manteniamo compatibilità con test
         return await SearchByNameAsync(searchTerm, cancellationToken);
     }
+
+    public async Task SoftDeleteAsync(int patientId, CancellationToken cancellationToken = default)
+    {
+        var patient = await _dbSet.FindAsync(new object[] { patientId }, cancellationToken);
+        if (patient != null)
+        {
+            patient.IsDeleted = true;
+            patient.DeletedAt = DateTime.UtcNow;
+            _dbSet.Update(patient);
+        }
+    }
+
+    public async Task HardDeleteAsync(int patientId, CancellationToken cancellationToken = default)
+    {
+        var patient = await _dbSet
+            .Include(p => p.INRControls)
+                .ThenInclude(c => c.DailyDoses)
+            .Include(p => p.INRControls)
+                .ThenInclude(c => c.DosageSuggestions)
+            .Include(p => p.Indications)
+            .Include(p => p.Medications)
+            .Include(p => p.AdverseEvents)
+            .Include(p => p.BridgeTherapyPlans)
+            .Include(p => p.PreTaoAssessments)
+            .FirstOrDefaultAsync(p => p.Id == patientId, cancellationToken);
+
+        if (patient != null)
+        {
+            // EF Core eliminerà automaticamente le entità correlate grazie al cascade delete
+            _dbSet.Remove(patient);
+        }
+    }
+
+    public async Task RestoreAsync(int patientId, CancellationToken cancellationToken = default)
+    {
+        var patient = await _dbSet
+            .IgnoreQueryFilters() // Per trovare anche i pazienti "eliminati"
+            .FirstOrDefaultAsync(p => p.Id == patientId, cancellationToken);
+
+        if (patient != null)
+        {
+            patient.IsDeleted = false;
+            patient.DeletedAt = null;
+            _dbSet.Update(patient);
+        }
+    }
+
+    public async Task<IEnumerable<Patient>> GetAllIncludingDeletedAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .IgnoreQueryFilters()
+            .OrderBy(p => p.LastName)
+            .ThenBy(p => p.FirstName)
+            .ToListAsync(cancellationToken);
+    }
 }

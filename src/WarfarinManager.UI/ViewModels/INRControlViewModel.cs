@@ -898,6 +898,49 @@ namespace WarfarinManager.UI.ViewModels
         }
 
         /// <summary>
+        /// Ricalcola lo schema settimanale distribuendo equilibratamente il dosaggio corrente
+        /// </summary>
+        [RelayCommand]
+        private void RecalculateSchedule()
+        {
+            if (CurrentWeeklyDose <= 0)
+            {
+                _dialogService.ShowWarning("Inserire prima un dosaggio settimanale valido.");
+                return;
+            }
+
+            try
+            {
+                // Blocca il ricalcolo durante l'applicazione
+                _isApplyingSchedule = true;
+
+                // Genera nuovo schema distribuito equilibratamente basato sul dosaggio corrente
+                var newSchedule = DoseDistributionHelper.DistributeWeeklyDose(
+                    CurrentWeeklyDose,
+                    ExcludeQuarterTablets);
+
+                // Applica il nuovo schema
+                MondayDose = FindDoseOption(newSchedule[0]);
+                TuesdayDose = FindDoseOption(newSchedule[1]);
+                WednesdayDose = FindDoseOption(newSchedule[2]);
+                ThursdayDose = FindDoseOption(newSchedule[3]);
+                FridayDose = FindDoseOption(newSchedule[4]);
+                SaturdayDose = FindDoseOption(newSchedule[5]);
+                SundayDose = FindDoseOption(newSchedule[6]);
+
+                // Aggiorna anche il testo descrittivo
+                var scheduleText = DoseDistributionHelper.GenerateShortSchedule(newSchedule);
+
+                _dialogService.ShowInformation($"Schema ricalcolato per {CurrentWeeklyDose:F1} mg/settimana:\n\n{scheduleText}");
+            }
+            finally
+            {
+                // Ripristina la possibilità di ricalcolo
+                _isApplyingSchedule = false;
+            }
+        }
+
+        /// <summary>
         /// Elimina il controllo INR selezionato dallo storico
         /// </summary>
         [RelayCommand(CanExecute = nameof(CanDeleteHistoryItem))]

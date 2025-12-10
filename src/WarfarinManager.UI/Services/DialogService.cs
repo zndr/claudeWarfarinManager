@@ -3,6 +3,8 @@ using System.Windows;
 using WarfarinManager.Data.Entities;
 using WarfarinManager.UI.Views.Dialogs;
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators
+
 namespace WarfarinManager.UI.Services;
 
 /// <summary>
@@ -81,5 +83,16 @@ public class DialogService : IDialogService
         }
 
         return null;
+    }
+
+    public DeletePatientChoice ShowDeletePatientDialog(string patientName, string fiscalCode)
+    {
+        var dialog = new DeletePatientDialog(patientName, fiscalCode);
+        var result = dialog.ShowDialog();
+
+        if (result != true)
+            return DeletePatientChoice.Cancel;
+
+        return dialog.SelectedChoice;
     }
 }

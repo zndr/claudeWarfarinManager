@@ -1027,6 +1027,9 @@ namespace WarfarinManager.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Email")
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
@@ -1055,6 +1058,9 @@ namespace WarfarinManager.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("HasVascularDisease")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsSlowMetabolizer")
