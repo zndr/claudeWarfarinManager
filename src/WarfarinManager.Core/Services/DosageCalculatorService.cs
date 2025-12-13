@@ -24,7 +24,13 @@ public class DosageCalculatorService : IDosageCalculatorService
         TherapyPhase phase,
         bool isCompliant,
         bool isSlowMetabolizer,
-        ThromboembolicRisk thromboembolicRisk = ThromboembolicRisk.Moderate)
+        ThromboembolicRisk thromboembolicRisk = ThromboembolicRisk.Moderate,
+        TipoEmorragia tipoEmorragia = TipoEmorragia.Nessuna,
+        SedeEmorragia sedeEmorragia = SedeEmorragia.Nessuna,
+        bool hasProtesiMeccanica = false,
+        DateTime? dataUltimoTEV = null,
+        string indicazioneTAO = "",
+        int cha2ds2vasc = 0)
     {
         ValidateInputs(currentINR, targetINRMin, targetINRMax, currentWeeklyDoseMg);
 
@@ -35,12 +41,31 @@ public class DosageCalculatorService : IDosageCalculatorService
             TargetINRMin = targetINRMin,
             TargetINRMax = targetINRMax,
             CurrentWeeklyDoseMg = currentWeeklyDoseMg,
-            IsInRange = IsINRInRange(currentINR, targetINRMin, targetINRMax)
+            IsInRange = IsINRInRange(currentINR, targetINRMin, targetINRMax),
+            FonteRaccomandazione = "FCSA"
         };
 
-        // Valutazione posizione INR
-        var inrStatus = EvaluateINRStatus(currentINR, targetINRMin, targetINRMax);
-        result.INRStatus = inrStatus;
+        // Determina fascia INR dettagliata
+        FasciaINR fasciaINR;
+        if (currentINR >= targetINRMin && currentINR <= targetINRMax)
+        {
+            fasciaINR = FasciaINR.InRange;
+        }
+        else if (currentINR < targetINRMin)
+        {
+            fasciaINR = DeterminaFasciaINRBasso(currentINR, targetINRMin, targetINRMax);
+        }
+        else
+        {
+            fasciaINR = DeterminaFasciaINRAlto(currentINR, targetINRMin, targetINRMax);
+        }
+
+        result.FasciaINR = fasciaINR;
+
+        // Mantieni compatibilità con INRStatus (deprecato)
+#pragma warning disable CS0618 // Type or member is obsolete
+        result.INRStatus = EvaluateINRStatus(currentINR, targetINRMin, targetINRMax);
+#pragma warning restore CS0618
 
         // Alert se non compliance
         if (!isCompliant)
@@ -54,28 +79,57 @@ public class DosageCalculatorService : IDosageCalculatorService
             result.Warnings.Add("⚠️ METABOLIZZATORE LENTO: Piccole variazioni hanno grande impatto sul INR.");
         }
 
-        // Calcolo basato su stato INR
-        switch (inrStatus)
+        // Calcola rischio tromboembolico (per INR basso)
+        bool rischioTromboticoElevato = false;
+        if (fasciaINR is FasciaINR.SubCritico or FasciaINR.SubModerato or FasciaINR.SubLieve)
         {
-            case INRStatus.InRange:
+            rischioTromboticoElevato = CalcolaRischioTromboticoElevato(
+                hasProtesiMeccanica, dataUltimoTEV, indicazioneTAO, cha2ds2vasc);
+        }
+
+        // Calcolo basato su fascia INR
+        switch (fasciaINR)
+        {
+            case FasciaINR.InRange:
                 HandleInRangeFCSA(result, phase);
                 break;
 
-            case INRStatus.BelowRange:
-                HandleBelowRangeFCSA(result, targetINRMin, targetINRMax, thromboembolicRisk, isSlowMetabolizer);
+            case FasciaINR.SubCritico:
+            case FasciaINR.SubModerato:
+            case FasciaINR.SubLieve:
+                // INR sottoterapeutico
+                HandleBelowRangeNuovoFCSA(result, fasciaINR, currentWeeklyDoseMg,
+                    isSlowMetabolizer, rischioTromboticoElevato);
                 break;
 
-            case INRStatus.AboveRange:
-                HandleAboveRangeFCSA(result, targetINRMax);
+            case FasciaINR.SovraLieve:
+            case FasciaINR.SovraModerato:
+            case FasciaINR.SovraAlto:
+            case FasciaINR.SovraMoltoAlto:
+            case FasciaINR.SovraCritico:
+            case FasciaINR.SovraEstremo:
+                // INR sovraterapeutico - switch su presenza emorragia
+                if (tipoEmorragia != TipoEmorragia.Nessuna)
+                {
+                    HandleAboveRangeConEmorragiaFCSA(result, tipoEmorragia, sedeEmorragia,
+                        currentWeeklyDoseMg, currentINR);
+                }
+                else
+                {
+                    HandleAboveRangeSenzaEmorragiaFCSA(result, fasciaINR, currentWeeklyDoseMg);
+                }
                 break;
         }
 
-        // Genera schema settimanale
-        result.WeeklySchedule = GenerateWeeklySchedule(result.SuggestedWeeklyDoseMg);
+        // Genera schema settimanale (solo se dose > 0)
+        if (result.SuggestedWeeklyDoseMg > 0)
+        {
+            result.WeeklySchedule = GenerateWeeklySchedule(result.SuggestedWeeklyDoseMg);
+        }
 
         _logger.LogInformation(
-            "Calcolo FCSA: INR {INR} (target {Min}-{Max}) → Nuova dose {NewDose}mg, controllo tra {Days} giorni",
-            currentINR, targetINRMin, targetINRMax, result.SuggestedWeeklyDoseMg, result.NextControlDays);
+            "Calcolo FCSA: INR {INR} (target {Min}-{Max}), Fascia {Fascia} → Nuova dose {NewDose}mg, controllo tra {Days} giorni, Urgenza {Urgency}",
+            currentINR, targetINRMin, targetINRMax, fasciaINR, result.SuggestedWeeklyDoseMg, result.NextControlDays, result.UrgencyLevel);
 
         return result;
     }
@@ -88,7 +142,13 @@ public class DosageCalculatorService : IDosageCalculatorService
         TherapyPhase phase,
         bool isCompliant,
         bool isSlowMetabolizer,
-        ThromboembolicRisk thromboembolicRisk = ThromboembolicRisk.Moderate)
+        ThromboembolicRisk thromboembolicRisk = ThromboembolicRisk.Moderate,
+        TipoEmorragia tipoEmorragia = TipoEmorragia.Nessuna,
+        SedeEmorragia sedeEmorragia = SedeEmorragia.Nessuna,
+        bool hasProtesiMeccanica = false,
+        DateTime? dataUltimoTEV = null,
+        string indicazioneTAO = "",
+        int cha2ds2vasc = 0)
     {
         ValidateInputs(currentINR, targetINRMin, targetINRMax, currentWeeklyDoseMg);
 
@@ -99,38 +159,98 @@ public class DosageCalculatorService : IDosageCalculatorService
             TargetINRMin = targetINRMin,
             TargetINRMax = targetINRMax,
             CurrentWeeklyDoseMg = currentWeeklyDoseMg,
-            IsInRange = IsINRInRange(currentINR, targetINRMin, targetINRMax)
+            IsInRange = IsINRInRange(currentINR, targetINRMin, targetINRMax),
+            FonteRaccomandazione = "ACCP"
         };
 
-        var inrStatus = EvaluateINRStatus(currentINR, targetINRMin, targetINRMax);
-        result.INRStatus = inrStatus;
+        // Determina fascia INR dettagliata
+        FasciaINR fasciaINR;
+        if (currentINR >= targetINRMin && currentINR <= targetINRMax)
+        {
+            fasciaINR = FasciaINR.InRange;
+        }
+        else if (currentINR < targetINRMin)
+        {
+            fasciaINR = DeterminaFasciaINRBasso(currentINR, targetINRMin, targetINRMax);
+        }
+        else
+        {
+            fasciaINR = DeterminaFasciaINRAlto(currentINR, targetINRMin, targetINRMax);
+        }
+
+        result.FasciaINR = fasciaINR;
+
+        // Mantieni compatibilità con INRStatus (deprecato)
+#pragma warning disable CS0618 // Type or member is obsolete
+        result.INRStatus = EvaluateINRStatus(currentINR, targetINRMin, targetINRMax);
+#pragma warning restore CS0618
 
         if (!isCompliant)
         {
             result.Warnings.Add("⚠️ WARNING: Poor compliance verified. Assess causes before dose adjustment.");
         }
 
-        // Calcolo basato su stato INR - logica ACCP
-        switch (inrStatus)
+        if (isSlowMetabolizer)
         {
-            case INRStatus.InRange:
+            result.Warnings.Add("⚠️ SLOW METABOLIZER: Small dose changes have large impact on INR.");
+        }
+
+        // Calcola rischio tromboembolico (per INR basso)
+        // ACCP: solo rischio alto per EBPM (più conservativo di FCSA)
+        bool rischioTromboticoElevato = false;
+        if (fasciaINR is FasciaINR.SubCritico or FasciaINR.SubModerato or FasciaINR.SubLieve)
+        {
+            rischioTromboticoElevato = CalcolaRischioTromboticoElevato(
+                hasProtesiMeccanica, dataUltimoTEV, indicazioneTAO, cha2ds2vasc);
+        }
+
+        // Calcolo basato su fascia INR
+        switch (fasciaINR)
+        {
+            case FasciaINR.InRange:
                 HandleInRangeACCP(result, phase);
                 break;
 
-            case INRStatus.BelowRange:
-                HandleBelowRangeACCP(result, targetINRMin, targetINRMax, thromboembolicRisk);
+            case FasciaINR.SubCritico:
+            case FasciaINR.SubModerato:
+            case FasciaINR.SubLieve:
+                // INR sottoterapeutico - usa stesso algoritmo di FCSA ma EBPM solo per rischio alto
+                HandleBelowRangeNuovoFCSA(result, fasciaINR, currentWeeklyDoseMg,
+                    isSlowMetabolizer, rischioTromboticoElevato);
+                // Nota: ACCP è più conservativo, EBPM solo se rischio VERAMENTE alto
                 break;
 
-            case INRStatus.AboveRange:
-                HandleAboveRangeACCP(result, targetINRMax);
+            case FasciaINR.SovraLieve:
+            case FasciaINR.SovraModerato:
+            case FasciaINR.SovraAlto:
+            case FasciaINR.SovraMoltoAlto:
+            case FasciaINR.SovraCritico:
+            case FasciaINR.SovraEstremo:
+                // INR sovraterapeutico
+                if (tipoEmorragia != TipoEmorragia.Nessuna)
+                {
+                    // Con emorragia: stessa gestione FCSA (linee guida convergono)
+                    HandleAboveRangeConEmorragiaFCSA(result, tipoEmorragia, sedeEmorragia,
+                        currentWeeklyDoseMg, currentINR);
+                    result.FonteRaccomandazione = "ACCP/FCSA"; // Convergenti
+                }
+                else
+                {
+                    // Senza emorragia: ACCP ha soglie Vit K diverse
+                    HandleAboveRangeSenzaEmorragiaACCP(result, fasciaINR, currentWeeklyDoseMg, currentINR);
+                }
                 break;
         }
 
-        result.WeeklySchedule = GenerateWeeklySchedule(result.SuggestedWeeklyDoseMg);
+        // Genera schema settimanale (solo se dose > 0)
+        if (result.SuggestedWeeklyDoseMg > 0)
+        {
+            result.WeeklySchedule = GenerateWeeklySchedule(result.SuggestedWeeklyDoseMg);
+        }
 
         _logger.LogInformation(
-            "Calcolo ACCP: INR {INR} (target {Min}-{Max}) → Nuova dose {NewDose}mg, controllo tra {Days} giorni",
-            currentINR, targetINRMin, targetINRMax, result.SuggestedWeeklyDoseMg, result.NextControlDays);
+            "Calcolo ACCP: INR {INR} (target {Min}-{Max}), Fascia {Fascia} → Nuova dose {NewDose}mg, controllo tra {Days} giorni, Urgenza {Urgency}",
+            currentINR, targetINRMin, targetINRMax, fasciaINR, result.SuggestedWeeklyDoseMg, result.NextControlDays, result.UrgencyLevel);
 
         return result;
     }
@@ -313,6 +433,239 @@ public class DosageCalculatorService : IDosageCalculatorService
         result.SuggestedWeeklyDoseMg = RoundToSensibleDose(result.SuggestedWeeklyDoseMg);
     }
 
+    /// <summary>
+    /// Gestione INR sottoterapeutico con nuovo algoritmo dettagliato
+    /// </summary>
+    private void HandleBelowRangeNuovoFCSA(
+        DosageSuggestionResult result,
+        FasciaINR fascia,
+        decimal currentDose,
+        bool isSlowMetabolizer,
+        bool rischioTromboticoElevato)
+    {
+        switch (fascia)
+        {
+            case FasciaINR.SubCritico:
+                // INR <1.5 (target 2-3) o <2.0 (target 2.5-3.5)
+                result.PercentageAdjustment = 17.5m; // Media 15-20%
+                result.DoseSupplementarePrimoGiorno = currentDose * 0.075m; // 7.5% primo giorno
+                result.SuggestedWeeklyDoseMg = currentDose * 1.175m;
+                result.NextControlDays = 6; // 5-7 giorni
+                result.LoadingDoseAction = $"Aumentare dose di {result.DoseSupplementarePrimoGiorno:F2}mg oggi";
+
+                if (rischioTromboticoElevato)
+                {
+                    result.RequiresEBPM = true;
+                    result.Warnings.Add("🔴 EBPM RACCOMANDATA: Enoxaparina 70 UI/kg x 2/die fino a INR ≥2.0 per 24h");
+                }
+                result.ClinicalNotes = "INR CRITICO: Incremento dose + dose carico.";
+                result.UrgencyLevel = UrgencyLevel.Urgente;
+                break;
+
+            case FasciaINR.SubModerato:
+                // INR 1.5-1.79 (target 2-3) o 2.0-2.29 (target 2.5-3.5)
+                result.PercentageAdjustment = isSlowMetabolizer ? 7.5m : 11.25m; // 7.5-15%
+                result.DoseSupplementarePrimoGiorno = currentDose * 0.05m; // Opzionale
+                result.SuggestedWeeklyDoseMg = currentDose * (1 + result.PercentageAdjustment / 100);
+                result.NextControlDays = 8; // 7-10 giorni
+                result.LoadingDoseAction = "Dose carico opzionale (5% dose settimanale oggi)";
+                result.ClinicalNotes = "INR moderatamente basso. Incremento dose.";
+                result.UrgencyLevel = UrgencyLevel.Routine;
+                break;
+
+            case FasciaINR.SubLieve:
+                // INR 1.8-1.99 (target 2-3) o 2.3-2.49 (target 2.5-3.5)
+                result.PercentageAdjustment = 7.5m; // 5-10%
+                result.DoseSupplementarePrimoGiorno = null;
+                result.SuggestedWeeklyDoseMg = currentDose * 1.075m;
+                result.NextControlDays = 12; // 10-14 giorni
+                result.LoadingDoseAction = "Nessuna dose carico";
+                result.ClinicalNotes = "INR lievemente basso. Valutare se ultimi 2 INR erano in range (possibile non modificare).";
+                result.UrgencyLevel = UrgencyLevel.Routine;
+                break;
+        }
+
+        // Round
+        result.SuggestedWeeklyDoseMg = RoundToSensibleDose(result.SuggestedWeeklyDoseMg);
+    }
+
+    /// <summary>
+    /// Gestione INR sovraterapeutico SENZA emorragia
+    /// </summary>
+    private void HandleAboveRangeSenzaEmorragiaFCSA(
+        DosageSuggestionResult result,
+        FasciaINR fascia,
+        decimal currentDose)
+    {
+        switch (fascia)
+        {
+            case FasciaINR.SovraLieve:
+                result.SospensioneDosi = 0;
+                result.PercentageAdjustment = -7.5m; // -5 a -10%
+                result.SuggestedWeeklyDoseMg = currentDose * 0.925m;
+                result.RequiresVitaminK = false;
+                result.NextControlDays = 10; // 7-14
+                result.LoadingDoseAction = "Nessuna sospensione";
+                result.ClinicalNotes = "INR lievemente alto. Riduzione modesta. Se ultimi 2 INR in range e causa transitoria, considerare non modificare.";
+                result.UrgencyLevel = UrgencyLevel.Routine;
+                break;
+
+            case FasciaINR.SovraModerato:
+                result.SospensioneDosi = 1; // Considerare
+                result.PercentageAdjustment = -12.5m; // -10 a -15%
+                result.SuggestedWeeklyDoseMg = currentDose * 0.875m;
+                result.RequiresVitaminK = false;
+                result.NextControlDays = 6; // 5-8
+                result.LoadingDoseAction = "Considerare saltare 1 dose";
+                result.ClinicalNotes = "INR moderatamente alto. Riduzione dose.";
+                result.UrgencyLevel = UrgencyLevel.Routine;
+                break;
+
+            case FasciaINR.SovraAlto:
+                result.SospensioneDosi = 1;
+                result.PercentageAdjustment = -12.5m;
+                result.SuggestedWeeklyDoseMg = currentDose * 0.875m;
+                result.RequiresVitaminK = false; // FCSA: no Vit K sotto INR 5
+                result.NextControlDays = 6; // 4-8
+                result.LoadingDoseAction = "Saltare 1 dose";
+                result.ClinicalNotes = "INR alto. Sospensione temporanea + riduzione dose.";
+                result.UrgencyLevel = UrgencyLevel.Urgente;
+                break;
+
+            case FasciaINR.SovraMoltoAlto:
+                result.SospensioneDosi = 2; // 1-2 dosi
+                result.PercentageAdjustment = -17.5m; // -15 a -20%
+                result.SuggestedWeeklyDoseMg = currentDose * 0.80m;
+                result.RequiresVitaminK = true; // Opzionale, ma raccomandato
+                result.VitaminKDoseMg = 2;
+                result.VitaminKRoute = "Orale";
+                result.NextControlDays = 5; // 4-7, controllo a 24h
+                result.LoadingDoseAction = "Saltare 1-2 dosi";
+                result.ClinicalNotes = "INR molto alto. Vitamina K 2mg PO se fattori rischio emorragico.";
+                result.Warnings.Add("⚠️ Controllo INR a 24h raccomandato");
+                result.UrgencyLevel = UrgencyLevel.Urgente;
+                break;
+
+            case FasciaINR.SovraCritico:
+                result.SospensioneDosi = 3; // 2-3 dosi
+                result.PercentageAdjustment = -20m;
+                result.SuggestedWeeklyDoseMg = currentDose * 0.80m;
+                result.RequiresVitaminK = true; // FCSA raccomanda
+                result.VitaminKDoseMg = 2.5m; // 2-3mg
+                result.VitaminKRoute = "Orale";
+                result.NextControlDays = 1; // Controllo a 24h
+                result.LoadingDoseAction = "Saltare 2-3 dosi";
+                result.ClinicalNotes = "🔴 INR CRITICO: Vitamina K + sospensione.";
+                result.Warnings.Add("🔴 URGENTE: Controllo INR a 24-48h obbligatorio");
+                result.UrgencyLevel = UrgencyLevel.Emergenza;
+                break;
+
+            case FasciaINR.SovraEstremo:
+                result.SospensioneDosi = null; // "Fino a INR < limite superiore range"
+                result.PercentageAdjustment = -35m; // -20 a -50%, media
+                result.SuggestedWeeklyDoseMg = currentDose * 0.65m;
+                result.RequiresVitaminK = true; // OBBLIGATORIA
+                result.VitaminKDoseMg = 4; // 3-5mg (FCSA)
+                result.VitaminKRoute = "Orale";
+                result.NextControlDays = 1;
+                result.LoadingDoseAction = "STOP warfarin fino a INR < limite superiore range";
+                result.ClinicalNotes = "🔴 EMERGENZA: INR ESTREMO. Vitamina K obbligatoria. Possibile seconda dose se INR ancora elevato.";
+                result.Warnings.Add("🔴 EMERGENZA: Controllo INR a 24h e 48h");
+                result.Warnings.Add("Valutare ricovero e monitoraggio intensivo");
+                result.UrgencyLevel = UrgencyLevel.Emergenza;
+                break;
+        }
+
+        result.SuggestedWeeklyDoseMg = RoundToSensibleDose(result.SuggestedWeeklyDoseMg);
+    }
+
+    /// <summary>
+    /// Gestione INR sovraterapeutico CON emorragia attiva
+    /// </summary>
+    private void HandleAboveRangeConEmorragiaFCSA(
+        DosageSuggestionResult result,
+        TipoEmorragia tipoEmorragia,
+        SedeEmorragia sedeEmorragia,
+        decimal currentDose,
+        decimal currentINR)
+    {
+        result.TipoEmorragia = tipoEmorragia;
+        result.LoadingDoseAction = "STOP warfarin";
+        result.UrgencyLevel = UrgencyLevel.Emergenza;
+
+        switch (tipoEmorragia)
+        {
+            case TipoEmorragia.Minore:
+                result.RequiresVitaminK = true;
+                result.VitaminKRoute = "Orale";
+
+                if (currentINR >= 5 && currentINR < 8)
+                {
+                    result.VitaminKDoseMg = 2;
+                }
+                else if (currentINR >= 8)
+                {
+                    result.VitaminKDoseMg = 4; // 3-5mg
+                }
+
+                result.NextControlDays = 1; // Controllo 24h
+                result.PercentageAdjustment = -20m;
+                result.SuggestedWeeklyDoseMg = currentDose * 0.80m;
+                result.RequiresHospitalization = false; // Valutare
+                result.ClinicalNotes = "Emorragia MINORE: STOP warfarin + Vitamina K PO. Ricerca causa locale.";
+                result.Warnings.Add("⚠️ Valutare ospedalizzazione in base a contesto clinico");
+                break;
+
+            case TipoEmorragia.Maggiore:
+                result.RequiresVitaminK = true;
+                result.VitaminKDoseMg = 10;
+                result.VitaminKRoute = "EV lenta (10-20 min)";
+
+                // Fattori procoagulanti
+                result.RequiresPCC = true;
+                result.DosePCC = "20-50 UI/kg (PREFERIBILE)";
+                result.RequiresPlasma = true; // Alternativa
+                result.DosePlasma = "15 mL/kg (se PCC non disponibile)";
+
+                result.RequiresHospitalization = true; // OBBLIGATORIA
+                result.NextControlDays = 1;
+                result.PercentageAdjustment = -50m; // Riduzione drastica
+                result.SuggestedWeeklyDoseMg = currentDose * 0.50m;
+                result.ClinicalNotes = "🔴 EMORRAGIA MAGGIORE: EMERGENZA - STOP warfarin + Vit K 10mg EV + PCC (preferito) o Plasma.";
+                result.Warnings.Add("🔴 RICOVERO OBBLIGATORIO");
+                result.Warnings.Add("Controllo INR post-PCC e seriato a 24-48h");
+                result.Warnings.Add("Vitamina K ripetibile ogni 12h se necessario");
+                break;
+
+            case TipoEmorragia.RischioVitale:
+                result.RequiresVitaminK = true;
+                result.VitaminKDoseMg = 10;
+                result.VitaminKRoute = "EV lenta";
+
+                result.RequiresPCC = true;
+                result.DosePCC = "20-50 UI/kg (PRIMA SCELTA)";
+
+                result.RequiresHospitalization = true;
+                result.NextControlDays = 0; // Monitoraggio continuo
+                result.PercentageAdjustment = -100m; // STOP indefinito
+                result.SuggestedWeeklyDoseMg = 0;
+                result.ClinicalNotes = "🔴🔴 EMORRAGIA RISCHIO VITALE: EMERGENZA ASSOLUTA - STOP warfarin + Vit K 10mg EV + PCC immediato.";
+                result.Warnings.Add("🔴 RICOVERO TERAPIA INTENSIVA IMMEDIATO");
+
+                if (sedeEmorragia == SedeEmorragia.Intracranica)
+                {
+                    result.Warnings.Add("🔴 Imaging cerebrale URGENTE");
+                }
+
+                result.Warnings.Add("Valutazione chirurgica immediata se indicata");
+                result.Warnings.Add("NOTA RIPRESA: Se necessario proseguire anticoagulazione, usare eparina per 7-10 giorni fino a scomparsa effetto vitamina K");
+                break;
+        }
+
+        result.SuggestedWeeklyDoseMg = RoundToSensibleDose(result.SuggestedWeeklyDoseMg);
+        result.FonteRaccomandazione = "FCSA";
+    }
+
     #endregion
 
     #region ACCP Logic
@@ -422,6 +775,113 @@ public class DosageCalculatorService : IDosageCalculatorService
             result.VitaminKDoseMg = 5;
             result.VitaminKRoute = "Oral";
             result.Warnings.Add("🔴 CRITICAL: INR >10 - High bleeding risk");
+        }
+
+        result.SuggestedWeeklyDoseMg = RoundToSensibleDose(result.SuggestedWeeklyDoseMg);
+    }
+
+    /// <summary>
+    /// Gestione INR sovraterapeutico SENZA emorragia - Algoritmo ACCP
+    /// DIFFERENZE: Vitamina K solo se INR >10, aggiustamenti più conservativi
+    /// </summary>
+    private void HandleAboveRangeSenzaEmorragiaACCP(
+        DosageSuggestionResult result,
+        FasciaINR fascia,
+        decimal currentDose,
+        decimal currentINR)
+    {
+        switch (fascia)
+        {
+            case FasciaINR.SovraLieve:
+                result.SospensioneDosi = 0;
+                result.PercentageAdjustment = -5m; // ACCP più conservativo
+                result.SuggestedWeeklyDoseMg = currentDose * 0.95m;
+                result.RequiresVitaminK = false;
+                result.NextControlDays = 10; // 7-14
+                result.LoadingDoseAction = "No dose adjustment or reduce by 5%";
+                result.ClinicalNotes = "Slightly elevated INR. Minor dose reduction or observe.";
+                result.UrgencyLevel = UrgencyLevel.Routine;
+                break;
+
+            case FasciaINR.SovraModerato:
+                result.SospensioneDosi = 1;
+                result.PercentageAdjustment = -7.5m; // Più conservativo di FCSA
+                result.SuggestedWeeklyDoseMg = currentDose * 0.925m;
+                result.RequiresVitaminK = false;
+                result.NextControlDays = 7;
+                result.LoadingDoseAction = "Consider holding 1 dose";
+                result.ClinicalNotes = "Moderately elevated INR. Dose reduction recommended.";
+                result.UrgencyLevel = UrgencyLevel.Routine;
+                break;
+
+            case FasciaINR.SovraAlto:
+                result.SospensioneDosi = 1;
+                result.PercentageAdjustment = -10m;
+                result.SuggestedWeeklyDoseMg = currentDose * 0.90m;
+                result.RequiresVitaminK = false; // ACCP: NO Vit K sotto 10
+                result.NextControlDays = 5;
+                result.LoadingDoseAction = "Hold 1 dose";
+                result.ClinicalNotes = "High INR. Hold warfarin, reduce dose. ACCP: No routine Vitamin K below INR 10.";
+                result.UrgencyLevel = UrgencyLevel.Urgente;
+                break;
+
+            case FasciaINR.SovraMoltoAlto:
+                result.SospensioneDosi = 2;
+                result.PercentageAdjustment = -15m;
+                result.SuggestedWeeklyDoseMg = currentDose * 0.85m;
+                result.RequiresVitaminK = false; // ACCP: ancora no Vit K
+                result.NextControlDays = 3;
+                result.LoadingDoseAction = "Hold 1-2 doses";
+                result.ClinicalNotes = "Very high INR. Monitor closely for bleeding signs. ACCP: No routine Vitamin K.";
+                result.Warnings.Add("⚠️ Monitor for bleeding signs");
+                result.UrgencyLevel = UrgencyLevel.Urgente;
+                break;
+
+            case FasciaINR.SovraCritico:
+                // INR 6-7.9 (target 2-3) o 6.5-8.4 (target 2.5-3.5)
+                if (currentINR < 10)
+                {
+                    result.SospensioneDosi = 2;
+                    result.PercentageAdjustment = -15m;
+                    result.SuggestedWeeklyDoseMg = currentDose * 0.85m;
+                    result.RequiresVitaminK = false; // ACCP: NO Vit K sotto 10
+                    result.NextControlDays = 2;
+                    result.LoadingDoseAction = "Hold warfarin, monitor closely";
+                    result.ClinicalNotes = "🔴 CRITICAL INR but <10. ACCP: NO routine Vitamin K without bleeding. Close monitoring.";
+                    result.Warnings.Add("🔴 URGENT: Monitor for bleeding signs");
+                    result.UrgencyLevel = UrgencyLevel.Emergenza;
+                }
+                else // INR ≥10
+                {
+                    result.SospensioneDosi = 3;
+                    result.PercentageAdjustment = -20m;
+                    result.SuggestedWeeklyDoseMg = currentDose * 0.80m;
+                    result.RequiresVitaminK = true; // ACCP: Vit K se ≥10
+                    result.VitaminKDoseMg = 5; // 2.5-5mg
+                    result.VitaminKRoute = "Oral";
+                    result.NextControlDays = 1;
+                    result.LoadingDoseAction = "HOLD warfarin + Vitamin K";
+                    result.ClinicalNotes = "🔴 CRITICAL: INR ≥10. ACCP recommends Vitamin K 2.5-5mg PO.";
+                    result.Warnings.Add("🔴 URGENT: Check INR at 24h");
+                    result.UrgencyLevel = UrgencyLevel.Emergenza;
+                }
+                break;
+
+            case FasciaINR.SovraEstremo:
+                // INR ≥8 (target 2-3) o ≥8.5 (target 2.5-3.5) - SEMPRE ≥10 per ACCP
+                result.SospensioneDosi = null;
+                result.PercentageAdjustment = -30m;
+                result.SuggestedWeeklyDoseMg = currentDose * 0.70m;
+                result.RequiresVitaminK = true; // OBBLIGATORIA
+                result.VitaminKDoseMg = 5; // 2.5-5mg (ACCP)
+                result.VitaminKRoute = "Oral";
+                result.NextControlDays = 1;
+                result.LoadingDoseAction = "STOP warfarin + Vitamin K";
+                result.ClinicalNotes = "🔴 EXTREME INR. Vitamin K mandatory. Hold until INR normalizes.";
+                result.Warnings.Add("🔴 EMERGENCY: Check INR at 24h and 48h");
+                result.Warnings.Add("Consider hospitalization for monitoring");
+                result.UrgencyLevel = UrgencyLevel.Emergenza;
+                break;
         }
 
         result.SuggestedWeeklyDoseMg = RoundToSensibleDose(result.SuggestedWeeklyDoseMg);
@@ -646,6 +1106,96 @@ public class DosageCalculatorService : IDosageCalculatorService
     {
         // Arrotonda a multipli di 2.5mg (mezza compressa)
         return Math.Round(dose / 2.5m) * 2.5m;
+    }
+
+    #endregion
+
+    #region New Algorithm Helpers
+
+    /// <summary>
+    /// Determina la fascia INR per valori sottoterapeutici
+    /// </summary>
+    private static FasciaINR DeterminaFasciaINRBasso(decimal inr, decimal targetMin, decimal targetMax)
+    {
+        bool isHighTarget = targetMax >= 3.5m;
+
+        if (!isHighTarget) // Target 2.0-3.0
+        {
+            if (inr >= 1.8m && inr < 2.0m) return FasciaINR.SubLieve;
+            if (inr >= 1.5m && inr < 1.8m) return FasciaINR.SubModerato;
+            if (inr < 1.5m) return FasciaINR.SubCritico;
+        }
+        else // Target 2.5-3.5
+        {
+            if (inr >= 2.3m && inr < 2.5m) return FasciaINR.SubLieve;
+            if (inr >= 2.0m && inr < 2.3m) return FasciaINR.SubModerato;
+            if (inr < 2.0m) return FasciaINR.SubCritico;
+        }
+
+        return FasciaINR.InRange; // Fallback
+    }
+
+    /// <summary>
+    /// Determina la fascia INR per valori sovraterapeutici
+    /// </summary>
+    private static FasciaINR DeterminaFasciaINRAlto(decimal inr, decimal targetMin, decimal targetMax)
+    {
+        bool isHighTarget = targetMax >= 3.5m;
+
+        if (!isHighTarget) // Target 2.0-3.0
+        {
+            if (inr >= 3.1m && inr <= 3.4m) return FasciaINR.SovraLieve;
+            if (inr >= 3.5m && inr <= 3.9m) return FasciaINR.SovraModerato;
+            if (inr >= 4.0m && inr <= 4.9m) return FasciaINR.SovraAlto;
+            if (inr >= 5.0m && inr <= 5.9m) return FasciaINR.SovraMoltoAlto;
+            if (inr >= 6.0m && inr <= 7.9m) return FasciaINR.SovraCritico;
+            if (inr >= 8.0m) return FasciaINR.SovraEstremo;
+        }
+        else // Target 2.5-3.5
+        {
+            if (inr >= 3.6m && inr <= 3.9m) return FasciaINR.SovraLieve;
+            if (inr >= 4.0m && inr <= 4.4m) return FasciaINR.SovraModerato;
+            if (inr >= 4.5m && inr <= 5.4m) return FasciaINR.SovraAlto;
+            if (inr >= 5.5m && inr <= 6.4m) return FasciaINR.SovraMoltoAlto;
+            if (inr >= 6.5m && inr <= 8.4m) return FasciaINR.SovraCritico;
+            if (inr >= 8.5m) return FasciaINR.SovraEstremo;
+        }
+
+        return FasciaINR.InRange; // Fallback
+    }
+
+    /// <summary>
+    /// Calcola se il paziente ha un rischio tromboembolico elevato
+    /// Basato su: protesi meccanica, TEV recente, CHA2DS2-VASc elevato
+    /// </summary>
+    private static bool CalcolaRischioTromboticoElevato(
+        bool hasProtesiMeccanica,
+        DateTime? dataUltimoTEV,
+        string indicazioneTAO,
+        int cha2ds2vasc)
+    {
+        // Protesi meccanica = sempre alto rischio
+        if (hasProtesiMeccanica) return true;
+
+        // TEV recente (<3 mesi)
+        if (dataUltimoTEV.HasValue)
+        {
+            var giorniDaUltimoTEV = (DateTime.Now - dataUltimoTEV.Value).Days;
+            if (giorniDaUltimoTEV < 90) return true;
+        }
+
+        // FA con CHA2DS2-VASc ≥4
+        if (indicazioneTAO.Equals("FA", StringComparison.OrdinalIgnoreCase) && cha2ds2vasc >= 4)
+            return true;
+
+        // TEV molto recente (<30 giorni)
+        if (indicazioneTAO.Equals("TEV", StringComparison.OrdinalIgnoreCase) && dataUltimoTEV.HasValue)
+        {
+            var giorniDaUltimoTEV = (DateTime.Now - dataUltimoTEV.Value).Days;
+            if (giorniDaUltimoTEV < 30) return true;
+        }
+
+        return false;
     }
 
     #endregion

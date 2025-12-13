@@ -63,7 +63,13 @@ namespace WarfarinManager.UI.ViewModels
         private DateTime _controlDate = DateTime.Today;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(CanSelectBleeding))]
         private decimal _inrValue;
+
+        /// <summary>
+        /// Il campo emorragia è abilitato solo per INR > 3.2 (sovraterapeutico)
+        /// </summary>
+        public bool CanSelectBleeding => InrValue > 3.2m;
 
         [ObservableProperty]
         private bool _isCompliant = true;
@@ -73,6 +79,31 @@ namespace WarfarinManager.UI.ViewModels
 
         [ObservableProperty]
         private string _notes = string.Empty;
+
+        // Gestione emorragie
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasBleeding))]
+        private TipoEmorragia _selectedBleedingType = TipoEmorragia.Nessuna;
+
+        [ObservableProperty]
+        private SedeEmorragia _selectedBleedingSite = SedeEmorragia.Nessuna;
+
+        /// <summary>
+        /// Indica se è presente un sanguinamento (visibilità condizionale UI)
+        /// </summary>
+        public bool HasBleeding => SelectedBleedingType != TipoEmorragia.Nessuna;
+
+        /// <summary>
+        /// Quando INR cambia, resetta l'emorragia se INR <= 3.2
+        /// </summary>
+        partial void OnInrValueChanged(decimal value)
+        {
+            if (value <= 3.2m && SelectedBleedingType != TipoEmorragia.Nessuna)
+            {
+                SelectedBleedingType = TipoEmorragia.Nessuna;
+                SelectedBleedingSite = SedeEmorragia.Nessuna;
+            }
+        }
 
         // Dosi giornaliere usando DoseOption per visualizzare mg + compresse
         [ObservableProperty]
@@ -192,6 +223,27 @@ namespace WarfarinManager.UI.ViewModels
         {
             GuidelineType.FCSA,
             GuidelineType.ACCP
+        };
+
+        public ObservableCollection<TipoEmorragia> BleedingTypes { get; } = new()
+        {
+            TipoEmorragia.Nessuna,
+            TipoEmorragia.Minore,
+            TipoEmorragia.Maggiore,
+            TipoEmorragia.RischioVitale
+        };
+
+        public ObservableCollection<SedeEmorragia> BleedingSites { get; } = new()
+        {
+            SedeEmorragia.Nessuna,
+            SedeEmorragia.Cutanea,
+            SedeEmorragia.Nasale,
+            SedeEmorragia.Gengivale,
+            SedeEmorragia.Gastrointestinale,
+            SedeEmorragia.Urinaria,
+            SedeEmorragia.Intracranica,
+            SedeEmorragia.Retroperitoneale,
+            SedeEmorragia.Altra
         };
 
         #endregion
@@ -538,7 +590,10 @@ namespace WarfarinManager.UI.ViewModels
                     CurrentWeeklyDose,
                     SelectedPhase,
                     IsCompliant,
-                    IsSlowMetabolizer);
+                    IsSlowMetabolizer,
+                    ThromboembolicRisk.Moderate, // TODO: calcolare dal paziente
+                    SelectedBleedingType,
+                    SelectedBleedingSite);
 
                 // Calcola suggerimento ACCP
                 AccpSuggestion = _dosageCalculator.CalculateACCP(
@@ -548,7 +603,10 @@ namespace WarfarinManager.UI.ViewModels
                     CurrentWeeklyDose,
                     SelectedPhase,
                     IsCompliant,
-                    IsSlowMetabolizer);
+                    IsSlowMetabolizer,
+                    ThromboembolicRisk.Moderate, // TODO: calcolare dal paziente
+                    SelectedBleedingType,
+                    SelectedBleedingSite);
 
                 // Imposta suggerimento attivo
                 ActiveSuggestion = SelectedGuideline == GuidelineType.FCSA 

@@ -19,6 +19,8 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:DecimalConverter x:Key="DecimalConverter" />
         <converters:EnumToBoolConverter x:Key="EnumToBoolConverter" />
+        <converters:BleedingTypeToStringConverter x:Key="BleedingTypeToStringConverter" />
+        <converters:BleedingSiteToStringConverter x:Key="BleedingSiteToStringConverter" />
         
         <!--  Stili comuni  -->
         <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
@@ -283,6 +285,42 @@
                                 FontSize="13"
                                 IsChecked="{Binding IsCompliant}" />
 
+                            <!--  Presenza Emorragia (abilitato solo per INR > 3.2)  -->
+                            <TextBlock Style="{StaticResource InputLabelStyle}">
+                                <Run Text="Presenza di sanguinamento" />
+                                <Run FontSize="10" Foreground="#999999" Text="(solo per INR > 3.2)" />
+                            </TextBlock>
+                            <ComboBox
+                                Margin="0,0,0,10"
+                                Padding="8"
+                                FontSize="14"
+                                IsEnabled="{Binding CanSelectBleeding}"
+                                ItemsSource="{Binding BleedingTypes}"
+                                SelectedItem="{Binding SelectedBleedingType}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Converter={StaticResource BleedingTypeToStringConverter}}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <!--  Sede Emorragia (visibile solo se c'è emorragia)  -->
+                            <StackPanel Visibility="{Binding HasBleeding, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <TextBlock Style="{StaticResource InputLabelStyle}" Text="Sede anatomica emorragia" />
+                                <ComboBox
+                                    Margin="0,0,0,15"
+                                    Padding="8"
+                                    FontSize="14"
+                                    ItemsSource="{Binding BleedingSites}"
+                                    SelectedItem="{Binding SelectedBleedingSite}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Converter={StaticResource BleedingSiteToStringConverter}}" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </StackPanel>
+
                             <!--  Note  -->
                             <TextBlock Style="{StaticResource InputLabelStyle}" Text="Note cliniche" />
                             <TextBox
@@ -476,9 +514,103 @@
                                 </TextBlock>
                             </Grid>
 
+                            <!--  Livello Urgenza  -->
+                            <Border Margin="0,0,0,15" Padding="12,8" CornerRadius="4">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ActiveSuggestion.UrgencyLevel}" Value="0">
+                                                <Setter Property="Background" Value="#E8F5E9" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ActiveSuggestion.UrgencyLevel}" Value="1">
+                                                <Setter Property="Background" Value="#FFF3E0" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ActiveSuggestion.UrgencyLevel}" Value="2">
+                                                <Setter Property="Background" Value="#FFEBEE" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <StackPanel>
+                                    <TextBlock FontSize="11" Foreground="#666666" Text="LIVELLO URGENZA" />
+                                    <TextBlock FontSize="14" FontWeight="Bold">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ActiveSuggestion.UrgencyLevel}" Value="0">
+                                                        <Setter Property="Foreground" Value="#388E3C" />
+                                                        <Setter Property="Text" Value="✓ ROUTINE" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ActiveSuggestion.UrgencyLevel}" Value="1">
+                                                        <Setter Property="Foreground" Value="#F57C00" />
+                                                        <Setter Property="Text" Value="⚠ URGENTE" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ActiveSuggestion.UrgencyLevel}" Value="2">
+                                                        <Setter Property="Foreground" Value="#D32F2F" />
+                                                        <Setter Property="Text" Value="🔴 EMERGENZA" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+
                             <!--  Note Cliniche  -->
                             <TextBlock Margin="0,0,0,8" FontSize="12" FontWeight="SemiBold" Foreground="#666666" Text="NOTE CLINICHE" />
                             <TextBlock Margin="0,0,0,15" FontSize="12" Foreground="#333333" Text="{Binding ActiveSuggestion.ClinicalNotes}" TextWrapping="Wrap" />
+
+                            <!--  Warnings (se presenti)  -->
+                            <ItemsControl Margin="0,0,0,15" ItemsSource="{Binding ActiveSuggestion.Warnings}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Margin="0,0,0,5" Padding="10,8" Background="#FFF3E0" BorderBrush="#FF9800" BorderThickness="1" CornerRadius="4">
+                                            <TextBlock FontSize="12" FontWeight="SemiBold" Foreground="#E65100" Text="{Binding}" TextWrapping="Wrap" />
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <!--  Raccomandazioni Speciali (Vitamina K, PCC, EBPM)  -->
+                            <StackPanel>
+                                <!--  Vitamina K  -->
+                                <Border Margin="0,0,0,10" Padding="12,10" Background="#E3F2FD" BorderBrush="#2196F3" BorderThickness="1" CornerRadius="4" Visibility="{Binding ActiveSuggestion.RequiresVitaminK, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <StackPanel>
+                                        <TextBlock FontSize="13" FontWeight="Bold" Foreground="#1976D2" Text="💊 VITAMINA K RACCOMANDATA" />
+                                        <TextBlock Margin="0,5,0,0" FontSize="12" Foreground="#333333">
+                                            <Run Text="Dose:" />
+                                            <Run FontWeight="Bold" Text="{Binding ActiveSuggestion.VitaminKDoseMg, StringFormat=F1}" />
+                                            <Run Text="mg" />
+                                        </TextBlock>
+                                        <TextBlock FontSize="12" Foreground="#333333">
+                                            <Run Text="Via:" />
+                                            <Run FontWeight="Bold" Text="{Binding ActiveSuggestion.VitaminKRoute}" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+
+                                <!--  PCC (Concentrato Complesso Protrombinico)  -->
+                                <Border Margin="0,0,0,10" Padding="12,10" Background="#FFEBEE" BorderBrush="#F44336" BorderThickness="2" CornerRadius="4" Visibility="{Binding ActiveSuggestion.RequiresPCC, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <StackPanel>
+                                        <TextBlock FontSize="13" FontWeight="Bold" Foreground="#C62828" Text="🔴 PCC RACCOMANDATO (EMERGENZA)" />
+                                        <TextBlock Margin="0,5,0,0" FontSize="12" FontWeight="SemiBold" Foreground="#333333" Text="{Binding ActiveSuggestion.DosePCC}" />
+                                        <TextBlock Margin="0,3,0,0" FontSize="11" Foreground="#666666" Text="Alternativa: Plasma fresco congelato (se PCC non disponibile)" Visibility="{Binding ActiveSuggestion.RequiresPlasma, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!--  EBPM  -->
+                                <Border Margin="0,0,0,10" Padding="12,10" Background="#FFF3E0" BorderBrush="#FF9800" BorderThickness="1" CornerRadius="4" Visibility="{Binding ActiveSuggestion.RequiresEBPM, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <StackPanel>
+                                        <TextBlock FontSize="13" FontWeight="Bold" Foreground="#E65100" Text="⚠ EBPM RACCOMANDATA (BRIDGING)" />
+                                        <TextBlock Margin="0,5,0,0" FontSize="12" Foreground="#333333" Text="Enoxaparina 70 UI/kg x 2/die fino a INR ≥2.0 per 24h" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!--  Ricovero Richiesto  -->
+                                <Border Margin="0,0,0,10" Padding="12,10" Background="#FFCDD2" BorderBrush="#D32F2F" BorderThickness="2" CornerRadius="4" Visibility="{Binding ActiveSuggestion.RequiresHospitalization, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <TextBlock FontSize="14" FontWeight="Bold" Foreground="#B71C1C" Text="🏥 RICOVERO OSPEDALIERO OBBLIGATORIO" TextAlignment="Center" />
+                                </Border>
+                            </StackPanel>
 
                             <!--  Azioni Export  -->
                             <StackPanel Margin="0,15,0,0">
