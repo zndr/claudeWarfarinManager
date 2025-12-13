@@ -78,7 +78,9 @@ public interface IDosageCalculatorService
     /// Genera schema posologico settimanale ottimizzato da dose totale
     /// Preferisce compresse intere (5mg) e mezze (2.5mg), evita 1/4 o 3/4
     /// </summary>
-    WeeklyDoseSchedule GenerateWeeklySchedule(decimal weeklyDoseMg);
+    /// <param name="weeklyDoseMg">Dose settimanale totale (mg)</param>
+    /// <param name="loadingDoseDay1">Dose supplementare da aggiungere al primo giorno (opzionale)</param>
+    WeeklyDoseSchedule GenerateWeeklySchedule(decimal weeklyDoseMg, decimal? loadingDoseDay1 = null);
 
     /// <summary>
     /// Valuta se è necessario bridge con EBPM

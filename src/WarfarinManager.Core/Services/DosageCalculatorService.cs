@@ -124,7 +124,9 @@ public class DosageCalculatorService : IDosageCalculatorService
         // Genera schema settimanale (solo se dose > 0)
         if (result.SuggestedWeeklyDoseMg > 0)
         {
-            result.WeeklySchedule = GenerateWeeklySchedule(result.SuggestedWeeklyDoseMg);
+            result.WeeklySchedule = GenerateWeeklySchedule(
+                result.SuggestedWeeklyDoseMg,
+                result.DoseSupplementarePrimoGiorno);
         }
 
         _logger.LogInformation(
@@ -245,7 +247,9 @@ public class DosageCalculatorService : IDosageCalculatorService
         // Genera schema settimanale (solo se dose > 0)
         if (result.SuggestedWeeklyDoseMg > 0)
         {
-            result.WeeklySchedule = GenerateWeeklySchedule(result.SuggestedWeeklyDoseMg);
+            result.WeeklySchedule = GenerateWeeklySchedule(
+                result.SuggestedWeeklyDoseMg,
+                result.DoseSupplementarePrimoGiorno);
         }
 
         _logger.LogInformation(
@@ -451,14 +455,16 @@ public class DosageCalculatorService : IDosageCalculatorService
                 result.DoseSupplementarePrimoGiorno = currentDose * 0.075m; // 7.5% primo giorno
                 result.SuggestedWeeklyDoseMg = currentDose * 1.175m;
                 result.NextControlDays = 6; // 5-7 giorni
-                result.LoadingDoseAction = $"Aumentare dose di {result.DoseSupplementarePrimoGiorno:F2}mg oggi";
+
+                var loadingDoseRounded = RoundToSensibleDose(result.DoseSupplementarePrimoGiorno.Value);
+                result.LoadingDoseAction = $"DOSE CARICO OGGI: +{loadingDoseRounded:F1}mg (7.5% dose settimanale)";
 
                 if (rischioTromboticoElevato)
                 {
                     result.RequiresEBPM = true;
                     result.Warnings.Add("🔴 EBPM RACCOMANDATA: Enoxaparina 70 UI/kg x 2/die fino a INR ≥2.0 per 24h");
                 }
-                result.ClinicalNotes = "INR CRITICO: Incremento dose + dose carico.";
+                result.ClinicalNotes = $"⚠️ INR CRITICO: Incremento dose settimanale +17.5% + dose carico OGGI (+{loadingDoseRounded:F1}mg).";
                 result.UrgencyLevel = UrgencyLevel.Urgente;
                 break;
 
@@ -891,7 +897,7 @@ public class DosageCalculatorService : IDosageCalculatorService
 
     #region Weekly Schedule Generation
 
-    public WeeklyDoseSchedule GenerateWeeklySchedule(decimal weeklyDoseMg)
+    public WeeklyDoseSchedule GenerateWeeklySchedule(decimal weeklyDoseMg, decimal? loadingDoseDay1 = null)
         {
         if (weeklyDoseMg <= 0)
             {
@@ -945,6 +951,18 @@ public class DosageCalculatorService : IDosageCalculatorService
             schedule.DailyDoses[day] += 2.5m;
             schedule.DailyDescriptions[day] = FormatDose(schedule.DailyDoses[day]);
             }
+
+        // Aggiungi dose carico al primo giorno (oggi - assumiamo sia il giorno corrente)
+        if (loadingDoseDay1.HasValue && loadingDoseDay1.Value > 0)
+        {
+            var today = DateTime.Today.DayOfWeek;
+            var roundedLoadingDose = RoundToSensibleDose(loadingDoseDay1.Value);
+            schedule.DailyDoses[today] += roundedLoadingDose;
+            schedule.DailyDescriptions[today] = FormatDose(schedule.DailyDoses[today]);
+
+            // Aggiorna totale settimanale effettivo
+            schedule.TotalWeeklyDose += roundedLoadingDose;
+        }
 
         // Genera descrizione formattata
         schedule.Description = FormatScheduleDescription(schedule);

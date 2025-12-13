@@ -416,16 +416,21 @@ namespace WarfarinManager.UI.ViewModels
         #region Clipboard Helper
 
         /// <summary>
-        /// Copia testo negli appunti con retry per gestire il clipboard occupato
+        /// Copia testo negli appunti con retry e gestione corretta del thread UI
         /// </summary>
-        private static bool TrySetClipboardText(string text, int maxRetries = 10, int retryDelayMs = 100)
+        private static bool TrySetClipboardText(string text, int maxRetries = 5, int retryDelayMs = 50)
         {
             for (int i = 0; i < maxRetries; i++)
             {
                 try
                 {
-                    Clipboard.Clear();
-                    Clipboard.SetDataObject(text, true);
+                    // Assicura che l'operazione avvenga sul thread UI
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        Clipboard.Clear();
+                        Thread.Sleep(10); // Piccolo delay dopo Clear
+                        Clipboard.SetText(text);
+                    });
                     return true;
                 }
                 catch (COMException)
@@ -434,6 +439,11 @@ namespace WarfarinManager.UI.ViewModels
                         Thread.Sleep(retryDelayMs);
                 }
                 catch (ExternalException)
+                {
+                    if (i < maxRetries - 1)
+                        Thread.Sleep(retryDelayMs);
+                }
+                catch (Exception)
                 {
                     if (i < maxRetries - 1)
                         Thread.Sleep(retryDelayMs);
@@ -762,12 +772,27 @@ namespace WarfarinManager.UI.ViewModels
             try
             {
                 var exportText = GenerateExportText();
-                bool success = TrySetClipboardText(exportText);
-                
-                if (success)
-                    _dialogService.ShowInformation("Suggerimento copiato negli appunti!");
-                else
-                    _dialogService.ShowWarning("Impossibile accedere agli appunti. Riprovare.");
+
+                // Usa Task.Run per evitare problemi di threading
+                Task.Run(async () =>
+                {
+                    await Task.Delay(100); // Piccolo delay
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        try
+                        {
+                            Clipboard.SetDataObject(exportText, true);
+                        }
+                        catch
+                        {
+                            // Retry con metodo alternativo
+                            Clipboard.SetText(exportText);
+                        }
+                    });
+                }).Wait(2000); // Timeout 2 secondi
+
+                _dialogService.ShowInformation("Suggerimento copiato negli appunti!");
             }
             catch (Exception ex)
             {
@@ -786,12 +811,27 @@ namespace WarfarinManager.UI.ViewModels
             try
             {
                 var shortText = GenerateShortExportText();
-                bool success = TrySetClipboardText(shortText);
-                
-                if (success)
-                    _dialogService.ShowInformation("Testo breve copiato negli appunti!");
-                else
-                    _dialogService.ShowWarning("Impossibile accedere agli appunti. Riprovare.");
+
+                // Usa Task.Run per evitare problemi di threading
+                Task.Run(async () =>
+                {
+                    await Task.Delay(100); // Piccolo delay
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        try
+                        {
+                            Clipboard.SetDataObject(shortText, true);
+                        }
+                        catch
+                        {
+                            // Retry con metodo alternativo
+                            Clipboard.SetText(shortText);
+                        }
+                    });
+                }).Wait(2000); // Timeout 2 secondi
+
+                _dialogService.ShowInformation("Testo breve copiato negli appunti!");
             }
             catch (Exception ex)
             {
@@ -1191,6 +1231,12 @@ Dosaggio corrente: {CurrentWeeklyDose:F1} mg/sett
 {doseSection}
 Prossimo controllo: {controlInterval}";
 
+            // Aggiungi note cliniche se presenti (includono dose carico)
+            if (!string.IsNullOrEmpty(ActiveSuggestion.ClinicalNotes))
+            {
+                text += $"\n\nNOTE: {ActiveSuggestion.ClinicalNotes}";
+            }
+
             return text;
         }
 
@@ -1271,6 +1317,30 @@ DOSE DI CARICO:
   • Somministrare {loadingDose:F1} mg oggi
   • Equivale al {percentageOfWeekly:F1}% della dose settimanale corrente
   • Poi proseguire con il nuovo schema settimanale da domani";
+            }
+
+            // Aggiungi schema dettagliato del nuovo dosaggio
+            if (SuggestedDistributedSchedule != null && SuggestedDistributedSchedule.Length == 7)
+            {
+                // Calcola le opzioni dose per ogni giorno
+                var monDose = FindDoseOption(SuggestedDistributedSchedule[0]);
+                var tueDose = FindDoseOption(SuggestedDistributedSchedule[1]);
+                var wedDose = FindDoseOption(SuggestedDistributedSchedule[2]);
+                var thuDose = FindDoseOption(SuggestedDistributedSchedule[3]);
+                var friDose = FindDoseOption(SuggestedDistributedSchedule[4]);
+                var satDose = FindDoseOption(SuggestedDistributedSchedule[5]);
+                var sunDose = FindDoseOption(SuggestedDistributedSchedule[6]);
+
+                text += $@"
+
+NUOVO SCHEMA SETTIMANALE DETTAGLIATO ({ActiveSuggestion.SuggestedWeeklyDoseMg:F1} mg/sett):
+  Lunedì:    {monDose?.DisplayText ?? "—"}
+  Martedì:   {tueDose?.DisplayText ?? "—"}
+  Mercoledì: {wedDose?.DisplayText ?? "—"}
+  Giovedì:   {thuDose?.DisplayText ?? "—"}
+  Venerdì:   {friDose?.DisplayText ?? "—"}
+  Sabato:    {satDose?.DisplayText ?? "—"}
+  Domenica:  {sunDose?.DisplayText ?? "—"}";
             }
 
             text += @"
