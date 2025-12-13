@@ -493,12 +493,61 @@
                                 </StackPanel>
                             </Border>
 
-                            <!--  Schema Settimanale Distribuito  -->
+                            <!--  Schema Settimanale Distribuito (testo compatto)  -->
                             <TextBlock Margin="0,0,0,8" FontSize="12" FontWeight="SemiBold" Foreground="#666666" Text="SCHEMA SETTIMANALE (distribuzione equilibrata)" />
-                            <Border Margin="0,0,0,10" Padding="12" Background="#E8F5E9" BorderBrush="#4CAF50" BorderThickness="1" CornerRadius="4">
+                            <Border Margin="0,0,0,15" Padding="12" Background="#E8F5E9" BorderBrush="#4CAF50" BorderThickness="1" CornerRadius="4">
                                 <TextBlock FontFamily="Consolas" FontSize="13" FontWeight="SemiBold" Foreground="#2E7D32" Text="{Binding SuggestedScheduleText}" TextWrapping="Wrap" />
                             </Border>
-                            
+
+                            <!--  Dosi giornaliere suggerite (dropdown dettagliati)  -->
+                            <TextBlock Margin="0,0,0,8" FontSize="12" FontWeight="SemiBold" Foreground="#666666" Text="DETTAGLIO DOSAGGIO GIORNALIERO SUGGERITO" />
+
+                            <Border Margin="0,0,0,15" Padding="12" Background="#F0F8FF" BorderBrush="#2196F3" BorderThickness="1" CornerRadius="4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="75" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <!--  Lunedì  -->
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,8,6" VerticalAlignment="Center" FontSize="11" FontWeight="Medium" Text="Lunedì" />
+                                    <ComboBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,6" DisplayMemberPath="DisplayText" FontSize="11" IsEnabled="False" ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedMondayDose, Mode=OneWay}" Style="{StaticResource DoseComboBoxStyle}" />
+
+                                    <!--  Martedì  -->
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,8,6" VerticalAlignment="Center" FontSize="11" FontWeight="Medium" Text="Martedì" />
+                                    <ComboBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,6" DisplayMemberPath="DisplayText" FontSize="11" IsEnabled="False" ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedTuesdayDose, Mode=OneWay}" Style="{StaticResource DoseComboBoxStyle}" />
+
+                                    <!--  Mercoledì  -->
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,0,8,6" VerticalAlignment="Center" FontSize="11" FontWeight="Medium" Text="Mercoledì" />
+                                    <ComboBox Grid.Row="2" Grid.Column="1" Margin="0,0,0,6" DisplayMemberPath="DisplayText" FontSize="11" IsEnabled="False" ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedWednesdayDose, Mode=OneWay}" Style="{StaticResource DoseComboBoxStyle}" />
+
+                                    <!--  Giovedì  -->
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,0,8,6" VerticalAlignment="Center" FontSize="11" FontWeight="Medium" Text="Giovedì" />
+                                    <ComboBox Grid.Row="3" Grid.Column="1" Margin="0,0,0,6" DisplayMemberPath="DisplayText" FontSize="11" IsEnabled="False" ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedThursdayDose, Mode=OneWay}" Style="{StaticResource DoseComboBoxStyle}" />
+
+                                    <!--  Venerdì  -->
+                                    <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,0,8,6" VerticalAlignment="Center" FontSize="11" FontWeight="Medium" Text="Venerdì" />
+                                    <ComboBox Grid.Row="4" Grid.Column="1" Margin="0,0,0,6" DisplayMemberPath="DisplayText" FontSize="11" IsEnabled="False" ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedFridayDose, Mode=OneWay}" Style="{StaticResource DoseComboBoxStyle}" />
+
+                                    <!--  Sabato  -->
+                                    <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,0,8,6" VerticalAlignment="Center" FontSize="11" FontWeight="Medium" Text="Sabato" />
+                                    <ComboBox Grid.Row="5" Grid.Column="1" Margin="0,0,0,6" DisplayMemberPath="DisplayText" FontSize="11" IsEnabled="False" ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedSaturdayDose, Mode=OneWay}" Style="{StaticResource DoseComboBoxStyle}" />
+
+                                    <!--  Domenica  -->
+                                    <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,0,8,0" VerticalAlignment="Center" FontSize="11" FontWeight="Medium" Text="Domenica" />
+                                    <ComboBox Grid.Row="6" Grid.Column="1" Margin="0,0,0,0" DisplayMemberPath="DisplayText" FontSize="11" IsEnabled="False" ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedSundayDose, Mode=OneWay}" Style="{StaticResource DoseComboBoxStyle}" />
+                                </Grid>
+                            </Border>
+
                             <!--  Pulsante Applica Schema  -->
                             <Button Margin="0,0,0,15" HorizontalAlignment="Left" Command="{Binding ApplySuggestedScheduleCommand}" Content="✅ Applica schema suggerito" Style="{StaticResource SuccessButtonStyle}" ToolTip="Imposta le dosi giornaliere con lo schema suggerito" />
 

@@ -179,6 +179,28 @@ namespace WarfarinManager.UI.ViewModels
         [ObservableProperty]
         private string _suggestedScheduleText = string.Empty;
 
+        // Dosi giornaliere SUGGERITE (visualizzate nei dropdown a destra, read-only)
+        [ObservableProperty]
+        private DoseOption? _suggestedMondayDose;
+
+        [ObservableProperty]
+        private DoseOption? _suggestedTuesdayDose;
+
+        [ObservableProperty]
+        private DoseOption? _suggestedWednesdayDose;
+
+        [ObservableProperty]
+        private DoseOption? _suggestedThursdayDose;
+
+        [ObservableProperty]
+        private DoseOption? _suggestedFridayDose;
+
+        [ObservableProperty]
+        private DoseOption? _suggestedSaturdayDose;
+
+        [ObservableProperty]
+        private DoseOption? _suggestedSundayDose;
+
         #endregion
 
         #region Properties - Storico
@@ -625,6 +647,9 @@ namespace WarfarinManager.UI.ViewModels
                         ActiveSuggestion.SuggestedWeeklyDoseMg,
                         ExcludeQuarterTablets);
                     SuggestedScheduleText = DoseDistributionHelper.GenerateShortSchedule(SuggestedDistributedSchedule);
+
+                    // Popola i dropdown delle dosi suggerite
+                    UpdateSuggestedDoseDropdowns();
                 }
 
                 await Task.CompletedTask;
@@ -1063,9 +1088,12 @@ namespace WarfarinManager.UI.ViewModels
                 if (ActiveSuggestion != null)
                 {
                     SuggestedDistributedSchedule = DoseDistributionHelper.DistributeWeeklyDose(
-                        ActiveSuggestion.SuggestedWeeklyDoseMg, 
+                        ActiveSuggestion.SuggestedWeeklyDoseMg,
                         ExcludeQuarterTablets);
                     SuggestedScheduleText = DoseDistributionHelper.GenerateShortSchedule(SuggestedDistributedSchedule);
+
+                    // Popola i dropdown delle dosi suggerite
+                    UpdateSuggestedDoseDropdowns();
                 }
             }
         }
@@ -1073,6 +1101,34 @@ namespace WarfarinManager.UI.ViewModels
         #endregion
 
         #region Helper Methods
+
+        /// <summary>
+        /// Aggiorna i dropdown delle dosi suggerite in base allo schema distribuito
+        /// </summary>
+        private void UpdateSuggestedDoseDropdowns()
+        {
+            if (SuggestedDistributedSchedule == null || SuggestedDistributedSchedule.Length != 7)
+            {
+                // Reset tutti i dropdown se non c'è uno schema valido
+                SuggestedMondayDose = null;
+                SuggestedTuesdayDose = null;
+                SuggestedWednesdayDose = null;
+                SuggestedThursdayDose = null;
+                SuggestedFridayDose = null;
+                SuggestedSaturdayDose = null;
+                SuggestedSundayDose = null;
+                return;
+            }
+
+            // Trova i DoseOption corrispondenti alle dosi suggerite
+            SuggestedMondayDose = FindDoseOption(SuggestedDistributedSchedule[0]);
+            SuggestedTuesdayDose = FindDoseOption(SuggestedDistributedSchedule[1]);
+            SuggestedWednesdayDose = FindDoseOption(SuggestedDistributedSchedule[2]);
+            SuggestedThursdayDose = FindDoseOption(SuggestedDistributedSchedule[3]);
+            SuggestedFridayDose = FindDoseOption(SuggestedDistributedSchedule[4]);
+            SuggestedSaturdayDose = FindDoseOption(SuggestedDistributedSchedule[5]);
+            SuggestedSundayDose = FindDoseOption(SuggestedDistributedSchedule[6]);
+        }
 
         private void UpdateINRStatus()
         {
@@ -1201,7 +1257,23 @@ Data consigliata: {ControlDate.AddDays(ActiveSuggestion.NextControlDays):dd/MM/y
 NOTE CLINICHE
 ───────────────────────────────────────────────────────────────
 
-{ActiveSuggestion.ClinicalNotes}
+{ActiveSuggestion.ClinicalNotes}";
+
+            // Aggiungi dose di carico se presente (per sottocoagulazione)
+            if (ActiveSuggestion.DoseSupplementarePrimoGiorno.HasValue && ActiveSuggestion.DoseSupplementarePrimoGiorno.Value > 0)
+            {
+                decimal loadingDose = ActiveSuggestion.DoseSupplementarePrimoGiorno.Value;
+                decimal percentageOfWeekly = CurrentWeeklyDose > 0 ? (loadingDose / CurrentWeeklyDose * 100) : 0;
+
+                text += $@"
+
+DOSE DI CARICO:
+  • Somministrare {loadingDose:F1} mg oggi
+  • Equivale al {percentageOfWeekly:F1}% della dose settimanale corrente
+  • Poi proseguire con il nuovo schema settimanale da domani";
+            }
+
+            text += @"
 
 ";
 
