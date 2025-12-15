@@ -1,0 +1,98 @@
+═══════════════════════════════════════════════════════════════
+  TaoGEST - Gestione Terapia Anticoagulante Orale
+  Note di Rilascio - Versione 1.1.0
+═══════════════════════════════════════════════════════════════
+
+Data Rilascio: 15 Dicembre 2024
+
+NOVITÀ PRINCIPALI
+─────────────────────────────────────────────────────────────
+
+✨ Gestione Dose di Carico per INR Critico
+  • Implementata dose supplementare per INR sottoterapeutico critico
+  • Per INR <1.5: dose carico del 7.5% viene aggiunta al giorno corrente
+  • Visualizzazione chiara nelle note cliniche e nello schema giornaliero
+  • Esempio: INR 1.3 → dose base + 2.5mg dose carico OGGI
+
+✨ Miglioramenti UI Note Cliniche
+  • Note cliniche più dettagliate e informative
+  • Indicazione esplicita della dose carico: "DOSE CARICO OGGI: +X.Xmg"
+  • Formato migliorato per copia negli appunti
+
+✨ Gestione Emorragie Avanzata
+  • Dropdown condizionale per tipo di emorragia (Minore/Maggiore/Rischio vitale)
+  • Selezione sede emorragia (Cutanea, GI, Urinaria, Intracranica, etc.)
+  • Raccomandazioni specifiche per ciascun tipo di emorragia
+  • Indicazioni per Vitamina K, PCC e ricovero
+
+CORREZIONI
+─────────────────────────────────────────────────────────────
+
+🐛 Fix Copia Breve
+  • La funzione "Copia breve" ora include le note cliniche
+  • Dose di carico correttamente visualizzata in entrambe le modalità di copia
+
+🐛 Fix Algoritmo Dose Carico
+  • Dose carico viene ora applicata correttamente al giorno corrente
+  • Schema settimanale aggiornato per riflettere la dose supplementare
+  • Calcolo arrotondato a multipli di 2.5mg per facilità somministrazione
+
+MIGLIORAMENTI TECNICI
+─────────────────────────────────────────────────────────────
+
+⚙️ Algoritmi Dosaggio
+  • Implementazione completa linee guida FCSA-SIMG 2024 per INR sottoterapeutico
+  • Classificazione dettagliata per fasce INR (SubCritico, SubModerato, SubLieve)
+  • Calcolo automatico rischio tromboembolico elevato
+
+⚙️ Generazione Schema Settimanale
+  • Parametro opzionale loadingDoseDay1 in GenerateWeeklySchedule()
+  • Supporto dose carico automatica nel giorno corrente
+  • Aggiornamento totale settimanale per includere dose supplementare
+
+REQUISITI DI SISTEMA
+─────────────────────────────────────────────────────────────
+
+• Windows 10 (versione 1809 o successiva) o Windows 11
+• .NET 8.0 Desktop Runtime (x64)
+• 200 MB spazio su disco
+• 4 GB RAM (consigliati)
+• Risoluzione schermo: 1280x720 minima, 1920x1080 consigliata
+
+INSTALLAZIONE
+─────────────────────────────────────────────────────────────
+
+1. Eseguire TaoGEST-Setup-v1.1.0.exe
+2. Seguire le istruzioni dell'installazione guidata
+3. Al primo avvio verrà creato il database locale
+4. Configurare i dati del medico in Impostazioni
+
+AGGIORNAMENTO DA VERSIONE PRECEDENTE
+─────────────────────────────────────────────────────────────
+
+⚠️ IMPORTANTE: Il database verrà aggiornato automaticamente.
+È consigliato effettuare un backup prima dell'aggiornamento.
+
+Il database si trova in:
+%LocalAppData%\WarfarinManager\warfarin.db
+
+PROSSIMI SVILUPPI (Roadmap v1.2.0)
+─────────────────────────────────────────────────────────────
+
+• Export dati in formato Excel
+• Grafici TTR (Time in Therapeutic Range)
+• Stampa schema settimanale personalizzato
+• Importazione dati da file CSV
+• Dashboard riepilogativa per paziente
+
+SUPPORTO
+─────────────────────────────────────────────────────────────
+
+Per segnalazioni bug o richieste di funzionalità:
+Email: supporto@taogest.it
+GitHub: https://github.com/studio-medico/taogest
+
+═══════════════════════════════════════════════════════════════
+© 2025 Studio Medico - TaoGEST
+Tutti i diritti riservati
+═══════════════════════════════════════════════════════════════
