@@ -49,7 +49,8 @@ public class WeeklySchedulePdfService
         string suggestedScheduleText,
         string selectedGuideline,
         DosageSuggestionResult? fcsaSuggestion,
-        DosageSuggestionResult? accpSuggestion)
+        DosageSuggestionResult? accpSuggestion,
+        bool isWarningIgnored = false)
     {
         // Carica i dati del medico
         var doctorData = await _context.DoctorData.FirstOrDefaultAsync();
@@ -69,7 +70,7 @@ public class WeeklySchedulePdfService
                 page.Content().Element(c => ComposeContent(c, controlDate, inrValue, inrStatusText,
                     targetINRMin, targetINRMax, currentWeeklyDose, currentSchedule, currentScheduleDescriptions,
                     suggestion, suggestedSchedule, suggestedScheduleText, selectedGuideline,
-                    fcsaSuggestion, accpSuggestion));
+                    fcsaSuggestion, accpSuggestion, isWarningIgnored));
                 page.Footer().Element(c => ComposeFooter(c, doctorData));
             });
         });
@@ -137,7 +138,7 @@ public class WeeklySchedulePdfService
         string inrStatusText, decimal targetINRMin, decimal targetINRMax, decimal currentWeeklyDose,
         decimal[] currentSchedule, string[] currentScheduleDescriptions, DosageSuggestionResult suggestion,
         decimal[] suggestedSchedule, string suggestedScheduleText, string selectedGuideline,
-        DosageSuggestionResult? fcsaSuggestion, DosageSuggestionResult? accpSuggestion)
+        DosageSuggestionResult? fcsaSuggestion, DosageSuggestionResult? accpSuggestion, bool isWarningIgnored)
     {
         container.PaddingVertical(10).Column(column =>
         {
@@ -158,20 +159,11 @@ public class WeeklySchedulePdfService
                 var deviation = inrValue - targetMid;
                 content.Item().Text(text =>
                 {
-                    text.Span("Scostamento: ").SemiBold();
+                    text.Span("Scostamento rispetto all'INR target: ").SemiBold();
                     text.Span($"{deviation:+0.0;-0.0}").FontColor(deviation > 0 ? DangerRed : SuccessGreen);
                 });
 
                 content.Item().Height(10);
-
-                // Dosaggio precedente
-                content.Item().Text("Dosaggio precedente (PRIMA della modifica):").SemiBold().FontSize(11);
-                content.Item().Height(5);
-                content.Item().Text($"• Dose settimanale: {currentWeeklyDose:F1} mg/settimana");
-                content.Item().Height(3);
-                content.Item().Text("• Schema quotidiano:");
-                content.Item().Height(5);
-                content.Item().Element(c => ComposeWeeklyScheduleTable(c, currentSchedule, currentScheduleDescriptions));
             });
 
             column.Item().Height(15);
@@ -182,8 +174,8 @@ public class WeeklySchedulePdfService
 
             column.Item().Border(2).BorderColor(PrimaryBlue).Padding(12).Column(content =>
             {
-                // Avviso sospensione dose
-                if (suggestion.SospensioneDosi != null || suggestion.SospensioneDosi > 0)
+                // Avviso sospensione dose (solo se NON ignorati i warning)
+                if (!isWarningIgnored && (suggestion.SospensioneDosi != null || suggestion.SospensioneDosi > 0))
                 {
                     var suspensionText = suggestion.SospensioneDosi == null
                         ? "Sospendere warfarin fino a INR rientrato nel range"
@@ -199,7 +191,8 @@ public class WeeklySchedulePdfService
                     content.Item().Height(10);
                 }
 
-                if (!string.IsNullOrEmpty(suggestion.LoadingDoseAction))
+                // Azione immediata (dose di carico) - solo se NON ignorati i warning
+                if (!isWarningIgnored && !string.IsNullOrEmpty(suggestion.LoadingDoseAction))
                 {
                     content.Item().Background(Colors.Yellow.Lighten3).Padding(8).Text(text =>
                     {
@@ -214,11 +207,19 @@ public class WeeklySchedulePdfService
 
                 if (doseChanged)
                 {
+                    // Calcola la dose settimanale effettiva dallo schema suggerito
+                    decimal actualSuggestedWeeklyDose = suggestedSchedule.Sum();
+
+                    // Calcola la percentuale di aggiustamento rispetto al dosaggio corrente
+                    decimal actualPercentageAdjustment = currentWeeklyDose > 0
+                        ? ((actualSuggestedWeeklyDose - currentWeeklyDose) / currentWeeklyDose * 100)
+                        : 0;
+
                     content.Item().Text(text =>
                     {
                         text.Span("Nuova dose settimanale: ").SemiBold();
-                        text.Span($"{suggestion.SuggestedWeeklyDoseMg:F1} mg").FontSize(16).Bold().FontColor(PrimaryBlue);
-                        text.Span($" ({suggestion.PercentageAdjustment:+0.0;-0.0}%)").FontColor(Colors.Grey.Darken1);
+                        text.Span($"{actualSuggestedWeeklyDose:F1} mg").FontSize(16).Bold().FontColor(PrimaryBlue);
+                        text.Span($" ({actualPercentageAdjustment:+0.0;-0.0}%)").FontColor(Colors.Grey.Darken1);
                     });
 
                     content.Item().Height(15);
@@ -285,32 +286,6 @@ public class WeeklySchedulePdfService
                     .Text(suggestion.ClinicalNotes).FontSize(11);
 
                 column.Item().Height(15);
-            }
-
-            // Confronto linee guida
-            if (fcsaSuggestion != null && accpSuggestion != null)
-            {
-                column.Item().Background(LightGray).Padding(8).Text("CONFRONTO LINEE GUIDA")
-                    .FontSize(14).SemiBold().FontColor(PrimaryBlue);
-
-                column.Item().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(12).Row(row =>
-                {
-                    row.RelativeItem().Column(col =>
-                    {
-                        col.Item().Text("FCSA-SIMG (Italia)").SemiBold().FontColor(PrimaryBlue);
-                        col.Item().Text($"• Nuova dose: {fcsaSuggestion.SuggestedWeeklyDoseMg:F1} mg");
-                        col.Item().Text($"• Prossimo controllo: {fcsaSuggestion.NextControlDays} giorni");
-                    });
-
-                    row.ConstantItem(20);
-
-                    row.RelativeItem().Column(col =>
-                    {
-                        col.Item().Text("ACCP/ACC (USA)").SemiBold().FontColor(PrimaryBlue);
-                        col.Item().Text($"• Nuova dose: {accpSuggestion.SuggestedWeeklyDoseMg:F1} mg");
-                        col.Item().Text($"• Prossimo controllo: {accpSuggestion.NextControlDays} giorni");
-                    });
-                });
             }
         });
     }

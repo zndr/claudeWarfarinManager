@@ -18,6 +18,7 @@
         <!--  Converter per Visibility  -->
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:BooleanAndToVisibilityConverter x:Key="BooleanAndToVisibilityConverter" />
         <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
         <converters:BoolToThicknessConverter x:Key="BoolToThicknessConverter" />
         <converters:DecimalConverter x:Key="DecimalConverter" />
@@ -490,9 +491,14 @@
                             </Border>
 
                             <!--  Avviso Sospensione Dose  -->
-                            <Border Margin="0,0,0,15" Padding="12" Background="#FFF9C4" BorderBrush="#FFB300" BorderThickness="2" CornerRadius="4" Visibility="{Binding HasDoseSuspension, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <Border Margin="0,0,0,10" Padding="12" Background="#FFF9C4" BorderBrush="#FFB300" BorderThickness="2" CornerRadius="4" Visibility="{Binding HasDoseSuspension, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="#E65100" Text="{Binding DoseSuspensionText}" TextAlignment="Center" TextWrapping="Wrap" />
                             </Border>
+
+                            <!--  Checkbox Ignora Warning (visibile sempre quando ci sono warning attivi)  -->
+                            <CheckBox Margin="0,0,0,15" Content="Ignora warning nelle esportazioni" FontSize="12" FontWeight="Medium" Foreground="#666666" IsChecked="{Binding IsWarningIgnored, Mode=TwoWay}"
+                                      Visibility="{Binding HasActiveWarnings, Converter={StaticResource BoolToVisibilityConverter}}"
+                                      ToolTip="Se selezionato, esclude gli alert e i warning dalla copia/esportazione del testo e dal PDF" />
 
                             <!--  Nuova Dose Suggerita  -->
                             <Border Margin="0,0,0,15" Padding="15" Background="#F0F8FF" CornerRadius="4">
