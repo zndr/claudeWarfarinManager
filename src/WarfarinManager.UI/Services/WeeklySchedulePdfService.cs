@@ -88,9 +88,9 @@ public class WeeklySchedulePdfService
             {
                 row.RelativeItem().Column(col =>
                 {
-                    col.Item().Text("SCHEMA POSOLOGICO SETTIMANALE")
+                    col.Item().Text("VALUTAZIONE INR E DOSAGGIO")
                         .FontSize(18).Bold().FontColor(Colors.White);
-                    col.Item().Text("Warfarin - Terapia Anticoagulante Orale")
+                    col.Item().Text("Warfarin (Coumadin) - Terapia Anticoagulante Orale")
                         .FontSize(11).FontColor(Colors.White).Italic();
                 });
 
