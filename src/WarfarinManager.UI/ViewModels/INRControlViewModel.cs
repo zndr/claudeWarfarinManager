@@ -291,6 +291,10 @@ namespace WarfarinManager.UI.ViewModels
         private DoseOption? _originalSaturdayDose;
         private DoseOption? _originalSundayDose;
 
+        // Backup dosaggi originali per confronto linee guida
+        private decimal? _originalFcsaDose;
+        private decimal? _originalAccpDose;
+
         // Notifica cambio dose settimanale quando cambiano i dropdown
         partial void OnSuggestedMondayDoseChanged(DoseOption? value) => NotifyWeeklyDoseChanged();
         partial void OnSuggestedTuesdayDoseChanged(DoseOption? value) => NotifyWeeklyDoseChanged();
@@ -1197,6 +1201,10 @@ namespace WarfarinManager.UI.ViewModels
             _originalSaturdayDose = SuggestedSaturdayDose;
             _originalSundayDose = SuggestedSundayDose;
 
+            // Salva dosaggi originali delle linee guida per confronto
+            _originalFcsaDose = FcsaSuggestion?.SuggestedWeeklyDoseMg;
+            _originalAccpDose = AccpSuggestion?.SuggestedWeeklyDoseMg;
+
             // Inizializza i campi editabili con i valori correnti
             EditableClinicalNotes = ActiveSuggestion.ClinicalNotes ?? string.Empty;
             EditableNextControlDays = ActiveSuggestion.NextControlDays;
@@ -1630,6 +1638,15 @@ CONFRONTO LINEE GUIDA
 ───────────────────────────────────────────────────────────────
 ";
 
+                // Usa dosaggi originali se disponibili (modifica manuale), altrimenti usa quelli correnti
+                decimal fcsaDose = IsManuallyModified && _originalFcsaDose.HasValue
+                    ? _originalFcsaDose.Value
+                    : FcsaSuggestion.SuggestedWeeklyDoseMg;
+
+                decimal accpDose = IsManuallyModified && _originalAccpDose.HasValue
+                    ? _originalAccpDose.Value
+                    : AccpSuggestion.SuggestedWeeklyDoseMg;
+
                 // Se lo schema è stato modificato manualmente, aggiungi warning
                 if (IsManuallyModified)
                 {
@@ -1643,11 +1660,11 @@ CONFRONTO LINEE GUIDA
 
                 text += $@"
 FCSA-SIMG (Italia):
-  • Nuova dose: {FcsaSuggestion.SuggestedWeeklyDoseMg:F1} mg
+  • Nuova dose: {fcsaDose:F1} mg
   • Prossimo controllo: {FcsaSuggestion.NextControlDays} giorni
 
 ACCP/ACC (USA):
-  • Nuova dose: {AccpSuggestion.SuggestedWeeklyDoseMg:F1} mg
+  • Nuova dose: {accpDose:F1} mg
   • Prossimo controllo: {AccpSuggestion.NextControlDays} giorni
 ";
             }
