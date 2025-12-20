@@ -182,6 +182,23 @@ public class WeeklySchedulePdfService
 
             column.Item().Border(2).BorderColor(PrimaryBlue).Padding(12).Column(content =>
             {
+                // Avviso sospensione dose
+                if (suggestion.SospensioneDosi != null || suggestion.SospensioneDosi > 0)
+                {
+                    var suspensionText = suggestion.SospensioneDosi == null
+                        ? "Sospendere warfarin fino a INR rientrato nel range"
+                        : suggestion.SospensioneDosi == 1
+                            ? "Considerare saltare 1 dose"
+                            : $"Saltare {suggestion.SospensioneDosi} dosi";
+
+                    content.Item().Background(Colors.Yellow.Lighten2).Padding(8).Text(text =>
+                    {
+                        text.Span("⚠ AZIONE IMMEDIATA: ").SemiBold().FontColor(WarningOrange);
+                        text.Span(suspensionText);
+                    });
+                    content.Item().Height(10);
+                }
+
                 if (!string.IsNullOrEmpty(suggestion.LoadingDoseAction))
                 {
                     content.Item().Background(Colors.Yellow.Lighten3).Padding(8).Text(text =>
@@ -192,25 +209,66 @@ public class WeeklySchedulePdfService
                     content.Item().Height(10);
                 }
 
-                content.Item().Text(text =>
+                // Verifica se il dosaggio è cambiato
+                bool doseChanged = Math.Abs(currentWeeklyDose - suggestion.SuggestedWeeklyDoseMg) > 0.1m;
+
+                if (doseChanged)
                 {
-                    text.Span("Nuova dose settimanale: ").SemiBold();
-                    text.Span($"{suggestion.SuggestedWeeklyDoseMg:F1} mg").FontSize(16).Bold().FontColor(PrimaryBlue);
-                    text.Span($" ({suggestion.PercentageAdjustment:+0.0;-0.0}%)").FontColor(Colors.Grey.Darken1);
-                });
+                    content.Item().Text(text =>
+                    {
+                        text.Span("Nuova dose settimanale: ").SemiBold();
+                        text.Span($"{suggestion.SuggestedWeeklyDoseMg:F1} mg").FontSize(16).Bold().FontColor(PrimaryBlue);
+                        text.Span($" ({suggestion.PercentageAdjustment:+0.0;-0.0}%)").FontColor(Colors.Grey.Darken1);
+                    });
+
+                    content.Item().Height(15);
+
+                    // Prova ad affiancare gli schemi (nuovo a sinistra, precedente a destra)
+                    content.Item().Row(row =>
+                    {
+                        // Schema NUOVO (sinistra)
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("NUOVO SCHEMA SETTIMANALE")
+                                .SemiBold().FontSize(12).FontColor(SuccessGreen);
+                            col.Item().Height(5);
+                            col.Item().Element(c => ComposeWeeklyScheduleTable(c, suggestedSchedule, null));
+                        });
+
+                        row.ConstantItem(15); // Spaziatura tra le colonne
+
+                        // Schema PRECEDENTE (destra)
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("SCHEMA PRECEDENTE")
+                                .SemiBold().FontSize(12).FontColor(Colors.Grey.Darken1);
+                            col.Item().Height(5);
+                            col.Item().Element(c => ComposeWeeklyScheduleTable(c, currentSchedule, null));
+                        });
+                    });
+                }
+                else
+                {
+                    // Dosaggio invariato - mostra solo schema nuovo con messaggio verde
+                    content.Item().Background(Colors.Green.Lighten4).Padding(12).Text(text =>
+                    {
+                        text.Span("✓ NESSUNA MODIFICA DEL DOSAGGIO È NECESSARIA")
+                            .Bold().FontSize(14).FontColor(SuccessGreen);
+                    });
+
+                    content.Item().Height(15);
+                    content.Item().Text("Schema settimanale (mantenere invariato):")
+                        .SemiBold().FontSize(12);
+                    content.Item().Height(5);
+
+                    content.Item().Element(c => ComposeWeeklyScheduleTable(c, suggestedSchedule, null));
+                }
 
                 content.Item().Height(15);
-                content.Item().Text("Schema settimanale consigliato (distribuzione equilibrata):")
-                    .SemiBold().FontSize(12);
-                content.Item().Height(5);
-
-                content.Item().Element(c => ComposeWeeklyScheduleTable(c, suggestedSchedule, null));
-
-                content.Item().Height(15);
                 content.Item().Text(text =>
                 {
-                    text.Span("Prossimo controllo: ").SemiBold();
-                    text.Span($"{controlDate.AddDays(suggestion.NextControlDays):dd/MM/yyyy}");
+                    text.Span("Prossimo controllo: ").SemiBold().FontColor(PrimaryBlue).FontSize(12);
+                    text.Span($"{controlDate.AddDays(suggestion.NextControlDays):dd/MM/yyyy}").FontColor(PrimaryBlue).FontSize(12);
                     text.Span($" (tra {suggestion.NextControlDays} giorni)").FontColor(Colors.Grey.Darken1);
                 });
             });

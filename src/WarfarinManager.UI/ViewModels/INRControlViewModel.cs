@@ -203,6 +203,118 @@ namespace WarfarinManager.UI.ViewModels
 
         #endregion
 
+        #region Properties - Modalità Modifica Manuale
+
+        /// <summary>
+        /// Indica se la modalità modifica è attiva
+        /// </summary>
+        [ObservableProperty]
+        private bool _isEditMode = false;
+
+        /// <summary>
+        /// Note cliniche modificabili (in modalità edit)
+        /// </summary>
+        [ObservableProperty]
+        private string _editableClinicalNotes = string.Empty;
+
+        /// <summary>
+        /// Prossimo controllo modificabile (giorni)
+        /// </summary>
+        [ObservableProperty]
+        private int _editableNextControlDays;
+
+        /// <summary>
+        /// Indica se il dosaggio è stato modificato manualmente
+        /// </summary>
+        [ObservableProperty]
+        private bool _isManuallyModified = false;
+
+        /// <summary>
+        /// Dose settimanale corrente calcolata dai dropdown (aggiornata in tempo reale)
+        /// </summary>
+        public decimal CurrentSuggestedWeeklyDose =>
+            (SuggestedMondayDose?.DoseMg ?? 0) +
+            (SuggestedTuesdayDose?.DoseMg ?? 0) +
+            (SuggestedWednesdayDose?.DoseMg ?? 0) +
+            (SuggestedThursdayDose?.DoseMg ?? 0) +
+            (SuggestedFridayDose?.DoseMg ?? 0) +
+            (SuggestedSaturdayDose?.DoseMg ?? 0) +
+            (SuggestedSundayDose?.DoseMg ?? 0);
+
+        /// <summary>
+        /// Percentuale di aggiustamento corrente rispetto alla dose attuale
+        /// </summary>
+        public decimal CurrentPercentageAdjustment =>
+            CurrentWeeklyDose > 0
+                ? ((CurrentSuggestedWeeklyDose - CurrentWeeklyDose) / CurrentWeeklyDose * 100)
+                : 0;
+
+        /// <summary>
+        /// Indica se è richiesta una sospensione di dosi
+        /// null = sospendere fino a rientro, >0 = numero dosi da saltare
+        /// </summary>
+        public bool HasDoseSuspension => ActiveSuggestion?.SospensioneDosi == null || (ActiveSuggestion?.SospensioneDosi > 0);
+
+        /// <summary>
+        /// Testo dell'avviso di sospensione dose
+        /// </summary>
+        public string DoseSuspensionText
+        {
+            get
+            {
+                if (ActiveSuggestion == null)
+                    return string.Empty;
+
+                // null significa "sospendere fino a INR rientrato" (valore sentinella)
+                if (ActiveSuggestion.SospensioneDosi == null)
+                    return "⚠️ AZIONE IMMEDIATA: Sospendere warfarin fino a INR rientrato nel range";
+
+                // 0 significa nessuna sospensione
+                if (ActiveSuggestion.SospensioneDosi == 0)
+                    return string.Empty;
+
+                var dosi = ActiveSuggestion.SospensioneDosi.Value;
+                return dosi == 1
+                    ? "⚠️ AZIONE IMMEDIATA: Considerare saltare 1 dose"
+                    : $"⚠️ AZIONE IMMEDIATA: Saltare {dosi} dosi";
+            }
+        }
+
+        // Backup dei valori originali per annullamento
+        private DosageSuggestionResult? _originalSuggestion;
+        private decimal[]? _originalSuggestedSchedule;
+        private DoseOption? _originalMondayDose;
+        private DoseOption? _originalTuesdayDose;
+        private DoseOption? _originalWednesdayDose;
+        private DoseOption? _originalThursdayDose;
+        private DoseOption? _originalFridayDose;
+        private DoseOption? _originalSaturdayDose;
+        private DoseOption? _originalSundayDose;
+
+        // Notifica cambio dose settimanale quando cambiano i dropdown
+        partial void OnSuggestedMondayDoseChanged(DoseOption? value) => NotifyWeeklyDoseChanged();
+        partial void OnSuggestedTuesdayDoseChanged(DoseOption? value) => NotifyWeeklyDoseChanged();
+        partial void OnSuggestedWednesdayDoseChanged(DoseOption? value) => NotifyWeeklyDoseChanged();
+        partial void OnSuggestedThursdayDoseChanged(DoseOption? value) => NotifyWeeklyDoseChanged();
+        partial void OnSuggestedFridayDoseChanged(DoseOption? value) => NotifyWeeklyDoseChanged();
+        partial void OnSuggestedSaturdayDoseChanged(DoseOption? value) => NotifyWeeklyDoseChanged();
+        partial void OnSuggestedSundayDoseChanged(DoseOption? value) => NotifyWeeklyDoseChanged();
+
+        private void NotifyWeeklyDoseChanged()
+        {
+            OnPropertyChanged(nameof(CurrentSuggestedWeeklyDose));
+            OnPropertyChanged(nameof(CurrentPercentageAdjustment));
+        }
+
+        // Notifica cambio proprietà sospensione dose quando ActiveSuggestion cambia
+        partial void OnActiveSuggestionChanged(DosageSuggestionResult? value)
+        {
+            OnPropertyChanged(nameof(HasDoseSuspension));
+            OnPropertyChanged(nameof(DoseSuspensionText));
+        }
+
+        #endregion
+
         #region Properties - Storico
 
         [ObservableProperty]
@@ -698,7 +810,8 @@ namespace WarfarinManager.UI.ViewModels
                     CurrentWeeklyDose = CurrentWeeklyDose,
                     PhaseOfTherapy = SelectedPhase,
                     IsCompliant = IsCompliant,
-                    Notes = Notes
+                    Notes = Notes,
+                    IsManuallyModified = IsManuallyModified
                 };
 
                 // Aggiungi dosi giornaliere
@@ -1063,6 +1176,152 @@ namespace WarfarinManager.UI.ViewModels
             }
         }
 
+        #region Comandi Modifica Manuale
+
+        /// <summary>
+        /// Attiva la modalità modifica manuale del dosaggio suggerito
+        /// </summary>
+        [RelayCommand]
+        private void EditSchema()
+        {
+            if (ActiveSuggestion == null) return;
+
+            // Salva i valori originali per eventuale annullamento
+            _originalSuggestion = ActiveSuggestion;
+            _originalSuggestedSchedule = SuggestedDistributedSchedule?.ToArray();
+            _originalMondayDose = SuggestedMondayDose;
+            _originalTuesdayDose = SuggestedTuesdayDose;
+            _originalWednesdayDose = SuggestedWednesdayDose;
+            _originalThursdayDose = SuggestedThursdayDose;
+            _originalFridayDose = SuggestedFridayDose;
+            _originalSaturdayDose = SuggestedSaturdayDose;
+            _originalSundayDose = SuggestedSundayDose;
+
+            // Inizializza i campi editabili con i valori correnti
+            EditableClinicalNotes = ActiveSuggestion.ClinicalNotes ?? string.Empty;
+            EditableNextControlDays = ActiveSuggestion.NextControlDays;
+
+            // Attiva modalità modifica
+            IsEditMode = true;
+        }
+
+        /// <summary>
+        /// Salva le modifiche manuali al dosaggio
+        /// </summary>
+        [RelayCommand]
+        private void SaveSchema()
+        {
+            if (ActiveSuggestion == null) return;
+
+            try
+            {
+                // Validazione: somma dosi giornaliere
+                var totalWeeklyDose = (SuggestedMondayDose?.DoseMg ?? 0) +
+                                     (SuggestedTuesdayDose?.DoseMg ?? 0) +
+                                     (SuggestedWednesdayDose?.DoseMg ?? 0) +
+                                     (SuggestedThursdayDose?.DoseMg ?? 0) +
+                                     (SuggestedFridayDose?.DoseMg ?? 0) +
+                                     (SuggestedSaturdayDose?.DoseMg ?? 0) +
+                                     (SuggestedSundayDose?.DoseMg ?? 0);
+
+                // Validazione range (5-70mg settimanali)
+                if (totalWeeklyDose < 5 || totalWeeklyDose > 70)
+                {
+                    _dialogService.ShowWarning($"Dose settimanale totale ({totalWeeklyDose:F1} mg) fuori range consentito (5-70 mg).\n\nModificare i valori giornalieri.");
+                    return;
+                }
+
+                // Validazione prossimo controllo
+                if (EditableNextControlDays < 1 || EditableNextControlDays > 90)
+                {
+                    _dialogService.ShowWarning("Prossimo controllo deve essere tra 1 e 90 giorni.");
+                    return;
+                }
+
+                // Avviso se l'utente sta ignorando raccomandazioni critiche
+                bool hasWarnings = ActiveSuggestion.Warnings?.Any() ?? false;
+                bool hasEBPMRequired = ActiveSuggestion.RequiresEBPM;
+                bool hasVitaminK = ActiveSuggestion.RequiresVitaminK;
+
+                if (hasWarnings || hasEBPMRequired || hasVitaminK)
+                {
+                    var confirmMessage = "⚠️ ATTENZIONE: Stai modificando manualmente un dosaggio con raccomandazioni critiche:\n\n";
+
+                    if (hasEBPMRequired)
+                        confirmMessage += "• EBPM raccomandata\n";
+                    if (hasVitaminK)
+                        confirmMessage += $"• Vitamina K raccomandata ({ActiveSuggestion.VitaminKDoseMg ?? 0}mg {ActiveSuggestion.VitaminKRoute})\n";
+                    if (hasWarnings)
+                        confirmMessage += $"• {ActiveSuggestion.Warnings?.Count ?? 0} alert speciali presenti\n";
+
+                    confirmMessage += "\nConfermi di voler procedere con le modifiche manuali?";
+
+                    if (!_dialogService.ShowConfirmation(confirmMessage, "Conferma modifica manuale"))
+                    {
+                        return;
+                    }
+                }
+
+                // Aggiorna il suggerimento attivo con i nuovi valori
+                ActiveSuggestion.SuggestedWeeklyDoseMg = totalWeeklyDose;
+                ActiveSuggestion.ClinicalNotes = EditableClinicalNotes;
+                ActiveSuggestion.NextControlDays = EditableNextControlDays;
+
+                // Aggiorna lo schema distribuito
+                SuggestedDistributedSchedule = new[]
+                {
+                    SuggestedMondayDose?.DoseMg ?? 0,
+                    SuggestedTuesdayDose?.DoseMg ?? 0,
+                    SuggestedWednesdayDose?.DoseMg ?? 0,
+                    SuggestedThursdayDose?.DoseMg ?? 0,
+                    SuggestedFridayDose?.DoseMg ?? 0,
+                    SuggestedSaturdayDose?.DoseMg ?? 0,
+                    SuggestedSundayDose?.DoseMg ?? 0
+                };
+
+                // Rigenera testo schema
+                SuggestedScheduleText = DoseDistributionHelper.GenerateShortSchedule(SuggestedDistributedSchedule);
+
+                // Segna come modificato manualmente
+                IsManuallyModified = true;
+
+                // Disattiva modalità modifica
+                IsEditMode = false;
+
+                _dialogService.ShowInformation($"Schema modificato correttamente.\n\nNuova dose settimanale: {totalWeeklyDose:F1} mg\nProssimo controllo: tra {EditableNextControlDays} giorni");
+            }
+            catch (Exception ex)
+            {
+                _dialogService.ShowError($"Errore nel salvataggio delle modifiche: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Annulla le modifiche e ripristina i valori originali
+        /// </summary>
+        [RelayCommand]
+        private void CancelEdit()
+        {
+            if (_originalSuggestion == null) return;
+
+            // Ripristina valori originali
+            ActiveSuggestion = _originalSuggestion;
+            SuggestedDistributedSchedule = _originalSuggestedSchedule ?? new decimal[7];
+            SuggestedMondayDose = _originalMondayDose;
+            SuggestedTuesdayDose = _originalTuesdayDose;
+            SuggestedWednesdayDose = _originalWednesdayDose;
+            SuggestedThursdayDose = _originalThursdayDose;
+            SuggestedFridayDose = _originalFridayDose;
+            SuggestedSaturdayDose = _originalSaturdayDose;
+            SuggestedSundayDose = _originalSundayDose;
+
+            // Disattiva modalità modifica
+            IsEditMode = false;
+            IsManuallyModified = false;
+        }
+
+        #endregion
+
         /// <summary>
         /// Elimina il controllo INR selezionato dallo storico
         /// </summary>
@@ -1288,7 +1547,21 @@ SUGGERIMENTO DOSAGGIO (Linee Guida {SelectedGuideline})
 ";
             }
 
-            text += $@"NUOVA DOSE SETTIMANALE: {ActiveSuggestion.SuggestedWeeklyDoseMg:F1} mg ({ActiveSuggestion.PercentageAdjustment:+0.0;-0.0}%)
+            // Calcola dose settimanale attuale (da dropdown se modificata, altrimenti dal suggerimento)
+            decimal currentWeeklyDose = (SuggestedMondayDose?.DoseMg ?? 0) +
+                                       (SuggestedTuesdayDose?.DoseMg ?? 0) +
+                                       (SuggestedWednesdayDose?.DoseMg ?? 0) +
+                                       (SuggestedThursdayDose?.DoseMg ?? 0) +
+                                       (SuggestedFridayDose?.DoseMg ?? 0) +
+                                       (SuggestedSaturdayDose?.DoseMg ?? 0) +
+                                       (SuggestedSundayDose?.DoseMg ?? 0);
+
+            // Calcola percentuale di aggiustamento
+            decimal percentageAdjustment = CurrentWeeklyDose > 0
+                ? ((currentWeeklyDose - CurrentWeeklyDose) / CurrentWeeklyDose * 100)
+                : 0;
+
+            text += $@"NUOVA DOSE SETTIMANALE: {currentWeeklyDose:F1} mg ({percentageAdjustment:+0.0;-0.0}%)
 
 SCHEMA SETTIMANALE CONSIGLIATO (distribuzione equilibrata):
 {SuggestedScheduleText}
@@ -1297,13 +1570,13 @@ SCHEMA SETTIMANALE CONSIGLIATO (distribuzione equilibrata):
 PROSSIMO CONTROLLO INR
 ───────────────────────────────────────────────────────────────
 
-Data consigliata: {ControlDate.AddDays(ActiveSuggestion.NextControlDays):dd/MM/yyyy} (tra {ActiveSuggestion.NextControlDays} giorni)
+Data consigliata: {ControlDate.AddDays(EditableNextControlDays > 0 ? EditableNextControlDays : ActiveSuggestion.NextControlDays):dd/MM/yyyy} (tra {(EditableNextControlDays > 0 ? EditableNextControlDays : ActiveSuggestion.NextControlDays)} giorni)
 
 ───────────────────────────────────────────────────────────────
 NOTE CLINICHE
 ───────────────────────────────────────────────────────────────
 
-{ActiveSuggestion.ClinicalNotes}";
+{(string.IsNullOrEmpty(EditableClinicalNotes) ? ActiveSuggestion.ClinicalNotes : EditableClinicalNotes)}";
 
             // Aggiungi dose di carico se presente (per sottocoagulazione)
             if (ActiveSuggestion.DoseSupplementarePrimoGiorno.HasValue && ActiveSuggestion.DoseSupplementarePrimoGiorno.Value > 0)
@@ -1319,28 +1592,21 @@ DOSE DI CARICO:
   • Poi proseguire con il nuovo schema settimanale da domani";
             }
 
-            // Aggiungi schema dettagliato del nuovo dosaggio
-            if (SuggestedDistributedSchedule != null && SuggestedDistributedSchedule.Length == 7)
+            // Aggiungi schema dettagliato del nuovo dosaggio (usa i dropdown)
+            if (SuggestedMondayDose != null || SuggestedTuesdayDose != null ||
+                SuggestedWednesdayDose != null || SuggestedThursdayDose != null ||
+                SuggestedFridayDose != null || SuggestedSaturdayDose != null || SuggestedSundayDose != null)
             {
-                // Calcola le opzioni dose per ogni giorno
-                var monDose = FindDoseOption(SuggestedDistributedSchedule[0]);
-                var tueDose = FindDoseOption(SuggestedDistributedSchedule[1]);
-                var wedDose = FindDoseOption(SuggestedDistributedSchedule[2]);
-                var thuDose = FindDoseOption(SuggestedDistributedSchedule[3]);
-                var friDose = FindDoseOption(SuggestedDistributedSchedule[4]);
-                var satDose = FindDoseOption(SuggestedDistributedSchedule[5]);
-                var sunDose = FindDoseOption(SuggestedDistributedSchedule[6]);
-
                 text += $@"
 
-NUOVO SCHEMA SETTIMANALE DETTAGLIATO ({ActiveSuggestion.SuggestedWeeklyDoseMg:F1} mg/sett):
-  Lunedì:    {monDose?.DisplayText ?? "—"}
-  Martedì:   {tueDose?.DisplayText ?? "—"}
-  Mercoledì: {wedDose?.DisplayText ?? "—"}
-  Giovedì:   {thuDose?.DisplayText ?? "—"}
-  Venerdì:   {friDose?.DisplayText ?? "—"}
-  Sabato:    {satDose?.DisplayText ?? "—"}
-  Domenica:  {sunDose?.DisplayText ?? "—"}";
+NUOVO SCHEMA SETTIMANALE DETTAGLIATO ({currentWeeklyDose:F1} mg/sett):
+  Lunedì:    {SuggestedMondayDose?.DisplayText ?? "—"}
+  Martedì:   {SuggestedTuesdayDose?.DisplayText ?? "—"}
+  Mercoledì: {SuggestedWednesdayDose?.DisplayText ?? "—"}
+  Giovedì:   {SuggestedThursdayDose?.DisplayText ?? "—"}
+  Venerdì:   {SuggestedFridayDose?.DisplayText ?? "—"}
+  Sabato:    {SuggestedSaturdayDose?.DisplayText ?? "—"}
+  Domenica:  {SuggestedSundayDose?.DisplayText ?? "—"}";
             }
 
             text += @"
@@ -1362,7 +1628,20 @@ NUOVO SCHEMA SETTIMANALE DETTAGLIATO ({ActiveSuggestion.SuggestedWeeklyDoseMg:F1
 ───────────────────────────────────────────────────────────────
 CONFRONTO LINEE GUIDA
 ───────────────────────────────────────────────────────────────
+";
 
+                // Se lo schema è stato modificato manualmente, aggiungi warning
+                if (IsManuallyModified)
+                {
+                    text += $@"
+⚠️ ATTENZIONE: Dosaggio modificato manualmente dall'utente
+   Nuovo dosaggio manuale: {currentWeeklyDose:F1} mg/settimana
+   Le dosi seguenti sono quelle suggerite PRIMA della modifica manuale.
+
+";
+                }
+
+                text += $@"
 FCSA-SIMG (Italia):
   • Nuova dose: {FcsaSuggestion.SuggestedWeeklyDoseMg:F1} mg
   • Prossimo controllo: {FcsaSuggestion.NextControlDays} giorni
@@ -1431,6 +1710,8 @@ valutazione clinica finale e della decisione terapeutica.
             AccpSuggestion = null;
             ActiveSuggestion = null;
             SuggestedScheduleText = string.Empty;
+            IsManuallyModified = false;
+            IsEditMode = false;
         }
 
         private INRControlDto MapToDto(Data.Entities.INRControl control)

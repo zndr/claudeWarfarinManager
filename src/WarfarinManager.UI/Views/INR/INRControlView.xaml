@@ -17,6 +17,9 @@
     <Window.Resources>
         <!--  Converter per Visibility  -->
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
+        <converters:BoolToThicknessConverter x:Key="BoolToThicknessConverter" />
         <converters:DecimalConverter x:Key="DecimalConverter" />
         <converters:EnumToBoolConverter x:Key="EnumToBoolConverter" />
         <converters:BleedingTypeToStringConverter x:Key="BleedingTypeToStringConverter" />
@@ -113,6 +116,13 @@
             BasedOn="{StaticResource PrimaryButtonStyle}"
             TargetType="Button">
             <Setter Property="Background" Value="#107C10" />
+        </Style>
+
+        <Style
+            x:Key="DangerButtonStyle"
+            BasedOn="{StaticResource PrimaryButtonStyle}"
+            TargetType="Button">
+            <Setter Property="Background" Value="#D13438" />
         </Style>
 
         <Style
@@ -479,16 +489,21 @@
                                 <TextBlock FontSize="16" FontWeight="Bold" Foreground="White" Text="{Binding InrStatusText}" TextAlignment="Center" />
                             </Border>
 
+                            <!--  Avviso Sospensione Dose  -->
+                            <Border Margin="0,0,0,15" Padding="12" Background="#FFF9C4" BorderBrush="#FFB300" BorderThickness="2" CornerRadius="4" Visibility="{Binding HasDoseSuspension, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="#E65100" Text="{Binding DoseSuspensionText}" TextAlignment="Center" TextWrapping="Wrap" />
+                            </Border>
+
                             <!--  Nuova Dose Suggerita  -->
                             <Border Margin="0,0,0,15" Padding="15" Background="#F0F8FF" CornerRadius="4">
                                 <StackPanel>
                                     <TextBlock FontSize="12" Foreground="#666666" Text="NUOVA DOSE SETTIMANALE" />
                                     <TextBlock FontSize="32" FontWeight="Bold" Foreground="#0078D4" TextAlignment="Center">
-                                        <Run Text="{Binding ActiveSuggestion.SuggestedWeeklyDoseMg, StringFormat=F1}" />
+                                        <Run Text="{Binding CurrentSuggestedWeeklyDose, Mode=OneWay, StringFormat=F1}" />
                                         <Run FontSize="20" Text="mg" />
                                     </TextBlock>
                                     <TextBlock FontSize="13" Foreground="#666666" TextAlignment="Center">
-                                        <Run Text="(" /><Run Text="{Binding ActiveSuggestion.PercentageAdjustment, StringFormat=+0.0;-0.0}" /><Run Text="%)" />
+                                        <Run Text="(" /><Run Text="{Binding CurrentPercentageAdjustment, Mode=OneWay, StringFormat=+0.0;-0.0}" /><Run Text="%)" />
                                     </TextBlock>
                                 </StackPanel>
                             </Border>
@@ -502,7 +517,17 @@
                             <!--  Dosi giornaliere suggerite (dropdown dettagliati)  -->
                             <TextBlock Margin="0,0,0,8" FontSize="12" FontWeight="SemiBold" Foreground="#666666" Text="DETTAGLIO DOSAGGIO GIORNALIERO SUGGERITO" />
 
-                            <Border Margin="0,0,0,15" Padding="12" Background="#F0F8FF" BorderBrush="#2196F3" BorderThickness="1" CornerRadius="4">
+                            <Border Margin="0,0,0,15" Padding="12" Background="#F0F8FF" CornerRadius="4">
+                                <Border.BorderBrush>
+                                    <SolidColorBrush Color="{Binding IsEditMode, Converter={StaticResource BoolToColorConverter}}" />
+                                </Border.BorderBrush>
+                                <Border.BorderThickness>
+                                    <Binding Path="IsEditMode">
+                                        <Binding.Converter>
+                                            <converters:BoolToThicknessConverter TrueValue="2" FalseValue="1" />
+                                        </Binding.Converter>
+                                    </Binding>
+                                </Border.BorderThickness>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="75" />
@@ -520,36 +545,186 @@
 
                                     <!--  Lunedì  -->
                                     <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,8,6" VerticalAlignment="Center" FontSize="11" FontWeight="Medium" Text="Lunedì" />
-                                    <ComboBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,6" DisplayMemberPath="DisplayText" FontSize="11" IsEnabled="False" ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedMondayDose, Mode=OneWay}" Style="{StaticResource DoseComboBoxStyle}" />
+                                    <ComboBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,6" DisplayMemberPath="DisplayText" FontSize="11"
+                                              ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedMondayDose, Mode=TwoWay}"
+                                              Style="{StaticResource DoseComboBoxStyle}"
+                                              IsEnabled="{Binding IsEditMode}">
+                                        <ComboBox.BorderBrush>
+                                            <SolidColorBrush Color="{Binding IsEditMode, Converter={StaticResource BoolToColorConverter}}" />
+                                        </ComboBox.BorderBrush>
+                                        <ComboBox.BorderThickness>
+                                            <Binding Path="IsEditMode">
+                                                <Binding.Converter>
+                                                    <converters:BoolToThicknessConverter TrueValue="2" FalseValue="1" />
+                                                </Binding.Converter>
+                                            </Binding>
+                                        </ComboBox.BorderThickness>
+                                    </ComboBox>
 
                                     <!--  Martedì  -->
                                     <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,8,6" VerticalAlignment="Center" FontSize="11" FontWeight="Medium" Text="Martedì" />
-                                    <ComboBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,6" DisplayMemberPath="DisplayText" FontSize="11" IsEnabled="False" ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedTuesdayDose, Mode=OneWay}" Style="{StaticResource DoseComboBoxStyle}" />
+                                    <ComboBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,6" DisplayMemberPath="DisplayText" FontSize="11"
+                                              ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedTuesdayDose, Mode=TwoWay}"
+                                              Style="{StaticResource DoseComboBoxStyle}"
+                                              IsEnabled="{Binding IsEditMode}">
+                                        <ComboBox.BorderBrush>
+                                            <SolidColorBrush Color="{Binding IsEditMode, Converter={StaticResource BoolToColorConverter}}" />
+                                        </ComboBox.BorderBrush>
+                                        <ComboBox.BorderThickness>
+                                            <Binding Path="IsEditMode">
+                                                <Binding.Converter>
+                                                    <converters:BoolToThicknessConverter TrueValue="2" FalseValue="1" />
+                                                </Binding.Converter>
+                                            </Binding>
+                                        </ComboBox.BorderThickness>
+                                    </ComboBox>
 
                                     <!--  Mercoledì  -->
                                     <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,0,8,6" VerticalAlignment="Center" FontSize="11" FontWeight="Medium" Text="Mercoledì" />
-                                    <ComboBox Grid.Row="2" Grid.Column="1" Margin="0,0,0,6" DisplayMemberPath="DisplayText" FontSize="11" IsEnabled="False" ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedWednesdayDose, Mode=OneWay}" Style="{StaticResource DoseComboBoxStyle}" />
+                                    <ComboBox Grid.Row="2" Grid.Column="1" Margin="0,0,0,6" DisplayMemberPath="DisplayText" FontSize="11"
+                                              ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedWednesdayDose, Mode=TwoWay}"
+                                              Style="{StaticResource DoseComboBoxStyle}"
+                                              IsEnabled="{Binding IsEditMode}">
+                                        <ComboBox.BorderBrush>
+                                            <SolidColorBrush Color="{Binding IsEditMode, Converter={StaticResource BoolToColorConverter}}" />
+                                        </ComboBox.BorderBrush>
+                                        <ComboBox.BorderThickness>
+                                            <Binding Path="IsEditMode">
+                                                <Binding.Converter>
+                                                    <converters:BoolToThicknessConverter TrueValue="2" FalseValue="1" />
+                                                </Binding.Converter>
+                                            </Binding>
+                                        </ComboBox.BorderThickness>
+                                    </ComboBox>
 
                                     <!--  Giovedì  -->
                                     <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,0,8,6" VerticalAlignment="Center" FontSize="11" FontWeight="Medium" Text="Giovedì" />
-                                    <ComboBox Grid.Row="3" Grid.Column="1" Margin="0,0,0,6" DisplayMemberPath="DisplayText" FontSize="11" IsEnabled="False" ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedThursdayDose, Mode=OneWay}" Style="{StaticResource DoseComboBoxStyle}" />
+                                    <ComboBox Grid.Row="3" Grid.Column="1" Margin="0,0,0,6" DisplayMemberPath="DisplayText" FontSize="11"
+                                              ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedThursdayDose, Mode=TwoWay}"
+                                              Style="{StaticResource DoseComboBoxStyle}"
+                                              IsEnabled="{Binding IsEditMode}">
+                                        <ComboBox.BorderBrush>
+                                            <SolidColorBrush Color="{Binding IsEditMode, Converter={StaticResource BoolToColorConverter}}" />
+                                        </ComboBox.BorderBrush>
+                                        <ComboBox.BorderThickness>
+                                            <Binding Path="IsEditMode">
+                                                <Binding.Converter>
+                                                    <converters:BoolToThicknessConverter TrueValue="2" FalseValue="1" />
+                                                </Binding.Converter>
+                                            </Binding>
+                                        </ComboBox.BorderThickness>
+                                    </ComboBox>
 
                                     <!--  Venerdì  -->
                                     <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,0,8,6" VerticalAlignment="Center" FontSize="11" FontWeight="Medium" Text="Venerdì" />
-                                    <ComboBox Grid.Row="4" Grid.Column="1" Margin="0,0,0,6" DisplayMemberPath="DisplayText" FontSize="11" IsEnabled="False" ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedFridayDose, Mode=OneWay}" Style="{StaticResource DoseComboBoxStyle}" />
+                                    <ComboBox Grid.Row="4" Grid.Column="1" Margin="0,0,0,6" DisplayMemberPath="DisplayText" FontSize="11"
+                                              ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedFridayDose, Mode=TwoWay}"
+                                              Style="{StaticResource DoseComboBoxStyle}"
+                                              IsEnabled="{Binding IsEditMode}">
+                                        <ComboBox.BorderBrush>
+                                            <SolidColorBrush Color="{Binding IsEditMode, Converter={StaticResource BoolToColorConverter}}" />
+                                        </ComboBox.BorderBrush>
+                                        <ComboBox.BorderThickness>
+                                            <Binding Path="IsEditMode">
+                                                <Binding.Converter>
+                                                    <converters:BoolToThicknessConverter TrueValue="2" FalseValue="1" />
+                                                </Binding.Converter>
+                                            </Binding>
+                                        </ComboBox.BorderThickness>
+                                    </ComboBox>
 
                                     <!--  Sabato  -->
                                     <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,0,8,6" VerticalAlignment="Center" FontSize="11" FontWeight="Medium" Text="Sabato" />
-                                    <ComboBox Grid.Row="5" Grid.Column="1" Margin="0,0,0,6" DisplayMemberPath="DisplayText" FontSize="11" IsEnabled="False" ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedSaturdayDose, Mode=OneWay}" Style="{StaticResource DoseComboBoxStyle}" />
+                                    <ComboBox Grid.Row="5" Grid.Column="1" Margin="0,0,0,6" DisplayMemberPath="DisplayText" FontSize="11"
+                                              ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedSaturdayDose, Mode=TwoWay}"
+                                              Style="{StaticResource DoseComboBoxStyle}"
+                                              IsEnabled="{Binding IsEditMode}">
+                                        <ComboBox.BorderBrush>
+                                            <SolidColorBrush Color="{Binding IsEditMode, Converter={StaticResource BoolToColorConverter}}" />
+                                        </ComboBox.BorderBrush>
+                                        <ComboBox.BorderThickness>
+                                            <Binding Path="IsEditMode">
+                                                <Binding.Converter>
+                                                    <converters:BoolToThicknessConverter TrueValue="2" FalseValue="1" />
+                                                </Binding.Converter>
+                                            </Binding>
+                                        </ComboBox.BorderThickness>
+                                    </ComboBox>
 
                                     <!--  Domenica  -->
                                     <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,0,8,0" VerticalAlignment="Center" FontSize="11" FontWeight="Medium" Text="Domenica" />
-                                    <ComboBox Grid.Row="6" Grid.Column="1" Margin="0,0,0,0" DisplayMemberPath="DisplayText" FontSize="11" IsEnabled="False" ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedSundayDose, Mode=OneWay}" Style="{StaticResource DoseComboBoxStyle}" />
+                                    <ComboBox Grid.Row="6" Grid.Column="1" Margin="0,0,0,0" DisplayMemberPath="DisplayText" FontSize="11"
+                                              ItemsSource="{Binding AvailableDoses}" SelectedItem="{Binding SuggestedSundayDose, Mode=TwoWay}"
+                                              Style="{StaticResource DoseComboBoxStyle}"
+                                              IsEnabled="{Binding IsEditMode}">
+                                        <ComboBox.BorderBrush>
+                                            <SolidColorBrush Color="{Binding IsEditMode, Converter={StaticResource BoolToColorConverter}}" />
+                                        </ComboBox.BorderBrush>
+                                        <ComboBox.BorderThickness>
+                                            <Binding Path="IsEditMode">
+                                                <Binding.Converter>
+                                                    <converters:BoolToThicknessConverter TrueValue="2" FalseValue="1" />
+                                                </Binding.Converter>
+                                            </Binding>
+                                        </ComboBox.BorderThickness>
+                                    </ComboBox>
                                 </Grid>
                             </Border>
 
-                            <!--  Pulsante Applica Schema  -->
-                            <Button Margin="0,0,0,15" HorizontalAlignment="Left" Command="{Binding ApplySuggestedScheduleCommand}" Content="✅ Applica schema suggerito" Style="{StaticResource SuccessButtonStyle}" ToolTip="Imposta le dosi giornaliere con lo schema suggerito" />
+                            <!--  Pulsanti Gestione Schema  -->
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                                <!--  Pulsante Applica Schema (sempre visibile)  -->
+                                <Button Margin="0,0,8,0" HorizontalAlignment="Left"
+                                        Command="{Binding ApplySuggestedScheduleCommand}"
+                                        Content="✅ Applica schema suggerito"
+                                        Style="{StaticResource SuccessButtonStyle}"
+                                        ToolTip="Imposta le dosi giornaliere con lo schema suggerito" />
+
+                                <!--  Pulsante Modifica Schema (visibile solo se NON in edit mode)  -->
+                                <Button Margin="0,0,0,0" HorizontalAlignment="Left"
+                                        Command="{Binding EditSchemaCommand}"
+                                        Content="✏️ Modifica schema"
+                                        Style="{StaticResource PrimaryButtonStyle}"
+                                        ToolTip="Modifica manualmente il dosaggio suggerito">
+                                    <Button.Visibility>
+                                        <Binding Path="IsEditMode">
+                                            <Binding.Converter>
+                                                <converters:BooleanToVisibilityConverter Inverted="True" />
+                                            </Binding.Converter>
+                                        </Binding>
+                                    </Button.Visibility>
+                                </Button>
+
+                                <!--  Pulsante Salva (visibile solo in edit mode)  -->
+                                <Button Margin="0,0,8,0" HorizontalAlignment="Left"
+                                        Command="{Binding SaveSchemaCommand}"
+                                        Content="💾 Salva"
+                                        Style="{StaticResource SuccessButtonStyle}"
+                                        ToolTip="Salva le modifiche manuali al dosaggio">
+                                    <Button.Visibility>
+                                        <Binding Path="IsEditMode">
+                                            <Binding.Converter>
+                                                <converters:BooleanToVisibilityConverter />
+                                            </Binding.Converter>
+                                        </Binding>
+                                    </Button.Visibility>
+                                </Button>
+
+                                <!--  Pulsante Annulla (visibile solo in edit mode)  -->
+                                <Button Margin="0,0,0,0" HorizontalAlignment="Left"
+                                        Command="{Binding CancelEditCommand}"
+                                        Content="❌ Annulla"
+                                        Style="{StaticResource DangerButtonStyle}"
+                                        ToolTip="Annulla le modifiche e ripristina i valori originali">
+                                    <Button.Visibility>
+                                        <Binding Path="IsEditMode">
+                                            <Binding.Converter>
+                                                <converters:BooleanToVisibilityConverter />
+                                            </Binding.Converter>
+                                        </Binding>
+                                    </Button.Visibility>
+                                </Button>
+                            </StackPanel>
 
                             <!--  Prossimo Controllo  -->
                             <Grid Margin="0,0,0,15">
@@ -558,9 +733,35 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" VerticalAlignment="Center" FontSize="13" Text="🗓 Prossimo controllo: " />
+
+                                <!--  Versione Read-Only (quando NON in edit mode)  -->
                                 <TextBlock Grid.Column="1" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Foreground="#0078D4">
-                                    <Run Text="tra" /><Run Text="{Binding ActiveSuggestion.NextControlDays}" /><Run Text="giorni" />
+                                    <TextBlock.Visibility>
+                                        <Binding Path="IsEditMode">
+                                            <Binding.Converter>
+                                                <converters:BooleanToVisibilityConverter Inverted="True" />
+                                            </Binding.Converter>
+                                        </Binding>
+                                    </TextBlock.Visibility>
+                                    <Run Text="tra " /><Run Text="{Binding ActiveSuggestion.NextControlDays}" /><Run Text=" giorni" />
                                 </TextBlock>
+
+                                <!--  Versione Editabile (quando in edit mode)  -->
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <StackPanel.Visibility>
+                                        <Binding Path="IsEditMode">
+                                            <Binding.Converter>
+                                                <converters:BooleanToVisibilityConverter />
+                                            </Binding.Converter>
+                                        </Binding>
+                                    </StackPanel.Visibility>
+                                    <TextBlock VerticalAlignment="Center" FontSize="14" Text="tra " />
+                                    <TextBox Width="60" Margin="4,0" Padding="4,2" FontSize="14" FontWeight="SemiBold"
+                                             Text="{Binding EditableNextControlDays, UpdateSourceTrigger=PropertyChanged}"
+                                             BorderBrush="#FF9800" BorderThickness="2"
+                                             ToolTip="Modifica il numero di giorni per il prossimo controllo" />
+                                    <TextBlock VerticalAlignment="Center" FontSize="14" Text=" giorni" />
+                                </StackPanel>
                             </Grid>
 
                             <!--  Livello Urgenza  -->
@@ -607,7 +808,32 @@
 
                             <!--  Note Cliniche  -->
                             <TextBlock Margin="0,0,0,8" FontSize="12" FontWeight="SemiBold" Foreground="#666666" Text="NOTE CLINICHE" />
-                            <TextBlock Margin="0,0,0,15" FontSize="12" Foreground="#333333" Text="{Binding ActiveSuggestion.ClinicalNotes}" TextWrapping="Wrap" />
+
+                            <!--  Versione Read-Only (quando NON in edit mode)  -->
+                            <TextBlock Margin="0,0,0,15" FontSize="12" Foreground="#333333" Text="{Binding ActiveSuggestion.ClinicalNotes}" TextWrapping="Wrap">
+                                <TextBlock.Visibility>
+                                    <Binding Path="IsEditMode">
+                                        <Binding.Converter>
+                                            <converters:BooleanToVisibilityConverter Inverted="True" />
+                                        </Binding.Converter>
+                                    </Binding>
+                                </TextBlock.Visibility>
+                            </TextBlock>
+
+                            <!--  Versione Editabile (quando in edit mode)  -->
+                            <TextBox Margin="0,0,0,15" MinHeight="60" Padding="8" FontSize="12"
+                                     Text="{Binding EditableClinicalNotes, UpdateSourceTrigger=PropertyChanged}"
+                                     TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
+                                     BorderBrush="#FF9800" BorderThickness="2"
+                                     ToolTip="Modifica le note cliniche">
+                                <TextBox.Visibility>
+                                    <Binding Path="IsEditMode">
+                                        <Binding.Converter>
+                                            <converters:BooleanToVisibilityConverter />
+                                        </Binding.Converter>
+                                    </Binding>
+                                </TextBox.Visibility>
+                            </TextBox>
 
                             <!--  Warnings (se presenti)  -->
                             <ItemsControl Margin="0,0,0,15" ItemsSource="{Binding ActiveSuggestion.Warnings}">
@@ -662,15 +888,11 @@
                             </StackPanel>
 
                             <!--  Azioni Export  -->
-                            <StackPanel Margin="0,15,0,0">
-                                <StackPanel Margin="0,0,0,10" HorizontalAlignment="Right" Orientation="Horizontal">
-                                    <Button Margin="0,0,10,0" Command="{Binding CopyShortToClipboardCommand}" Content="📝 Copia Breve" Style="{StaticResource SmallButtonStyle}" ToolTip="Copia versione concisa" />
-                                    <Button Command="{Binding CopyToClipboardCommand}" Content="📋 Copia Completo" Style="{StaticResource SmallButtonStyle}" ToolTip="Copia report completo" />
-                                </StackPanel>
-                                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                                    <Button Margin="0,0,10,0" Command="{Binding ExportToFileCommand}" Content="💾 Esporta TXT" Style="{StaticResource PrimaryButtonStyle}" />
-                                    <Button Command="{Binding ExportToPdfCommand}" Content="📄 Stampa PDF" Style="{StaticResource PrimaryButtonStyle}" />
-                                </StackPanel>
+                            <StackPanel Margin="0,15,0,0" HorizontalAlignment="Right" Orientation="Horizontal">
+                                <Button Margin="0,0,8,0" Command="{Binding CopyShortToClipboardCommand}" Content="📝 Copia Breve" Style="{StaticResource SecondaryButtonStyle}" ToolTip="Copia versione concisa" />
+                                <Button Margin="0,0,8,0" Command="{Binding CopyToClipboardCommand}" Content="📋 Copia Completo" Style="{StaticResource SecondaryButtonStyle}" ToolTip="Copia report completo" />
+                                <Button Margin="0,0,8,0" Command="{Binding ExportToFileCommand}" Content="💾 Esporta TXT" Style="{StaticResource SecondaryButtonStyle}" ToolTip="Esporta in file di testo" />
+                                <Button Command="{Binding ExportToPdfCommand}" Content="📄 Stampa PDF" Style="{StaticResource SecondaryButtonStyle}" ToolTip="Genera e stampa PDF" />
                             </StackPanel>
                         </StackPanel>
                     </Border>
