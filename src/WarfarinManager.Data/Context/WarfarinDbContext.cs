@@ -14,7 +14,7 @@ public class WarfarinDbContext : DbContext
     }
     
     // DbSets - Entità principali
-    
+
     public DbSet<Patient> Patients => Set<Patient>();
     public DbSet<Indication> Indications => Set<Indication>();
     public DbSet<Medication> Medications => Set<Medication>();
@@ -23,7 +23,10 @@ public class WarfarinDbContext : DbContext
     public DbSet<DosageSuggestion> DosageSuggestions => Set<DosageSuggestion>();
     public DbSet<AdverseEvent> AdverseEvents => Set<AdverseEvent>();
     public DbSet<BridgeTherapyPlan> BridgeTherapyPlans => Set<BridgeTherapyPlan>();
-    
+    public DbSet<PreTaoAssessment> PreTaoAssessments => Set<PreTaoAssessment>();
+    public DbSet<DoctorData> DoctorData => Set<DoctorData>();
+    public DbSet<TherapySwitch> TherapySwitches => Set<TherapySwitch>();
+
     // DbSets - Lookup tables
     
     public DbSet<IndicationType> IndicationTypes => Set<IndicationType>();
@@ -32,18 +35,28 @@ public class WarfarinDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
+
         // Applicazione configurazioni
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(WarfarinDbContext).Assembly);
-        
+
         // Conversioni enum to string per readability
         ConfigureEnumConversions(modelBuilder);
-        
+
         // Indici per performance
         ConfigureIndexes(modelBuilder);
-        
+
+        // Query filter globale per soft delete pazienti
+        ConfigureQueryFilters(modelBuilder);
+
         // Seeding dati lookup
         SeedData(modelBuilder);
+    }
+
+    private static void ConfigureQueryFilters(ModelBuilder modelBuilder)
+    {
+        // Escludi automaticamente i pazienti con IsDeleted = true da tutte le query
+        modelBuilder.Entity<Patient>()
+            .HasQueryFilter(p => !p.IsDeleted);
     }
     
     private static void ConfigureEnumConversions(ModelBuilder modelBuilder)
@@ -66,19 +79,15 @@ public class WarfarinDbContext : DbContext
             .HasConversion<string>();
             
         modelBuilder.Entity<AdverseEvent>()
-            .Property(a => a.EventType)
+            .Property(a => a.ReactionType)
             .HasConversion<string>();
-            
-        modelBuilder.Entity<AdverseEvent>()
-            .Property(a => a.HemorrhagicCategory)
-            .HasConversion<string>();
-            
-        modelBuilder.Entity<AdverseEvent>()
-            .Property(a => a.ThromboticCategory)
-            .HasConversion<string>();
-            
+
         modelBuilder.Entity<AdverseEvent>()
             .Property(a => a.Severity)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<AdverseEvent>()
+            .Property(a => a.CertaintyLevel)
             .HasConversion<string>();
             
         modelBuilder.Entity<BridgeTherapyPlan>()
@@ -95,6 +104,18 @@ public class WarfarinDbContext : DbContext
             
         modelBuilder.Entity<InteractionDrug>()
             .Property(i => i.InteractionLevel)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<TherapySwitch>()
+            .Property(t => t.Direction)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<TherapySwitch>()
+            .Property(t => t.DoacType)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<TherapySwitch>()
+            .Property(t => t.WarfarinType)
             .HasConversion<string>();
     }
     
@@ -123,7 +144,7 @@ public class WarfarinDbContext : DbContext
             
         // AdverseEvent indexes
         modelBuilder.Entity<AdverseEvent>()
-            .HasIndex(a => new { a.PatientId, a.EventDate })
+            .HasIndex(a => new { a.PatientId, a.OnsetDate })
             .IsDescending(false, true);
             
         // IndicationType indexes
@@ -135,6 +156,14 @@ public class WarfarinDbContext : DbContext
         modelBuilder.Entity<InteractionDrug>()
             .HasIndex(id => id.DrugName)
             .IsUnique();
+
+        // TherapySwitch indexes
+        modelBuilder.Entity<TherapySwitch>()
+            .HasIndex(ts => new { ts.PatientId, ts.SwitchDate })
+            .IsDescending(false, true);
+
+        modelBuilder.Entity<TherapySwitch>()
+            .HasIndex(ts => new { ts.FirstFollowUpDate, ts.FollowUpCompleted });
     }
     
     private static void SeedData(ModelBuilder modelBuilder)

@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Switch Terapia - Warfarin ↔ DOAC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            font-size: 13px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #3b82f6;
+        }
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        .label {
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 6px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+        }
+        .label::before {
+            content: "●";
+            color: #3b82f6;
+            margin-right: 8px;
+            font-size: 10px;
+        }
+        input, select {
+            padding: 8px 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 13px;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        input:focus, select:focus {
+            border-color: #3b82f6;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        input:read-only, input:disabled, select:disabled {
+            background-color: #fef3c7;
+            border-color: #fbbf24;
+            cursor: not-allowed;
+            color: #92400e;
+            font-weight: 600;
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+            border: none;
+        }
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+        }
+        .radio-card {
+            border: 2px solid #e5e7eb;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            display: flex;
+            align-items: center;
+        }
+        .radio-card:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            transform: translateY(-1px);
+        }
+        .radio-card.selected {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+        }
+        .radio-card input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .radio-card label {
+            cursor: pointer;
+            user-select: none;
+            flex: 1;
+            margin: 0;
+        }
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            border-left: 4px solid;
+        }
+        .alert-danger {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+        .alert-warning {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+        .timeline-step {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+        .hidden { display: none; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .checkbox-row:hover {
+            background: #f3f4f6;
+        }
+        .checkbox-row input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .checkbox-row label {
+            cursor: pointer;
+            user-select: none;
+            flex: 1;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .badge-required {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .badge-optional {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .history-card {
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease-out;
+        }
+        .history-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+            transform: translateY(-1px);
+        }
+        .history-card.expanded {
+            border-color: #3b82f6;
+            background: white;
+        }
+        .switch-alert {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 3px solid #f59e0b;
+            border-left: 8px solid #f59e0b;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: pulse-alert 2s ease-in-out infinite;
+        }
+        @keyframes pulse-alert {
+            0%, 100% { box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25); }
+            50% { box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4); }
+        }
+        .switch-alert-icon {
+            font-size: 32px;
+            flex-shrink: 0;
+        }
+        .switch-alert-content {
+            flex: 1;
+        }
+        .switch-alert-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 4px;
+        }
+        .switch-alert-text {
+            font-size: 13px;
+            color: #78350f;
+            font-weight: 500;
+        }
+        #historySection {
+            margin-top: 20px;
+        }
+        .history-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .status-completed { background: #d1fae5; color: #065f46; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-follow-up { background: #dbeafe; color: #1e40af; }
+        .history-details {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 2px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="max-w-5xl mx-auto">
+        <!-- Header -->
+        <div class="section-header text-center">
+            <h1 class="text-2xl font-bold mb-2">🔄 Switch Terapia Anticoagulante</h1>
+            <p class="text-sm opacity-90">Protocollo guidato per lo switch bidirezionale Warfarin/Acenocumarolo ↔ DOAC</p>
+        </div>
+
+        <!-- Alert Switch Attivo -->
+        <div id="switchAlert" class="switch-alert hidden">
+            <div class="switch-alert-icon">⚠️</div>
+            <div class="switch-alert-content">
+                <div class="switch-alert-title">ATTENZIONE: Switch Terapeutico in Corso</div>
+                <div class="switch-alert-text" id="switchAlertText"></div>
+            </div>
+        </div>
+
+        <!-- Switch History Section -->
+        <div id="historySection" class="section hidden">
+            <div class="flex justify-between items-center mb-3">
+                <div class="label" style="margin-bottom: 0;">📋 Storico Switch Terapeutici</div>
+                <button onclick="toggleHistory()" class="text-xs text-blue-600 hover:text-blue-800 font-semibold">
+                    <span id="toggleHistoryText">Nascondi</span>
+                </button>
+            </div>
+            <div id="historyList" class="space-y-2">
+                <!-- Popolato dinamicamente da JavaScript -->
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <div id="formSection">
+            <!-- Direzione Switch -->
+            <div class="section">
+                <div class="label">1. Direzione dello Switch<span class="badge badge-required">OBBLIGATORIO</span></div>
+                <div class="grid-2 mt-2">
+                    <div class="radio-card" onclick="selectDirection('warfarin-to-doac')">
+                        <input type="radio" name="direction" value="warfarin-to-doac" id="dir1">
+                        <label for="dir1" class="font-semibold">📤 Warfarin/Acenocumarolo → DOAC</label>
+                    </div>
+                    <div class="radio-card" onclick="selectDirection('doac-to-warfarin')">
+                        <input type="radio" name="direction" value="doac-to-warfarin" id="dir2">
+                        <label for="dir2" class="font-semibold">📥 DOAC → Warfarin/Acenocumarolo</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DOAC Type -->
+            <div class="section">
+                <div class="label">2. Tipo di DOAC<span class="badge badge-required">OBBLIGATORIO</span></div>
+                <div class="grid-2 mt-2">
+                    <div class="radio-card" onclick="selectDoac('apixaban')">
+                        <input type="radio" name="doacType" value="apixaban" id="d1">
+                        <label for="d1">💊 Apixaban (Eliquis)</label>
+                    </div>
+                    <div class="radio-card" onclick="selectDoac('rivaroxaban')">
+                        <input type="radio" name="doacType" value="rivaroxaban" id="d2">
+                        <label for="d2">💊 Rivaroxaban (Xarelto)</label>
+                    </div>
+                    <div class="radio-card" onclick="selectDoac('dabigatran')">
+                        <input type="radio" name="doacType" value="dabigatran" id="d3">
+                        <label for="d3">💊 Dabigatran (Pradaxa)</label>
+                    </div>
+                    <div class="radio-card" onclick="selectDoac('edoxaban')">
+                        <input type="radio" name="doacType" value="edoxaban" id="d4">
+                        <label for="d4">💊 Edoxaban (Lixiana)</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warfarin Type -->
+            <div class="section">
+                <div class="label">3. Tipo di Anticoagulante Cumarinico<span class="badge badge-required">OBBLIGATORIO</span></div>
+                <div class="grid-2 mt-2">
+                    <div class="radio-card selected" onclick="selectWarfarin('warfarin')">
+                        <input type="radio" name="warfarinType" value="warfarin" id="w1" checked>
+                        <label for="w1">💊 Warfarin (Coumadin)</label>
+                    </div>
+                    <div class="radio-card" onclick="selectWarfarin('acenocumarolo')">
+                        <input type="radio" name="warfarinType" value="acenocumarolo" id="w2">
+                        <label for="w2">💊 Acenocumarolo (Sintrom)</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dati Paziente -->
+            <div class="section">
+                <div class="label">4. Dati Paziente<span class="badge badge-required">OBBLIGATORIO</span></div>
+                <div class="grid-3 mt-2">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 mb-1 block">👤 Età (anni)</label>
+                        <input type="number" id="age" placeholder="Es: 70" min="18" max="120" required>
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 mb-1 block">⚖️ Peso (kg)</label>
+                        <input type="number" id="weight" placeholder="Es: 75" min="30" max="200" step="0.1" required>
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 mb-1 block">👥 Sesso</label>
+                        <select id="gender" required>
+                            <option value="">Seleziona...</option>
+                            <option value="M">Maschio</option>
+                            <option value="F">Femmina</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clearance Creatinina -->
+            <div class="section">
+                <div class="label">5. Clearance Creatinina<span class="badge badge-required">OBBLIGATORIO</span></div>
+                <div class="mb-3 mt-2">
+                    <label class="inline-flex items-center mr-6 cursor-pointer">
+                        <input type="radio" name="clcrMode" value="calculate" checked onchange="toggleClCrMode()" class="w-4 h-4 mr-2">
+                        <span class="text-sm font-semibold">🧮 Calcola (Cockcroft-Gault)</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="radio" name="clcrMode" value="manual" onchange="toggleClCrMode()" class="w-4 h-4 mr-2">
+                        <span class="text-sm font-semibold">✏️ Inserisci manualmente</span>
+                    </label>
+                </div>
+
+                <div id="clcrCalculate">
+                    <div class="grid-2">
+                        <div>
+                            <label class="text-xs font-semibold text-gray-600 mb-1 block">🧪 Creatinina sierica (mg/dL)</label>
+                            <input type="number" id="serumCreatinine" placeholder="Es: 1.2" min="0.1" max="20" step="0.01">
+                        </div>
+                        <div class="flex items-end">
+                            <button class="btn btn-secondary w-full" onclick="calculateClCr()">📊 Calcola ClCr</button>
+                        </div>
+                    </div>
+                    <div class="mt-3 p-3 bg-blue-50 border-2 border-blue-300 rounded-lg text-center">
+                        <span class="text-xs font-semibold text-blue-900">ClCr calcolata:</span>
+                        <span id="clcrResult" class="text-lg font-bold text-blue-700 ml-2">--</span>
+                        <span class="text-xs font-semibold text-blue-900 ml-1">mL/min</span>
+                    </div>
+                </div>
+
+                <div id="clcrManual" class="hidden">
+                    <label class="text-xs font-semibold text-gray-600 mb-1 block">Clearance Creatinina (mL/min)</label>
+                    <input type="number" id="clcrManualInput" placeholder="Es: 65" min="5" max="200" step="0.1">
+                </div>
+            </div>
+
+            <!-- INR Attuale -->
+            <div class="section">
+                <div class="label">6. INR Attuale<span class="badge badge-optional">Opzionale</span></div>
+                <div class="mt-2">
+                    <input type="number" id="currentINR" placeholder="Es: 2.5" min="0.5" max="10" step="0.1">
+                    <p class="text-xs text-gray-600 mt-2">💡 Necessario per switch da Warfarin/Acenocumarolo a DOAC</p>
+                </div>
+            </div>
+
+            <!-- Controindicazioni -->
+            <div class="section">
+                <div class="label">7. Valutazione Controindicazioni<span class="badge badge-optional">Opzionale</span></div>
+                <div class="mt-2 space-y-1">
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="hasMechanicalValves">
+                        <label for="hasMechanicalValves">⚙️ Protesi valvolari meccaniche</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="hasMitralStenosis">
+                        <label for="hasMitralStenosis">🫀 Stenosi mitralica moderata-severa</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="hasAPS">
+                        <label for="hasAPS">🔬 Sindrome da anticorpi antifosfolipidi</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="isPregnant">
+                        <label for="isPregnant">🤰 Gravidanza o allattamento</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Genera Protocollo -->
+            <div class="section">
+                <button class="btn btn-primary w-full text-base font-bold" onclick="generateProtocol()">
+                    ✨ Genera Protocollo di Switch
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="hidden">
+            <!-- Controindicazioni -->
+            <div id="contraindicationsAlert" class="alert alert-danger hidden">
+                <div class="font-bold mb-2">⛔ CONTROINDICAZIONI RILEVATE</div>
+                <ul id="contraindicationsList" class="list-disc list-inside text-xs space-y-1"></ul>
+            </div>
+
+            <!-- Warnings -->
+            <div id="warningsAlert" class="alert alert-warning hidden">
+                <div class="font-bold mb-2">⚠️ ATTENZIONE</div>
+                <ul id="warningsList" class="list-disc list-inside text-xs space-y-1"></ul>
+            </div>
+
+            <!-- Dosaggio -->
+            <div class="section">
+                <div class="label">💊 Dosaggio Raccomandato</div>
+                <div id="dosageContent" class="text-sm mt-2"></div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="section">
+                <div class="label">📅 Timeline Protocollo</div>
+                <div id="timelineContent" class="mt-3"></div>
+            </div>
+
+            <!-- Piano Monitoraggio -->
+            <div class="section">
+                <div class="label">🔬 Piano di Monitoraggio</div>
+                <div id="monitoringContent" class="text-xs whitespace-pre-wrap mt-2 p-3 bg-gray-50 rounded-lg"></div>
+            </div>
+
+            <!-- Note Cliniche -->
+            <div class="section">
+                <div class="label">📋 Note Cliniche</div>
+                <ul id="notesContent" class="text-xs list-disc list-inside space-y-1 mt-2 p-3 bg-amber-50 rounded-lg"></ul>
+            </div>
+
+            <!-- Actions -->
+            <div class="section">
+                <div class="grid-2">
+                    <button class="btn btn-secondary" onclick="resetForm()">← Nuovo Switch</button>
+                    <button class="btn btn-primary" onclick="saveProtocol()">💾 Salva Protocollo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentProtocol = null;
+        let currentPatientParams = null;
+        let clcrMode = 'calculate';
+
+        function selectDirection(value) {
+            document.querySelectorAll('input[name="direction"]').forEach(el => {
+                el.checked = el.value === value;
+                el.parentElement.classList.toggle('selected', el.checked);
+            });
+        }
+
+        function selectDoac(value) {
+            document.querySelectorAll('input[name="doacType"]').forEach(el => {
+                el.checked = el.value === value;
+                el.parentElement.classList.toggle('selected', el.checked);
+            });
+        }
+
+        function selectWarfarin(value) {
+            document.querySelectorAll('input[name="warfarinType"]').forEach(el => {
+                el.checked = el.value === value;
+                el.parentElement.classList.toggle('selected', el.checked);
+            });
+        }
+
+        function toggleClCrMode() {
+            clcrMode = document.querySelector('input[name="clcrMode"]:checked').value;
+            document.getElementById('clcrCalculate').classList.toggle('hidden', clcrMode !== 'calculate');
+            document.getElementById('clcrManual').classList.toggle('hidden', clcrMode !== 'manual');
+        }
+
+        function calculateClCr() {
+            const age = parseInt(document.getElementById('age').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            const gender = document.getElementById('gender').value;
+            const creatinine = parseFloat(document.getElementById('serumCreatinine').value);
+
+            if (!age || !weight || !gender || !creatinine) {
+                alert('⚠️ Inserire età, peso, sesso e creatinina per calcolare la ClCr');
+                return;
+            }
+
+            const factor = gender === 'F' ? 0.85 : 1.0;
+            const clcr = ((140 - age) * weight * factor) / (72 * creatinine);
+            document.getElementById('clcrResult').textContent = clcr.toFixed(1);
+        }
+
+        async function generateProtocol() {
+            const direction = document.querySelector('input[name="direction"]:checked')?.value;
+            const doacType = document.querySelector('input[name="doacType"]:checked')?.value;
+            const warfarinType = document.querySelector('input[name="warfarinType"]:checked')?.value;
+            const age = parseInt(document.getElementById('age').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            const gender = document.getElementById('gender').value;
+
+            if (!direction || !doacType || !warfarinType || !age || !weight || !gender) {
+                alert('⚠️ Compilare tutti i campi obbligatori');
+                return;
+            }
+
+            let clcr;
+            if (clcrMode === 'manual') {
+                clcr = parseFloat(document.getElementById('clcrManualInput').value);
+            } else {
+                const clcrText = document.getElementById('clcrResult').textContent;
+                clcr = parseFloat(clcrText);
+            }
+
+            if (!clcr || clcr <= 0 || isNaN(clcr)) {
+                alert('⚠️ Clearance creatinina non valida. Calcolarla o inserirla manualmente.');
+                return;
+            }
+
+            const params = {
+                direction: direction,
+                doacType: doacType,
+                warfarinType: warfarinType,
+                patientParameters: {
+                    age: age,
+                    weight: weight,
+                    gender: gender,
+                    currentINR: parseFloat(document.getElementById('currentINR').value) || null,
+                    creatinineClearance: clcr,
+                    serumCreatinine: parseFloat(document.getElementById('serumCreatinine').value) || null,
+                    isCreatinineClearanceCalculated: clcrMode === 'calculate',
+                    hasMechanicalValves: document.getElementById('hasMechanicalValves').checked,
+                    hasMitralStenosis: document.getElementById('hasMitralStenosis').checked,
+                    hasAntiphospholipidSyndrome: document.getElementById('hasAPS').checked,
+                    isPregnantOrBreastfeeding: document.getElementById('isPregnant').checked
+                }
+            };
+
+            try {
+                const protocol = await window.chrome.webview.hostObjects.switchService.CalculateProtocol(JSON.stringify(params));
+                currentProtocol = JSON.parse(protocol);
+                currentPatientParams = params.patientParameters; // Salva i parametri per il save
+                displayProtocol(currentProtocol);
+            } catch (error) {
+                console.error('Error calling backend:', error);
+                alert('Errore nel calcolo del protocollo:\n' + (error.message || 'Verificare i parametri inseriti.'));
+            }
+        }
+
+        function displayProtocol(protocol) {
+            document.getElementById('formSection').classList.add('hidden');
+            document.getElementById('resultsSection').classList.remove('hidden');
+
+            // Controindicazioni
+            if (protocol.contraindications && protocol.contraindications.length > 0) {
+                document.getElementById('contraindicationsAlert').classList.remove('hidden');
+                const list = document.getElementById('contraindicationsList');
+                list.innerHTML = protocol.contraindications.map(c => `<li>${c}</li>`).join('');
+            }
+
+            // Warnings
+            if (protocol.warnings && protocol.warnings.length > 0) {
+                document.getElementById('warningsAlert').classList.remove('hidden');
+                const list = document.getElementById('warningsList');
+                list.innerHTML = protocol.warnings.map(w => `<li>${w}</li>`).join('');
+            }
+
+            // Dosaggio
+            if (!protocol.isSafeToSwitch) {
+                document.getElementById('dosageContent').innerHTML =
+                    '<div class="bg-red-100 border-2 border-red-400 p-4 rounded-lg"><p class="text-red-800 font-bold text-sm">⛔ SWITCH NON RACCOMANDATO</p></div>';
+            } else {
+                document.getElementById('dosageContent').innerHTML = `
+                    <div class="p-4 bg-green-50 border-2 border-green-300 rounded-lg">
+                        <p class="font-bold text-lg text-green-900 mb-2">${protocol.recommendedDoacDosage}</p>
+                        <p class="text-xs text-green-700">${protocol.dosageRationale}</p>
+                    </div>
+                `;
+            }
+
+            // Timeline
+            const timelineHtml = protocol.timeline.map((step) => {
+                return `
+                    <div class="timeline-step">
+                        <div class="text-xs font-bold text-blue-900 mb-1">📍 Giorno ${step.day}: ${step.action}</div>
+                        <div class="text-xs text-gray-700">${step.details}</div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('timelineContent').innerHTML = timelineHtml;
+
+            // Monitoraggio
+            document.getElementById('monitoringContent').textContent = protocol.monitoringPlan;
+
+            // Note cliniche
+            if (protocol.clinicalNotes && protocol.clinicalNotes.length > 0) {
+                const notesHtml = protocol.clinicalNotes.map(note => `<li>${note}</li>`).join('');
+                document.getElementById('notesContent').innerHTML = notesHtml;
+            }
+
+            window.scrollTo(0, 0);
+        }
+
+        function resetForm() {
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('formSection').classList.remove('hidden');
+            currentProtocol = null;
+            window.scrollTo(0, 0);
+        }
+
+        async function saveProtocol() {
+            if (!currentProtocol || !currentPatientParams) {
+                alert('⚠️ Nessun protocollo da salvare');
+                return;
+            }
+
+            try {
+                const saveData = {
+                    protocol: currentProtocol,
+                    patientParams: currentPatientParams
+                };
+                window.chrome.webview.hostObjects.switchService.SaveProtocol(JSON.stringify(saveData));
+
+                // Aspetta un momento per il salvataggio, poi torna al form e ricarica lo storico
+                setTimeout(() => {
+                    resetForm();
+                    // Richiedi il ricaricamento dello storico
+                    window.chrome.webview.hostObjects.switchService.RefreshHistory();
+                }, 500);
+
+                alert('✅ Protocollo salvato con successo!');
+            } catch (error) {
+                console.error('Error saving protocol:', error);
+                alert('❌ Errore nel salvataggio del protocollo');
+            }
+        }
+
+        // === FUNZIONI STORICO SWITCH ===
+
+        let switchHistory = [];
+
+        function loadSwitchHistory(switches) {
+            console.log('Loading switch history:', switches);
+            switchHistory = switches;
+
+            const historySection = document.getElementById('historySection');
+            const historyList = document.getElementById('historyList');
+            const switchAlert = document.getElementById('switchAlert');
+            const switchAlertText = document.getElementById('switchAlertText');
+
+            if (!switches || switches.length === 0) {
+                historySection.classList.add('hidden');
+                switchAlert.classList.add('hidden');
+                return;
+            }
+
+            historySection.classList.remove('hidden');
+            historyList.innerHTML = '';
+
+            // Controlla se ci sono switch attivi (non completati)
+            const activeSwitches = switches.filter(sw => !sw.switchCompleted);
+
+            if (activeSwitches.length > 0) {
+                // Mostra l'alert con i dettagli del primo switch attivo
+                const activeSwitch = activeSwitches[0];
+                const directionText = activeSwitch.direction === 'WarfarinToDoac'
+                    ? `${activeSwitch.warfarinType} → ${activeSwitch.doacType}`
+                    : `${activeSwitch.doacType} → ${activeSwitch.warfarinType}`;
+
+                switchAlertText.textContent = `Paziente in switch ${directionText} dal ${activeSwitch.switchDate}. ${activeSwitches.length} switch ${activeSwitches.length === 1 ? 'attivo' : 'attivi'}. Monitorare attentamente.`;
+                switchAlert.classList.remove('hidden');
+            } else {
+                switchAlert.classList.add('hidden');
+            }
+
+            switches.forEach(sw => {
+                const card = createHistoryCard(sw);
+                historyList.appendChild(card);
+            });
+        }
+
+        function createHistoryCard(sw) {
+            const div = document.createElement('div');
+            div.className = 'history-card';
+            div.id = `switch-${sw.id}`;
+
+            const directionText = sw.direction === 'WarfarinToDoac'
+                ? `📤 ${sw.warfarinType} → ${sw.doacType}`
+                : `📥 ${sw.doacType} → ${sw.warfarinType}`;
+
+            let statusClass = 'status-pending';
+            let statusText = 'In corso';
+            if (sw.switchCompleted) {
+                statusClass = 'status-completed';
+                statusText = 'Completato';
+            } else if (sw.followUpCompleted) {
+                statusClass = 'status-follow-up';
+                statusText = 'Follow-up';
+            }
+
+            div.innerHTML = `
+                <div onclick="toggleSwitchDetails(${sw.id})">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="font-bold text-sm text-gray-800">${directionText}</div>
+                            <div class="text-xs text-gray-600 mt-1">
+                                📅 ${sw.switchDate} | 💊 ${sw.recommendedDosage}
+                            </div>
+                        </div>
+                        <span class="history-status ${statusClass}">${statusText}</span>
+                    </div>
+                    <div id="details-${sw.id}" class="history-details hidden">
+                        <div class="grid-2 text-xs mb-3">
+                            <div><strong>Età:</strong> ${sw.ageAtSwitch} anni</div>
+                            <div><strong>Peso:</strong> ${sw.weightAtSwitch} kg</div>
+                            <div><strong>ClCr:</strong> ${sw.creatinineClearance} mL/min</div>
+                            ${sw.inrAtSwitch ? `<div><strong>INR:</strong> ${sw.inrAtSwitch}</div>` : ''}
+                        </div>
+
+                        ${sw.dosageRationale ? `
+                        <div class="mb-3">
+                            <strong class="text-xs text-blue-800">Motivazione dosaggio:</strong>
+                            <p class="text-xs text-gray-700 mt-1">${sw.dosageRationale}</p>
+                        </div>
+                        ` : ''}
+
+                        ${sw.monitoringPlan ? `
+                        <div class="mb-3">
+                            <strong class="text-xs text-blue-800">Piano di monitoraggio:</strong>
+                            <p class="text-xs text-gray-700 mt-1">${sw.monitoringPlan}</p>
+                        </div>
+                        ` : ''}
+
+                        ${sw.warnings ? `
+                        <div class="mb-3">
+                            <strong class="text-xs text-orange-800">⚠️ Avvertenze:</strong>
+                            <p class="text-xs text-gray-700 mt-1">${formatWarnings(sw.warnings)}</p>
+                        </div>
+                        ` : ''}
+
+                        <div class="mt-3 pt-3 border-t border-gray-200">
+                            <strong class="text-xs text-blue-800">📝 Note Follow-up:</strong>
+                            <textarea
+                                id="followup-${sw.id}"
+                                class="w-full mt-2 p-2 border-2 border-gray-300 rounded text-xs"
+                                rows="3"
+                                placeholder="Inserisci note di follow-up..."
+                            >${sw.followUpNotes || ''}</textarea>
+
+                            <div class="flex items-center gap-3 mt-2">
+                                <label class="flex items-center text-xs">
+                                    <input type="checkbox" id="completed-${sw.id}" ${sw.followUpCompleted ? 'checked' : ''} class="mr-2">
+                                    Follow-up completato
+                                </label>
+
+                                ${!sw.switchCompleted ? `
+                                <select id="outcome-${sw.id}" class="text-xs p-1 border rounded">
+                                    <option value="">Seleziona esito...</option>
+                                    <option value="Successo">Successo</option>
+                                    <option value="Complicazioni minori">Complicazioni minori</option>
+                                    <option value="Complicazioni maggiori">Complicazioni maggiori</option>
+                                    <option value="Sospeso">Sospeso</option>
+                                </select>
+                                ` : `<span class="text-xs font-semibold text-green-700">✓ ${sw.outcome}</span>`}
+                            </div>
+
+                            <div class="flex gap-2 mt-2">
+                                <button
+                                    onclick="updateFollowUp(${sw.id}); event.stopPropagation();"
+                                    class="btn btn-primary text-xs py-1 px-3"
+                                >
+                                    💾 Salva Follow-up
+                                </button>
+                                <button
+                                    onclick="deleteSwitch(${sw.id}); event.stopPropagation();"
+                                    class="text-xs py-1 px-3 bg-red-600 text-white rounded hover:bg-red-700 transition-colors font-semibold"
+                                >
+                                    🗑️ Elimina
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return div;
+        }
+
+        function formatWarnings(warnings) {
+            try {
+                const parsed = JSON.parse(warnings);
+                if (Array.isArray(parsed)) {
+                    return parsed.join('; ');
+                }
+                return warnings;
+            } catch {
+                return warnings;
+            }
+        }
+
+        function toggleSwitchDetails(switchId) {
+            const details = document.getElementById(`details-${switchId}`);
+            const card = document.getElementById(`switch-${switchId}`);
+
+            if (details.classList.contains('hidden')) {
+                details.classList.remove('hidden');
+                card.classList.add('expanded');
+            } else {
+                details.classList.add('hidden');
+                card.classList.remove('expanded');
+            }
+        }
+
+        function toggleHistory() {
+            const historyList = document.getElementById('historyList');
+            const toggleText = document.getElementById('toggleHistoryText');
+
+            if (historyList.classList.contains('hidden')) {
+                historyList.classList.remove('hidden');
+                toggleText.textContent = 'Nascondi';
+            } else {
+                historyList.classList.add('hidden');
+                toggleText.textContent = 'Mostra';
+            }
+        }
+
+        async function updateFollowUp(switchId) {
+            const notes = document.getElementById(`followup-${switchId}`).value;
+            const completed = document.getElementById(`completed-${switchId}`).checked;
+            const outcomeSelect = document.getElementById(`outcome-${switchId}`);
+            const outcome = outcomeSelect ? outcomeSelect.value : '';
+
+            try {
+                window.chrome.webview.hostObjects.switchService.UpdateFollowUp(switchId, notes, completed, outcome);
+                alert('✅ Follow-up aggiornato con successo!');
+            } catch (error) {
+                console.error('Error updating follow-up:', error);
+                alert('❌ Errore nell\'aggiornamento del follow-up');
+            }
+        }
+
+        async function deleteSwitch(switchId) {
+            // Conferma eliminazione
+            const confirmed = confirm(
+                '⚠️ ATTENZIONE\n\n' +
+                'Sei sicuro di voler eliminare questo protocollo di switch?\n\n' +
+                'Questa operazione è IRREVERSIBILE e cancellerà:\n' +
+                '• Il protocollo di switch\n' +
+                '• Tutte le note di follow-up\n' +
+                '• Lo storico completo di questo switch\n\n' +
+                'Confermi l\'eliminazione?'
+            );
+
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+                window.chrome.webview.hostObjects.switchService.DeleteSwitch(switchId);
+
+                // Rimuovi la card dallo storico con animazione
+                const card = document.getElementById(`switch-${switchId}`);
+                if (card) {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateX(-20px)';
+                    setTimeout(() => {
+                        card.remove();
+
+                        // Se non ci sono più card, nascondi la sezione storico
+                        const historyList = document.getElementById('historyList');
+                        if (historyList.children.length === 0) {
+                            document.getElementById('historySection').classList.add('hidden');
+                        }
+                    }, 300);
+                }
+
+                alert('✅ Protocollo eliminato con successo!');
+            } catch (error) {
+                console.error('Error deleting switch:', error);
+                alert('❌ Errore nell\'eliminazione del protocollo');
+            }
+        }
+    </script>
+</body>
+</html>

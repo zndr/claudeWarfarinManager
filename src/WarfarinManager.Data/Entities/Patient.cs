@@ -56,6 +56,38 @@ public class Patient : BaseEntity
     /// Flag metabolizzatore lento (calcolato automaticamente se dose settimanale <15 mg)
     /// </summary>
     public bool IsSlowMetabolizer { get; set; }
+
+    /// <summary>
+    /// Flag per soft delete - se true il paziente è "eliminato" ma i dati restano nel DB
+    /// </summary>
+    public bool IsDeleted { get; set; }
+
+    /// <summary>
+    /// Data di eliminazione (soft delete)
+    /// </summary>
+    public DateTime? DeletedAt { get; set; }
+    
+    // CHA₂DS₂-VASc Score Components (per calcolo rischio bridge therapy)
+    
+    /// <summary>
+    /// Presenza di scompenso cardiaco congestizio / disfunzione VS
+    /// </summary>
+    public bool HasCongestiveHeartFailure { get; set; }
+    
+    /// <summary>
+    /// Ipertensione arteriosa (in trattamento)
+    /// </summary>
+    public bool HasHypertension { get; set; }
+    
+    /// <summary>
+    /// Diabete mellito (in trattamento)
+    /// </summary>
+    public bool HasDiabetes { get; set; }
+    
+    /// <summary>
+    /// Presenza di malattia vascolare (pregresso IMA, PAD, placca aortica)
+    /// </summary>
+    public bool HasVascularDisease { get; set; }
     
     // Navigation Properties
     
@@ -83,7 +115,12 @@ public class Patient : BaseEntity
     /// Piani di bridge therapy
     /// </summary>
     public ICollection<BridgeTherapyPlan> BridgeTherapyPlans { get; set; } = new List<BridgeTherapyPlan>();
-    
+
+    /// <summary>
+    /// Valutazioni pre-TAO
+    /// </summary>
+    public ICollection<PreTaoAssessment> PreTaoAssessments { get; set; } = new List<PreTaoAssessment>();
+
     // Computed Properties (non mappate su DB)
     
     /// <summary>

@@ -1,79 +1,65 @@
+using System;
 using WarfarinManager.Shared.Enums;
 
 namespace WarfarinManager.Data.Entities;
 
 /// <summary>
-/// Entità evento avverso
+/// Rappresenta un evento avverso occorso durante la terapia con Warfarin
 /// </summary>
 public class AdverseEvent : BaseEntity
 {
     /// <summary>
-    /// ID paziente (Foreign Key)
+    /// ID del paziente
     /// </summary>
     public int PatientId { get; set; }
-    
+
     /// <summary>
-    /// Data evento
+    /// Data di comparsa della reazione avversa
     /// </summary>
-    public DateTime EventDate { get; set; }
-    
+    public DateTime OnsetDate { get; set; }
+
     /// <summary>
-    /// Tipo evento (Emorragico/Trombotico)
+    /// Tipo di reazione avversa (classificata secondo gravità e frequenza)
     /// </summary>
-    public AdverseEventType EventType { get; set; }
-    
+    public AdverseReactionType ReactionType { get; set; }
+
     /// <summary>
-    /// Categoria emorragica (se EventType = Hemorrhagic)
+    /// Gravità della reazione (automaticamente derivata dal tipo)
     /// </summary>
-    public HemorrhagicEventCategory? HemorrhagicCategory { get; set; }
-    
+    public AdverseReactionSeverity Severity { get; set; }
+
     /// <summary>
-    /// Categoria trombotica (se EventType = Thrombotic)
+    /// Grado di certezza della correlazione con il Warfarin
     /// </summary>
-    public ThromboticEventCategory? ThromboticCategory { get; set; }
-    
+    public CertaintyLevel CertaintyLevel { get; set; }
+
     /// <summary>
-    /// Gravità evento
+    /// Provvedimenti adottati (testo libero)
     /// </summary>
-    public EventSeverity Severity { get; set; }
-    
+    public string? MeasuresTaken { get; set; }
+
     /// <summary>
     /// INR al momento dell'evento (se disponibile)
     /// </summary>
     public decimal? INRAtEvent { get; set; }
-    
+
     /// <summary>
-    /// Dose settimanale in uso al momento dell'evento (mg)
-    /// </summary>
-    public decimal? WeeklyDoseAtEvent { get; set; }
-    
-    /// <summary>
-    /// Gestione evento (testo libero)
-    /// </summary>
-    public string? Management { get; set; }
-    
-    /// <summary>
-    /// Outcome evento
-    /// </summary>
-    public string? Outcome { get; set; }
-    
-    /// <summary>
-    /// Note cliniche
+    /// Note aggiuntive
     /// </summary>
     public string? Notes { get; set; }
-    
+
     /// <summary>
     /// ID controllo INR collegato (opzionale)
     /// </summary>
     public int? LinkedINRControlId { get; set; }
-    
+
     // Navigation Properties
-    
+
     /// <summary>
     /// Paziente associato
     /// </summary>
     public Patient Patient { get; set; } = null!;
-    
+
     /// <summary>
     /// Controllo INR collegato (se presente)
     /// </summary>

@@ -1,4 +1,4 @@
-# WarfarinManager Pro
+# TaoGEST
 
 ## Gestione Terapia Anticoagulante Orale (TAO) con Warfarin
 
@@ -7,7 +7,7 @@ Applicazione desktop Windows per medici di medicina generale italiani.
 ### Struttura Progetto
 
 ```
-WarfarinManager/
+TaoGEST/
 ├── src/
 │   ├── WarfarinManager.UI/          # WPF Application
 │   ├── WarfarinManager.Core/        # Business Logic
@@ -20,7 +20,7 @@ WarfarinManager/
 
 ### Requisiti
 
-- .NET 9.0 SDK
+- .NET 8.0 SDK
 - Visual Studio 2022 (17.8+)
 - Windows 10/11
 
@@ -46,20 +46,28 @@ dotnet run --project src/WarfarinManager.UI/WarfarinManager.UI.csproj
 - [x] Enums & Constants
 - [x] Base WPF app skeleton
 
-**Fase 2: Core Business Logic** 🚧 (Prossima)
-- [ ] DosageCalculatorService
-- [ ] TTRCalculatorService
-- [ ] InteractionCheckerService
-- [ ] Seeding dati lookup
+**Fase 2: Core Business Logic** ✅ (Completata)
+- [x] DosageCalculatorService
+- [x] TTRCalculatorService
+- [x] InteractionCheckerService
+- [x] Seeding dati lookup
+
+**Fase 3: User Interface WPF** ✅ (Completata)
+- [x] Dashboard pazienti
+- [x] Gestione controlli INR
+- [x] Grafici trend INR
+- [x] Gestione farmaci e interazioni
+- [x] Export e reporting
 
 ### Tecnologie
 
-- **.NET 9.0** con C# 13
+- **.NET 8.0** con C# 12
 - **WPF** per UI
-- **Entity Framework Core 9** + SQLite
+- **Entity Framework Core 8** + SQLite
 - **CommunityToolkit.Mvvm**
+- **LiveCharts2** per grafici
+- **QuestPDF** per export PDF
 - **xUnit** per testing
-- **FluentAssertions**
 
 ### Linee Guida Implementate
 
@@ -68,5 +76,5 @@ dotnet run --project src/WarfarinManager.UI/WarfarinManager.UI.csproj
 
 ---
 
-**Versione**: 1.0.0-dev  
-**Ultimo aggiornamento**: 22 Novembre 2025
+**Versione**: 1.0.0.0 - Beta  
+**Ultimo aggiornamento**: 26 Novembre 2025

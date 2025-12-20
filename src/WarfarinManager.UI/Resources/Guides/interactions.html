@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guida Interattiva Interazioni Warfarin (Coumadin)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Slate 50 */
+            color: #334155; /* Slate 700 */
+        }
+
+        /* Chart Container Styling Rules - STRICT ADHERENCE */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px; /* Constraint width */
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px; /* Base height */
+            max-height: 350px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Custom scrollbar for better desktop experience */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+    </style>
+    <!-- Chosen Palette: Slate (Background/Text), Red (Danger), Amber (Warning), Emerald (Safe/Monitor), Blue (Info) -->
+    <!-- Application Structure Plan: 
+         1. Header & Disclaimer: Immediate medical context and safety warning.
+         2. Dashboard Overview: A Chart.js visualization showing the distribution of interaction types (Antibiotics, NSAIDs, Food, etc.) to give a macro view of risk sources.
+         3. Control Center: Search bar and Category filters to allow users to quickly find specific drugs or filter by risk level.
+         4. Interaction Grid: The core content. Dynamic cards representing drugs/foods, color-coded by severity.
+         5. Detail Modal: Interactive element to show deeper context without cluttering the main view.
+         Why: This structure moves from general awareness to specific actionable data, prioritizing quick retrieval (Search) and clear visual signaling (Color coding).
+    -->
+    <!-- Visualization & Content Choices: 
+         1. Report Info: Drug Classes -> Goal: Categorize -> Viz: Doughnut Chart -> Interaction: Click legend to filter (optional) -> Justification: Quick visual breakdown of where risks lie. -> Lib: Chart.js.
+         2. Report Info: Specific Interaction -> Goal: Inform/Warn -> Viz: Color-coded Card -> Interaction: Click for details -> Justification: Immediate visual cue of danger level (Red/Orange). -> Method: HTML/Tailwind.
+         CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. 
+    -->
+</head>
+<body class="antialiased">
+
+    <!-- Navbar / Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">💊</span>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 leading-tight">Warfarin Check</h1>
+                    <p class="text-xs text-slate-500">Guida alle interazioni farmacologiche</p>
+                </div>
+            </div>
+            <button id="infoBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                ℹ️ Come funziona
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Medical Disclaimer -->
+        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-8 rounded-r-lg">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    ⚠️
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-red-700">
+                        <strong class="font-bold">Attenzione:</strong> L'elenco dei farmaci interagenti non è completo, ma contiene solo i farmaci o sostanze di impiego più comune.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Introduction Section -->
+        <section class="mb-10 text-center max-w-3xl mx-auto">
+            <h2 class="text-2xl font-bold text-slate-800 mb-3">Gestione della Terapia Anticoagulante</h2>
+            <p class="text-slate-600 leading-relaxed">
+                Il Warfarin (Coumadin) è un farmaco salvavita con un indice terapeutico ristretto. Ciò significa che piccole interazioni con altri farmaci o alimenti possono alterare significativamente il valore INR, aumentando il rischio di emorragia (sangue troppo fluido) o trombosi (sangue troppo denso). Utilizza gli strumenti qui sotto per esplorare le interazioni note.
+            </p>
+        </section>
+
+        <!-- Stats & Overview Section -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12 items-center">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <h3 class="text-lg font-semibold text-slate-800 mb-2">Distribuzione dei Rischi</h3>
+                <p class="text-sm text-slate-500 mb-6">
+                    Il grafico sottostante mostra la suddivisione delle categorie di interazione presenti nel database. Notare come antibiotici e antinfiammatori rappresentino una porzione significativa delle interazioni ad alto rischio.
+                </p>
+                <!-- Chart Container -->
+                <div class="chart-container">
+                    <canvas id="riskChart"></canvas>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-800">Legenda Livelli di Rischio</h3>
+                
+                <div class="flex items-start p-4 bg-red-50 rounded-lg border border-red-100">
+                    <span class="text-2xl mr-3">⛔</span>
+                    <div>
+                        <h4 class="font-bold text-red-800">Pericolo Alto (Vietato/Consulto)</h4>
+                        <p class="text-sm text-red-600 mt-1">Interazioni che possono causare gravi alterazioni dell'INR. Spesso richiedono la sospensione temporanea o un aggiustamento del dosaggio immediato.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start p-4 bg-amber-50 rounded-lg border border-amber-100">
+                    <span class="text-2xl mr-3">⚠️</span>
+                    <div>
+                        <h4 class="font-bold text-amber-800">Attenzione (Monitoraggio)</h4>
+                        <p class="text-sm text-amber-700 mt-1">L'uso concomitante è possibile ma richiede un monitoraggio frequente dell'INR e cautela.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start p-4 bg-emerald-50 rounded-lg border border-emerald-100">
+                    <span class="text-2xl mr-3">🥗</span>
+                    <div>
+                        <h4 class="font-bold text-emerald-800">Stile di Vita & Cibo</h4>
+                        <p class="text-sm text-emerald-700 mt-1">Alimenti o integratori che influenzano la vitamina K. La chiave è la costanza nell'assunzione, non l'eliminazione totale.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Control Panel: Search & Filter -->
+        <section class="sticky top-20 z-40 bg-slate-50/90 backdrop-blur-md p-4 rounded-xl shadow-md border border-slate-200 mb-8">
+            <div class="flex flex-col md:flex-row gap-4 justify-between items-center">
+                <div class="relative w-full md:w-1/3">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Cerca farmaco (es. Aspirina, Antibiotico...)" 
+                           class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                </div>
+                
+                <div class="flex flex-wrap justify-center gap-2 w-full md:w-auto">
+                    <button class="filter-btn active bg-slate-800 text-white px-4 py-1.5 rounded-full text-sm font-medium transition-all" data-filter="all">Tutti</button>
+                    <button class="filter-btn bg-white text-slate-600 border border-slate-300 hover:bg-red-50 hover:text-red-600 px-4 py-1.5 rounded-full text-sm font-medium transition-all" data-filter="Alto">⛔ Alto Rischio</button>
+                    <button class="filter-btn bg-white text-slate-600 border border-slate-300 hover:bg-amber-50 hover:text-amber-600 px-4 py-1.5 rounded-full text-sm font-medium transition-all" data-filter="Medio">⚠️ Moderato</button>
+                    <button class="filter-btn bg-white text-slate-600 border border-slate-300 hover:bg-emerald-50 hover:text-emerald-600 px-4 py-1.5 rounded-full text-sm font-medium transition-all" data-filter="Cibo">🥗 Cibo/Erbe</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Content Grid -->
+        <section class="mb-12">
+            <p class="text-sm text-slate-500 mb-4 ml-1">Clicca su una scheda per visualizzare i dettagli completi.</p>
+            <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cards will be injected here via JS -->
+            </div>
+            <div id="noResults" class="hidden text-center py-12">
+                <span class="text-4xl">🤔</span>
+                <p class="text-slate-500 mt-2">Nessun risultato trovato. Prova con un altro termine.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal for Details -->
+    <div id="detailModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full transform scale-95 transition-transform duration-300 overflow-hidden" id="modalContent">
+            <div id="modalHeader" class="p-6 text-white bg-slate-800">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span id="modalIcon" class="text-4xl mb-2 block"></span>
+                        <h3 id="modalTitle" class="text-2xl font-bold"></h3>
+                        <span id="modalCategory" class="inline-block bg-white/20 px-2 py-0.5 rounded text-xs mt-1"></span>
+                    </div>
+                    <button id="closeModal" class="text-white/70 hover:text-white text-2xl font-bold">&times;</button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="mb-4">
+                    <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Meccanismo</h4>
+                    <p id="modalMechanism" class="text-slate-800 font-medium"></p>
+                </div>
+                
+                <div class="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                    <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Effetto sull'INR</h4>
+                    <div id="modalEffect" class="flex items-center gap-2 font-bold text-lg"></div>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Consiglio Clinico</h4>
+                    <p id="modalAdvice" class="text-slate-600 text-sm leading-relaxed"></p>
+                </div>
+            </div>
+            <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 text-right">
+                <button id="closeModalBtn" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">Chiudi Scheda</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA STORE ---
+        // Comprehensive list of interactions categorized by risk and type
+        const interactionData = [
+            // ANTIBIOTICS (High Risk)
+            {
+                id: 1,
+                name: "Ciprofloxacina",
+                category: "Antibiotici",
+                risk: "Alto",
+                icon: "💊",
+                mechanism: "Inibisce il metabolismo del Warfarin.",
+                effect: "Aumento INR 📈 (Rischio Emorragia)",
+                advice: "Interazione molto comune. Solitamente richiede una riduzione della dose di Warfarin durante la terapia antibiotica. Monitorare INR ogni 2-3 giorni."
+            },
+            {
+                id: 2,
+                name: "Eritromicina / Claritromicina",
+                category: "Antibiotici",
+                risk: "Alto",
+                icon: "💊",
+                mechanism: "Potente inibitore enzimatico epatico.",
+                effect: "Aumento INR 📈 (Rischio Emorragia)",
+                advice: "Evitare se possibile o ridurre preventivamente il Warfarin del 20-30% sotto consiglio medico. Controllo INR stretto."
+            },
+            {
+                id: 3,
+                name: "Bactrim (Sulfametoxazolo)",
+                category: "Antibiotici",
+                risk: "Alto",
+                icon: "💊",
+                mechanism: "Sposta il Warfarin dalle proteine plasmatiche e ne inibisce il metabolismo.",
+                effect: "Aumento INR Drastico 📈",
+                advice: "Una delle interazioni più pericolose. Il rischio di emorragia è molto alto. Necessario aggiustamento dosaggio immediato."
+            },
+            // NSAIDS / PAIN (High/Med Risk)
+            {
+                id: 4,
+                name: "Aspirina / FANS",
+                category: "Antinfiammatori",
+                risk: "Alto",
+                icon: "🦴",
+                mechanism: "Danneggia mucosa gastrica e inibisce funzione piastrinica.",
+                effect: "Rischio Sanguinamento 🩸 (INR può restare invariato)",
+                advice: "Pericoloso perché aumenta il rischio di emorragia (specialmente gastrica) anche senza alzare l'INR. Usare solo se prescritto da cardiologo (es. prevenzione secondaria)."
+            },
+            {
+                id: 5,
+                name: "Ibuprofene / Ketoprofene",
+                category: "Antinfiammatori",
+                risk: "Medio",
+                icon: "🦴",
+                mechanism: "Effetto antiaggregante e gastrolesivo.",
+                effect: "Rischio Sanguinamento 🩸",
+                advice: "Evitare l'uso cronico. Per il dolore occasionale, preferire il Paracetamolo."
+            },
+            {
+                id: 6,
+                name: "Paracetamolo (Tachipirina)",
+                category: "Analgesici",
+                risk: "Medio",
+                icon: "🤒",
+                mechanism: "Interazione metabolica ad alti dosaggi.",
+                effect: "Aumento INR 📈 (se dose > 2g/die)",
+                advice: "Sicuro a basse dosi. Se assunto a pieno dosaggio (es. 3g al giorno) per più giorni consecutivi, può alzare l'INR."
+            },
+            // CARDIO
+            {
+                id: 7,
+                name: "Amiodarone",
+                category: "Cardiovascolari",
+                risk: "Alto",
+                icon: "🫀",
+                mechanism: "Blocca potentemente l'eliminazione del Warfarin.",
+                effect: "Aumento INR 📈",
+                advice: "L'effetto persiste anche settimane dopo la sospensione dell'Amiodarone (emivita lunghissima). Dose Warfarin spesso va dimezzata."
+            },
+            // FOOD & HERBS
+            {
+                id: 8,
+                name: "Verdure a Foglia Larga",
+                category: "Cibo",
+                risk: "Cibo",
+                icon: "🥦",
+                mechanism: "Ricche di Vitamina K (antagonista del Warfarin).",
+                effect: "Diminuzione INR 📉 (Rischio Trombosi)",
+                advice: "Spinaci, broccoli, cavoli. NON vanno eliminati, ma mangiati in quantità costante. Evitare le 'abbuffate' occasionali."
+            },
+            {
+                id: 9,
+                name: "Succo di Mirtillo",
+                category: "Cibo",
+                risk: "Cibo",
+                icon: "🫐",
+                mechanism: "Inibizione enzimatica dei flavonoidi.",
+                effect: "Aumento INR 📈",
+                advice: "Grandi quantità di succo concentrato possono destabilizzare la terapia. Consumo moderato è accettabile."
+            },
+            {
+                id: 10,
+                name: "Alcool",
+                category: "Cibo",
+                risk: "Medio",
+                icon: "🍷",
+                mechanism: "Acuto: inibisce metabolismo. Cronico: induce metabolismo.",
+                effect: "Variabile 📉📈",
+                advice: "L'intossicazione acuta (ubriacatura) alza l'INR (rischio emorragia). L'alcolismo cronico può abbassarlo. Consigliata moderazione (1 bicchiere)."
+            },
+            {
+                id: 11,
+                name: "Ginkgo Biloba",
+                category: "Erbe",
+                risk: "Alto",
+                icon: "🌿",
+                mechanism: "Attività antiaggregante piastrinica.",
+                effect: "Rischio Sanguinamento 🩸",
+                advice: "Evitare. Aumenta il rischio di emorragie spontanee anche con INR normale."
+            },
+            // OTHERS
+            {
+                id: 12,
+                name: "Fluconazolo",
+                category: "Antifungini",
+                risk: "Alto",
+                icon: "🍄",
+                mechanism: "Inibitore CYP2C9.",
+                effect: "Aumento INR 📈",
+                advice: "Interazione forte. Monitorare strettamente INR se prescritta terapia per candida o micosi."
+            },
+            {
+                id: 13,
+                name: "Carbamazepina",
+                category: "Antiepilettici",
+                risk: "Medio",
+                icon: "🧠",
+                mechanism: "Induttore enzimatico (accelera eliminazione Warfarin).",
+                effect: "Diminuzione INR 📉",
+                advice: "Potrebbe essere necessario aumentare la dose di Warfarin per mantenere l'effetto terapeutico."
+            }
+        ];
+
+        // --- UI & LOGIC ---
+
+        const grid = document.getElementById('cardsGrid');
+        const searchInput = document.getElementById('searchInput');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const modal = document.getElementById('detailModal');
+        const modalContent = document.getElementById('modalContent');
+        const noResults = document.getElementById('noResults');
+
+        let currentFilter = 'all';
+
+        // Color Mapping
+        const riskColors = {
+            'Alto': { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-800', badge: 'bg-red-100 text-red-700', hover: 'hover:border-red-300' },
+            'Medio': { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-800', badge: 'bg-amber-100 text-amber-700', hover: 'hover:border-amber-300' },
+            'Cibo': { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-800', badge: 'bg-emerald-100 text-emerald-700', hover: 'hover:border-emerald-300' }
+        };
+
+        // Initialize Chart
+        function initChart() {
+            const ctx = document.getElementById('riskChart').getContext('2d');
+            
+            // Calculate stats
+            const counts = {
+                'Alto Rischio': interactionData.filter(d => d.risk === 'Alto').length,
+                'Moderato': interactionData.filter(d => d.risk === 'Medio').length,
+                'Cibo/Erbe': interactionData.filter(d => d.risk === 'Cibo').length
+            };
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(counts),
+                    datasets: [{
+                        data: Object.values(counts),
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.8)', // Red
+                            'rgba(245, 158, 11, 0.8)', // Amber
+                            'rgba(16, 185, 129, 0.8)'  // Emerald
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 12
+                                },
+                                boxWidth: 12
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.label}: ${context.raw} elementi`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Render Cards
+        function renderCards(data) {
+            grid.innerHTML = '';
+            
+            if (data.length === 0) {
+                noResults.classList.remove('hidden');
+                return;
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            data.forEach(item => {
+                const colors = riskColors[item.risk] || riskColors['Medio'];
+                
+                const card = document.createElement('div');
+                card.className = `bg-white border rounded-xl p-5 card-hover transition-all duration-200 cursor-pointer flex flex-col justify-between ${colors.hover}`;
+                card.style.borderColor = "transparent"; // Reset for custom border logic if needed, utilizing shadow mainly
+                // Applying subtle border based on risk
+                card.classList.add(colors.border);
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-3xl bg-slate-50 p-2 rounded-lg">${item.icon}</span>
+                        <span class="px-2 py-1 rounded text-xs font-bold uppercase tracking-wide ${colors.badge}">${item.risk}</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800 mb-1">${item.name}</h3>
+                        <p class="text-xs text-slate-500 uppercase tracking-wide mb-2">${item.category}</p>
+                        <p class="text-sm text-slate-600 line-clamp-2">${item.mechanism}</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-xs font-semibold ${colors.text}">Clicca per dettagli &rarr;</span>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => openModal(item));
+                grid.appendChild(card);
+            });
+        }
+
+        // Filter Logic
+        function filterData() {
+            const query = searchInput.value.toLowerCase();
+            
+            const filtered = interactionData.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(query) || 
+                                      item.category.toLowerCase().includes(query) ||
+                                      item.mechanism.toLowerCase().includes(query);
+                
+                const matchesCategory = currentFilter === 'all' || item.risk === currentFilter;
+
+                return matchesSearch && matchesCategory;
+            });
+
+            renderCards(filtered);
+        }
+
+        // Modal Logic
+        function openModal(item) {
+            const colors = riskColors[item.risk];
+            const header = document.getElementById('modalHeader');
+            
+            // Dynamic Header Color
+            header.className = `p-6 text-white transition-colors duration-300 ${item.risk === 'Alto' ? 'bg-red-600' : item.risk === 'Medio' ? 'bg-amber-500' : 'bg-emerald-600'}`;
+
+            document.getElementById('modalIcon').textContent = item.icon;
+            document.getElementById('modalTitle').textContent = item.name;
+            document.getElementById('modalCategory').textContent = item.category + " • Rischio " + item.risk;
+            document.getElementById('modalMechanism').textContent = item.mechanism;
+            document.getElementById('modalEffect').textContent = item.effect;
+            document.getElementById('modalAdvice').textContent = item.advice;
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex'); // Enable flexbox for centering
+            
+            // Animation timeout
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        // Event Listeners
+        searchInput.addEventListener('input', filterData);
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Update UI classes
+                filterBtns.forEach(b => {
+                    b.classList.remove('bg-slate-800', 'text-white');
+                    b.classList.add('bg-white', 'text-slate-600');
+                });
+                e.target.classList.remove('bg-white', 'text-slate-600');
+                e.target.classList.add('bg-slate-800', 'text-white');
+
+                // Update Logic
+                currentFilter = e.target.dataset.filter;
+                filterData();
+            });
+        });
+
+        document.getElementById('closeModal').addEventListener('click', closeModal);
+        document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            renderCards(interactionData);
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+/* TaoGEST Professional Guides Stylesheet */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f5;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+header {
+    border-bottom: 3px solid #0078D4;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: #0078D4;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 1.1em;
+}
+
+.guide-menu {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 6px;
+    margin-bottom: 30px;
+}
+
+.guide-menu h2 {
+    color: #0078D4;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+}
+
+.guide-menu ul {
+    list-style: none;
+}
+
+.guide-menu li {
+    margin: 10px 0;
+}
+
+.guide-menu a {
+    color: #0078D4;
+    text-decoration: none;
+    font-size: 1.1em;
+    display: block;
+    padding: 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.guide-menu a:hover {
+    background-color: #e3f2fd;
+}
+
+.welcome {
+    margin: 30px 0;
+}
+
+.welcome h2 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.welcome p {
+    margin-bottom: 10px;
+    font-size: 1.05em;
+}
+
+/* Content styles */
+h2 {
+    color: #0078D4;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+h3 {
+    color: #107C10;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+p {
+    margin-bottom: 15px;
+}
+
+ul, ol {
+    margin-left: 30px;
+    margin-bottom: 15px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+table th {
+    background-color: #0078D4;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+table tr:hover {
+    background-color: #f5f5f5;
+}
+
+.note {
+    background-color: #fff8dc;
+    border-left: 4px solid #ffa500;
+    padding: 15px;
+    margin: 20px 0;
+}
+
+.warning {
+    background-color: #ffe6e6;
+    border-left: 4px solid #d13438;
+    padding: 15px;
+    margin: 20px 0;
+}
+
+.info {
+    background-color: #e3f2fd;
+    border-left: 4px solid #0078D4;
+    padding: 15px;
+    margin: 20px 0;
+}
+
+footer {
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+    text-align: center;
+    color: #666;
+    font-size: 0.9em;
+}
+
+/* Navigation buttons */
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+}
+
+.btn {
+    padding: 10px 20px;
+    background-color: #0078D4;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #005a9e;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #545b62;
+}

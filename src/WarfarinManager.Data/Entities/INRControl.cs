@@ -41,7 +41,12 @@ public class INRControl : BaseEntity
     /// Note libere
     /// </summary>
     public string? Notes { get; set; }
-    
+
+    /// <summary>
+    /// Indica se lo schema dosaggio è stato modificato manualmente dall'utente
+    /// </summary>
+    public bool IsManuallyModified { get; set; }
+
     // Navigation Properties
     
     /// <summary>

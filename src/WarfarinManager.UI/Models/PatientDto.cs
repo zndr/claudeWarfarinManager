@@ -1,0 +1,93 @@
+using System;
+
+namespace WarfarinManager.UI.Models;
+
+/// <summary>
+/// Data Transfer Object per visualizzazione paziente nella UI
+/// </summary>
+public class PatientDto
+{
+    public int Id { get; set; }
+    
+    public string FirstName { get; set; } = string.Empty;
+    
+    public string LastName { get; set; } = string.Empty;
+    
+    public string FullName => $"{LastName} {FirstName}";
+    
+    public DateTime BirthDate { get; set; }
+    
+    public int Age => CalculateAge();
+    
+    public string FiscalCode { get; set; } = string.Empty;
+    
+    public string? Gender { get; set; }
+    
+    public string? Phone { get; set; }
+    
+    public string? Email { get; set; }
+    
+    /// <summary>
+    /// Indicazione terapeutica attiva
+    /// </summary>
+    public string? ActiveIndication { get; set; }
+    
+    /// <summary>
+    /// Ultimo valore INR registrato
+    /// </summary>
+    public decimal? LastINR { get; set; }
+    
+    /// <summary>
+    /// Data ultimo controllo INR
+    /// </summary>
+    public DateTime? LastINRDate { get; set; }
+    
+    /// <summary>
+    /// Dosaggio settimanale corrente (mg) - dall'ultimo controllo
+    /// </summary>
+    public decimal? CurrentWeeklyDose { get; set; }
+    
+    /// <summary>
+    /// Time in Therapeutic Range (percentuale)
+    /// </summary>
+    public decimal? TTRPercentage { get; set; }
+    
+    /// <summary>
+    /// Data prossimo controllo previsto
+    /// </summary>
+    public DateTime? NextControlDate { get; set; }
+    
+    /// <summary>
+    /// Flag metabolizzatore lento (dose < 15mg/sett)
+    /// </summary>
+    public bool IsSlowMetabolizer { get; set; }
+    
+    /// <summary>
+    /// Indica se il controllo è scaduto
+    /// </summary>
+    public bool IsControlOverdue => NextControlDate.HasValue && NextControlDate.Value < DateTime.Today;
+    
+    /// <summary>
+    /// Indica se il controllo è prossimo (entro 3 giorni)
+    /// </summary>
+    public bool IsControlSoon => NextControlDate.HasValue && 
+                                   NextControlDate.Value >= DateTime.Today && 
+                                   NextControlDate.Value <= DateTime.Today.AddDays(3);
+    
+    /// <summary>
+    /// Indica se il TTR è critico (<60%)
+    /// </summary>
+    public bool IsTTRCritical => TTRPercentage.HasValue && TTRPercentage.Value < 60;
+    
+    private int CalculateAge()
+    {
+        var today = DateTime.Today;
+        var age = today.Year - BirthDate.Year;
+        
+        // Sottrai 1 anno se il compleanno non è ancora arrivato quest'anno
+        if (BirthDate.Date > today.AddYears(-age))
+            age--;
+        
+        return age;
+    }
+}

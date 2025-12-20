@@ -1,0 +1,443 @@
+<UserControl x:Class="WarfarinManager.UI.Views.BridgeTherapy.BridgeTherapyView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1000"
+             d:DataContext="{d:DesignInstance Type=vm:BridgeTherapyViewModel}">
+
+    <UserControl.Resources>
+        <!-- Style per i GroupBox -->
+        <Style x:Key="SectionGroupBox" TargetType="GroupBox">
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        
+        <!-- Style per le Label delle sezioni -->
+        <Style x:Key="SectionLabel" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="400"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Colonna sinistra: Input parametri -->
+        <ScrollViewer Grid.Column="0" 
+                      VerticalScrollBarVisibility="Auto"
+                      Padding="20">
+            <StackPanel>
+                <!-- Titolo sezione -->
+                <TextBlock Text="PIANIFICAZIONE BRIDGE THERAPY"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Foreground="#0078D4"
+                           Margin="0,0,0,20"/>
+
+                <!-- Data Intervento -->
+                <GroupBox Header="📅 Data Intervento" Style="{StaticResource SectionGroupBox}">
+                    <DatePicker SelectedDate="{Binding SurgeryDate}"
+                                DisplayDateStart="{x:Static sys:DateTime.Today}"
+                                FirstDayOfWeek="Monday"/>
+                </GroupBox>
+
+                <!-- Tipo Chirurgia -->
+                <GroupBox Header="🏥 Tipo di Chirurgia" Style="{StaticResource SectionGroupBox}">
+                    <ComboBox ItemsSource="{Binding SurgeryTypes}"
+                              SelectedValue="{Binding SelectedSurgeryType}"
+                              SelectedValuePath="Type"
+                              DisplayMemberPath="DisplayText"
+                              Height="35"
+                              FontSize="13"/>
+                </GroupBox>
+
+                <!-- Rischio Emorragico (calcolato automaticamente) -->
+                <GroupBox Header="🩸 Rischio Emorragico" Style="{StaticResource SectionGroupBox}">
+                    <StackPanel>
+                        <TextBlock Text="Calcolato automaticamente in base al tipo di chirurgia"
+                                   FontStyle="Italic"
+                                   Foreground="#666666"
+                                   Margin="0,0,0,10"/>
+                        <Border Padding="15,10"
+                                CornerRadius="4">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="#FFF8E1"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding BleedingRisk}" Value="Low">
+                                            <Setter Property="Background" Value="#E8F5E9"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding BleedingRisk}" Value="Moderate">
+                                            <Setter Property="Background" Value="#FFF8E1"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding BleedingRisk}" Value="High">
+                                            <Setter Property="Background" Value="#FFEBEE"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <TextBlock FontWeight="SemiBold" FontSize="14">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="🟡 MODERATO"/>
+                                        <Setter Property="Foreground" Value="#F57F17"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding BleedingRisk}" Value="Low">
+                                                <Setter Property="Text" Value="🟢 BASSO"/>
+                                                <Setter Property="Foreground" Value="#2E7D32"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding BleedingRisk}" Value="Moderate">
+                                                <Setter Property="Text" Value="🟡 MODERATO"/>
+                                                <Setter Property="Foreground" Value="#F57F17"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding BleedingRisk}" Value="High">
+                                                <Setter Property="Text" Value="🔴 ALTO"/>
+                                                <Setter Property="Foreground" Value="#C62828"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Border>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Rischio Tromboembolico -->
+                <GroupBox Header="🫀 Rischio Tromboembolico" Style="{StaticResource SectionGroupBox}">
+                    <StackPanel>
+                        <!-- CHA2DS2-VASc -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <TextBlock Text="CHA₂DS₂-VASc Score: " FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding Cha2ds2vascScore}" FontWeight="Bold" Foreground="#0078D4"/>
+                        </StackPanel>
+
+                        <!-- Protesi valvolare meccanica -->
+                        <CheckBox Content="Protesi valvolare meccanica"
+                                  IsChecked="{Binding HasMechanicalValve}"
+                                  Margin="0,0,0,10"
+                                  FontWeight="SemiBold"/>
+
+                        <!-- Override manuale rischio -->
+                        <CheckBox Content="Override manuale rischio TE"
+                                  IsChecked="{Binding UseManualRisk}"
+                                  Margin="0,10,0,5"/>
+                        
+                        <ComboBox IsEnabled="{Binding UseManualRisk}"
+                                  Margin="0,0,0,10"
+                                  Height="30">
+                            <ComboBoxItem Content="Basso" IsSelected="{Binding ManualTERisk, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Low}"/>
+                            <ComboBoxItem Content="Moderato" IsSelected="{Binding ManualTERisk, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Moderate}"/>
+                            <ComboBoxItem Content="Alto" IsSelected="{Binding ManualTERisk, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=High}"/>
+                        </ComboBox>
+
+                        <!-- Rischio calcolato -->
+                        <Border Padding="15,10" CornerRadius="4" Margin="0,5,0,0">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="#FFF8E1"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ThromboembolicRisk}" Value="Low">
+                                            <Setter Property="Background" Value="#E8F5E9"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding ThromboembolicRisk}" Value="Moderate">
+                                            <Setter Property="Background" Value="#FFF8E1"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding ThromboembolicRisk}" Value="High">
+                                            <Setter Property="Background" Value="#FFEBEE"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Rischio TE: " FontWeight="SemiBold"/>
+                                <TextBlock FontWeight="Bold">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Text" Value="🟡 MODERATO"/>
+                                            <Setter Property="Foreground" Value="#F57F17"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ThromboembolicRisk}" Value="Low">
+                                                    <Setter Property="Text" Value="🟢 BASSO"/>
+                                                    <Setter Property="Foreground" Value="#2E7D32"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ThromboembolicRisk}" Value="Moderate">
+                                                    <Setter Property="Text" Value="🟡 MODERATO"/>
+                                                    <Setter Property="Foreground" Value="#F57F17"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ThromboembolicRisk}" Value="High">
+                                                    <Setter Property="Text" Value="🔴 ALTO"/>
+                                                    <Setter Property="Foreground" Value="#C62828"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Pulsante Calcola -->
+                <Button Content="🧮 CALCOLA BRIDGE THERAPY"
+                        Command="{Binding CalculateBridgeCommand}"
+                        Background="#0078D4"
+                        Foreground="White"
+                        FontWeight="Bold"
+                        FontSize="14"
+                        Height="45"
+                        Margin="0,10,0,0"
+                        Cursor="Hand">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                CornerRadius="4"
+                                                Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#005A9E"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <!-- Messaggio errore -->
+                <TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="#D32F2F"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap"
+                           Margin="0,10,0,0"
+                           Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Colonna destra: Risultato -->
+        <Grid Grid.Column="1" Background="#F5F5F5">
+            <!-- Placeholder quando non c'è risultato -->
+            <StackPanel VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Visibility="{Binding HasResult, Converter={StaticResource InverseBoolToVisibility}}">
+                <TextBlock Text="📋"
+                           FontSize="48"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,10"/>
+                <TextBlock Text="Compila i parametri e clicca 'Calcola'"
+                           FontSize="16"
+                           Foreground="#666666"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="per generare il protocollo bridge therapy"
+                           FontSize="14"
+                           Foreground="#999999"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Risultato -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                         Visibility="{Binding HasResult, Converter={StaticResource BoolToVisibility}}"
+                         Padding="20">
+                <StackPanel>
+                    <!-- Header raccomandazione -->
+                    <Border CornerRadius="8" Padding="20" Margin="0,0,0,15">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Background" Value="#FFF3E0"/>
+                                <Setter Property="BorderBrush" Value="#EF6C00"/>
+                                <Setter Property="BorderThickness" Value="2"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CurrentProtocol.BridgeRecommended}" Value="True">
+                                        <Setter Property="Background" Value="#E3F2FD"/>
+                                        <Setter Property="BorderBrush" Value="#1976D2"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <StackPanel>
+                            <TextBlock FontSize="20" FontWeight="Bold" HorizontalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="✗ BRIDGE THERAPY NON RACCOMANDATO"/>
+                                        <Setter Property="Foreground" Value="#E65100"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CurrentProtocol.BridgeRecommended}" Value="True">
+                                                <Setter Property="Text" Value="✓ BRIDGE THERAPY RACCOMANDATO"/>
+                                                <Setter Property="Foreground" Value="#1565C0"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Protocollo testuale -->
+                    <GroupBox Header="📋 Protocollo Dettagliato" Padding="10">
+                        <TextBox Text="{Binding ProtocolText, Mode=OneWay}"
+                                 IsReadOnly="True"
+                                 FontFamily="Consolas"
+                                 FontSize="11"
+                                 Background="White"
+                                 BorderThickness="1"
+                                 BorderBrush="#E0E0E0"
+                                 VerticalScrollBarVisibility="Auto"
+                                 HorizontalScrollBarVisibility="Auto"
+                                 MinHeight="300"
+                                 MaxHeight="400"
+                                 TextWrapping="NoWrap"/>
+                    </GroupBox>
+
+                    <!-- Pulsanti azione -->
+                    <StackPanel Orientation="Horizontal" 
+                               HorizontalAlignment="Center" 
+                               Margin="0,15,0,0">
+                        <Button Content="💾 Salva Piano"
+                                Command="{Binding SavePlanCommand}"
+                                Background="#107C10"
+                                Foreground="White"
+                                FontWeight="SemiBold"
+                                Padding="20,10"
+                                Margin="0,0,10,0"
+                                Cursor="Hand">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        CornerRadius="4"
+                                                        Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center"
+                                                                    VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#0E6B0E"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+
+                        <Button Content="📋 Copia"
+                                Command="{Binding CopyToClipboardCommand}"
+                                Background="#0078D4"
+                                Foreground="White"
+                                FontWeight="SemiBold"
+                                Padding="20,10"
+                                Margin="0,0,10,0"
+                                Cursor="Hand">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        CornerRadius="4"
+                                                        Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center"
+                                                                    VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#005A9E"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+
+                        <Button Content="💾 Esporta TXT"
+                                Command="{Binding ExportToFileCommand}"
+                                Background="#5C2D91"
+                                Foreground="White"
+                                FontWeight="SemiBold"
+                                Padding="20,10"
+                                Cursor="Hand">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        CornerRadius="4"
+                                                        Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center"
+                                                                    VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#4A2175"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Storico piani -->
+                    <GroupBox Header="📜 Piani Precedenti" 
+                             Margin="0,20,0,0" 
+                             Padding="10"
+                             Visibility="{Binding PreviousPlans.Count, Converter={StaticResource CountToVisibilityInverseConverter}}">
+                        <DataGrid ItemsSource="{Binding PreviousPlans}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  Height="150"
+                                  GridLinesVisibility="Horizontal"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Data Intervento" 
+                                                    Binding="{Binding SurgeryDateFormatted}" 
+                                                    Width="120"/>
+                                <DataGridTextColumn Header="Tipo Chirurgia" 
+                                                    Binding="{Binding SurgeryTypeDescription}" 
+                                                    Width="*"/>
+                                <DataGridTextColumn Header="Rischio TE" 
+                                                    Binding="{Binding RiskDescription}" 
+                                                    Width="100"/>
+                                <DataGridTextColumn Header="Bridge" 
+                                                    Binding="{Binding BridgeStatus}" 
+                                                    Width="150"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Loading overlay -->
+            <Grid Background="#80FFFFFF"
+                  Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBlock Text="⏳" FontSize="32" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Caricamento..." FontSize="14" Foreground="#666666"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

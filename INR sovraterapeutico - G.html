@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guida Gestione Warfarin & INR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Palette: Vibrant Blue/Cyan - Professional & Stylish */
+        :root {
+            --color-primary: #2563EB; /* Vibrant Blue */
+            --color-secondary: #06B6D4; /* Cyan */
+            --color-accent: #F59E0B; /* Amber/Warning */
+            --color-danger: #EF4444; /* Red/Critical */
+            --color-bg: #F8FAFC;
+            --color-card: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg);
+            color: #1E293B;
+        }
+
+        /* Chart Container Rules */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        /* Custom Flowchart CSS (No SVG/Mermaid) */
+        .flow-step {
+            position: relative;
+            z-index: 10;
+        }
+        
+        .flow-connector {
+            position: absolute;
+            background-color: #CBD5E1;
+            z-index: 0;
+        }
+
+        .flow-vertical {
+            width: 4px;
+            height: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0;
+        }
+
+        /* Material Design Cards */
+        .card {
+            background: var(--color-card);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Typography Hierarchy */
+        h1 { font-weight: 800; letter-spacing: -0.025em; }
+        h2 { font-weight: 700; letter-spacing: -0.025em; color: var(--color-primary); }
+        h3 { font-weight: 600; color: #334155; }
+    </style>
+    <!-- 
+        Palette: Vibrant Blue (#2563EB) & Cyan (#06B6D4) 
+        Source Analysis Summary:
+        - Theme: Medical/Hematology (Warfarin Management).
+        - Narrative: Intro -> Risk Balance -> High INR Mgmt -> Low INR Mgmt -> Vit K Pharmacology -> Summary.
+        - Visuals: 
+            1. Risk Curves (Chart.js Line) - Goal: Relationships.
+            2. High INR Decision Tree (HTML/CSS) - Goal: Organize/Process.
+            3. Dose Adjustment (Chart.js Bar) - Goal: Compare.
+            4. Vit K Pharmacokinetics (Chart.js Line) - Goal: Change/Compare.
+            5. Summary Table (HTML) - Goal: Inform/Reference.
+        - Constraints: NO SVG, NO MERMAID.
+    -->
+</head>
+<body class="antialiased">
+
+    <!-- Header / Hero Section -->
+    <header class="bg-gradient-to-r from-blue-600 to-cyan-500 text-white p-8 md:p-12 shadow-lg mb-8">
+        <div class="container mx-auto max-w-6xl">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h1 class="text-4xl md:text-5xl mb-4">Gestione Warfarin & INR</h1>
+                    <p class="text-xl md:text-2xl text-blue-100 font-light">Raccomandazioni Cliniche per l'Ottimizzazione della Terapia Anticoagulante</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 text-center min-w-[150px]">
+                    <span class="block text-4xl font-bold">2.0 - 3.0</span>
+                    <span class="text-sm uppercase tracking-wider">Target INR Standard</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto max-w-6xl px-4 space-y-12 pb-20">
+
+        <!-- SECTION 1: Intro & The Therapeutic Window -->
+        <section>
+            <div class="bg-white rounded-xl shadow-sm border-l-8 border-blue-600 p-6 mb-8">
+                <h2 class="text-2xl mb-2">L'Equilibrio Terapeutico</h2>
+                <p class="text-gray-600 leading-relaxed">
+                    Il warfarin è un antagonista della vitamina K con una finestra terapeutica stretta. La gestione richiede un bilanciamento preciso tra il rischio emorragico (INR alto) e il rischio trombotico (INR basso). Mantenere il <strong>Time in Therapeutic Range (TTR)</strong> > 70% è cruciale per la sicurezza del paziente.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="order-2 md:order-1">
+                    <div class="card p-4">
+                        <div class="chart-container">
+                            <canvas id="riskCurveChart"></canvas>
+                        </div>
+                        <p class="mt-4 text-sm text-gray-500 italic text-center">
+                            Il grafico illustra come i rischi di ictus ischemico (linea blu) ed emorragia intracranica (linea rossa) cambino drasticamente al di fuori del range 2.0-3.0.
+                        </p>
+                    </div>
+                </div>
+                <div class="order-1 md:order-2 space-y-6">
+                    <h3 class="text-xl text-blue-800">Perché il range è vitale?</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <span class="flex-shrink-0 h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold mr-3">1</span>
+                            <p class="text-gray-700"><strong>INR &lt; 2.0:</strong> Il rischio di ictus ischemico raddoppia per ogni punto sotto 2.0.</p>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="flex-shrink-0 h-8 w-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center font-bold mr-3">2</span>
+                            <p class="text-gray-700"><strong>INR > 4.5:</strong> Il rischio di sanguinamento maggiore aumenta in modo esponenziale.</p>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="flex-shrink-0 h-8 w-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold mr-3">3</span>
+                            <p class="text-gray-700"><strong>Obiettivo:</strong> Massimizzare il tempo in cui il paziente rimane nella zona di sicurezza (TTR).</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: Supratherapeutic INR Management (High INR) -->
+        <section>
+            <div class="mb-6">
+                <h2 class="text-3xl mb-4">Gestione INR Sovraterapeutico (Alto)</h2>
+                <p class="text-gray-600">
+                    Quando l'INR supera il target, l'intervento dipende dalla presenza di sanguinamento attivo e dall'entità dell'elevazione dell'INR. Le linee guida (ACCP/ASH) raccomandano cautela con la Vitamina K per evitare resistenza futura al warfarin.
+                </p>
+            </div>
+
+            <!-- CSS Flowchart for Decision Making -->
+            <div class="card bg-slate-50 p-6 md:p-8">
+                <h3 class="text-center text-xl font-bold text-gray-800 mb-8">Algoritmo Decisionale: INR Elevato</h3>
+                
+                <div class="flex flex-col items-center space-y-8 relative">
+                    
+                    <!-- Root Node -->
+                    <div class="w-full max-w-md bg-blue-600 text-white p-4 rounded-lg shadow-md text-center z-10 font-bold">
+                        Paziente con INR > Target
+                    </div>
+
+                    <!-- Level 1: Bleeding Check -->
+                    <div class="w-1 bg-gray-300 h-8"></div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl relative">
+                        <!-- Left Branch: No Bleeding -->
+                        <div class="flex flex-col items-center relative">
+                            <div class="absolute top-0 left-1/2 w-full h-4 border-t-4 border-l-4 border-gray-300 rounded-tl-xl -translate-y-4 -translate-x-[2px] hidden md:block"></div>
+                            
+                            <div class="bg-emerald-500 text-white px-6 py-2 rounded-full mb-4 z-10 font-semibold shadow">Assenza di Sanguinamento</div>
+                            
+                            <div class="space-y-4 w-full">
+                                <!-- Scenario A -->
+                                <div class="bg-white border-l-4 border-yellow-400 p-4 rounded shadow">
+                                    <div class="font-bold text-yellow-600 mb-1">INR 4.5 – 10.0</div>
+                                    <p class="text-sm text-gray-600">Sospendere Warfarin. Nessuna Vitamina K di routine. Monitorare INR.</p>
+                                </div>
+                                <!-- Scenario B -->
+                                <div class="bg-white border-l-4 border-orange-500 p-4 rounded shadow">
+                                    <div class="font-bold text-orange-600 mb-1">INR > 10.0</div>
+                                    <p class="text-sm text-gray-600">Sospendere Warfarin. Somministrare <strong>Vit K orale (2.5-5 mg)</strong>.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Branch: Bleeding -->
+                        <div class="flex flex-col items-center relative mt-8 md:mt-0">
+                            <div class="absolute top-0 right-1/2 w-full h-4 border-t-4 border-r-4 border-gray-300 rounded-tr-xl -translate-y-4 translate-x-[2px] hidden md:block"></div>
+
+                            <div class="bg-red-500 text-white px-6 py-2 rounded-full mb-4 z-10 font-semibold shadow">Sanguinamento Maggiore</div>
+                            
+                            <div class="bg-white border-l-4 border-red-600 p-4 rounded shadow w-full">
+                                <div class="font-bold text-red-700 mb-2">Emergenza Medica</div>
+                                <ul class="text-sm text-gray-600 list-disc pl-4 space-y-1">
+                                    <li>Sospendere Warfarin</li>
+                                    <li><strong>Vitamina K 5-10 mg IV</strong> (infusione lenta)</li>
+                                    <li>Concentrato Complesso Protrombinico (PCC) a 4 fattori</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: Subtherapeutic INR Management (Low INR) -->
+        <section>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div>
+                    <h2 class="text-3xl mb-4">Gestione INR Sottoterapeutico (Basso)</h2>
+                    <p class="text-gray-600 mb-6">
+                        Un INR basso espone al rischio trombotico. La gestione richiede l'identificazione della causa (es. dieta, interazioni, scarsa aderenza) e un aggiustamento della dose settimanale.
+                    </p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center p-4 bg-white rounded-lg shadow-sm">
+                            <div class="text-3xl mr-4">🥗</div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Assunzione Vitamina K</h4>
+                                <p class="text-xs text-gray-500">Un aumento improvviso di verdure a foglia verde può abbassare l'INR.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-4 bg-white rounded-lg shadow-sm">
+                            <div class="text-3xl mr-4">💊</div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Interazioni Farmacologiche</h4>
+                                <p class="text-xs text-gray-500">Induttori (es. rifampicina, carbamazepina) riducono l'effetto del warfarin.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card p-6">
+                    <h3 class="text-lg font-bold text-gray-700 mb-4 text-center">Aggiustamento Dose Settimanale (%)</h3>
+                    <div class="chart-container">
+                        <canvas id="doseAdjustmentChart"></canvas>
+                    </div>
+                    <p class="mt-4 text-xs text-gray-400 text-center">
+                        Gli aggiustamenti si basano sulla dose totale settimanale (TWD). Evitare correzioni eccessive ("yo-yo effect").
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: Vitamin K Pharmacology -->
+        <section class="bg-blue-50 rounded-2xl p-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="md:col-span-1">
+                    <h2 class="text-2xl mb-4 text-blue-900">Farmacologia Vitamina K</h2>
+                    <p class="text-sm text-blue-800 mb-4">
+                        La via di somministrazione è critica. La via sottocutanea (SC) è sconsigliata per assorbimento erratico. La via orale è preferita per pazienti non sanguinanti.
+                    </p>
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-100">
+                        <h4 class="font-bold text-blue-600 text-sm mb-2">Punti Chiave</h4>
+                        <ul class="text-xs text-gray-600 space-y-2">
+                            <li>• <strong>Orale:</strong> Effetto in 24h. Sicura.</li>
+                            <li>• <strong>Endovenosa:</strong> Effetto rapido (6-8h). Rischio anafilassi (raro, infondere piano).</li>
+                            <li>• <strong>Sottocutanea:</strong> NON RACCOMANDATA.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="md:col-span-2">
+                    <div class="card p-4">
+                        <div class="chart-container">
+                            <canvas id="vitKChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: Summary Table -->
+        <section>
+            <h2 class="text-3xl mb-6 text-center">Tabella Riassuntiva Operativa</h2>
+            <div class="overflow-x-auto rounded-xl shadow-lg">
+                <table class="w-full bg-white text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-800 text-white">
+                            <th class="p-4 border-b border-gray-700">Situazione INR</th>
+                            <th class="p-4 border-b border-gray-700">Sanguinamento</th>
+                            <th class="p-4 border-b border-gray-700">Azione Raccomandata</th>
+                            <th class="p-4 border-b border-gray-700">Monitoraggio</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm text-gray-700">
+                        <!-- Subtherapeutic -->
+                        <tr class="bg-blue-50 hover:bg-blue-100 transition">
+                            <td class="p-4 border-b border-gray-200 font-bold text-blue-700">INR &lt; 2.0</td>
+                            <td class="p-4 border-b border-gray-200">Assente</td>
+                            <td class="p-4 border-b border-gray-200">Aumentare dose settimanale del 10-20%. Considerare dose booster singola.</td>
+                            <td class="p-4 border-b border-gray-200">Controllo in 1-2 settimane</td>
+                        </tr>
+                        <!-- Therapeutic -->
+                        <tr class="bg-green-50 hover:bg-green-100 transition">
+                            <td class="p-4 border-b border-gray-200 font-bold text-green-700">INR 2.0 - 3.0</td>
+                            <td class="p-4 border-b border-gray-200">Assente</td>
+                            <td class="p-4 border-b border-gray-200">Mantenere dose attuale.</td>
+                            <td class="p-4 border-b border-gray-200">Controllo ogni 4 settimane</td>
+                        </tr>
+                        <!-- High A -->
+                        <tr class="bg-yellow-50 hover:bg-yellow-100 transition">
+                            <td class="p-4 border-b border-gray-200 font-bold text-yellow-700">INR 4.5 - 10.0</td>
+                            <td class="p-4 border-b border-gray-200">Assente</td>
+                            <td class="p-4 border-b border-gray-200">Omettere 1-2 dosi. Riprendere a dose ridotta quando INR in range. NO Vitamina K.</td>
+                            <td class="p-4 border-b border-gray-200">Controllo frequente fino a rientro</td>
+                        </tr>
+                        <!-- High B -->
+                        <tr class="bg-orange-50 hover:bg-orange-100 transition">
+                            <td class="p-4 border-b border-gray-200 font-bold text-orange-700">INR > 10.0</td>
+                            <td class="p-4 border-b border-gray-200">Assente</td>
+                            <td class="p-4 border-b border-gray-200">Sospendere warfarin. Vitamina K orale (2.5 - 5 mg).</td>
+                            <td class="p-4 border-b border-gray-200">Controllo in 24 ore</td>
+                        </tr>
+                        <!-- Critical -->
+                        <tr class="bg-red-50 hover:bg-red-100 transition">
+                            <td class="p-4 border-b border-gray-200 font-bold text-red-700">Qualsiasi INR</td>
+                            <td class="p-4 border-b border-gray-200 font-bold text-red-600">MAGGIORE</td>
+                            <td class="p-4 border-b border-gray-200"><strong>PCC 4-fattori + Vit K 5-10mg IV lenta.</strong> Sospendere warfarin.</td>
+                            <td class="p-4 border-b border-gray-200">Ospedalizzazione immediata</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-xs text-gray-400 mt-4 text-center">Fonte dati: ACCP CHEST Guidelines (2012/2016 Update), ASH Guidelines (2018).</p>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-gray-400 py-8 text-center">
+        <p>© 2025 Clinical Hematology Visuals. Consultare sempre le linee guida locali.</p>
+    </footer>
+
+    <script>
+        // Utility for handling labels > 16 chars
+        const wrapLabels = (label) => {
+            if (label.length <= 16) return label;
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = words[0];
+
+            for (let i = 1; i < words.length; i++) {
+                if ((currentLine + " " + words[i]).length <= 16) {
+                    currentLine += " " + words[i];
+                } else {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        };
+
+        // Common Tooltip Config
+        const tooltipConfig = {
+            callbacks: {
+                title: function(tooltipItems) {
+                    const item = tooltipItems[0];
+                    let label = item.chart.data.labels[item.dataIndex];
+                    if (Array.isArray(label)) {
+                        return label.join(' ');
+                    } else {
+                        return label;
+                    }
+                }
+            }
+        };
+
+        // CHART 1: Risk Curve (Bleeding vs Clotting)
+        const ctxRisk = document.getElementById('riskCurveChart').getContext('2d');
+        new Chart(ctxRisk, {
+            type: 'line',
+            data: {
+                labels: ['1.0', '1.5', '2.0', '2.5', '3.0', '3.5', '4.0', '5.0', '6.0', '7.0', '8.0'],
+                datasets: [
+                    {
+                        label: 'Rischio Ictus Ischemico',
+                        data: [15, 6, 2, 1, 1, 1, 1, 1, 1, 1, 1], // High risk at low INR
+                        borderColor: '#2563EB', // Blue
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Rischio Emorragia Intracranica',
+                        data: [0.5, 0.5, 0.6, 0.8, 1.2, 2.0, 3.5, 7.0, 12.0, 20.0, 35.0], // High risk at high INR
+                        borderColor: '#EF4444', // Red
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: 'Rischio Trombotico vs Emorragico' },
+                    tooltip: tooltipConfig,
+                    annotation: {
+                        annotations: {
+                            box1: {
+                                type: 'box',
+                                xMin: 2,
+                                xMax: 4,
+                                backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                                borderColor: 'transparent'
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Odds Ratio (Rischio Relativo)' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Valore INR' }
+                    }
+                }
+            }
+        });
+
+        // CHART 2: Dose Adjustment Bar Chart
+        const ctxDose = document.getElementById('doseAdjustmentChart').getContext('2d');
+        const labelsDose = ['INR < 1.5', 'INR 1.5 - 1.8', 'INR 3.2 - 3.9', 'INR 4.0 - 4.9'];
+        const wrappedLabelsDose = labelsDose.map(wrapLabels);
+
+        new Chart(ctxDose, {
+            type: 'bar',
+            data: {
+                labels: wrappedLabelsDose,
+                datasets: [{
+                    label: 'Variazione Dose Settimanale (%)',
+                    data: [15, 10, -10, -15],
+                    backgroundColor: [
+                        '#2563EB', // Low INR - Increase (Blue)
+                        '#60A5FA', // Mild Low - Mild Increase (Light Blue)
+                        '#F59E0B', // Mild High - Mild Decrease (Amber)
+                        '#EF4444'  // High - Decrease (Red)
+                    ],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: tooltipConfig
+                },
+                scales: {
+                    y: {
+                        title: { display: true, text: '% Modifica Dose' },
+                        suggestedMin: -20,
+                        suggestedMax: 20
+                    }
+                }
+            }
+        });
+
+        // CHART 3: Vitamin K Onset Comparison
+        const ctxVitK = document.getElementById('vitKChart').getContext('2d');
+        new Chart(ctxVitK, {
+            type: 'line',
+            data: {
+                labels: ['0h', '4h', '8h', '12h', '16h', '20h', '24h', '36h'],
+                datasets: [
+                    {
+                        label: 'Vit K Endovena (IV)',
+                        data: [8.0, 4.0, 2.1, 1.5, 1.4, 1.3, 1.3, 1.3], // Fast drop
+                        borderColor: '#EF4444',
+                        borderDash: [5, 5],
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Vit K Orale (OS)',
+                        data: [8.0, 7.5, 6.0, 4.5, 3.0, 2.2, 1.8, 1.5], // Slower drop
+                        borderColor: '#06B6D4',
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: 'Riduzione INR: IV vs Orale (Simulazione partendo da INR 8)' },
+                    tooltip: tooltipConfig
+                },
+                scales: {
+                    y: {
+                        title: { display: true, text: 'Valore INR' },
+                        beginAtZero: true
+                    },
+                    x: {
+                        title: { display: true, text: 'Tempo dalla Somministrazione' }
+                    }
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build:*)",
+      "Bash(git add:*)",
+      "Bash(git checkout:*)",
+      "Bash(dir:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nAggiunti file di documentazione e configurazione Claude Code\n\n- CLAUDE.md: Istruzioni per Claude Code con architettura progetto, comandi build, e linee guida sviluppo\n- Documentazione clinica: Guide FCSA/ACCP per gestione INR sovra/sottoterapeutico\n- Schema logico: Algoritmo dettagliato per gestione terapia warfarin (INR management)\n- Configurazione: Permessi aggiuntivi per comandi git e directory\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(dotnet test:*)",
+      "Bash(dotnet run:*)",
+      "Bash(git commit:*)",
+      "Bash(taskkill:*)",
+      "Bash(cmd /c \"taskkill /F /IM WarfarinManager.UI.exe\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
