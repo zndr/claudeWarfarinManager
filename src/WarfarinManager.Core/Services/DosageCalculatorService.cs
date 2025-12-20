@@ -265,6 +265,7 @@ public class DosageCalculatorService : IDosageCalculatorService
     {
         result.SuggestedWeeklyDoseMg = result.CurrentWeeklyDoseMg;
         result.PercentageAdjustment = 0;
+        result.SospensioneDosi = 0; // Nessuna sospensione necessaria
         result.LoadingDoseAction = "Nessuna dose carico necessaria";
         result.ClinicalNotes = "✅ INR nel range terapeutico. Mantenere dose attuale.";
 
@@ -680,6 +681,7 @@ public class DosageCalculatorService : IDosageCalculatorService
     {
         result.SuggestedWeeklyDoseMg = result.CurrentWeeklyDoseMg;
         result.PercentageAdjustment = 0;
+        result.SospensioneDosi = 0; // No dose suspension needed
         result.LoadingDoseAction = "No loading dose required";
         result.ClinicalNotes = "✅ INR within therapeutic range. Continue current dose.";
 
