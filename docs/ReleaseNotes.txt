@@ -1,54 +1,53 @@
 ═══════════════════════════════════════════════════════════════
   TaoGEST - Gestione Terapia Anticoagulante Orale
-  Note di Rilascio - Versione 1.1.0
+  Note di Rilascio - Versione 1.1.1
 ═══════════════════════════════════════════════════════════════
 
-Data Rilascio: 15 Dicembre 2025
+Data Rilascio: 20 Dicembre 2025
 
-NOVITÀ PRINCIPALI
+CORREZIONI CRITICHE
 ─────────────────────────────────────────────────────────────
 
-✨ Gestione Dose di Carico per INR Critico
-  • Implementata dose supplementare per INR sottoterapeutico critico
-  • Per INR <1.5: dose carico del 7.5% viene aggiunta al giorno corrente
-  • Visualizzazione chiara nelle note cliniche e nello schema giornaliero
-  • Esempio: INR 1.3 → dose base + 2.5mg dose carico OGGI
+🐛 FIX CRITICO: Warning Inappropriati per INR Normali
+  • Risolto bug grave che generava avvisi di sospensione terapia
+    per valori INR perfettamente nel range terapeutico
+  • Esempio: INR 3.0 (target 2.0-3.0) non genera più warning
+  • Corretto inizializzazione SospensioneDosi nelle funzioni
+    HandleInRangeFCSA() e HandleInRangeACCP()
 
-✨ Miglioramenti UI Note Cliniche
-  • Note cliniche più dettagliate e informative
-  • Indicazione esplicita della dose carico: "DOSE CARICO OGGI: +X.Xmg"
-  • Formato migliorato per copia negli appunti
-
-✨ Gestione Emorragie Avanzata
-  • Dropdown condizionale per tipo di emorragia (Minore/Maggiore/Rischio vitale)
-  • Selezione sede emorragia (Cutanea, GI, Urinaria, Intracranica, etc.)
-  • Raccomandazioni specifiche per ciascun tipo di emorragia
-  • Indicazioni per Vitamina K, PCC e ricovero
-
-CORREZIONI
+MIGLIORAMENTI UI
 ─────────────────────────────────────────────────────────────
 
-🐛 Fix Copia Breve
-  • La funzione "Copia breve" ora include le note cliniche
-  • Dose di carico correttamente visualizzata in entrambe le modalità di copia
+✨ Sistema di Esclusione Warning nelle Esportazioni
+  • Nuovo checkbox "Ignora warning nelle esportazioni"
+  • Visibile quando ci sono warning attivi
+  • Permette di escludere alert da PDF e copia testo
+  • Utile per comunicazioni al paziente senza creare allarmi
 
-🐛 Fix Algoritmo Dose Carico
-  • Dose carico viene ora applicata correttamente al giorno corrente
-  • Schema settimanale aggiornato per riflettere la dose supplementare
-  • Calcolo arrotondato a multipli di 2.5mg per facilità somministrazione
+✨ Miglioramenti PDF
+  • Rimossa tabella duplicata dosaggio precedente
+  • Rimossa sezione "Confronto Linee Guida" (semplificazione output)
+  • Terminologia corretta: "medico" invece di "utente"
+  • Layout più pulito e focalizzato sulle informazioni essenziali
+
+✨ Miglioramenti Esportazione Testo
+  • Rimossi dettagli schema corrente sotto "DOSAGGIO ATTUALE"
+  • Etichetta linea guida condizionale (nascosta se dosaggio manuale)
+  • Schema settimanale dettagliato mostrato direttamente
+  • Output più conciso e professionale
+
+✨ UI Migliorata
+  • Pulsante "Salva Controllo" riposizionato vicino ai pulsanti di export
+  • Stile distintivo arancione per il pulsante salvataggio
+  • Layout più intuitivo e coerente
 
 MIGLIORAMENTI TECNICI
 ─────────────────────────────────────────────────────────────
 
-⚙️ Algoritmi Dosaggio
-  • Implementazione completa linee guida FCSA-SIMG 2024 per INR sottoterapeutico
-  • Classificazione dettagliata per fasce INR (SubCritico, SubModerato, SubLieve)
-  • Calcolo automatico rischio tromboembolico elevato
-
-⚙️ Generazione Schema Settimanale
-  • Parametro opzionale loadingDoseDay1 in GenerateWeeklySchedule()
-  • Supporto dose carico automatica nel giorno corrente
-  • Aggiornamento totale settimanale per includere dose supplementare
+⚙️ Correzioni Logica Dosaggio
+  • Inizializzazione corretta SospensioneDosi = 0 per INR in range
+  • Gestione coerente del flag IsWarningIgnored in tutta l'applicazione
+  • Propagazione corretta parametro isWarningIgnored al servizio PDF
 
 REQUISITI DI SISTEMA
 ─────────────────────────────────────────────────────────────
@@ -62,7 +61,7 @@ REQUISITI DI SISTEMA
 INSTALLAZIONE
 ─────────────────────────────────────────────────────────────
 
-1. Eseguire TaoGEST-Setup-v1.1.0.exe
+1. Eseguire TaoGEST-Setup-v1.1.1.exe
 2. Seguire le istruzioni dell'installazione guidata
 3. Al primo avvio verrà creato il database locale
 4. Configurare i dati del medico in Impostazioni
@@ -75,6 +74,13 @@ AGGIORNAMENTO DA VERSIONE PRECEDENTE
 
 Il database si trova in:
 %LocalAppData%\WarfarinManager\warfarin.db
+
+CHANGELOG DA v1.1.0
+─────────────────────────────────────────────────────────────
+
+Questa versione è un aggiornamento di manutenzione che corregge
+un bug critico e migliora l'esperienza utente nell'esportazione
+di documenti per i pazienti.
 
 PROSSIMI SVILUPPI (Roadmap v1.2.0)
 ─────────────────────────────────────────────────────────────
