@@ -230,6 +230,12 @@ namespace WarfarinManager.UI.ViewModels
         private bool _isManuallyModified = false;
 
         /// <summary>
+        /// Indica se i warning delle linee guida devono essere ignorati
+        /// </summary>
+        [ObservableProperty]
+        private bool _isWarningIgnored = false;
+
+        /// <summary>
         /// Dose settimanale corrente calcolata dai dropdown (aggiornata in tempo reale)
         /// </summary>
         public decimal CurrentSuggestedWeeklyDose =>
@@ -280,6 +286,28 @@ namespace WarfarinManager.UI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Indica se ci sono warning attivi (sospensione dose, dose carico, ecc.)
+        /// </summary>
+        public bool HasActiveWarnings
+        {
+            get
+            {
+                if (ActiveSuggestion == null) return false;
+
+                // Verifica sospensione dosi
+                bool hasSuspension = ActiveSuggestion.SospensioneDosi == null || ActiveSuggestion.SospensioneDosi > 0;
+
+                // Verifica dose di carico
+                bool hasLoadingDose = !string.IsNullOrEmpty(ActiveSuggestion.LoadingDoseAction);
+
+                // Verifica altri warning
+                bool hasOtherWarnings = ActiveSuggestion.Warnings?.Any() ?? false;
+
+                return hasSuspension || hasLoadingDose || hasOtherWarnings;
+            }
+        }
+
         // Backup dei valori originali per annullamento
         private DosageSuggestionResult? _originalSuggestion;
         private decimal[]? _originalSuggestedSchedule;
@@ -290,6 +318,10 @@ namespace WarfarinManager.UI.ViewModels
         private DoseOption? _originalFridayDose;
         private DoseOption? _originalSaturdayDose;
         private DoseOption? _originalSundayDose;
+
+        // Backup dosaggi originali per confronto linee guida
+        private decimal? _originalFcsaDose;
+        private decimal? _originalAccpDose;
 
         // Notifica cambio dose settimanale quando cambiano i dropdown
         partial void OnSuggestedMondayDoseChanged(DoseOption? value) => NotifyWeeklyDoseChanged();
@@ -311,6 +343,7 @@ namespace WarfarinManager.UI.ViewModels
         {
             OnPropertyChanged(nameof(HasDoseSuspension));
             OnPropertyChanged(nameof(DoseSuspensionText));
+            OnPropertyChanged(nameof(HasActiveWarnings));
         }
 
         #endregion
@@ -1039,7 +1072,8 @@ namespace WarfarinManager.UI.ViewModels
                         SuggestedScheduleText,
                         SelectedGuideline.ToString(),
                         FcsaSuggestion,
-                        AccpSuggestion);
+                        AccpSuggestion,
+                        IsWarningIgnored);
 
                     _dialogService.ShowInformation($"PDF generato: {dialog.FileName}");
 
@@ -1196,6 +1230,10 @@ namespace WarfarinManager.UI.ViewModels
             _originalFridayDose = SuggestedFridayDose;
             _originalSaturdayDose = SuggestedSaturdayDose;
             _originalSundayDose = SuggestedSundayDose;
+
+            // Salva dosaggi originali delle linee guida per confronto
+            _originalFcsaDose = FcsaSuggestion?.SuggestedWeeklyDoseMg;
+            _originalAccpDose = AccpSuggestion?.SuggestedWeeklyDoseMg;
 
             // Inizializza i campi editabili con i valori correnti
             EditableClinicalNotes = ActiveSuggestion.ClinicalNotes ?? string.Empty;
@@ -1524,22 +1562,15 @@ INR RILEVATO: {InrValue:F1} ({InrStatusText})
 Scostamento: {(InrValue - (TargetINRMin + TargetINRMax) / 2):+0.0;-0.0}
 
 DOSAGGIO ATTUALE: {CurrentWeeklyDose:F1} mg/settimana
-Schema corrente:
-  Lunedì:    {MondayDose?.DoseMg ?? 0:F1} mg ({MondayDose?.TabletDescription ?? "—"})
-  Martedì:   {TuesdayDose?.DoseMg ?? 0:F1} mg ({TuesdayDose?.TabletDescription ?? "—"})
-  Mercoledì: {WednesdayDose?.DoseMg ?? 0:F1} mg ({WednesdayDose?.TabletDescription ?? "—"})
-  Giovedì:   {ThursdayDose?.DoseMg ?? 0:F1} mg ({ThursdayDose?.TabletDescription ?? "—"})
-  Venerdì:   {FridayDose?.DoseMg ?? 0:F1} mg ({FridayDose?.TabletDescription ?? "—"})
-  Sabato:    {SaturdayDose?.DoseMg ?? 0:F1} mg ({SaturdayDose?.TabletDescription ?? "—"})
-  Domenica:  {SundayDose?.DoseMg ?? 0:F1} mg ({SundayDose?.TabletDescription ?? "—"})
 
 ───────────────────────────────────────────────────────────────
-SUGGERIMENTO DOSAGGIO (Linee Guida {SelectedGuideline})
+SUGGERIMENTO DOSAGGIO{(IsManuallyModified ? "" : $" (Linee Guida {SelectedGuideline})")}
 ───────────────────────────────────────────────────────────────
 
 ";
 
-            if (!string.IsNullOrEmpty(ActiveSuggestion.LoadingDoseAction))
+            // Includi azione immediata solo se NON sono stati ignorati i warning
+            if (!IsWarningIgnored && !string.IsNullOrEmpty(ActiveSuggestion.LoadingDoseAction))
             {
                 text += $@"AZIONE IMMEDIATA:
 {ActiveSuggestion.LoadingDoseAction}
@@ -1561,10 +1592,38 @@ SUGGERIMENTO DOSAGGIO (Linee Guida {SelectedGuideline})
                 ? ((currentWeeklyDose - CurrentWeeklyDose) / CurrentWeeklyDose * 100)
                 : 0;
 
-            text += $@"NUOVA DOSE SETTIMANALE: {currentWeeklyDose:F1} mg ({percentageAdjustment:+0.0;-0.0}%)
+            // Aggiungi schema dettagliato del nuovo dosaggio (usa i dropdown)
+            if (SuggestedMondayDose != null || SuggestedTuesdayDose != null ||
+                SuggestedWednesdayDose != null || SuggestedThursdayDose != null ||
+                SuggestedFridayDose != null || SuggestedSaturdayDose != null || SuggestedSundayDose != null)
+            {
+                text += $@"NUOVA DOSE SETTIMANALE: {currentWeeklyDose:F1} mg ({percentageAdjustment:+0.0;-0.0}%)
 
-SCHEMA SETTIMANALE CONSIGLIATO (distribuzione equilibrata):
-{SuggestedScheduleText}
+NUOVO SCHEMA SETTIMANALE DETTAGLIATO:
+  Lunedì:    {SuggestedMondayDose?.DisplayText ?? "—"}
+  Martedì:   {SuggestedTuesdayDose?.DisplayText ?? "—"}
+  Mercoledì: {SuggestedWednesdayDose?.DisplayText ?? "—"}
+  Giovedì:   {SuggestedThursdayDose?.DisplayText ?? "—"}
+  Venerdì:   {SuggestedFridayDose?.DisplayText ?? "—"}
+  Sabato:    {SuggestedSaturdayDose?.DisplayText ?? "—"}
+  Domenica:  {SuggestedSundayDose?.DisplayText ?? "—"}";
+            }
+
+            // Aggiungi dose di carico se presente (per sottocoagulazione) e se NON ignorati i warning
+            if (!IsWarningIgnored && ActiveSuggestion.DoseSupplementarePrimoGiorno.HasValue && ActiveSuggestion.DoseSupplementarePrimoGiorno.Value > 0)
+            {
+                decimal loadingDose = ActiveSuggestion.DoseSupplementarePrimoGiorno.Value;
+                decimal percentageOfWeekly = CurrentWeeklyDose > 0 ? (loadingDose / CurrentWeeklyDose * 100) : 0;
+
+                text += $@"
+
+DOSE DI CARICO:
+  • Somministrare {loadingDose:F1} mg oggi
+  • Equivale al {percentageOfWeekly:F1}% della dose settimanale corrente
+  • Poi proseguire con il nuovo schema settimanale da domani";
+            }
+
+            text += $@"
 
 ───────────────────────────────────────────────────────────────
 PROSSIMO CONTROLLO INR
@@ -1578,42 +1637,12 @@ NOTE CLINICHE
 
 {(string.IsNullOrEmpty(EditableClinicalNotes) ? ActiveSuggestion.ClinicalNotes : EditableClinicalNotes)}";
 
-            // Aggiungi dose di carico se presente (per sottocoagulazione)
-            if (ActiveSuggestion.DoseSupplementarePrimoGiorno.HasValue && ActiveSuggestion.DoseSupplementarePrimoGiorno.Value > 0)
-            {
-                decimal loadingDose = ActiveSuggestion.DoseSupplementarePrimoGiorno.Value;
-                decimal percentageOfWeekly = CurrentWeeklyDose > 0 ? (loadingDose / CurrentWeeklyDose * 100) : 0;
-
-                text += $@"
-
-DOSE DI CARICO:
-  • Somministrare {loadingDose:F1} mg oggi
-  • Equivale al {percentageOfWeekly:F1}% della dose settimanale corrente
-  • Poi proseguire con il nuovo schema settimanale da domani";
-            }
-
-            // Aggiungi schema dettagliato del nuovo dosaggio (usa i dropdown)
-            if (SuggestedMondayDose != null || SuggestedTuesdayDose != null ||
-                SuggestedWednesdayDose != null || SuggestedThursdayDose != null ||
-                SuggestedFridayDose != null || SuggestedSaturdayDose != null || SuggestedSundayDose != null)
-            {
-                text += $@"
-
-NUOVO SCHEMA SETTIMANALE DETTAGLIATO ({currentWeeklyDose:F1} mg/sett):
-  Lunedì:    {SuggestedMondayDose?.DisplayText ?? "—"}
-  Martedì:   {SuggestedTuesdayDose?.DisplayText ?? "—"}
-  Mercoledì: {SuggestedWednesdayDose?.DisplayText ?? "—"}
-  Giovedì:   {SuggestedThursdayDose?.DisplayText ?? "—"}
-  Venerdì:   {SuggestedFridayDose?.DisplayText ?? "—"}
-  Sabato:    {SuggestedSaturdayDose?.DisplayText ?? "—"}
-  Domenica:  {SuggestedSundayDose?.DisplayText ?? "—"}";
-            }
-
             text += @"
 
 ";
 
-            if (ActiveSuggestion.Warnings.Any())
+            // Includi gli alert solo se NON sono stati ignorati dall'utente
+            if (!IsWarningIgnored && ActiveSuggestion.Warnings.Any())
             {
                 text += "⚠ ALERT SPECIALI:\n";
                 foreach (var warning in ActiveSuggestion.Warnings)
@@ -1630,11 +1659,20 @@ CONFRONTO LINEE GUIDA
 ───────────────────────────────────────────────────────────────
 ";
 
+                // Usa dosaggi originali se disponibili (modifica manuale), altrimenti usa quelli correnti
+                decimal fcsaDose = IsManuallyModified && _originalFcsaDose.HasValue
+                    ? _originalFcsaDose.Value
+                    : FcsaSuggestion.SuggestedWeeklyDoseMg;
+
+                decimal accpDose = IsManuallyModified && _originalAccpDose.HasValue
+                    ? _originalAccpDose.Value
+                    : AccpSuggestion.SuggestedWeeklyDoseMg;
+
                 // Se lo schema è stato modificato manualmente, aggiungi warning
                 if (IsManuallyModified)
                 {
                     text += $@"
-⚠️ ATTENZIONE: Dosaggio modificato manualmente dall'utente
+⚠️ ATTENZIONE: Dosaggio modificato manualmente dal medico
    Nuovo dosaggio manuale: {currentWeeklyDose:F1} mg/settimana
    Le dosi seguenti sono quelle suggerite PRIMA della modifica manuale.
 
@@ -1643,11 +1681,11 @@ CONFRONTO LINEE GUIDA
 
                 text += $@"
 FCSA-SIMG (Italia):
-  • Nuova dose: {FcsaSuggestion.SuggestedWeeklyDoseMg:F1} mg
+  • Nuova dose: {fcsaDose:F1} mg
   • Prossimo controllo: {FcsaSuggestion.NextControlDays} giorni
 
 ACCP/ACC (USA):
-  • Nuova dose: {AccpSuggestion.SuggestedWeeklyDoseMg:F1} mg
+  • Nuova dose: {accpDose:F1} mg
   • Prossimo controllo: {AccpSuggestion.NextControlDays} giorni
 ";
             }

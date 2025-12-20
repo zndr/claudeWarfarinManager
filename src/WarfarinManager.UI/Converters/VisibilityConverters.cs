@@ -166,3 +166,27 @@ public class PercentageToWidthConverter : IValueConverter
         throw new NotImplementedException();
     }
 }
+
+/// <summary>
+/// Converte due valori boolean in Visibility con operatore AND
+/// - true AND true = Visible
+/// - qualsiasi altro caso = Collapsed
+/// </summary>
+public class BooleanAndToVisibilityConverter : IMultiValueConverter
+{
+    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (values == null || values.Length < 2)
+            return Visibility.Collapsed;
+
+        bool firstValue = values[0] is bool b1 && b1;
+        bool secondValue = values[1] is bool b2 && b2;
+
+        return (firstValue && secondValue) ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
