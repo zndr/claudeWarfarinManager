@@ -12,6 +12,7 @@
     MinHeight="500"
     d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
     WindowStartupLocation="CenterScreen"
+    Icon="Resources/Icons/taogest.ico"
     mc:Ignorable="d">
 
     <Window.InputBindings>
@@ -173,7 +174,7 @@
             <TextBlock
                 FontSize="11"
                 Foreground="#7F8C8D"
-                Text="Versione 1.0.0.0 - Beta" />
+                Text="Versione 1.1.2" />
         </Border>
     </Grid>
 </Window>

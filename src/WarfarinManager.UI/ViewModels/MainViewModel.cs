@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Reflection;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using WarfarinManager.UI.Services;
@@ -275,17 +276,20 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void CheckUpdates()
     {
-        _dialogService.ShowInformation("Nessun aggiornamento disponibile.\n\nVersione corrente: 1.0.0.0", "Verifica aggiornamenti");
+        var version = Assembly.GetExecutingAssembly().GetName().Version;
+        var versionString = version != null ? $"{version.Major}.{version.Minor}.{version.Build}" : "1.1.2";
+
+        _dialogService.ShowInformation($"Nessun aggiornamento disponibile.\n\nVersione corrente: {versionString}", "Verifica aggiornamenti");
     }
 
     [RelayCommand]
     private void ShowAbout()
     {
-        var message = "TaoGEST - Gestione Terapia Anticoagulante Orale\n\n" +
-                     "Versione 1.0.0.0 - Beta\n\n" +
-                     "Sistema di gestione per la terapia anticoagulante orale con Warfarin\n\n" +
-                     "© 2024 - Tutti i diritti riservati";
-        _dialogService.ShowInformation(message, "About TaoGEST");
+        var aboutDialog = new AboutDialog
+        {
+            Owner = Application.Current.MainWindow
+        };
+        aboutDialog.ShowDialog();
     }
 
     #endregion

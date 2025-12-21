@@ -10,6 +10,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <LangVersion>12</LangVersion>
+    <ApplicationIcon>Resources\Icons\taogest.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -45,6 +46,11 @@
     <ProjectReference Include="..\WarfarinManager.Core\WarfarinManager.Core.csproj" />
     <ProjectReference Include="..\WarfarinManager.Data\WarfarinManager.Data.csproj" />
     <ProjectReference Include="..\WarfarinManager.Shared\WarfarinManager.Shared.csproj" />
+  </ItemGroup>
+
+  <!-- Icona applicazione -->
+  <ItemGroup>
+    <Resource Include="Resources\Icons\taogest.ico" />
   </ItemGroup>
 
   <!-- Guide HTML - Copia tutti i file nella cartella di output -->

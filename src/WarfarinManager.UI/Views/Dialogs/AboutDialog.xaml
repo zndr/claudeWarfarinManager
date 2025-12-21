@@ -1,0 +1,245 @@
+<Window
+    x:Class="WarfarinManager.UI.Views.Dialogs.AboutDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="About TaoGEST"
+    Width="700"
+    Height="600"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--  Header con logo e info versione  -->
+        <Border
+            Grid.Row="0"
+            Padding="30,25"
+            Background="#2C3E50">
+            <StackPanel HorizontalAlignment="Center">
+                <TextBlock
+                    FontSize="28"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    Text="TaoGEST" />
+                <TextBlock
+                    Margin="0,5,0,0"
+                    FontSize="14"
+                    Foreground="#ECF0F1"
+                    Text="Gestione Terapia Anticoagulante Orale" />
+                <TextBlock
+                    x:Name="VersionText"
+                    Margin="0,10,0,0"
+                    FontSize="12"
+                    Foreground="#BDC3C7"
+                    HorizontalAlignment="Center" />
+            </StackPanel>
+        </Border>
+
+        <!--  Contenuto con TabControl  -->
+        <TabControl Grid.Row="1" Margin="0">
+            <!--  Tab Informazioni  -->
+            <TabItem Header="Informazioni">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="30,20">
+                        <TextBlock
+                            FontSize="14"
+                            Text="Sistema di gestione per la terapia anticoagulante orale con Warfarin destinato ai medici di medicina generale italiani."
+                            TextWrapping="Wrap" />
+
+                        <TextBlock
+                            Margin="0,20,0,5"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Text="Caratteristiche principali:" />
+                        <StackPanel Margin="10,5,0,0">
+                            <TextBlock Margin="0,3" Text="• Calcolo automatico dosaggio Warfarin (linee guida FCSA/ACCP)" />
+                            <TextBlock Margin="0,3" Text="• Monitoraggio INR e grafici trend" />
+                            <TextBlock Margin="0,3" Text="• Gestione score CHA₂DS₂-VASc e HAS-BLED" />
+                            <TextBlock Margin="0,3" Text="• Verifica interazioni farmacologiche" />
+                            <TextBlock Margin="0,3" Text="• Export PDF per il paziente" />
+                            <TextBlock Margin="0,3" Text="• Guide professionali integrate" />
+                            <TextBlock Margin="0,3" Text="• Wizard configurazione iniziale paziente" />
+                        </StackPanel>
+
+                        <TextBlock
+                            Margin="0,20,0,5"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Text="Requisiti di sistema:" />
+                        <StackPanel Margin="10,5,0,0">
+                            <TextBlock Margin="0,3" Text="• Windows 10 (versione 1809 o successiva) o Windows 11" />
+                            <TextBlock Margin="0,3" Text="• .NET 8.0 Desktop Runtime (x64)" />
+                            <TextBlock Margin="0,3" Text="• 200 MB spazio su disco" />
+                            <TextBlock Margin="0,3" Text="• 4 GB RAM (consigliati)" />
+                            <TextBlock Margin="0,3" Text="• Risoluzione schermo: 1280x720 minima" />
+                        </StackPanel>
+
+                        <TextBlock
+                            Margin="0,30,0,10"
+                            FontSize="13"
+                            Foreground="#7F8C8D"
+                            Text="© 2025 - dr Dario Giorgio Zani"
+                            TextAlignment="Center" />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="#95A5A6"
+                            Text="Tutti i diritti riservati"
+                            TextAlignment="Center" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!--  Tab Changelog  -->
+            <TabItem Header="Novità">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="30,20">
+                        <!--  Versione 1.1.2  -->
+                        <Border
+                            Margin="0,0,0,15"
+                            Padding="15"
+                            Background="#ECF0F1"
+                            CornerRadius="5">
+                            <StackPanel>
+                                <TextBlock
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    Text="Versione 1.1.2 (21 Dicembre 2025)" />
+                                <TextBlock
+                                    Margin="0,10,0,5"
+                                    FontWeight="SemiBold"
+                                    Text="Miglioramenti UI:" />
+                                <TextBlock Margin="10,3" Text="• Aggiunta icona ufficiale TaoGEST nella taskbar di Windows" />
+                                <TextBlock Margin="10,3" Text="• Rimossa etichetta Beta (prodotto maturo e stabile)" />
+                                <TextBlock
+                                    Margin="0,10,0,5"
+                                    FontWeight="SemiBold"
+                                    Text="Documentazione:" />
+                                <TextBlock Margin="10,3" Text="• Aggiunto file CHANGELOG.md con storico versioni" />
+                            </StackPanel>
+                        </Border>
+
+                        <!--  Versione 1.1.1  -->
+                        <Border
+                            Margin="0,0,0,15"
+                            Padding="15"
+                            Background="#F8F9FA"
+                            CornerRadius="5">
+                            <StackPanel>
+                                <TextBlock
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    Text="Versione 1.1.1 (20 Dicembre 2025)" />
+                                <TextBlock
+                                    Margin="0,10,0,5"
+                                    FontWeight="SemiBold"
+                                    Foreground="#E74C3C"
+                                    Text="Correzioni critiche:" />
+                                <TextBlock Margin="10,3" Text="• Risolto bug critico che generava warning inappropriati per INR normali" />
+                                <TextBlock
+                                    Margin="0,10,0,5"
+                                    FontWeight="SemiBold"
+                                    Text="Miglioramenti UI:" />
+                                <TextBlock Margin="10,3" Text="• Sistema di esclusione warning nelle esportazioni" />
+                                <TextBlock Margin="10,3" Text="• Miglioramenti PDF e esportazione testo" />
+                                <TextBlock Margin="10,3" Text="• UI più intuitiva e professionale" />
+                            </StackPanel>
+                        </Border>
+
+                        <!--  Versione 1.1.0  -->
+                        <Border
+                            Margin="0,0,0,15"
+                            Padding="15"
+                            Background="#F8F9FA"
+                            CornerRadius="5">
+                            <StackPanel>
+                                <TextBlock
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    Text="Versione 1.1.0 (20 Dicembre 2025)" />
+                                <TextBlock
+                                    Margin="0,10,0,5"
+                                    FontWeight="SemiBold"
+                                    Text="Nuove funzionalità:" />
+                                <TextBlock Margin="10,3" Text="• Wizard di configurazione iniziale paziente con step guidati" />
+                                <TextBlock Margin="10,3" Text="• Calcolo automatico score CHA₂DS₂-VASc e HAS-BLED" />
+                                <TextBlock Margin="10,3" Text="• Valutazione controindicazioni pre-TAO" />
+                            </StackPanel>
+                        </Border>
+
+                        <!--  Versione 1.0.0  -->
+                        <Border
+                            Padding="15"
+                            Background="#F8F9FA"
+                            CornerRadius="5">
+                            <StackPanel>
+                                <TextBlock
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    Text="Versione 1.0.0 (15 Dicembre 2025)" />
+                                <TextBlock
+                                    Margin="0,10,0,5"
+                                    FontWeight="SemiBold"
+                                    Text="Release iniziale:" />
+                                <TextBlock Margin="10,3" Text="• Gestione pazienti in terapia con Warfarin" />
+                                <TextBlock Margin="10,3" Text="• Calcolo dosaggio automatico" />
+                                <TextBlock Margin="10,3" Text="• Verifica interazioni farmacologiche" />
+                                <TextBlock Margin="10,3" Text="• Gestione bridge therapy" />
+                                <TextBlock Margin="10,3" Text="• Switch terapia Warfarin ↔ DOAC" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <!--  Pulsante Chiudi  -->
+        <Border
+            Grid.Row="2"
+            Padding="20"
+            Background="#F5F5F5"
+            BorderBrush="#DDD"
+            BorderThickness="0,1,0,0">
+            <Button
+                x:Name="CloseButton"
+                Width="100"
+                Height="35"
+                HorizontalAlignment="Center"
+                Background="#3498DB"
+                BorderThickness="0"
+                Click="CloseButton_Click"
+                Content="Chiudi"
+                Foreground="White">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="3">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#2980B9" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Border>
+    </Grid>
+</Window>
