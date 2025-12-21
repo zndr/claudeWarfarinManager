@@ -190,6 +190,12 @@ public partial class PreTaoAssessmentViewModel : ObservableObject
     [ObservableProperty]
     private bool _isSaving;
 
+    /// <summary>
+    /// Indica se il form è utilizzato all'interno del wizard (disabilita messaggi di conferma)
+    /// </summary>
+    [ObservableProperty]
+    private bool _isWizardMode;
+
     // ==================== Computed Properties ====================
 
     public int CHA2DS2VAScScore =>
@@ -363,6 +369,31 @@ public partial class PreTaoAssessmentViewModel : ObservableObject
         if (latestAssessment != null)
         {
             LoadFromEntity(latestAssessment);
+        }
+        else
+        {
+            // Se non c'è valutazione precedente, precompila il nome del medico
+            await LoadDoctorNameAsync();
+        }
+    }
+
+    /// <summary>
+    /// Carica il nome del medico corrente
+    /// </summary>
+    private async Task LoadDoctorNameAsync()
+    {
+        try
+        {
+            var doctorData = await _unitOfWork.Database.DoctorData.FirstOrDefaultAsync();
+            if (doctorData != null && !string.IsNullOrWhiteSpace(doctorData.FullName))
+            {
+                AssessingPhysician = doctorData.FullName;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Impossibile caricare il nome del medico");
+            // Non è un errore critico, il campo può essere compilato manualmente
         }
     }
 
@@ -599,9 +630,13 @@ public partial class PreTaoAssessmentViewModel : ObservableObject
 
             _logger.LogInformation("Valutazione pre-TAO salvata per paziente {PatientId}", _patientId);
 
-            _dialogService.ShowInformation(
-                "Valutazione pre-TAO salvata con successo!",
-                "Salvataggio Completato");
+            // Se non siamo in modalità wizard, mostra il messaggio di conferma
+            if (!IsWizardMode)
+            {
+                _dialogService.ShowInformation(
+                    "Valutazione pre-TAO salvata con successo!",
+                    "Salvataggio Completato");
+            }
         }
         catch (Exception ex)
         {

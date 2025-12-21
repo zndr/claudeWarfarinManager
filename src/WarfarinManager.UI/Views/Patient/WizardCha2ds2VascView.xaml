@@ -1,0 +1,130 @@
+<UserControl x:Class="WarfarinManager.UI.Views.Patient.WizardCha2ds2VascView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="550" d:DesignWidth="900"
+             d:DataContext="{d:DesignInstance Type=vm:PreTaoAssessmentViewModel}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="20">
+            <!-- Intestazione -->
+            <TextBlock Text="Score CHA₂DS₂-VASc"
+                       FontSize="18"
+                       FontWeight="Bold"
+                       Margin="0,0,0,10"/>
+
+            <TextBlock Text="Valutazione del rischio tromboembolico per pazienti con fibrillazione atriale"
+                       FontSize="13"
+                       Foreground="#666666"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,20"/>
+
+            <!-- Fattori di Rischio -->
+            <Border Background="#E3F2FD"
+                    BorderBrush="#2196F3"
+                    BorderThickness="2"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Fattori di Rischio"
+                               FontSize="15"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,15"/>
+
+                    <CheckBox Content="Scompenso cardiaco / disfunzione VS (1 punto)"
+                              IsChecked="{Binding CongestiveHeartFailure}"
+                              Margin="0,5"
+                              FontSize="14"/>
+
+                    <CheckBox Content="Ipertensione arteriosa (1 punto)"
+                              IsChecked="{Binding Hypertension}"
+                              Margin="0,5"
+                              FontSize="14"/>
+
+                    <CheckBox Content="Età ≥75 anni (2 punti)"
+                              IsChecked="{Binding Age75OrMore}"
+                              Margin="0,5"
+                              FontSize="14"/>
+
+                    <CheckBox Content="Diabete mellito (1 punto)"
+                              IsChecked="{Binding Diabetes}"
+                              Margin="0,5"
+                              FontSize="14"/>
+
+                    <CheckBox Content="Stroke/TIA/TE pregresso (2 punti)"
+                              IsChecked="{Binding PriorStrokeTiaTE}"
+                              Margin="0,5"
+                              FontSize="14"/>
+
+                    <CheckBox Content="Malattia vascolare - IMA, PAD, placca aortica (1 punto)"
+                              IsChecked="{Binding VascularDisease}"
+                              Margin="0,5"
+                              FontSize="14"/>
+
+                    <CheckBox Content="Età 65-74 anni (1 punto)"
+                              IsChecked="{Binding Age65To74}"
+                              Margin="0,5"
+                              FontSize="14"/>
+
+                    <CheckBox Content="Sesso femminile (1 punto)"
+                              IsChecked="{Binding Female}"
+                              Margin="0,5"
+                              FontSize="14"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Risultato -->
+            <Border Background="#C8E6C9"
+                    BorderBrush="#4CAF50"
+                    BorderThickness="2"
+                    CornerRadius="8"
+                    Padding="20">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Punteggio Totale"
+                                   FontSize="14"
+                                   Foreground="#666666"/>
+                        <TextBlock Text="{Binding ThromboticRiskLevel}"
+                                   FontSize="13"
+                                   Foreground="#2E7D32"
+                                   Margin="0,5,0,0"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="{Binding CHA2DS2VAScScore}"
+                                   FontSize="48"
+                                   FontWeight="Bold"
+                                   Foreground="#2E7D32"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="punti"
+                                   FontSize="12"
+                                   Foreground="#666666"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Info -->
+            <TextBlock Margin="0,15,0,0"
+                       FontSize="12"
+                       Foreground="#666666"
+                       TextWrapping="Wrap">
+                <Run Text="ℹ️  Interpretazione: "/>
+                <Run Text="0 punti = Basso rischio; "/>
+                <Run Text="1 punto = Rischio basso-moderato; "/>
+                <Run Text="≥2 punti = Alto rischio (anticoagulazione indicata)"/>
+            </TextBlock>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

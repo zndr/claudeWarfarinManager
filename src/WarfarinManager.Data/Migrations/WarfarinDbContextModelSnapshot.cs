@@ -1072,6 +1072,9 @@ namespace WarfarinManager.Data.Migrations
                     b.Property<bool>("IsNaive")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("IsInitialWizardCompleted")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("HasRenalDisease")
                         .HasColumnType("INTEGER");
 

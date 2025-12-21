@@ -1,0 +1,158 @@
+<UserControl x:Class="WarfarinManager.UI.Views.Patient.WizardHasBledView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="550" d:DesignWidth="900"
+             d:DataContext="{d:DesignInstance Type=vm:PreTaoAssessmentViewModel}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="20">
+            <!-- Intestazione -->
+            <TextBlock Text="Score HAS-BLED"
+                       FontSize="18"
+                       FontWeight="Bold"
+                       Margin="0,0,0,10"/>
+
+            <TextBlock Text="Valutazione del rischio emorragico per pazienti in terapia anticoagulante"
+                       FontSize="13"
+                       Foreground="#666666"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,20"/>
+
+            <!-- Fattori di Rischio -->
+            <Border Background="#FFEBEE"
+                    BorderBrush="#F44336"
+                    BorderThickness="2"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Fattori di Rischio Emorragico"
+                               FontSize="15"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,15"/>
+
+                    <CheckBox Content="Hypertension - Ipertensione non controllata (PAS >160 mmHg) (1 punto)"
+                              IsChecked="{Binding HasBledHypertension}"
+                              Margin="0,5"
+                              FontSize="14"/>
+
+                    <CheckBox Content="Abnormal renal function - Dialisi, trapianto o Cr >2.26 mg/dL (1 punto)"
+                              IsChecked="{Binding AbnormalRenalFunction}"
+                              Margin="0,5"
+                              FontSize="14"/>
+
+                    <CheckBox Content="Abnormal liver function - Cirrosi o bilirubina >2x o AST/ALT >3x (1 punto)"
+                              IsChecked="{Binding AbnormalLiverFunction}"
+                              Margin="0,5"
+                              FontSize="14"/>
+
+                    <CheckBox Content="Stroke - Storia di ictus (1 punto)"
+                              IsChecked="{Binding StrokeHistory}"
+                              Margin="0,5"
+                              FontSize="14"/>
+
+                    <CheckBox Content="Bleeding - Storia di sanguinamenti maggiori (1 punto)"
+                              IsChecked="{Binding BleedingHistory}"
+                              Margin="0,5"
+                              FontSize="14"/>
+
+                    <CheckBox Content="Labile INR - INR instabile, tempo nel range &lt;60% (1 punto)"
+                              IsChecked="{Binding LabileINR}"
+                              Margin="0,5"
+                              FontSize="14"/>
+
+                    <CheckBox Content="Elderly - Età &gt;65 anni (1 punto)"
+                              IsChecked="{Binding Elderly}"
+                              Margin="0,5"
+                              FontSize="14"/>
+
+                    <CheckBox Content="Drugs/Alcohol - Farmaci che predispongono al sanguinamento o abuso di alcol (1 punto)"
+                              IsChecked="{Binding DrugsPredisposing}"
+                              Margin="0,5"
+                              FontSize="14"/>
+
+                    <CheckBox Content="Alcohol abuse - Abuso di alcol (≥8 bevande/settimana) (1 punto)"
+                              IsChecked="{Binding AlcoholAbuse}"
+                              Margin="0,5"
+                              FontSize="14"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Risultato -->
+            <Border Background="#FFCCBC"
+                    BorderBrush="#FF5722"
+                    BorderThickness="2"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="0,0,0,10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Punteggio Totale"
+                                   FontSize="14"
+                                   Foreground="#666666"/>
+                        <TextBlock Text="{Binding BleedingRiskLevel}"
+                                   FontSize="13"
+                                   Foreground="#D84315"
+                                   Margin="0,5,0,0"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="{Binding HASBLEDScore}"
+                                   FontSize="48"
+                                   FontWeight="Bold"
+                                   Foreground="#D84315"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="punti"
+                                   FontSize="12"
+                                   Foreground="#666666"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Approvazione -->
+            <Border Background="#E8F5E9"
+                    BorderBrush="#4CAF50"
+                    BorderThickness="2"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="0,10,0,10">
+                <StackPanel>
+                    <CheckBox Content="✓ Approvo la valutazione pre-TAO - Il paziente può iniziare la terapia"
+                              IsChecked="{Binding IsApproved}"
+                              FontSize="14"
+                              FontWeight="SemiBold"
+                              Foreground="#2E7D32"/>
+                    <TextBlock Text="Spuntare questa casella per autorizzare l'inizio della terapia anticoagulante"
+                               FontSize="11"
+                               Foreground="#666666"
+                               Margin="25,5,0,0"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Info -->
+            <TextBlock Margin="0,15,0,0"
+                       FontSize="12"
+                       Foreground="#666666"
+                       TextWrapping="Wrap">
+                <Run Text="ℹ️  Interpretazione: "/>
+                <Run Text="0 punti = Basso rischio (1.13%/anno); "/>
+                <Run Text="1-2 punti = Rischio moderato (1.02-1.88%/anno); "/>
+                <Run Text="≥3 punti = Alto rischio (>3.74%/anno). "/>
+                <Run Text="Score ≥3 richiede monitoraggio più frequente dell'INR."/>
+            </TextBlock>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

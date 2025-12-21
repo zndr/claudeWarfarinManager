@@ -8,9 +8,15 @@ namespace WarfarinManager.UI.Views.Patient;
 /// </summary>
 public partial class IndicationFormView : UserControl
 {
-    public IndicationFormView(IndicationFormViewModel viewModel)
+    public IndicationFormView(IndicationFormViewModel? viewModel = null)
     {
         InitializeComponent();
-        DataContext = viewModel;
+
+        // Imposta il DataContext solo se fornito (per DI)
+        // Altrimenti sarà impostato dal parent (es. wizard)
+        if (viewModel != null)
+        {
+            DataContext = viewModel;
+        }
     }
 }
