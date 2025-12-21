@@ -63,6 +63,12 @@ public class Patient : BaseEntity
     public bool IsNaive { get; set; }
 
     /// <summary>
+    /// Flag che indica se il wizard iniziale obbligatorio è stato completato
+    /// (Indicazione, Valutazione Pre-TAO, CHA2DS2-VASc, HAS-BLED)
+    /// </summary>
+    public bool IsInitialWizardCompleted { get; set; }
+
+    /// <summary>
     /// Flag per soft delete - se true il paziente è "eliminato" ma i dati restano nel DB
     /// </summary>
     public bool IsDeleted { get; set; }

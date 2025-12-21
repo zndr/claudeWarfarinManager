@@ -1,0 +1,77 @@
+<UserControl x:Class="WarfarinManager.UI.Views.Patient.WizardPreTaoContraindicationsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="550" d:DesignWidth="900"
+             d:DataContext="{d:DesignInstance Type=vm:PreTaoAssessmentViewModel}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="20">
+            <!-- Controindicazioni Assolute -->
+            <TextBlock Text="Controindicazioni Assolute alla TAO"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,15"/>
+
+            <Border Background="#FFEBEE"
+                    BorderBrush="#E57373"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="15"
+                    Margin="0,0,0,20">
+                <StackPanel>
+                    <CheckBox Content="Emorragia maggiore in atto" IsChecked="{Binding ActiveMajorBleeding}" Margin="0,5"/>
+                    <CheckBox Content="Gravidanza" IsChecked="{Binding Pregnancy}" Margin="0,5"/>
+                    <CheckBox Content="Grave discrasia ematica" IsChecked="{Binding SevereBloodDyscrasia}" Margin="0,5"/>
+                    <CheckBox Content="Recente neurochirurgia (&lt;2 settimane)" IsChecked="{Binding RecentNeurosurgery}" Margin="0,5"/>
+                    <CheckBox Content="Emorragia intracranica o malformazione" IsChecked="{Binding IntracranialBleedingOrMalformation}" Margin="0,5"/>
+                    <CheckBox Content="Ulcera peptica attiva o varici sanguinanti" IsChecked="{Binding ActivePepticUlcerOrVarices}" Margin="0,5"/>
+                    <CheckBox Content="Endocardite batterica acuta" IsChecked="{Binding AcuteBacterialEndocarditis}" Margin="0,5"/>
+                    <CheckBox Content="Ipertensione severa non controllata (PAS >200, PAD >120 mmHg)" IsChecked="{Binding SevereUncontrolledHypertension}" Margin="0,5"/>
+                    <CheckBox Content="Allergia documentata al warfarin" IsChecked="{Binding WarfarinAllergy}" Margin="0,5"/>
+                    <CheckBox Content="Mancanza di compliance/supervisione" IsChecked="{Binding LackOfCompliance}" Margin="0,5"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Controindicazioni Relative -->
+            <TextBlock Text="Controindicazioni Relative"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Margin="0,10,0,15"/>
+
+            <Border Background="#FFF3E0"
+                    BorderBrush="#FFB74D"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="15"
+                    Margin="0,0,0,20">
+                <StackPanel>
+                    <CheckBox Content="Recente emorragia GI (3-6 mesi)" IsChecked="{Binding RecentGIBleeding}" Margin="0,5"/>
+                    <CheckBox Content="Storia di sanguinamenti maggiori (>6 mesi)" IsChecked="{Binding HistoryOfMajorBleeding}" Margin="0,5"/>
+                    <CheckBox Content="Insufficienza renale moderata (GFR 30-60 mL/min)" IsChecked="{Binding ModerateRenalFailure}" Margin="0,5"/>
+                    <CheckBox Content="Insufficienza epatica moderata (Child-Pugh B)" IsChecked="{Binding ModerateHepaticFailure}" Margin="0,5"/>
+                    <CheckBox Content="Piastrinopenia moderata (50.000-100.000/μL)" IsChecked="{Binding ModerateThrombocytopenia}" Margin="0,5"/>
+                    <CheckBox Content="Cadute frequenti / rischio traumatico elevato" IsChecked="{Binding FrequentFalls}" Margin="0,5"/>
+                    <CheckBox Content="Demenza o deficit cognitivo" IsChecked="{Binding CognitiveImpairment}" Margin="0,5"/>
+                    <CheckBox Content="Recente chirurgia maggiore (1-3 mesi)" IsChecked="{Binding RecentMajorSurgery}" Margin="0,5"/>
+                    <CheckBox Content="Lesioni organiche a rischio (aneurismi, neoplasie)" IsChecked="{Binding OrganicLesionsAtRisk}" Margin="0,5"/>
+                    <CheckBox Content="Pericardite acuta" IsChecked="{Binding AcutePericarditis}" Margin="0,5"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Valutatore -->
+            <TextBlock Text="Medico Valutatore"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Margin="0,10,0,15"/>
+
+            <TextBox Text="{Binding AssessingPhysician, UpdateSourceTrigger=PropertyChanged}"
+                     FontSize="14"
+                     Padding="10"
+                     BorderBrush="#CCCCCC"
+                     BorderThickness="1"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

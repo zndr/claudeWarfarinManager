@@ -53,6 +53,12 @@ public partial class IndicationFormViewModel : ObservableObject, INavigationAwar
     [ObservableProperty]
     private bool _isLoading;
 
+    /// <summary>
+    /// Indica se il form è utilizzato all'interno del wizard (disabilita navigazione automatica)
+    /// </summary>
+    [ObservableProperty]
+    private bool _isWizardMode;
+
     // Computed properties per visualizzazione
     [ObservableProperty]
     private string _targetINRDisplay = "-";
@@ -118,6 +124,27 @@ public partial class IndicationFormViewModel : ObservableObject, INavigationAwar
             AvailableIndications = new ObservableCollection<IndicationTypeDto>(dtos);
 
             _logger.LogInformation("Caricate {Count} indicazioni disponibili", AvailableIndications.Count);
+
+            // Se siamo in wizard mode, carica l'indicazione attiva se esiste
+            if (IsWizardMode)
+            {
+                var activeIndication = await _unitOfWork.Database.Indications
+                    .Include(i => i.IndicationType)
+                    .FirstOrDefaultAsync(i => i.PatientId == PatientId && i.IsActive);
+
+                if (activeIndication != null)
+                {
+                    // Trova il DTO corrispondente e selezionalo
+                    var indicationDto = AvailableIndications.FirstOrDefault(i => i.Code == activeIndication.IndicationTypeCode);
+                    if (indicationDto != null)
+                    {
+                        SelectedIndicationType = indicationDto;
+                        StartDate = activeIndication.StartDate;
+                        Notes = activeIndication.Notes ?? string.Empty;
+                        _logger.LogInformation("Caricata indicazione attiva esistente: {Code}", activeIndication.IndicationTypeCode);
+                    }
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -171,24 +198,28 @@ public partial class IndicationFormViewModel : ObservableObject, INavigationAwar
 
             if (activeIndication != null)
             {
-                // Chiedi conferma per terminare l'indicazione attiva
-                var result = _dialogService.ShowQuestion(
-                    $"Esiste già un'indicazione attiva:\n\n" +
-                    $"{activeIndication.IndicationType?.Description}\n" +
-                    $"Dal: {activeIndication.StartDate:dd/MM/yyyy}\n\n" +
-                    $"Vuoi terminarla e attivare la nuova indicazione?",
-                    "Indicazione Attiva Presente");
-
-                if (result != System.Windows.MessageBoxResult.Yes)
+                // In wizard mode, sostituisci automaticamente senza chiedere conferma
+                if (!IsWizardMode)
                 {
-                    IsSaving = false;
-                    return;
+                    // Chiedi conferma per terminare l'indicazione attiva
+                    var result = _dialogService.ShowQuestion(
+                        $"Esiste già un'indicazione attiva:\n\n" +
+                        $"{activeIndication.IndicationType?.Description}\n" +
+                        $"Dal: {activeIndication.StartDate:dd/MM/yyyy}\n\n" +
+                        $"Vuoi terminarla e attivare la nuova indicazione?",
+                        "Indicazione Attiva Presente");
+
+                    if (result != System.Windows.MessageBoxResult.Yes)
+                    {
+                        IsSaving = false;
+                        return;
+                    }
                 }
 
                 // Termina l'indicazione attiva
                 activeIndication.EndDate = StartDate.AddDays(-1);
                 activeIndication.IsActive = false;
-                activeIndication.ChangeReason = "Cambio indicazione terapeutica";
+                activeIndication.ChangeReason = IsWizardMode ? "Configurazione iniziale paziente" : "Cambio indicazione terapeutica";
             }
 
             // Crea la nuova indicazione
@@ -210,14 +241,18 @@ public partial class IndicationFormViewModel : ObservableObject, INavigationAwar
 
             _logger.LogInformation("Indicazione salvata con successo: ID {IndicationId}", indication.Id);
 
-            _dialogService.ShowInformation(
-                $"Indicazione aggiunta con successo!\n\n" +
-                $"Indicazione: {SelectedIndicationType.Description}\n" +
-                $"Target INR: {SelectedIndicationType.TargetINRRange}",
-                "Successo");
+            // Se non siamo in modalità wizard, mostra il messaggio e naviga
+            if (!IsWizardMode)
+            {
+                _dialogService.ShowInformation(
+                    $"Indicazione aggiunta con successo!\n\n" +
+                    $"Indicazione: {SelectedIndicationType.Description}\n" +
+                    $"Target INR: {SelectedIndicationType.TargetINRRange}",
+                    "Successo");
 
-            // Torna ai dettagli del paziente
-            _navigationService.NavigateTo<PatientDetailsViewModel>(PatientId);
+                // Torna ai dettagli del paziente
+                _navigationService.NavigateTo<PatientDetailsViewModel>(PatientId);
+            }
         }
         catch (Exception ex)
         {

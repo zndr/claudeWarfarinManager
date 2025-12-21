@@ -456,6 +456,7 @@ public class DosageCalculatorService : IDosageCalculatorService
                 result.DoseSupplementarePrimoGiorno = currentDose * 0.075m; // 7.5% primo giorno
                 result.SuggestedWeeklyDoseMg = currentDose * 1.175m;
                 result.NextControlDays = 6; // 5-7 giorni
+                result.SospensioneDosi = 0; // Nessuna sospensione per INR basso
 
                 var loadingDoseRounded = RoundToSensibleDose(result.DoseSupplementarePrimoGiorno.Value);
                 result.LoadingDoseAction = $"DOSE CARICO OGGI: +{loadingDoseRounded:F1}mg (7.5% dose settimanale)";
@@ -475,6 +476,7 @@ public class DosageCalculatorService : IDosageCalculatorService
                 result.DoseSupplementarePrimoGiorno = currentDose * 0.05m; // Opzionale
                 result.SuggestedWeeklyDoseMg = currentDose * (1 + result.PercentageAdjustment / 100);
                 result.NextControlDays = 8; // 7-10 giorni
+                result.SospensioneDosi = 0; // Nessuna sospensione per INR basso
                 result.LoadingDoseAction = "Dose carico opzionale (5% dose settimanale oggi)";
                 result.ClinicalNotes = "INR moderatamente basso. Incremento dose.";
                 result.UrgencyLevel = UrgencyLevel.Routine;
@@ -486,6 +488,7 @@ public class DosageCalculatorService : IDosageCalculatorService
                 result.DoseSupplementarePrimoGiorno = null;
                 result.SuggestedWeeklyDoseMg = currentDose * 1.075m;
                 result.NextControlDays = 12; // 10-14 giorni
+                result.SospensioneDosi = 0; // Nessuna sospensione per INR basso
                 result.LoadingDoseAction = "Nessuna dose carico";
                 result.ClinicalNotes = "INR lievemente basso. Valutare se ultimi 2 INR erano in range (possibile non modificare).";
                 result.UrgencyLevel = UrgencyLevel.Routine;

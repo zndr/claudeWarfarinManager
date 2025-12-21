@@ -107,6 +107,7 @@ public partial class App : Application
         services.AddTransient<DatabaseManagementViewModel>();
         services.AddTransient<GuideViewModel>();
         services.AddTransient<SwitchTherapyViewModel>();
+        services.AddTransient<NewPatientWizardViewModel>();
 
         // Views
         services.AddTransient<PatientListView>();
@@ -123,6 +124,7 @@ public partial class App : Application
         services.AddTransient<AdverseEventsView>();
         services.AddTransient<DoctorDataDialog>();
         services.AddTransient<DatabaseManagementDialog>();
+        services.AddTransient<NewPatientWizardView>();
 
         // Main Window
         services.AddSingleton<MainWindow>();

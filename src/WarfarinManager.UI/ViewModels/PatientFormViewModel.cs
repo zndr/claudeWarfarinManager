@@ -3,11 +3,14 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using WarfarinManager.Data.Entities;
 using WarfarinManager.Data.Repositories.Interfaces;
 using WarfarinManager.Shared.Enums;
 using WarfarinManager.UI.Services;
+using WarfarinManager.UI.Views.Patient;
+using WarfarinManager.UI.Views.INR;
 
 namespace WarfarinManager.UI.ViewModels;
 
@@ -20,6 +23,7 @@ public partial class PatientFormViewModel : ObservableObject, Services.INavigati
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
     private readonly ILogger<PatientFormViewModel> _logger;
+    private readonly IServiceProvider _serviceProvider;
     private int? _patientId; // null = nuovo paziente, valore = modifica
 
     [ObservableProperty]
@@ -77,12 +81,14 @@ public partial class PatientFormViewModel : ObservableObject, Services.INavigati
         IUnitOfWork unitOfWork,
         INavigationService navigationService,
         IDialogService dialogService,
-        ILogger<PatientFormViewModel> logger)
+        ILogger<PatientFormViewModel> logger,
+        IServiceProvider serviceProvider)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
         _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     }
 
     /// <summary>
@@ -230,11 +236,16 @@ public partial class PatientFormViewModel : ObservableObject, Services.INavigati
                     patient.FiscalCode, $"{patient.LastName} {patient.FirstName}");
 
                 _dialogService.ShowInformation(
-                    $"Paziente {patient.LastName} {patient.FirstName} creato con successo!",
+                    $"Paziente {patient.LastName} {patient.FirstName} creato con successo!\n\n" +
+                    "Ora è necessario completare la configurazione iniziale obbligatoria.",
                     "Salvataggio Completato");
+
+                // Apri il wizard obbligatorio per nuovo paziente
+                await OpenNewPatientWizardAsync(patient.Id);
+                return; // Non navigare alla lista, il wizard si occuperà della navigazione
             }
 
-            // Torna alla lista pazienti
+            // Torna alla lista pazienti (solo per modifiche)
             _navigationService.NavigateTo<PatientListViewModel>();
         }
         catch (Exception ex)
@@ -388,6 +399,101 @@ public partial class PatientFormViewModel : ObservableObject, Services.INavigati
         if (!string.IsNullOrEmpty(value) && value != value.ToUpperInvariant())
         {
             FiscalCode = value.ToUpperInvariant();
+        }
+    }
+
+    /// <summary>
+    /// Apre il wizard di configurazione iniziale per nuovo paziente
+    /// </summary>
+    private async Task OpenNewPatientWizardAsync(int patientId)
+    {
+        try
+        {
+            _logger.LogInformation("Apertura wizard configurazione iniziale per paziente {PatientId}", patientId);
+
+            // Crea il wizard view e viewmodel
+            var wizardView = _serviceProvider.GetRequiredService<NewPatientWizardView>();
+            var wizardViewModel = _serviceProvider.GetRequiredService<NewPatientWizardViewModel>();
+
+            // Inizializza il wizard con i dati del paziente
+            await wizardViewModel.InitializeAsync(patientId);
+
+            // Imposta la modalità wizard sui ViewModels figli
+            if (wizardViewModel.IndicationFormViewModel != null)
+            {
+                wizardViewModel.IndicationFormViewModel.IsWizardMode = true;
+            }
+
+            if (wizardViewModel.PreTaoAssessmentViewModel != null)
+            {
+                wizardViewModel.PreTaoAssessmentViewModel.IsWizardMode = true;
+            }
+
+            // Assegna il DataContext e mostra il wizard
+            wizardView.DataContext = wizardViewModel;
+            var dialogResult = wizardView.ShowDialog();
+
+            // Se il wizard è stato completato e l'utente vuole inserire INR
+            if (dialogResult == true && wizardViewModel.ShouldOpenINRForm)
+            {
+                _logger.LogInformation("Apertura form INR dopo completamento wizard per paziente {PatientId}", patientId);
+
+                // Chiedi se il paziente è naive (prima terapia anticoagulante)
+                var isNaiveResult = _dialogService.ShowQuestion(
+                    "🩺 Tipo di Paziente\n\n" +
+                    "Il paziente è NAIVE (non ha mai assunto terapia anticoagulante con warfarin)?\n\n" +
+                    "• NAIVE (Sì): Il paziente inizia per la prima volta la terapia con warfarin.\n" +
+                    "  Il dosaggio sarà calcolato secondo il Nomogramma di Pengo.\n\n" +
+                    "• NON NAIVE (No): Il paziente ha già assunto warfarin in passato.\n" +
+                    "  Sarà richiesto di inserire il dosaggio settimanale corrente.",
+                    "Paziente Naive?");
+
+                bool isNaive = (isNaiveResult == System.Windows.MessageBoxResult.Yes);
+
+                // Aggiorna il flag IsNaive nel database
+                var patient = await _unitOfWork.Patients.GetByIdAsync(patientId);
+                if (patient != null)
+                {
+                    patient.IsNaive = isNaive;
+                    await _unitOfWork.Patients.UpdateAsync(patient);
+                    await _unitOfWork.SaveChangesAsync();
+                    _logger.LogInformation("Flag IsNaive impostato a {IsNaive} per paziente {PatientId}", isNaive, patientId);
+                }
+
+                // Forza il ricaricamento del contesto per ottenere i dati più aggiornati
+                if (patient != null)
+                {
+                    await _unitOfWork.Database.Entry(patient).ReloadAsync();
+                }
+
+                // Crea e apri la finestra di controllo INR come dialog
+                var inrViewModel = _serviceProvider.GetRequiredService<INRControlViewModel>();
+                await inrViewModel.LoadPatientDataAsync(patientId);
+
+                var inrView = new INRControlView
+                {
+                    DataContext = inrViewModel
+                };
+                inrView.ShowDialog();
+
+                // Dopo aver chiuso il form INR, naviga ai dettagli paziente
+                _navigationService.NavigateTo<PatientDetailsViewModel>(patientId);
+            }
+            else if (dialogResult == true)
+            {
+                // Wizard completato ma utente non vuole inserire INR, vai ai dettagli paziente
+                _navigationService.NavigateTo<PatientDetailsViewModel>(patientId);
+            }
+
+            _logger.LogInformation("Wizard configurazione iniziale completato per paziente {PatientId}", patientId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Errore durante l'apertura del wizard configurazione iniziale");
+            _dialogService.ShowError($"Errore: {ex.Message}", "Errore");
+
+            // In caso di errore, naviga comunque ai dettagli del paziente
+            _navigationService.NavigateTo<PatientDetailsViewModel>(patientId);
         }
     }
 }
