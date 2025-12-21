@@ -150,6 +150,9 @@ namespace WarfarinManager.UI.ViewModels
 
                 Patient = MapPatientToDto(patient);
 
+                // Verifica se è un paziente appena creato senza controlli INR
+                await CheckAndShowNaivePatientDialogAsync(patient);
+
                 // Carica le indicazioni
                 await LoadIndicationsAsync();
 
@@ -380,6 +383,49 @@ namespace WarfarinManager.UI.ViewModels
         partial void OnSelectedIndicationChanged(IndicationDto? value)
         {
             EndIndicationCommand.NotifyCanExecuteChanged();
+        }
+
+        /// <summary>
+        /// Verifica se mostrare il dialog per paziente naive (solo se appena creato e senza INR)
+        /// </summary>
+        private async Task CheckAndShowNaivePatientDialogAsync(Data.Entities.Patient patient)
+        {
+            try
+            {
+                // Controlla se il paziente ha già controlli INR
+                var hasINRControls = await _unitOfWork.Database.INRControls
+                    .AnyAsync(c => c.PatientId == patient.Id);
+
+                // Mostra il dialog solo se:
+                // 1. Il paziente non ha ancora controlli INR
+                // 2. Il flag IsNaive non è già stato impostato (evita di chiedere più volte)
+                if (!hasINRControls && !patient.IsNaive)
+                {
+                    var isNaive = _dialogService.ShowNaivePatientDialog(patient.FullName);
+
+                    if (isNaive.HasValue)
+                    {
+                        // Aggiorna il flag nel database
+                        patient.IsNaive = isNaive.Value;
+                        await _unitOfWork.Patients.UpdateAsync(patient);
+                        await _unitOfWork.SaveChangesAsync();
+
+                        _logger.LogInformation("Paziente {PatientId} marcato come {Status}",
+                            patient.Id, isNaive.Value ? "Naive" : "Non-Naive");
+
+                        // Se è naive, mostra le informazioni sulla fase di induzione
+                        if (isNaive.Value)
+                        {
+                            _dialogService.ShowInductionPhaseInfo();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Errore durante la verifica paziente naive");
+                // Non mostrare errore all'utente, è una funzionalità opzionale
+            }
         }
 
         /// <summary>
