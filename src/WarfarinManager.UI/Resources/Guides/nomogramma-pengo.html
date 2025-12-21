@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nomogramma di Pengo (2001) - Fase di Induzione Warfarin</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+
+        .header p {
+            margin: 5px 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .info-box {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .info-box strong {
+            color: #1976d2;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        thead th {
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #e0e0e0;
+            transition: background-color 0.2s;
+        }
+
+        tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        tbody tr:nth-child(even):hover {
+            background-color: #f0f0f0;
+        }
+
+        tbody td {
+            padding: 12px 15px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        tbody td:first-child {
+            font-weight: 600;
+            color: #1976d2;
+            font-size: 16px;
+        }
+
+        tbody td:last-child {
+            font-weight: 600;
+            color: #388e3c;
+            font-size: 16px;
+        }
+
+        .notes {
+            background-color: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .notes h3 {
+            margin-top: 0;
+            color: #e65100;
+        }
+
+        .notes ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .notes li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .reference {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .reference strong {
+            color: #333;
+        }
+
+        .highlight-row {
+            background-color: #fff9c4 !important;
+        }
+
+        .therapeutic-range {
+            background-color: #c8e6c9 !important;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+                margin: 0;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Nomogramma di Pengo (2001)</h1>
+        <p>Fase di Induzione della Terapia con Warfarin</p>
+        <p>Stima del Fabbisogno Settimanale basato sull'INR al 5° giorno</p>
+    </div>
+
+    <div class="container">
+        <div class="info-box">
+            <strong>Protocollo di Induzione:</strong><br>
+            Somministrare <strong>5 mg di warfarin al giorno per 4 giorni consecutivi</strong>, poi valutare l'INR al 5° giorno e stimare il fabbisogno settimanale utilizzando la tabella sottostante.
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>INR al 5° Giorno</th>
+                    <th>Fabbisogno Settimanale Stimato (mg)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1.0</td>
+                    <td>71</td>
+                </tr>
+                <tr>
+                    <td>1.1</td>
+                    <td>57</td>
+                </tr>
+                <tr>
+                    <td>1.2</td>
+                    <td>48</td>
+                </tr>
+                <tr>
+                    <td>1.3</td>
+                    <td>43</td>
+                </tr>
+                <tr>
+                    <td>1.4</td>
+                    <td>39</td>
+                </tr>
+                <tr>
+                    <td>1.5</td>
+                    <td>35</td>
+                </tr>
+                <tr>
+                    <td>1.6</td>
+                    <td>33</td>
+                </tr>
+                <tr>
+                    <td>1.7</td>
+                    <td>31</td>
+                </tr>
+                <tr>
+                    <td>1.8</td>
+                    <td>29</td>
+                </tr>
+                <tr>
+                    <td>1.9</td>
+                    <td>27</td>
+                </tr>
+                <tr class="therapeutic-range">
+                    <td>2.0</td>
+                    <td>26</td>
+                </tr>
+                <tr class="therapeutic-range">
+                    <td>2.1</td>
+                    <td>24</td>
+                </tr>
+                <tr class="therapeutic-range">
+                    <td>2.2</td>
+                    <td>23</td>
+                </tr>
+                <tr class="therapeutic-range">
+                    <td>2.3</td>
+                    <td>22</td>
+                </tr>
+                <tr class="therapeutic-range">
+                    <td>2.4</td>
+                    <td>21</td>
+                </tr>
+                <tr class="therapeutic-range">
+                    <td>2.5</td>
+                    <td>20</td>
+                </tr>
+                <tr class="therapeutic-range">
+                    <td>2.6</td>
+                    <td>19</td>
+                </tr>
+                <tr class="therapeutic-range">
+                    <td>2.7</td>
+                    <td>18</td>
+                </tr>
+                <tr class="therapeutic-range">
+                    <td>2.8</td>
+                    <td>17</td>
+                </tr>
+                <tr class="therapeutic-range">
+                    <td>2.9</td>
+                    <td>16.5</td>
+                </tr>
+                <tr class="therapeutic-range">
+                    <td>3.0</td>
+                    <td>16</td>
+                </tr>
+                <tr>
+                    <td>3.1</td>
+                    <td>15</td>
+                </tr>
+                <tr>
+                    <td>3.2</td>
+                    <td>14</td>
+                </tr>
+                <tr>
+                    <td>3.3</td>
+                    <td>13.5</td>
+                </tr>
+                <tr>
+                    <td>3.4</td>
+                    <td>13</td>
+                </tr>
+                <tr>
+                    <td>3.5</td>
+                    <td>12</td>
+                </tr>
+                <tr>
+                    <td>3.6</td>
+                    <td>11.5</td>
+                </tr>
+                <tr>
+                    <td>3.7</td>
+                    <td>11</td>
+                </tr>
+                <tr>
+                    <td>3.8</td>
+                    <td>10.5</td>
+                </tr>
+                <tr>
+                    <td>3.9</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <td>4.0</td>
+                    <td>9</td>
+                </tr>
+                <tr>
+                    <td>4.1</td>
+                    <td>8.5</td>
+                </tr>
+                <tr>
+                    <td>4.2</td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <td>4.3</td>
+                    <td>7.5</td>
+                </tr>
+                <tr>
+                    <td>4.4</td>
+                    <td>7</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="notes">
+            <h3>Note Importanti:</h3>
+            <ul>
+                <li><strong>Range Terapeutico:</strong> Le righe evidenziate in verde (INR 2.0-3.0) rappresentano il range terapeutico standard per la maggior parte delle indicazioni.</li>
+                <li><strong>Arrotondamento:</strong> Il fabbisogno settimanale stimato deve essere arrotondato secondo criteri clinici:
+                    <ul>
+                        <li><strong>Per difetto</strong> se: età > 75 anni, HAS-BLED ≥ 3, o INR > 2.5</li>
+                        <li><strong>Per eccesso</strong> negli altri casi</li>
+                    </ul>
+                </li>
+                <li><strong>Distribuzione Settimanale:</strong> La dose settimanale stimata va distribuita equilibratamente nei 7 giorni, preferibilmente evitando quarti di compressa.</li>
+                <li><strong>Monitoraggio:</strong> Dopo l'induzione, proseguire con controlli INR ravvicinati (ogni 3-7 giorni) fino a stabilizzazione nel range terapeutico.</li>
+                <li><strong>Validità:</strong> Questo nomogramma è applicabile solo per pazienti naive (che iniziano la terapia anticoagulante per la prima volta).</li>
+            </ul>
+        </div>
+
+        <div class="reference">
+            <strong>Riferimento Bibliografico:</strong><br>
+            Pengo V, Banzato A, Garelli E, Zasso A, Pelloso M, Biasiolo A. A <em>nomogram</em> to estimate the weekly dose of warfarin during the induction phase: a pilot study. <em>Thromb Haemost.</em> 2001;86(6):1374-7.
+        </div>
+    </div>
+
+    <script>
+        // Evidenzia automaticamente la riga corrispondente all'INR se passato come parametro URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const inrParam = urlParams.get('inr');
+
+        if (inrParam) {
+            const inrValue = parseFloat(inrParam);
+            const rows = document.querySelectorAll('tbody tr');
+
+            rows.forEach(row => {
+                const cellValue = parseFloat(row.cells[0].textContent);
+                if (Math.abs(cellValue - inrValue) < 0.05) {
+                    row.classList.add('highlight-row');
+                    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -2,8 +2,8 @@
 # Utilizzo: powershell -ExecutionPolicy Bypass -File sync-guides.ps1
 
 param(
-    [string]$SourceDir = "D:\Claude\winTaoGest\docs",
-    [string]$TargetDir = "D:\Claude\winTaoGest\src\WarfarinManager.UI\Resources\Guides"
+    [string]$SourceDir = "D:\Claude\TaoGest\docs",
+    [string]$TargetDir = "D:\Claude\TaoGest\src\WarfarinManager.UI\Resources\Guides"
 )
 
 Write-Host "=== Sincronizzazione Guide TaoGEST ===" -ForegroundColor Cyan
@@ -29,7 +29,8 @@ $filesToSync = @(
     "LineeGuida.pdf",
     "Guida Warfarin per pazienti.pdf",
     "Algoritmo Gestione INR.html",
-    "infografica-tao.html"
+    "infografica-tao.html",
+    "nomogramma-pengo.html"
 )
 
 $syncedCount = 0

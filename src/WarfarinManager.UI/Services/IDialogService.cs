@@ -65,4 +65,29 @@ public interface IDialogService
     /// <param name="fiscalCode">Codice fiscale del paziente</param>
     /// <returns>Scelta dell'utente</returns>
     DeletePatientChoice ShowDeletePatientDialog(string patientName, string fiscalCode);
+
+    /// <summary>
+    /// Mostra dialog per chiedere se il paziente è naive (inizia fase di induzione)
+    /// </summary>
+    /// <param name="patientName">Nome completo del paziente</param>
+    /// <returns>True se il paziente è naive, False altrimenti</returns>
+    bool? ShowNaivePatientDialog(string patientName);
+
+    /// <summary>
+    /// Mostra box informativo sulla fase di induzione con nomogramma di Pengo
+    /// </summary>
+    void ShowInductionPhaseInfo();
+
+    /// <summary>
+    /// Mostra dialog per confermare l'uso del nomogramma di Pengo
+    /// </summary>
+    /// <param name="inrValue">Valore INR misurato</param>
+    /// <returns>True se l'utente conferma, False altrimenti</returns>
+    bool ShowPengoNomogramConfirmation(decimal inrValue);
+
+    /// <summary>
+    /// Mostra il nomogramma di Pengo in formato HTML
+    /// </summary>
+    /// <param name="inrValue">Valore INR da evidenziare (opzionale)</param>
+    void ShowPengoNomogramHtml(decimal? inrValue = null);
 }

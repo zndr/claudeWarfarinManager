@@ -31,6 +31,7 @@ namespace WarfarinManager.UI.ViewModels
         private readonly IDialogService _dialogService;
         private readonly INavigationService _navigationService;
         private readonly WeeklySchedulePdfService _pdfService;
+        private readonly Core.Services.PengoNomogramService _pengoNomogramService;
 
         #region Properties - Dati Paziente
 
@@ -54,6 +55,15 @@ namespace WarfarinManager.UI.ViewModels
 
         [ObservableProperty]
         private bool _isSlowMetabolizer;
+
+        [ObservableProperty]
+        private bool _isNaivePatient;
+
+        [ObservableProperty]
+        private int _patientAge;
+
+        [ObservableProperty]
+        private int _patientHasBledScore;
 
         #endregion
 
@@ -429,6 +439,7 @@ namespace WarfarinManager.UI.ViewModels
             _dialogService = dialogService;
             _navigationService = navigationService;
             _pdfService = pdfService;
+            _pengoNomogramService = new Core.Services.PengoNomogramService();
 
             // Inizializza lista dosi disponibili e valori default
             UpdateAvailableDoses();
@@ -471,6 +482,9 @@ namespace WarfarinManager.UI.ViewModels
                 if (InrValue > 0)
                 {
                     System.Diagnostics.Debug.WriteLine($"[PropertyChanged] Calling CheckAndShowFourDEvaluationAsync()");
+
+                    // Verifica se usare il nomogramma di Pengo per paziente naive
+                    _ = CheckAndApplyPengoNomogramAsync();
 
                     // Verifica valutazione 4D anche se non c'è dosaggio
                     _ = CheckAndShowFourDEvaluationAsync();
@@ -627,6 +641,9 @@ namespace WarfarinManager.UI.ViewModels
 
                 PatientName = $"{patient.LastName} {patient.FirstName}";
                 PatientFiscalCode = patient.FiscalCode;
+                IsNaivePatient = patient.IsNaive;
+                PatientAge = patient.Age;
+                PatientHasBledScore = patient.HasBledScore;
 
                 // Carica indicazione attiva tramite DbContext
                 var indication = await _unitOfWork.Database.Indications
@@ -1786,6 +1803,121 @@ valutazione clinica finale e della decisione terapeutica.
                 NextControlDays_ACCP = control.DosageSuggestions
                     .FirstOrDefault(s => s.GuidelineUsed == Guideline.ACCP_ACC)?.NextControlDays
             };
+        }
+
+        /// <summary>
+        /// Verifica se applicare il nomogramma di Pengo per paziente naive al primo INR
+        /// </summary>
+        private async Task CheckAndApplyPengoNomogramAsync()
+        {
+            try
+            {
+                // Verifica solo per pazienti naive
+                if (!IsNaivePatient)
+                    return;
+
+                // Verifica che non ci siano già controlli INR (primo INR)
+                var hasExistingControls = InrHistory != null && InrHistory.Any();
+                if (hasExistingControls)
+                    return;
+
+                // IMPORTANTE: Verifica che ci sia un'indicazione attiva con target INR
+                if (TargetINRMin <= 0 || TargetINRMax <= 0)
+                {
+                    var confirm = _dialogService.ShowConfirmation(
+                        "Per utilizzare il nomogramma di Pengo è necessario specificare prima l'indicazione terapeutica " +
+                        "(es. Fibrillazione Atriale, TEV, ecc.) con il relativo target INR.\n\n" +
+                        "Vuoi aggiungere l'indicazione ora?\n\n" +
+                        "Dopo aver aggiunto l'indicazione, potrai inserire nuovamente il valore INR.",
+                        "Indicazione Terapeutica Mancante");
+
+                    if (confirm)
+                    {
+                        // Naviga alla form di creazione indicazione
+                        _navigationService.NavigateTo<IndicationFormViewModel>(PatientId);
+                    }
+                    return;
+                }
+
+                // Verifica che l'INR sia nel range del nomogramma
+                if (!_pengoNomogramService.IsInrInNomogramRange(InrValue))
+                {
+                    _dialogService.ShowWarning(
+                        $"L'INR {InrValue:F1} è fuori dal range del nomogramma di Pengo (1.0 - 4.4).\n\n" +
+                        "Sarà necessario impostare il dosaggio manualmente.",
+                        "INR Fuori Range Nomogramma");
+                    return;
+                }
+
+                // Chiedi conferma per usare il nomogramma di Pengo
+                bool usePengo = _dialogService.ShowPengoNomogramConfirmation(InrValue);
+
+                if (!usePengo)
+                    return;
+
+                // Imposta la fase come "Induction"
+                SelectedPhase = TherapyPhase.Induction;
+
+                // Calcola il fabbisogno stimato
+                var estimatedDose = _pengoNomogramService.GetEstimatedWeeklyDose(InrValue);
+
+                // Applica l'arrotondamento clinico
+                var roundedDose = _pengoNomogramService.ApplyClinicalRounding(
+                    estimatedDose,
+                    PatientAge,
+                    PatientHasBledScore,
+                    InrValue);
+
+                // Aggiorna le note cliniche
+                Notes = $"Stima fabbisogno effettuata seguendo il nomogramma di Pengo (2001)\n" +
+                        $"Dose stimata: {estimatedDose:F1} mg/sett → Dose arrotondata: {roundedDose:F1} mg/sett";
+
+                // Determina tipo di arrotondamento per informazione
+                string roundingType = (PatientAge > 75 || PatientHasBledScore >= 3 || InrValue > 2.5m)
+                    ? "per difetto"
+                    : "per eccesso";
+
+                Notes += $"\nArrotondamento {roundingType} (Età: {PatientAge}, HAS-BLED: {PatientHasBledScore}, INR: {InrValue:F1})";
+
+                // Blocca il ricalcolo durante l'applicazione
+                _isApplyingSchedule = true;
+
+                try
+                {
+                    // Genera e applica lo schema settimanale
+                    var weeklySchedule = WarfarinManager.UI.Helpers.DoseDistributionHelper.DistributeWeeklyDose(
+                        roundedDose,
+                        ExcludeQuarterTablets);
+
+                    MondayDose = FindDoseOption(weeklySchedule[0]);
+                    TuesdayDose = FindDoseOption(weeklySchedule[1]);
+                    WednesdayDose = FindDoseOption(weeklySchedule[2]);
+                    ThursdayDose = FindDoseOption(weeklySchedule[3]);
+                    FridayDose = FindDoseOption(weeklySchedule[4]);
+                    SaturdayDose = FindDoseOption(weeklySchedule[5]);
+                    SundayDose = FindDoseOption(weeklySchedule[6]);
+
+                    // Mostra il nomogramma HTML
+                    _dialogService.ShowPengoNomogramHtml(InrValue);
+
+                    _dialogService.ShowInformation(
+                        $"Schema calcolato con successo secondo il nomogramma di Pengo:\n\n" +
+                        $"Fabbisogno settimanale stimato: {estimatedDose:F1} mg\n" +
+                        $"Dose arrotondata {roundingType}: {roundedDose:F1} mg\n\n" +
+                        $"Lo schema settimanale è stato impostato automaticamente.",
+                        "Nomogramma di Pengo Applicato");
+                }
+                finally
+                {
+                    _isApplyingSchedule = false;
+                }
+
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                _dialogService.ShowError($"Errore nell'applicazione del nomogramma di Pengo:\n{ex.Message}");
+            }
         }
 
         /// <summary>

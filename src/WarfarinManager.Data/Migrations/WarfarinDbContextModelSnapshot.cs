@@ -1069,6 +1069,30 @@ namespace WarfarinManager.Data.Migrations
                     b.Property<bool>("IsSlowMetabolizer")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("IsNaive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HasRenalDisease")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HasLiverDisease")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HasStroke")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HasBleedingHistory")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HasLabileINR")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("UsesDrugsIncreasingBleedingRisk")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("UsesAlcohol")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(50)
