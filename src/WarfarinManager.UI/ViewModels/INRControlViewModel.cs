@@ -157,6 +157,9 @@ namespace WarfarinManager.UI.ViewModels
         // Flag per bloccare il ricalcolo durante l'applicazione dello schema
         private bool _isApplyingSchedule = false;
 
+        // Flag per evitare doppia applicazione del nomogramma di Pengo
+        private bool _pengoNomogramAlreadyApplied = false;
+
         #endregion
 
         #region Properties - Suggerimenti
@@ -489,8 +492,13 @@ namespace WarfarinManager.UI.ViewModels
                     // Verifica valutazione 4D anche se non c'è dosaggio
                     _ = CheckAndShowFourDEvaluationAsync();
 
-                    // Calcola suggerimenti solo se c'è un dosaggio
-                    if (CurrentWeeklyDose > 0)
+                    // NON calcolare suggerimenti se:
+                    // - È appena stato applicato il nomogramma di Pengo
+                    // - Siamo in fase di induzione (il dosaggio è gestito dal nomogramma)
+                    bool skipSuggestions = _pengoNomogramAlreadyApplied || SelectedPhase == TherapyPhase.Induction;
+
+                    // Calcola suggerimenti solo se c'è un dosaggio e non siamo in condizioni di skip
+                    if (CurrentWeeklyDose > 0 && !skipSuggestions)
                     {
                         _ = CalculateSuggestionsAsync();
                     }
@@ -635,6 +643,9 @@ namespace WarfarinManager.UI.ViewModels
             {
                 PatientId = patientId;
 
+                // Reset flag nomogramma per nuovo caricamento
+                _pengoNomogramAlreadyApplied = false;
+
                 // Carica dati paziente
                 var patient = await _unitOfWork.Patients.GetByIdAsync(patientId);
                 if (patient == null) return;
@@ -644,6 +655,27 @@ namespace WarfarinManager.UI.ViewModels
                 IsNaivePatient = patient.IsNaive;
                 PatientAge = patient.Age;
                 PatientHasBledScore = patient.HasBledScore;
+
+                // Verifica se il wizard iniziale è stato completato
+                if (!patient.IsInitialWizardCompleted)
+                {
+                    _dialogService.ShowWarning(
+                        "Non è possibile inserire controlli INR per questo paziente.\n\n" +
+                        "È necessario completare prima la configurazione iniziale obbligatoria:\n" +
+                        "• Indicazione alla TAO\n" +
+                        "• Valutazione Pre-TAO\n" +
+                        "• Score CHA2DS2-VASc\n" +
+                        "• Score HAS-BLED\n\n" +
+                        "Accedere ai dettagli del paziente per completare la configurazione.",
+                        "Configurazione Iniziale Richiesta");
+
+                    // Chiudi la finestra
+                    Application.Current.Windows
+                        .OfType<Window>()
+                        .FirstOrDefault(w => w.DataContext == this)?
+                        .Close();
+                    return;
+                }
 
                 // Carica indicazione attiva tramite DbContext
                 var indication = await _unitOfWork.Database.Indications
@@ -1767,6 +1799,7 @@ valutazione clinica finale e della decisione terapeutica.
             SuggestedScheduleText = string.Empty;
             IsManuallyModified = false;
             IsEditMode = false;
+            _pengoNomogramAlreadyApplied = false; // Reset flag nomogramma
         }
 
         private INRControlDto MapToDto(Data.Entities.INRControl control)
@@ -1816,6 +1849,10 @@ valutazione clinica finale e della decisione terapeutica.
                 if (!IsNaivePatient)
                     return;
 
+                // Evita doppia applicazione del nomogramma
+                if (_pengoNomogramAlreadyApplied)
+                    return;
+
                 // Verifica che non ci siano già controlli INR (primo INR)
                 var hasExistingControls = InrHistory != null && InrHistory.Any();
                 if (hasExistingControls)
@@ -1855,6 +1892,9 @@ valutazione clinica finale e della decisione terapeutica.
                 if (!usePengo)
                     return;
 
+                // Imposta il flag per evitare doppia applicazione
+                _pengoNomogramAlreadyApplied = true;
+
                 // Imposta la fase come "Induction"
                 SelectedPhase = TherapyPhase.Induction;
 
@@ -1868,26 +1908,21 @@ valutazione clinica finale e della decisione terapeutica.
                     PatientHasBledScore,
                     InrValue);
 
-                // Aggiorna le note cliniche
-                Notes = $"Stima fabbisogno effettuata seguendo il nomogramma di Pengo (2001)\n" +
-                        $"Dose stimata: {estimatedDose:F1} mg/sett → Dose arrotondata: {roundedDose:F1} mg/sett";
-
                 // Determina tipo di arrotondamento per informazione
                 string roundingType = (PatientAge > 75 || PatientHasBledScore >= 3 || InrValue > 2.5m)
                     ? "per difetto"
                     : "per eccesso";
 
-                Notes += $"\nArrotondamento {roundingType} (Età: {PatientAge}, HAS-BLED: {PatientHasBledScore}, INR: {InrValue:F1})";
+                // Genera e applica lo schema settimanale (dichiarato fuori dal try per usarlo nel finally)
+                decimal[] weeklySchedule = WarfarinManager.UI.Helpers.DoseDistributionHelper.DistributeWeeklyDose(
+                    roundedDose,
+                    ExcludeQuarterTablets);
 
                 // Blocca il ricalcolo durante l'applicazione
                 _isApplyingSchedule = true;
 
                 try
                 {
-                    // Genera e applica lo schema settimanale
-                    var weeklySchedule = WarfarinManager.UI.Helpers.DoseDistributionHelper.DistributeWeeklyDose(
-                        roundedDose,
-                        ExcludeQuarterTablets);
 
                     MondayDose = FindDoseOption(weeklySchedule[0]);
                     TuesdayDose = FindDoseOption(weeklySchedule[1]);
@@ -1897,19 +1932,30 @@ valutazione clinica finale e della decisione terapeutica.
                     SaturdayDose = FindDoseOption(weeklySchedule[5]);
                     SundayDose = FindDoseOption(weeklySchedule[6]);
 
-                    // Mostra il nomogramma HTML
+                    // Aggiorna le note cliniche DOPO aver impostato lo schema
+                    // così CurrentWeeklyDose è già aggiornato
+                    Notes = $"Stima fabbisogno effettuata seguendo il nomogramma di Pengo (2001)\n" +
+                            $"Dose stimata: {estimatedDose:F1} mg/sett → Dose arrotondata: {roundedDose:F1} mg/sett\n" +
+                            $"Arrotondamento {roundingType} (Età: {PatientAge}, HAS-BLED: {PatientHasBledScore}, INR: {InrValue:F1})";
+
+                    // Mostra il nomogramma HTML interattivo
                     _dialogService.ShowPengoNomogramHtml(InrValue);
 
+                    // Notifica all'utente che lo schema è stato applicato
                     _dialogService.ShowInformation(
-                        $"Schema calcolato con successo secondo il nomogramma di Pengo:\n\n" +
-                        $"Fabbisogno settimanale stimato: {estimatedDose:F1} mg\n" +
-                        $"Dose arrotondata {roundingType}: {roundedDose:F1} mg\n\n" +
+                        $"Schema settimanale calcolato secondo il nomogramma di Pengo:\n\n" +
+                        $"• Fabbisogno stimato: {estimatedDose:F1} mg/sett\n" +
+                        $"• Dose arrotondata {roundingType}: {roundedDose:F1} mg/sett\n\n" +
                         $"Lo schema settimanale è stato impostato automaticamente.",
-                        "Nomogramma di Pengo Applicato");
+                        "Schema Applicato");
                 }
                 finally
                 {
                     _isApplyingSchedule = false;
+
+                    // NON chiamare CalculateSuggestionsAsync() qui perché sovrascrive la dose del nomogramma!
+                    // Invece, crea manualmente i suggerimenti che mostrano la dose del nomogramma senza modifiche
+                    CreatePengoNomogramSuggestions(roundedDose, weeklySchedule);
                 }
 
                 await Task.CompletedTask;
@@ -1921,12 +1967,84 @@ valutazione clinica finale e della decisione terapeutica.
         }
 
         /// <summary>
+        /// Crea suggerimenti personalizzati per il nomogramma di Pengo (senza modifiche alla dose)
+        /// </summary>
+        private void CreatePengoNomogramSuggestions(decimal roundedDose, decimal[] weeklySchedule)
+        {
+            // Determina se l'INR è effettivamente nel range (anche se in fase di induzione)
+            bool isActuallyInRange = InrValue >= TargetINRMin && InrValue <= TargetINRMax;
+
+            // Crea un suggerimento "fittizio" che mostra la dose del nomogramma senza modificarla
+            var pengoSuggestion = new DosageSuggestionResult
+            {
+                GuidelineUsed = GuidelineType.FCSA,
+                CurrentINR = InrValue,
+                TargetINRMin = TargetINRMin,
+                TargetINRMax = TargetINRMax,
+                CurrentWeeklyDoseMg = CurrentWeeklyDose,
+                SuggestedWeeklyDoseMg = roundedDose, // Dose del nomogramma, NON modificata
+                PercentageAdjustment = 0, // Nessun aggiustamento
+                IsInRange = isActuallyInRange, // Verifica reale se è in range
+                NextControlDays = 7, // Controllo settimanale durante induzione
+                LoadingDoseAction = string.Empty, // Nessuna azione speciale (evita warning arancione)
+                SospensioneDosi = 0, // IMPORTANTE: Nessuna sospensione (evita warning arancione)
+                DoseSupplementarePrimoGiorno = null, // Nessuna dose supplementare
+                ClinicalNotes = "Fase di induzione con nomogramma di Pengo. Mantenere questa dose per almeno 7 giorni.",
+                FonteRaccomandazione = "Nomogramma di Pengo (2001)",
+                UrgencyLevel = UrgencyLevel.Routine,
+                Warnings = new List<string>() // IMPORTANTE: Nessun warning durante fase di induzione
+            };
+
+            // Imposta lo stesso suggerimento per entrambe le linee guida
+            FcsaSuggestion = pengoSuggestion;
+            AccpSuggestion = pengoSuggestion;
+            ActiveSuggestion = pengoSuggestion;
+
+            HasSuggestions = true;
+
+            // Genera schema distribuito
+            SuggestedDistributedSchedule = weeklySchedule;
+            SuggestedScheduleText = DoseDistributionHelper.GenerateShortSchedule(weeklySchedule);
+
+            // Popola i dropdown delle dosi suggerite
+            UpdateSuggestedDoseDropdowns();
+
+            // Aggiorna status INR - ma con messaggio personalizzato per fase di induzione
+            UpdateINRStatusForInduction(isActuallyInRange);
+        }
+
+        /// <summary>
+        /// Aggiorna lo status INR durante la fase di induzione (messaggio diverso)
+        /// </summary>
+        private void UpdateINRStatusForInduction(bool isInRange)
+        {
+            if (isInRange)
+            {
+                InrStatusText = "✓ INR IN RANGE (Fase induzione)";
+                InrStatusColor = "#107C10"; // Verde
+            }
+            else
+            {
+                InrStatusText = "⏳ FASE INDUZIONE (Titolazione in corso)";
+                InrStatusColor = "#0078D4"; // Blu - neutro, non warning
+            }
+        }
+
+        /// <summary>
         /// Verifica se l'INR è significativamente fuori range e mostra il dialog di valutazione 4D
         /// </summary>
         public async Task CheckAndShowFourDEvaluationAsync()
         {
             // Verifica che ci sia un target INR valido
             if (TargetINRMin <= 0 || TargetINRMax <= 0)
+                return;
+
+            // NON mostrare valutazione 4D per pazienti naive al primo INR
+            if (IsNaivePatient && (InrHistory == null || !InrHistory.Any()))
+                return;
+
+            // NON mostrare valutazione 4D durante la fase di induzione
+            if (SelectedPhase == TherapyPhase.Induction)
                 return;
 
             // Soglia: INR molto fuori range (± 0.5 dal target)
