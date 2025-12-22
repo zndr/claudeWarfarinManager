@@ -111,13 +111,12 @@
                                 <TextBlock
                                     FontSize="16"
                                     FontWeight="SemiBold"
-                                    Text="Versione 1.1.2 (21 Dicembre 2025)" />
+                                    Text="Versione 1.2.1 (22 Dicembre 2025)" />
                                 <TextBlock
                                     Margin="0,10,0,5"
                                     FontWeight="SemiBold"
-                                    Text="Miglioramenti UI:" />
-                                <TextBlock Margin="10,3" Text="• Aggiunta icona ufficiale TaoGEST nella taskbar di Windows" />
-                                <TextBlock Margin="10,3" Text="• Rimossa etichetta Beta (prodotto maturo e stabile)" />
+                                    Text="Feature:" />
+                                <TextBlock Margin="10,3" Text="• Aggiunto sistema automatico di controllo degli aggiornamenti" />
                                 <TextBlock
                                     Margin="0,10,0,5"
                                     FontWeight="SemiBold"
@@ -126,7 +125,7 @@
                             </StackPanel>
                         </Border>
 
-                        <!--  Versione 1.1.1  -->
+                        <!--  Versione 1.1.2  -->
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"

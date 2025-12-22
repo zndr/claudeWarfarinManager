@@ -1,38 +1,41 @@
 ═══════════════════════════════════════════════════════════════
   TaoGEST - Gestione Terapia Anticoagulante Orale
-  Note di Rilascio - Versione 1.1.2
+  Note di Rilascio - Versione 1.2.1
 ═══════════════════════════════════════════════════════════════
 
-Data Rilascio: 21 Dicembre 2025
+Data Rilascio: 22 Dicembre 2025
 
-MIGLIORAMENTI UI
+MIGLIORAMENTI DOCUMENTAZIONE
 ─────────────────────────────────────────────────────────────
 
-✨ Nuova Icona Applicazione
-  • Aggiunta icona ufficiale TaoGEST nella taskbar di Windows
-  • Icona visibile nel menu di sistema e nella barra delle applicazioni
-  • Identità visiva professionale e riconoscibile
+📚 Guide Complete per Sviluppatori
+  • GUIDA-AGGIORNAMENTO-VERSIONE.md: Procedura dettagliata per
+    aggiornare tutti i riferimenti di versione e changelog
+  • GUIDA-RELEASE-GITHUB.md: Guida completa per creare release
+    su GitHub con gh CLI
+  • GUIDA-RAPIDA-HASH.md: Calcolo hash SHA256 per verifica integrità
 
-✨ Interfaccia Utente Aggiornata
-  • Aggiornato testo versione da "1.0.0.0 - Beta" a "Versione 1.1.2"
-  • Rimossa etichetta Beta (prodotto maturo e stabile)
-  • Interfaccia più pulita e professionale
+📋 Sistema Aggiornamenti
+  • AGGIORNAMENTI-HTTPS.md: Documentazione completa sistema
+    aggiornamenti automatici via HTTPS
+  • Configurazione e test del controllo aggiornamenti
+  • Workflow completo per nuove release
 
-DOCUMENTAZIONE
+FEATURE VERSIONE 1.2.0
 ─────────────────────────────────────────────────────────────
 
-📄 Changelog Strutturato
-  • Aggiunto file CHANGELOG.md nella root del progetto
-  • Storico completo di tutte le versioni rilasciate
-  • Formato standard seguendo Keep a Changelog
+🆕 Sistema Aggiornamenti Automatici
+  • Controllo automatico aggiornamenti via HTTPS
+  • Notifiche per nuove versioni disponibili
+  • Download diretto installer dalla finestra di notifica
+  • Controllo periodico in background (ogni 24h)
+  • Verifica integrità file con hash SHA256
 
-MIGLIORAMENTI TECNICI
-─────────────────────────────────────────────────────────────
-
-⚙️ Gestione Versioni Centralizzata
-  • Sistema di versioning centralizzato tramite Version.props
-  • Consistenza versione in tutti i componenti dell'applicazione
-  • Semplificazione processo di release
+🔒 Sicurezza
+  • Sistema aggiornamenti basato su HTTPS pubblico
+  • Nessuna credenziale richiesta nel codice
+  • Verifica hash SHA256 per integrità download
+  • Protezione contro file modificati o corrotti
 
 REQUISITI DI SISTEMA
 ─────────────────────────────────────────────────────────────
@@ -46,7 +49,7 @@ REQUISITI DI SISTEMA
 INSTALLAZIONE
 ─────────────────────────────────────────────────────────────
 
-1. Eseguire TaoGEST-Setup-v1.1.2.exe
+1. Eseguire TaoGEST-Setup-v1.2.1.exe
 2. Seguire le istruzioni dell'installazione guidata
 3. Al primo avvio verrà creato il database locale
 4. Configurare i dati del medico in Impostazioni
@@ -60,30 +63,20 @@ AGGIORNAMENTO DA VERSIONE PRECEDENTE
 Il database si trova in:
 %LocalAppData%\WarfarinManager\warfarin.db
 
-CHANGELOG DA v1.1.1
+CHANGELOG DA v1.2.0
 ─────────────────────────────────────────────────────────────
 
-Questa versione è un aggiornamento minore che migliora l'identità
-visiva dell'applicazione e introduce una documentazione strutturata
-del progetto. Include l'icona ufficiale e rimuove l'etichetta Beta.
-
-PROSSIMI SVILUPPI (Roadmap v1.2.0)
-─────────────────────────────────────────────────────────────
-
-• Export dati in formato Excel
-• Grafici TTR (Time in Therapeutic Range)
-• Stampa schema settimanale personalizzato
-• Importazione dati da file CSV
-• Dashboard riepilogativa per paziente
+Questa versione è un aggiornamento minore che migliora la
+documentazione del progetto per facilitare il processo di
+sviluppo e rilascio di nuove versioni.
 
 SUPPORTO
 ─────────────────────────────────────────────────────────────
 
 Per segnalazioni bug o richieste di funzionalità:
-Email: supporto@taogest.it
-GitHub: https://github.com/studio-medico/taogest
+GitHub: https://github.com/zndr/claudeWarfarinManager
 
 ═══════════════════════════════════════════════════════════════
-© 2025 Studio Medico - TaoGEST
+© 2025 - dr Dario Giorgio Zani
 Tutti i diritti riservati
 ═══════════════════════════════════════════════════════════════

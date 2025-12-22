@@ -5,6 +5,39 @@ Tutte le modifiche importanti a questo progetto saranno documentate in questo fi
 Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.0.0/),
 e questo progetto aderisce al [Semantic Versioning](https://semver.org/lang/it/).
 
+## [1.2.1] - 2025-12-22
+
+### Added
+- GUIDA-AGGIORNAMENTO-VERSIONE.md: Guida completa per aggiornare tutti i riferimenti di versione
+- GUIDA-RELEASE-GITHUB.md: Procedura dettagliata per creare release su GitHub
+- Script Update-Version.ps1 migliorato per aggiornamenti centralizzati
+
+### Changed
+- Migliorata documentazione sistema aggiornamenti HTTPS
+- Aggiornati tutti i riferimenti di versione in modo consistente
+- AboutDialog.xaml ora mostra changelog versione 1.2.1
+
+## [1.2.0] - 2025-12-22
+
+### Added
+- Sistema di controllo automatico aggiornamenti via HTTPS
+- Notifiche per nuove versioni disponibili con dettagli release
+- Download diretto installer dalla finestra di notifica
+- Controllo periodico in background ogni 24 ore
+- Verifica integrità file con hash SHA256
+- AGGIORNAMENTI-HTTPS.md: Documentazione completa sistema aggiornamenti
+- GUIDA-RAPIDA-HASH.md: Guida per calcolo hash SHA256
+
+### Changed
+- Migrato sistema aggiornamenti da FTP a HTTPS pubblico
+- Ottimizzate prestazioni database
+- Miglioramenti interfaccia utente
+
+### Security
+- Sistema aggiornamenti basato su HTTPS pubblico (no credenziali)
+- Verifica hash SHA256 per integrità download
+- Protezione contro file modificati o corrotti
+
 ## [1.1.2] - 2025-12-21
 
 ### Added
