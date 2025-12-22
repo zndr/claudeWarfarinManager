@@ -2,8 +2,10 @@ using System;
 using System.IO;
 using System.Windows;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using WarfarinManager.Core.Interfaces;
 using WarfarinManager.Core.Services;
@@ -33,9 +35,14 @@ public partial class App : Application
 
         _host = Host.CreateDefaultBuilder()
             .UseSerilog()
+            .ConfigureAppConfiguration((context, config) =>
+            {
+                config.SetBasePath(AppDomain.CurrentDomain.BaseDirectory);
+                config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            })
             .ConfigureServices((context, services) =>
             {
-                ConfigureServices(services);
+                ConfigureServices(services, context.Configuration);
             })
             .Build();
     }
@@ -60,7 +67,7 @@ public partial class App : Application
         Log.Information("WarfarinManager Pro avviato");
     }
 
-    private void ConfigureServices(IServiceCollection services)
+    private void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         // Database
         var dbPath = Path.Combine(
@@ -82,6 +89,19 @@ public partial class App : Application
         services.AddScoped<IBridgeTherapyService, BridgeTherapyService>();
         services.AddScoped<ISwitchCalculatorService, SwitchCalculatorService>();
 
+        // Update Checker Service
+        services.AddSingleton<IUpdateCheckerService>(sp =>
+        {
+            var logger = sp.GetRequiredService<ILogger<UpdateCheckerService>>();
+            var ftpHost = configuration.GetValue<string>("UpdateChecker:FtpHost") ?? "";
+            var ftpUsername = configuration.GetValue<string>("UpdateChecker:FtpUsername") ?? "";
+            var ftpPassword = configuration.GetValue<string>("UpdateChecker:FtpPassword") ?? "";
+            var versionFileName = configuration.GetValue<string>("UpdateChecker:VersionFileName") ?? "version.json";
+            var timeoutSeconds = configuration.GetValue<int>("UpdateChecker:TimeoutSeconds", 30);
+
+            return new UpdateCheckerService(logger, ftpHost, ftpUsername, ftpPassword, versionFileName, timeoutSeconds);
+        });
+
         // UI Services
         services.AddSingleton<INavigationService, NavigationService>();
         services.AddSingleton<IDialogService, DialogService>();
@@ -89,6 +109,7 @@ public partial class App : Application
         services.AddScoped<PatientSummaryPdfService>();
         services.AddScoped<BridgeTherapyPdfService>();
         services.AddScoped<WeeklySchedulePdfService>();
+        services.AddSingleton<UpdateNotificationService>();
 
         // ViewModels
         services.AddTransient<MainViewModel>();
@@ -138,6 +159,10 @@ public partial class App : Application
 
             // Assicura che il database esista e sia aggiornato
             await EnsureDatabaseAsync();
+
+            // Avvia il servizio di controllo aggiornamenti
+            var updateService = _host.Services.GetRequiredService<UpdateNotificationService>();
+            updateService.Start();
 
             // Ottieni MainWindow dal DI container
             var mainWindow = _host.Services.GetRequiredService<MainWindow>();

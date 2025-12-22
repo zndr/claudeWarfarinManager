@@ -1,6 +1,33 @@
-# Script di Sincronizzazione Guide TaoGEST
+# 📜 Scripts TaoGEST
 
-Questi script automatizzano la sincronizzazione dei file delle guide dalla cartella `docs` alla cartella `Resources\Guides` del progetto.
+Raccolta di script PowerShell per automatizzare operazioni comuni nello sviluppo di TaoGEST.
+
+## 🔢 Update-Version.ps1
+
+Aggiorna la versione del progetto in modo centralizzato.
+
+```powershell
+.\Update-Version.ps1 -NewVersion "1.2.0.0"
+```
+
+---
+
+## 🔐 Calculate-InstallerHash.ps1
+
+Calcola l'hash SHA256 dell'installer per verifica integrità.
+
+```powershell
+# Calcola hash e aggiorna automaticamente version.json
+.\Calculate-InstallerHash.ps1 -UpdateVersionJson
+```
+
+Vedi [GUIDA-RAPIDA-HASH.md](../GUIDA-RAPIDA-HASH.md) per dettagli completi.
+
+---
+
+## 📚 sync-guides.ps1
+
+Sincronizza le guide HTML/PDF dalla cartella `docs` alla cartella `Resources\Guides` del progetto.
 
 ## 📋 File Sincronizzati
 

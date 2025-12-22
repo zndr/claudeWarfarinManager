@@ -274,12 +274,17 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void CheckUpdates()
+    private async Task CheckUpdates()
     {
-        var version = Assembly.GetExecutingAssembly().GetName().Version;
-        var versionString = version != null ? $"{version.Major}.{version.Minor}.{version.Build}" : "1.1.2";
-
-        _dialogService.ShowInformation($"Nessun aggiornamento disponibile.\n\nVersione corrente: {versionString}", "Verifica aggiornamenti");
+        try
+        {
+            var updateService = _serviceProvider.GetRequiredService<UpdateNotificationService>();
+            await updateService.CheckForUpdatesAsync(showNoUpdateMessage: true);
+        }
+        catch (Exception ex)
+        {
+            _dialogService.ShowError($"Errore durante il controllo degli aggiornamenti:\n{ex.Message}", "Errore");
+        }
     }
 
     [RelayCommand]

@@ -1,0 +1,18 @@
+{
+  "UpdateChecker": {
+    "Enabled": true,
+    "FtpHost": "ftp://your-ftp-server.com/path/to/updates",
+    "FtpUsername": "your-username",
+    "FtpPassword": "your-password",
+    "VersionFileName": "version.json",
+    "TimeoutSeconds": 30,
+    "CheckIntervalHours": 24,
+    "CheckOnStartup": true
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning"
+    }
+  }
+}

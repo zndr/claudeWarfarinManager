@@ -1,0 +1,9 @@
+{
+  "Version": "1.2.0",
+  "DownloadUrl": "https://www.example.com/downloads/TaoGEST-Setup-v1.2.0.exe",
+  "ReleaseDate": "2025-01-15T00:00:00",
+  "IsCritical": false,
+  "FileSize": 52428800,
+  "Sha256Hash": "abc123def456...",
+  "ReleaseNotes": "Novità in TaoGEST v1.2.0:\n\n• Controllo automatico aggiornamenti via FTP\n• Notifiche per nuove versioni disponibili\n• Miglioramenti all'interfaccia utente\n• Correzione bug minori\n• Ottimizzazione prestazioni database\n\nPer ulteriori dettagli visitare:\nhttps://www.example.com/changelog"
+}
