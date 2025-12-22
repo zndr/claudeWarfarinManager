@@ -61,8 +61,9 @@ public class UpdateNotificationService : IDisposable
         var checkOnStartup = _configuration.GetValue("UpdateChecker:CheckOnStartup", true);
         if (checkOnStartup)
         {
-            _logger.LogInformation("Avvio controllo aggiornamenti all'avvio");
-            Task.Run(() => CheckForUpdatesAsync(true));
+            _logger.LogInformation("Avvio controllo aggiornamenti all'avvio (modalità silenziosa)");
+            // Passa false per non mostrare messaggi quando non ci sono aggiornamenti
+            Task.Run(() => CheckForUpdatesAsync(false));
         }
 
         _timer.Start();
@@ -97,7 +98,7 @@ public class UpdateNotificationService : IDisposable
                     updateInfo.Version,
                     _currentVersion);
 
-                // Mostra la finestra di notifica nel thread UI
+                // Mostra la finestra di notifica nel thread UI SOLO quando c'è un aggiornamento
                 await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
                     ShowUpdateNotification(updateInfo);
@@ -105,8 +106,10 @@ public class UpdateNotificationService : IDisposable
             }
             else
             {
-                _logger.LogInformation("Nessun aggiornamento disponibile");
+                _logger.LogInformation("Nessun aggiornamento disponibile. Versione corrente: {CurrentVersion}", _currentVersion);
 
+                // NON mostrare alcun messaggio quando non ci sono aggiornamenti (comportamento silenzioso)
+                // Il messaggio viene mostrato SOLO se l'utente controlla manualmente (showNoUpdateMessage = true)
                 if (showNoUpdateMessage)
                 {
                     await Application.Current.Dispatcher.InvokeAsync(() =>
@@ -124,6 +127,8 @@ public class UpdateNotificationService : IDisposable
         {
             _logger.LogError(ex, "Errore durante il controllo degli aggiornamenti");
 
+            // NON mostrare errori durante il controllo automatico all'avvio
+            // Gli errori vengono mostrati SOLO per controlli manuali
             if (showNoUpdateMessage)
             {
                 await Application.Current.Dispatcher.InvokeAsync(() =>

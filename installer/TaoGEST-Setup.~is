@@ -1,10 +1,10 @@
 ; Script Inno Setup per TaoGEST - Gestione Terapia Anticoagulante Orale
-; Versione 1.2.2.1
+; Versione 1.1.0
 
 #define MyAppName "TaoGEST"
-#define MyAppVersion "1.2.2.1"
-#define MyAppPublisher "dr Dario Giorgio Zani"
-#define MyAppURL "https://dottorgiorgio.it"
+#define MyAppVersion "1.1.0"
+#define MyAppPublisher "Studio Medico"
+#define MyAppURL "https://taogest.it"
 #define MyAppExeName "WarfarinManager.UI.exe"
 #define MyAppDescription "Gestione Terapia Anticoagulante Orale"
 
@@ -25,7 +25,7 @@ LicenseFile=..\LICENSE.txt
 InfoBeforeFile=..\docs\ReleaseNotes.txt
 OutputDir=..\publish
 OutputBaseFilename=TaoGEST-Setup-v{#MyAppVersion}
-SetupIconFile=..\src\WarfarinManager.UI\Resources\Icons\taogest.ico
+;SetupIconFile=..\src\WarfarinManager.UI\Resources\Icons\app-icon.ico
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
