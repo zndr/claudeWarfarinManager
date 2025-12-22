@@ -1,9 +1,9 @@
 {
-  "Version": "1.2.2.2",
-  "DownloadUrl": "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.2.2.2/TaoGEST-Setup-v1.2.2.2.exe",
+  "Version": "1.2.3",
+  "DownloadUrl": "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.2.3/TaoGEST-Setup-v1.2.3.exe",
   "ReleaseDate": "2025-12-22T00:00:00",
   "IsCritical": false,
-  "FileSize": 66467182,
-  "Sha256Hash": "a61e06837d3f7dd1536c1cde5cfb530f4249b6c27151e5fbe2ed4b96dcd47a02",
-  "ReleaseNotes": "🐛 TaoGEST v1.2.2.2 - Bugfix Controllo Aggiornamenti\n\n🔧 BUG RISOLTI:\n• Corretto bug che mostrava notifica di aggiornamento anche quando la versione era già aggiornata\n• Migliorata lettura versione assembly usando GetEntryAssembly()\n• Aggiunto logging dettagliato per diagnostica confronto versioni\n\n📋 DETTAGLI TECNICI:\n• UpdateNotificationService ora usa GetEntryAssembly() invece di GetExecutingAssembly()\n• AboutDialog mostra versione completa a 4 componenti (es. 1.2.2.2)\n• Logging dettagliato del confronto versioni per debug\n\n📥 INSTALLAZIONE:\n1. Chiudi TaoGEST se aperto\n2. Scarica e installa l'aggiornamento\n3. Riavvia l'applicazione\n\nPer maggiori dettagli:\nhttps://github.com/zndr/claudeWarfarinManager/releases/tag/v1.2.2.2"
+  "FileSize": 18966731,
+  "Sha256Hash": "056750282249018ab27e7a2e7bfc8b3953e6c438a59b502100a4ef50c1603f57",
+  "ReleaseNotes": "🐛 TaoGEST v1.2.3 - Compatibilità Database & Schermi Piccoli\n\n🔧 BUG RISOLTI:\n• Risolto errore 'no such column certaintyLevel' su database legacy (v1.0.0)\n• Correzione automatica schema database all'avvio\n\n🖥️ SUPPORTO SCHERMI PICCOLI:\n• Finestra Controllo INR adattiva per laptop 15\"\n• Finestra Modifica INR ora ridimensionabile\n• Le finestre si centrano correttamente su tutti gli schermi\n\n📥 INSTALLAZIONE:\n1. Chiudi TaoGEST se aperto\n2. Scarica e installa l'aggiornamento\n3. Riavvia l'applicazione\n\nPer maggiori dettagli:\nhttps://github.com/zndr/claudeWarfarinManager/releases/tag/v1.2.3"
 }
