@@ -3,7 +3,7 @@
   "DownloadUrl": "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.2.2.2/TaoGEST-Setup-v1.2.2.2.exe",
   "ReleaseDate": "2025-12-22T00:00:00",
   "IsCritical": false,
-  "FileSize": 66466235,
-  "Sha256Hash": "160c6c74c981bbf11e1fcd0c3b19c5d72d37ceacc57a62d1372e08cd657e3eb3",
+  "FileSize": 66467182,
+  "Sha256Hash": "a61e06837d3f7dd1536c1cde5cfb530f4249b6c27151e5fbe2ed4b96dcd47a02",
   "ReleaseNotes": "🐛 TaoGEST v1.2.2.2 - Bugfix Controllo Aggiornamenti\n\n🔧 BUG RISOLTI:\n• Corretto bug che mostrava notifica di aggiornamento anche quando la versione era già aggiornata\n• Migliorata lettura versione assembly usando GetEntryAssembly()\n• Aggiunto logging dettagliato per diagnostica confronto versioni\n\n📋 DETTAGLI TECNICI:\n• UpdateNotificationService ora usa GetEntryAssembly() invece di GetExecutingAssembly()\n• AboutDialog mostra versione completa a 4 componenti (es. 1.2.2.2)\n• Logging dettagliato del confronto versioni per debug\n\n📥 INSTALLAZIONE:\n1. Chiudi TaoGEST se aperto\n2. Scarica e installa l'aggiornamento\n3. Riavvia l'applicazione\n\nPer maggiori dettagli:\nhttps://github.com/zndr/claudeWarfarinManager/releases/tag/v1.2.2.2"
 }
