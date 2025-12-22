@@ -5,6 +5,17 @@ Tutte le modifiche importanti a questo progetto saranno documentate in questo fi
 Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.0.0/),
 e questo progetto aderisce al [Semantic Versioning](https://semver.org/lang/it/).
 
+## [1.2.2] - 2025-12-22
+
+### Fixed
+- Risolto problema critico: sistema aggiornamenti non rilevava nuove versioni
+- Configurato correttamente URL HTTPS in appsettings.Production.json
+- Aggiornato valore di default hardcoded in App.xaml.cs per URL version.json
+
+### Changed
+- Aggiunto appsettings.Production.json con configurazione production-ready
+- URL configurato: https://raw.githubusercontent.com/zndr/claudeWarfarinManager/master/version.json
+
 ## [1.2.1] - 2025-12-22
 
 ### Added

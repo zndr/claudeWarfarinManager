@@ -1,27 +1,20 @@
 ═══════════════════════════════════════════════════════════════
   TaoGEST - Gestione Terapia Anticoagulante Orale
-  Note di Rilascio - Versione 1.2.1
+  Note di Rilascio - Versione 1.2.2
 ═══════════════════════════════════════════════════════════════
 
 Data Rilascio: 22 Dicembre 2025
 
-MIGLIORAMENTI DOCUMENTAZIONE
+CORREZIONE CRITICA
 ─────────────────────────────────────────────────────────────
 
-📚 Guide Complete per Sviluppatori
-  • GUIDA-AGGIORNAMENTO-VERSIONE.md: Procedura dettagliata per
-    aggiornare tutti i riferimenti di versione e changelog
-  • GUIDA-RELEASE-GITHUB.md: Guida completa per creare release
-    su GitHub con gh CLI
-  • GUIDA-RAPIDA-HASH.md: Calcolo hash SHA256 per verifica integrità
+🔧 Sistema Aggiornamenti
+  • Risolto problema critico che impediva il rilevamento automatico
+    delle nuove versioni disponibili
+  • Configurato correttamente URL HTTPS per controllo aggiornamenti
+  • Il sistema ora verifica correttamente la disponibilità di update
 
-📋 Sistema Aggiornamenti
-  • AGGIORNAMENTI-HTTPS.md: Documentazione completa sistema
-    aggiornamenti automatici via HTTPS
-  • Configurazione e test del controllo aggiornamenti
-  • Workflow completo per nuove release
-
-FEATURE VERSIONE 1.2.0
+FEATURE VERSIONE 1.2.0 (Mantenute)
 ─────────────────────────────────────────────────────────────
 
 🆕 Sistema Aggiornamenti Automatici
@@ -49,7 +42,7 @@ REQUISITI DI SISTEMA
 INSTALLAZIONE
 ─────────────────────────────────────────────────────────────
 
-1. Eseguire TaoGEST-Setup-v1.2.1.exe
+1. Eseguire TaoGEST-Setup-v1.2.2.exe
 2. Seguire le istruzioni dell'installazione guidata
 3. Al primo avvio verrà creato il database locale
 4. Configurare i dati del medico in Impostazioni
@@ -63,12 +56,15 @@ AGGIORNAMENTO DA VERSIONE PRECEDENTE
 Il database si trova in:
 %LocalAppData%\WarfarinManager\warfarin.db
 
-CHANGELOG DA v1.2.0
+CHANGELOG DA v1.2.1
 ─────────────────────────────────────────────────────────────
 
-Questa versione è un aggiornamento minore che migliora la
-documentazione del progetto per facilitare il processo di
-sviluppo e rilascio di nuove versioni.
+Questa è una versione di correzione critica (hotfix) che risolve
+il problema del sistema di aggiornamento automatico introdotto
+nella versione 1.2.0.
+
+Si raccomanda vivamente l'aggiornamento per assicurarsi di
+ricevere tutte le future notifiche di aggiornamento.
 
 SUPPORTO
 ─────────────────────────────────────────────────────────────
