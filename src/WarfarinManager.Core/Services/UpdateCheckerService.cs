@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Logging;
-using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text.Json;
 using WarfarinManager.Core.Models;
@@ -7,31 +7,22 @@ using WarfarinManager.Core.Models;
 namespace WarfarinManager.Core.Services;
 
 /// <summary>
-/// Implementazione del servizio per il controllo automatico degli aggiornamenti via FTP
+/// Implementazione del servizio per il controllo automatico degli aggiornamenti via HTTPS
 /// </summary>
 public class UpdateCheckerService : IUpdateCheckerService
 {
     private readonly ILogger<UpdateCheckerService> _logger;
-    private readonly string _ftpHost;
-    private readonly string _ftpUsername;
-    private readonly string _ftpPassword;
-    private readonly string _versionFileName;
-    private readonly TimeSpan _timeout;
+    private readonly HttpClient _httpClient;
+    private readonly string _versionFileUrl;
 
     public UpdateCheckerService(
         ILogger<UpdateCheckerService> logger,
-        string ftpHost,
-        string ftpUsername,
-        string ftpPassword,
-        string versionFileName = "version.json",
-        int timeoutSeconds = 30)
+        HttpClient httpClient,
+        string versionFileUrl)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _ftpHost = ftpHost ?? throw new ArgumentNullException(nameof(ftpHost));
-        _ftpUsername = ftpUsername ?? throw new ArgumentNullException(nameof(ftpUsername));
-        _ftpPassword = ftpPassword ?? throw new ArgumentNullException(nameof(ftpPassword));
-        _versionFileName = versionFileName;
-        _timeout = TimeSpan.FromSeconds(timeoutSeconds);
+        _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        _versionFileUrl = versionFileUrl ?? throw new ArgumentNullException(nameof(versionFileUrl));
     }
 
     public async Task<UpdateInfo?> CheckForUpdateAsync(string currentVersion, CancellationToken cancellationToken = default)
@@ -40,7 +31,7 @@ public class UpdateCheckerService : IUpdateCheckerService
         {
             _logger.LogInformation("Controllo aggiornamenti disponibili. Versione corrente: {CurrentVersion}", currentVersion);
 
-            // Scarica il file version.json dal server FTP
+            // Scarica il file version.json dal server HTTPS
             var versionJson = await DownloadVersionFileAsync(cancellationToken);
 
             if (string.IsNullOrWhiteSpace(versionJson))
@@ -103,36 +94,28 @@ public class UpdateCheckerService : IUpdateCheckerService
 
     private async Task<string> DownloadVersionFileAsync(CancellationToken cancellationToken)
     {
-        var ftpUrl = $"{_ftpHost.TrimEnd('/')}/{_versionFileName}";
-
-        _logger.LogDebug("Download file versione da: {FtpUrl}", ftpUrl);
-
-        var request = (FtpWebRequest)WebRequest.Create(ftpUrl);
-        request.Method = WebRequestMethods.Ftp.DownloadFile;
-        request.Credentials = new NetworkCredential(_ftpUsername, _ftpPassword);
-        request.Timeout = (int)_timeout.TotalMilliseconds;
-        request.UseBinary = true;
-        request.UsePassive = true;
-        request.KeepAlive = false;
-
-        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        cts.CancelAfter(_timeout);
+        _logger.LogDebug("Download file versione da: {Url}", _versionFileUrl);
 
         try
         {
-            using var response = (FtpWebResponse)await request.GetResponseAsync();
-            using var stream = response.GetResponseStream();
-            using var reader = new StreamReader(stream);
+            var response = await _httpClient.GetAsync(_versionFileUrl, cancellationToken);
+            response.EnsureSuccessStatusCode();
 
-            var content = await reader.ReadToEndAsync(cts.Token);
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
 
             _logger.LogDebug("File versione scaricato con successo. Dimensione: {Size} bytes", content.Length);
 
             return content;
         }
-        catch (WebException ex) when (ex.Response is FtpWebResponse ftpResponse)
+        catch (HttpRequestException ex)
         {
-            _logger.LogError(ex, "Errore FTP durante il download. Status: {Status}", ftpResponse.StatusDescription);
+            _logger.LogError(ex, "Errore HTTP durante il download da {Url}. Status: {Status}",
+                _versionFileUrl, ex.StatusCode);
+            throw;
+        }
+        catch (TaskCanceledException ex)
+        {
+            _logger.LogWarning(ex, "Timeout durante il download da {Url}", _versionFileUrl);
             throw;
         }
     }

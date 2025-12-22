@@ -1,10 +1,12 @@
 using System;
 using System.IO;
+using System.Net.Http;
 using System.Windows;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using WarfarinManager.Core.Interfaces;
@@ -89,17 +91,23 @@ public partial class App : Application
         services.AddScoped<IBridgeTherapyService, BridgeTherapyService>();
         services.AddScoped<ISwitchCalculatorService, SwitchCalculatorService>();
 
+        // HttpClient per Update Checker
+        services.AddHttpClient();
+
         // Update Checker Service
         services.AddSingleton<IUpdateCheckerService>(sp =>
         {
             var logger = sp.GetRequiredService<ILogger<UpdateCheckerService>>();
-            var ftpHost = configuration.GetValue<string>("UpdateChecker:FtpHost") ?? "";
-            var ftpUsername = configuration.GetValue<string>("UpdateChecker:FtpUsername") ?? "";
-            var ftpPassword = configuration.GetValue<string>("UpdateChecker:FtpPassword") ?? "";
-            var versionFileName = configuration.GetValue<string>("UpdateChecker:VersionFileName") ?? "version.json";
-            var timeoutSeconds = configuration.GetValue<int>("UpdateChecker:TimeoutSeconds", 30);
+            var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
+            var httpClient = httpClientFactory.CreateClient();
 
-            return new UpdateCheckerService(logger, ftpHost, ftpUsername, ftpPassword, versionFileName, timeoutSeconds);
+            var timeoutSeconds = configuration.GetValue<int>("UpdateChecker:TimeoutSeconds", 30);
+            httpClient.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
+
+            var versionFileUrl = configuration.GetValue<string>("UpdateChecker:VersionFileUrl")
+                ?? "https://raw.githubusercontent.com/TUO-USERNAME/TaoGEST/master/version.json";
+
+            return new UpdateCheckerService(logger, httpClient, versionFileUrl);
         });
 
         // UI Services

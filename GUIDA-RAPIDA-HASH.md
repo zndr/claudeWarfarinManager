@@ -200,6 +200,6 @@ Sì! Ogni compilazione genera un binario leggermente diverso, quindi l'hash camb
 
 ## Risorse
 
-- 📖 [AGGIORNAMENTI-FTP.md](AGGIORNAMENTI-FTP.md) - Guida completa sistema aggiornamenti
+- 📖 [AGGIORNAMENTI-HTTPS.md](AGGIORNAMENTI-HTTPS.md) - Guida completa sistema aggiornamenti
 - 📝 [version.json](version.json) - File di configurazione versione
 - 🔧 [Calculate-InstallerHash.ps1](scripts/Calculate-InstallerHash.ps1) - Script calcolo hash

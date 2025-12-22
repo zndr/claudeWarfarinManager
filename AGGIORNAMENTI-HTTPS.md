@@ -1,4 +1,4 @@
-# Sistema di Controllo Aggiornamenti via FTP
+# Sistema di Controllo Aggiornamenti via HTTPS
 
 ## Panoramica
 
@@ -7,21 +7,19 @@ TaoGEST include un sistema automatico di controllo aggiornamenti che:
 - Esegue controlli periodici in background (ogni 24 ore di default)
 - Permette controlli manuali tramite menu `Aiuto > Verifica aggiornamenti`
 - Mostra notifiche con le novità e il link per scaricare l'installer
+- **Nessuna credenziale richiesta** - usa HTTPS pubblico
 
-## Configurazione Server FTP
+## Configurazione
 
 ### 1. Modifica appsettings.json
 
-Apri il file `src/WarfarinManager.UI/appsettings.json` e configura i parametri FTP:
+Apri il file `src/WarfarinManager.UI/appsettings.json` e configura l'URL:
 
 ```json
 {
   "UpdateChecker": {
     "Enabled": true,
-    "FtpHost": "ftp://tuo-server-ftp.com/path/to/updates",
-    "FtpUsername": "tuo-username",
-    "FtpPassword": "tua-password",
-    "VersionFileName": "version.json",
+    "VersionFileUrl": "https://raw.githubusercontent.com/TUO-USERNAME/TaoGEST/master/version.json",
     "TimeoutSeconds": 30,
     "CheckIntervalHours": 24,
     "CheckOnStartup": true
@@ -32,11 +30,8 @@ Apri il file `src/WarfarinManager.UI/appsettings.json` e configura i parametri F
 ### 2. Parametri di Configurazione
 
 - **Enabled**: Abilita/disabilita il controllo aggiornamenti
-- **FtpHost**: URL completo del server FTP (incluso il percorso alla cartella)
-- **FtpUsername**: Nome utente FTP
-- **FtpPassword**: Password FTP
-- **VersionFileName**: Nome del file JSON con le info versione (default: `version.json`)
-- **TimeoutSeconds**: Timeout connessione FTP in secondi
+- **VersionFileUrl**: URL pubblico del file version.json (HTTPS)
+- **TimeoutSeconds**: Timeout connessione HTTP in secondi
 - **CheckIntervalHours**: Intervallo tra i controlli automatici in ore
 - **CheckOnStartup**: Se `true`, controlla aggiornamenti all'avvio
 
@@ -82,35 +77,45 @@ L'hash SHA256 permette di verificare che il file scaricato dall'utente sia ident
 
 **Consiglio**: Includi sempre l'hash SHA256 nel file `version.json` per garantire la sicurezza degli utenti.
 
-## Caricamento su FTP
+## Caricamento version.json
 
-### Manualmente
+### Opzione 1: GitHub Repository (Consigliato)
 
-Puoi usare qualsiasi client FTP (FileZilla, WinSCP, ecc.) per caricare `version.json` sul server.
+Il modo più semplice è commitare `version.json` direttamente nel repository GitHub:
 
-### Script PowerShell (esempio)
-
-```powershell
-# Upload-Version.ps1
-$ftpServer = "ftp://tuo-server.com/updates/"
-$username = "tuo-username"
-$password = "tua-password"
-$localFile = "version.json"
-
-$ftpUri = $ftpServer + "version.json"
-$ftpRequest = [System.Net.FtpWebRequest]::Create($ftpUri)
-$ftpRequest.Method = [System.Net.WebRequestMethods+Ftp]::UploadFile
-$ftpRequest.Credentials = New-Object System.Net.NetworkCredential($username, $password)
-
-$fileContent = [System.IO.File]::ReadAllBytes($localFile)
-$ftpRequest.ContentLength = $fileContent.Length
-
-$requestStream = $ftpRequest.GetRequestStream()
-$requestStream.Write($fileContent, 0, $fileContent.Length)
-$requestStream.Close()
-
-Write-Host "File caricato con successo!"
+```bash
+# Dopo aver aggiornato version.json
+git add version.json
+git commit -m "Update: Versione 1.2.0"
+git push origin master
 ```
+
+**URL pubblico**: `https://raw.githubusercontent.com/TUO-USERNAME/TaoGEST/master/version.json`
+
+✅ **Vantaggi**:
+- Nessun server FTP necessario
+- Nessuna credenziale da gestire
+- Gratuito e sempre disponibile
+- Versionato con Git
+
+### Opzione 2: GitHub Releases
+
+Puoi anche caricare `version.json` come asset di una release:
+
+1. Vai su GitHub → Releases → Create new release
+2. Upload `version.json` come asset
+3. Usa l'URL dell'asset
+
+### Opzione 3: Server Web Pubblico
+
+Se hai un sito web, carica semplicemente il file:
+
+```bash
+# Via FTP o SFTP al tuo hosting
+scp version.json user@yourserver.com:/var/www/html/updates/
+```
+
+**URL**: `https://tuosito.com/updates/version.json`
 
 ## Workflow Rilascio Nuova Versione
 
@@ -140,7 +145,7 @@ Write-Host "File caricato con successo!"
    - Calcola l'hash SHA256
    - Aggiorna automaticamente `version.json` con hash e dimensione corretti
 
-4. **Carica l'installer** su un server web pubblico (es. GitHub Releases, tuo sito)
+4. **Carica l'installer** su GitHub Releases
 
 5. **Aggiorna version.json** con:
    - Nuova versione
@@ -149,48 +154,51 @@ Write-Host "File caricato con successo!"
    - Data di rilascio
    - Hash SHA256 e dimensione (già aggiornati dallo script)
 
-6. **Carica version.json sul server FTP**
+6. **Committa e pusha version.json**:
+   ```bash
+   git add version.json
+   git commit -m "Update: Versione 1.2.0"
+   git push origin master
+   ```
 
 7. Gli utenti riceveranno automaticamente la notifica al prossimo controllo!
 
 ## Test del Sistema
 
-### Test Locale (senza FTP)
+### Test Locale
 
-Per testare senza configurare FTP, puoi:
+Per testare il sistema, puoi usare un file version.json locale o un server HTTP locale:
 
-1. Modificare temporaneamente `UpdateCheckerService.cs` per leggere da file locale
-2. Creare un file `version.json` locale con versione superiore
-3. Avviare l'applicazione e verificare che compaia la notifica
+#### Opzione 1: File Locale con Server HTTP Semplice
 
-### Test con FTP
+```powershell
+# Avvia un server HTTP nella cartella root del progetto
+python -m http.server 8000
 
-1. Configura `appsettings.json` con credenziali FTP di test
-2. Carica `version.json` con versione > versione corrente
-3. Usa menu `Aiuto > Verifica aggiornamenti`
-4. Dovresti vedere la finestra di notifica
+# O con Node.js
+npx http-server -p 8000
+```
+
+Poi in `appsettings.json`:
+```json
+"VersionFileUrl": "http://localhost:8000/version.json"
+```
+
+### Test Remoto
+
+1. Committa `version.json` con una versione superiore alla corrente
+2. Pusha su GitHub
+3. Avvia TaoGEST → Menu "Aiuto > Verifica aggiornamenti"
+4. Dovresti vedere la finestra di notifica!
 
 ## Sicurezza
 
-⚠️ **IMPORTANTE**:
+✅ **Nessuna credenziale necessaria**:
 
-- Il file `appsettings.json` contiene credenziali FTP in chiaro
-- **NON committare** `appsettings.json` con credenziali reali su repository pubblici
-- Considera l'uso di variabili d'ambiente per le credenziali in produzione
-- Il file è già aggiunto a `.gitignore` per evitare commit accidentali
-
-### Alternativa Sicura: Variabili d'Ambiente
-
-Modifica `App.xaml.cs` per leggere credenziali da variabili d'ambiente:
-
-```csharp
-var ftpHost = Environment.GetEnvironmentVariable("TAOGEST_FTP_HOST")
-    ?? configuration.GetValue<string>("UpdateChecker:FtpHost") ?? "";
-var ftpUsername = Environment.GetEnvironmentVariable("TAOGEST_FTP_USER")
-    ?? configuration.GetValue<string>("UpdateChecker:FtpUsername") ?? "";
-var ftpPassword = Environment.GetEnvironmentVariable("TAOGEST_FTP_PASS")
-    ?? configuration.GetValue<string>("UpdateChecker:FtpPassword") ?? "";
-```
+- Il sistema usa HTTPS pubblico, nessuna autenticazione richiesta
+- Il file `appsettings.json` contiene solo un URL pubblico
+- Nessun rischio di esposizione credenziali
+- Il file è comunque in `.gitignore` per sicurezza
 
 ## Disabilitare gli Aggiornamenti
 
@@ -208,18 +216,26 @@ Per disabilitare completamente il sistema:
 
 ### L'applicazione non rileva aggiornamenti
 
-1. Verifica connessione FTP (credenziali corrette)
-2. Controlla che `version.json` sia nel percorso corretto sul server
-3. Verifica formato JSON valido (usa JSONLint.com)
-4. Controlla i log in `%LocalAppData%\WarfarinManager\Logs\`
+1. Verifica connessione internet
+2. Controlla che l'URL in `appsettings.json` sia corretto
+3. Verifica che `version.json` sia accessibile pubblicamente (apri l'URL nel browser)
+4. Verifica formato JSON valido (usa JSONLint.com)
+5. Controlla i log in `%LocalAppData%\WarfarinManager\Logs\`
 
-### Timeout FTP
+### Timeout HTTP
 
 Aumenta `TimeoutSeconds` in `appsettings.json`:
 
 ```json
 "TimeoutSeconds": 60
 ```
+
+### Errore 404 Not Found
+
+L'URL non è corretto o il file non esiste:
+- Verifica l'URL aprendo nel browser
+- Se usi GitHub, assicurati che il file sia nel branch master
+- L'URL deve essere `https://raw.githubusercontent.com/...` (non `https://github.com/...`)
 
 ### La versione non viene riconosciuta come più recente
 

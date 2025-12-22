@@ -21,7 +21,7 @@ Calcola l'hash SHA256 dell'installer per verifica integrità.
 .\Calculate-InstallerHash.ps1 -UpdateVersionJson
 ```
 
-Vedi [GUIDA-RAPIDA-HASH.md](../GUIDA-RAPIDA-HASH.md) per dettagli completi.
+Vedi [GUIDA-RAPIDA-HASH.md](../GUIDA-RAPIDA-HASH.md) e [AGGIORNAMENTI-HTTPS.md](../AGGIORNAMENTI-HTTPS.md) per dettagli completi.
 
 ---
 
