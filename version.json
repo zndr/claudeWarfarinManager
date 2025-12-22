@@ -1,9 +1,9 @@
 {
-  "Version": "1.2.1",
-  "DownloadUrl": "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.2.1/TaoGEST-Setup-v1.2.1.exe",
+  "Version": "1.2.2",
+  "DownloadUrl": "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.2.2/TaoGEST-Setup-v1.2.2.exe",
   "ReleaseDate": "2025-12-22T00:00:00",
-  "IsCritical": false,
-  "FileSize": 66486134,
-  "Sha256Hash": "f8d9e9b626d0389134a73d7661152ead8914b29fa0c23bae3fbc81aafcd1bb46",
-  "ReleaseNotes": "📚 TaoGEST v1.2.1 - Miglioramenti Documentazione\n\n✨ NUOVE GUIDE:\n• GUIDA-AGGIORNAMENTO-VERSIONE.md: Procedura dettagliata per aggiornare tutti i riferimenti di versione\n• GUIDA-RELEASE-GITHUB.md: Guida completa per creare release su GitHub\n• Update-Version.ps1: Script PowerShell migliorato per aggiornamenti centralizzati\n\n📝 DOCUMENTAZIONE:\n• Migliorata documentazione sistema aggiornamenti HTTPS\n• Aggiornati tutti i riferimenti di versione in modo consistente\n• AboutDialog.xaml ora mostra changelog versione 1.2.1\n\n🔧 CARATTERISTICHE v1.2.0 (Mantenute):\n• Sistema controllo automatico aggiornamenti via HTTPS\n• Notifiche nuove versioni con dettagli release\n• Download diretto installer\n• Controllo periodico background (24h)\n• Verifica integrità file SHA256\n\n📥 INSTALLAZIONE:\n1. Chiudi TaoGEST se aperto\n2. Scarica e installa l'aggiornamento\n3. Riavvia l'applicazione\n\nPer maggiori dettagli:\nhttps://github.com/zndr/claudeWarfarinManager/releases/tag/v1.2.1"
+  "IsCritical": true,
+  "FileSize": 66482896,
+  "Sha256Hash": "0b5af6997d1a4c243eae182cd18ea3ad91ed144ffc5e85747ecc937da68ec401",
+  "ReleaseNotes": "🔧 TaoGEST v1.2.2 - HOTFIX CRITICO Sistema Aggiornamenti\n\n🐛 PROBLEMA RISOLTO:\n• Risolto problema critico: sistema aggiornamenti non rilevava nuove versioni\n• Configurato correttamente URL HTTPS per controllo aggiornamenti\n• Il sistema ora verifica correttamente la disponibilità di update\n\n🚨 RACCOMANDAZIONE:\nSi raccomanda VIVAMENTE l'aggiornamento per tutti gli utenti delle versioni 1.2.0 e 1.2.1\n\n🔧 CARATTERISTICHE v1.2.0 (Mantenute):\n• Sistema controllo automatico aggiornamenti via HTTPS\n• Notifiche nuove versioni con dettagli release\n• Download diretto installer\n• Controllo periodico background (24h)\n• Verifica integrità file SHA256\n\n📥 INSTALLAZIONE:\n1. Chiudi TaoGEST se aperto\n2. Scarica e installa l'aggiornamento\n3. Riavvia l'applicazione\n\nPer maggiori dettagli:\nhttps://github.com/zndr/claudeWarfarinManager/releases/tag/v1.2.2"
 }
