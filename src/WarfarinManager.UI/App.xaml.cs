@@ -197,6 +197,10 @@ public partial class App : Application
             using var scope = _host.Services.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<WarfarinDbContext>();
 
+            // Prima di applicare le migrazioni, correggi eventuali problemi di schema
+            // per database provenienti da versioni precedenti (es. 1.0.0)
+            await FixLegacyDatabaseSchemaAsync(context);
+
             // Crea il database se non esiste e applica migrations
             await context.Database.MigrateAsync();
 
@@ -206,6 +210,65 @@ public partial class App : Application
         {
             Log.Error(ex, "Errore durante l'inizializzazione del database");
             throw;
+        }
+    }
+
+    /// <summary>
+    /// Corregge problemi di schema in database provenienti da versioni precedenti.
+    /// Aggiunge colonne mancanti che potrebbero causare errori durante le operazioni.
+    /// </summary>
+    private async System.Threading.Tasks.Task FixLegacyDatabaseSchemaAsync(WarfarinDbContext context)
+    {
+        try
+        {
+            var connection = context.Database.GetDbConnection();
+            await connection.OpenAsync();
+
+            using var command = connection.CreateCommand();
+
+            // Verifica se la tabella AdverseEvents esiste e se ha la colonna CertaintyLevel
+            command.CommandText = "SELECT name FROM sqlite_master WHERE type='table' AND name='AdverseEvents';";
+            var tableExists = await command.ExecuteScalarAsync() != null;
+
+            if (tableExists)
+            {
+                // Verifica se la colonna CertaintyLevel esiste
+                command.CommandText = "PRAGMA table_info(AdverseEvents);";
+                var hasColumnCertaintyLevel = false;
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var columnName = reader.GetString(1); // La colonna 'name' è all'indice 1
+                        if (columnName.Equals("CertaintyLevel", StringComparison.OrdinalIgnoreCase))
+                        {
+                            hasColumnCertaintyLevel = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!hasColumnCertaintyLevel)
+                {
+                    Log.Warning("Colonna CertaintyLevel mancante nella tabella AdverseEvents. Aggiunta in corso...");
+
+                    // Aggiungi la colonna mancante con un valore di default
+                    using var addColumnCommand = connection.CreateCommand();
+                    addColumnCommand.CommandText = "ALTER TABLE AdverseEvents ADD COLUMN CertaintyLevel TEXT NOT NULL DEFAULT 'Possible';";
+                    await addColumnCommand.ExecuteNonQueryAsync();
+
+                    Log.Information("Colonna CertaintyLevel aggiunta con successo alla tabella AdverseEvents");
+                }
+            }
+
+            await connection.CloseAsync();
+        }
+        catch (Exception ex)
+        {
+            // Non bloccare l'avvio dell'app se questa correzione fallisce
+            // Le migrazioni standard potrebbero gestirlo comunque
+            Log.Warning(ex, "Impossibile verificare/correggere lo schema legacy del database. Le migrazioni standard potrebbero gestirlo.");
         }
     }
 

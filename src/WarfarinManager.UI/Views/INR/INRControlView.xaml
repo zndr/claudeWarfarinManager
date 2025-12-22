@@ -8,10 +8,16 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
     Title="Controllo INR - Warfarin Manager Pro"
+    MinWidth="1000"
+    MinHeight="700"
     Width="1400"
     Height="950"
+    MaxWidth="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Width}"
+    MaxHeight="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Height}"
     Background="#F5F5F5"
     WindowStartupLocation="CenterScreen"
+    WindowState="Normal"
+    SizeToContent="Manual"
     mc:Ignorable="d">
 
     <Window.Resources>

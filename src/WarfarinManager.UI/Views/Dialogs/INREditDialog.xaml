@@ -7,10 +7,14 @@
     xmlns:sys="clr-namespace:System;assembly=System.Runtime"
     xmlns:enums="clr-namespace:WarfarinManager.Shared.Enums;assembly=WarfarinManager.Shared"
     Title="Modifica Controllo INR"
+    MinWidth="500"
+    MinHeight="550"
     Width="600"
     Height="650"
+    MaxWidth="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Width}"
+    MaxHeight="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Height}"
     WindowStartupLocation="CenterOwner"
-    ResizeMode="NoResize"
+    ResizeMode="CanResize"
     mc:Ignorable="d">
 
     <Window.Resources>

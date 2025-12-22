@@ -1,6 +1,6 @@
 ═══════════════════════════════════════════════════════════════
   TaoGEST - Gestione Terapia Anticoagulante Orale
-  Note di Rilascio - Versione 1.2.2.2
+  Note di Rilascio - Versione 1.2.3
 ═══════════════════════════════════════════════════════════════
 
 Data Rilascio: 22 Dicembre 2025
@@ -8,25 +8,25 @@ Data Rilascio: 22 Dicembre 2025
 BUGFIX
 ─────────────────────────────────────────────────────────────
 
+🐛 Compatibilità Database Legacy
+  • Risolto errore "SQLite error: no such column certaintyLevel"
+    durante eliminazione pazienti su database v1.0.0
+  • Correzione automatica dello schema database all'avvio
+    per database provenienti da versioni precedenti
+
+🖥️ Supporto Schermi Piccoli (Laptop 15")
+  • Finestra Controllo INR ora si adatta automaticamente
+    agli schermi con risoluzione inferiore a 1400x950
+  • Finestra Modifica INR ora ridimensionabile
+  • Le finestre si centrano correttamente e non escono
+    più dai bordi dello schermo
+
+VERSIONE 1.2.2.2 (22 Dicembre 2025)
+─────────────────────────────────────────────────────────────
+
 🐛 Controllo Aggiornamenti
   • Corretto bug che mostrava notifica di aggiornamento anche
     quando la versione era già aggiornata
-  • Migliorata lettura versione assembly usando GetEntryAssembly()
-  • Aggiunto logging dettagliato per diagnostica confronto versioni
-
-📋 Dettagli Tecnici
-  • UpdateNotificationService ora usa GetEntryAssembly() invece
-    di GetExecutingAssembly()
-  • AboutDialog mostra versione completa a 4 componenti (es. 1.2.2.2)
-  • Logging dettagliato del confronto versioni per debug
-
-VERSIONE 1.2.2.1 (22 Dicembre 2025)
-─────────────────────────────────────────────────────────────
-
-✨ Miglioramenti UX
-  • Controllo aggiornamenti completamente silenzioso all'avvio
-  • Notifiche mostrate SOLO quando è disponibile una nuova versione
-  • Eliminati messaggi superflui quando l'app è già aggiornata
 
 FEATURE VERSIONE 1.2.0 (Mantenute)
 ─────────────────────────────────────────────────────────────
@@ -56,7 +56,7 @@ REQUISITI DI SISTEMA
 INSTALLAZIONE
 ─────────────────────────────────────────────────────────────
 
-1. Eseguire TaoGEST-Setup-v1.2.2.2.exe
+1. Eseguire TaoGEST-Setup-v1.2.3.exe
 2. Seguire le istruzioni dell'installazione guidata
 3. Al primo avvio verrà creato il database locale
 4. Configurare i dati del medico in Impostazioni

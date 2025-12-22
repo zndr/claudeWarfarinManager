@@ -24,8 +24,43 @@ public partial class INREditDialog : Window
 
         _originalControl = control ?? throw new ArgumentNullException(nameof(control));
 
+        // Adatta la finestra alle dimensioni dello schermo all'avvio
+        Loaded += INREditDialog_Loaded;
+
         LoadPhases();
         LoadControlData();
+    }
+
+    /// <summary>
+    /// Adatta le dimensioni della finestra allo schermo disponibile.
+    /// Su schermi piccoli, ridimensiona la finestra per non uscire dai bordi.
+    /// </summary>
+    private void INREditDialog_Loaded(object sender, RoutedEventArgs e)
+    {
+        // Ottieni le dimensioni dell'area di lavoro (esclude la taskbar)
+        var workArea = SystemParameters.WorkArea;
+
+        // Se la finestra è più grande dello schermo, adatta le dimensioni
+        if (Width > workArea.Width)
+        {
+            Width = workArea.Width * 0.90;
+        }
+
+        if (Height > workArea.Height)
+        {
+            Height = workArea.Height * 0.90;
+        }
+
+        // Assicura che la finestra sia completamente visibile
+        // Per le dialog, il CenterOwner potrebbe posizionarla male su schermi piccoli
+        if (Left < workArea.Left)
+            Left = workArea.Left;
+        if (Top < workArea.Top)
+            Top = workArea.Top;
+        if (Left + Width > workArea.Right)
+            Left = Math.Max(workArea.Left, workArea.Right - Width);
+        if (Top + Height > workArea.Bottom)
+            Top = Math.Max(workArea.Top, workArea.Bottom - Height);
     }
 
     /// <summary>
