@@ -84,6 +84,44 @@ All projects import `Version.props` for centralized version management. Use the 
 .\Update-Version.ps1 -NewVersion "1.2.0.0"
 ```
 
+## CHECKLIST RELEASE (IMPORTANTE!)
+
+**Quando si crea una nuova release, TUTTI questi file devono essere aggiornati:**
+
+### File da aggiornare con la nuova versione:
+
+1. **`Version.props`** - Versione centralizzata .NET
+   - `AssemblyVersion`, `FileVersion`
+
+2. **`version.json`** - File remoto per update checker
+   - `Version`, `DownloadUrl`, `ReleaseDate`, `FileSize`, `Sha256Hash`, `ReleaseNotes`
+
+3. **`installer/TaoGEST-Setup.iss`** - Script Inno Setup
+   - `MyAppVersion` (riga 5)
+
+4. **`docs/ReleaseNotes.txt`** - Note di rilascio mostrate durante installazione
+   - Aggiungere le note della nuova versione
+
+5. **`CHANGELOG.md`** - Storico versioni
+   - Aggiungere sezione per la nuova versione
+
+6. **`src/WarfarinManager.UI/Views/Dialogs/AboutDialog.xaml`** - Dialog "Info su TaoGEST"
+   - Verificare che il testo delle note di versione sia aggiornato (se presente testo statico)
+
+7. **`src/WarfarinManager.UI/MainWindow.xaml`** - TextBlock versione in basso a sinistra
+   - Aggiornare il testo della versione nel StatusBar (se hardcoded)
+
+### Passi per creare una release:
+
+1. Aggiornare TUTTI i file sopra elencati
+2. `dotnet build -c Release` - Verificare compilazione
+3. `dotnet publish` - Creare build self-contained
+4. Compilare installer con InnoSetup
+5. Calcolare SHA256 dell'installer e aggiornare `version.json`
+6. `git add -A && git commit && git push`
+7. `git tag -a vX.X.X.X && git push origin vX.X.X.X`
+8. `gh release create` - Creare release GitHub con installer
+
 ## Testing
 
 - xUnit for test framework

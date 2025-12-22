@@ -5,6 +5,17 @@ Tutte le modifiche importanti a questo progetto saranno documentate in questo fi
 Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.0.0/),
 e questo progetto aderisce al [Semantic Versioning](https://semver.org/lang/it/).
 
+## [1.2.2.2] - 2025-12-22
+
+### Fixed
+- Corretto bug controllo aggiornamenti che mostrava notifica anche con versione già aggiornata
+- UpdateNotificationService ora usa GetEntryAssembly() invece di GetExecutingAssembly()
+- AboutDialog mostra versione completa a 4 componenti (es. 1.2.2.2)
+
+### Added
+- Logging dettagliato per diagnostica confronto versioni in UpdateCheckerService
+- Checklist release in CLAUDE.md per evitare dimenticanze
+
 ## [1.2.2.1] - 2025-12-22
 
 ### Changed
