@@ -1,9 +1,9 @@
 {
   "Version": "1.2.0",
-  "DownloadUrl": "https://github.com/zndr/TaoGEST/releases/download/v1.2.0/TaoGEST-Setup-v1.2.0.exe",
+  "DownloadUrl": "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.2.0/TaoGEST-Setup-v1.2.0.exe",
   "ReleaseDate": "2025-12-22T00:00:00",
   "IsCritical": false,
   "FileSize": 66484934,
   "Sha256Hash": "6cd4c837f1fc38135bb85e90a7b0610419173a0116e54ddaaa4a095741a69cec",
-  "ReleaseNotes": "🎯 TaoGEST v1.2.0 - Sistema Aggiornamenti Automatici\n\n🆕 NUOVE FUNZIONALITÀ:\n• Sistema di controllo automatico aggiornamenti via HTTPS\n• Notifiche per nuove versioni disponibili\n• Download diretto dell'installer dalla finestra di notifica\n• Controllo periodico in background (ogni 24h)\n• Verifica integrità file con hash SHA256\n\n🔒 SICUREZZA:\n• Sistema aggiornamenti basato su HTTPS pubblico\n• Verifica hash SHA256 per integrità file\n• Nessuna credenziale richiesta\n\n🔧 MIGLIORAMENTI:\n• Ottimizzazione prestazioni database\n• Miglioramenti all'interfaccia utente\n• Documentazione completa sistema aggiornamenti\n\n📥 INSTALLAZIONE:\n1. Chiudi TaoGEST se aperto\n2. Scarica e installa l'aggiornamento\n3. Riavvia l'applicazione\n\nPer maggiori dettagli:\nhttps://github.com/zndr/TaoGEST/releases/tag/v1.2.0"
+  "ReleaseNotes": "🎯 TaoGEST v1.2.0 - Sistema Aggiornamenti Automatici\n\n🆕 NUOVE FUNZIONALITÀ:\n• Sistema di controllo automatico aggiornamenti via HTTPS\n• Notifiche per nuove versioni disponibili\n• Download diretto dell'installer dalla finestra di notifica\n• Controllo periodico in background (ogni 24h)\n• Verifica integrità file con hash SHA256\n\n🔒 SICUREZZA:\n• Sistema aggiornamenti basato su HTTPS pubblico\n• Verifica hash SHA256 per integrità file\n• Nessuna credenziale richiesta\n\n🔧 MIGLIORAMENTI:\n• Ottimizzazione prestazioni database\n• Miglioramenti all'interfaccia utente\n• Documentazione completa sistema aggiornamenti\n\n📥 INSTALLAZIONE:\n1. Chiudi TaoGEST se aperto\n2. Scarica e installa l'aggiornamento\n3. Riavvia l'applicazione\n\nPer maggiori dettagli:\nhttps://github.com/zndr/claudeWarfarinManager/releases/tag/v1.2.0"
 }
