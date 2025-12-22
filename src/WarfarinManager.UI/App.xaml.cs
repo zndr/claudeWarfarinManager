@@ -105,7 +105,7 @@ public partial class App : Application
             httpClient.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
 
             var versionFileUrl = configuration.GetValue<string>("UpdateChecker:VersionFileUrl")
-                ?? "https://raw.githubusercontent.com/TUO-USERNAME/TaoGEST/master/version.json";
+                ?? "https://raw.githubusercontent.com/zndr/claudeWarfarinManager/master/version.json";
 
             return new UpdateCheckerService(logger, httpClient, versionFileUrl);
         });
