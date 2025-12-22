@@ -5,6 +5,19 @@ Tutte le modifiche importanti a questo progetto saranno documentate in questo fi
 Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.0.0/),
 e questo progetto aderisce al [Semantic Versioning](https://semver.org/lang/it/).
 
+## [1.2.2.1] - 2025-12-22
+
+### Changed
+- Controllo aggiornamenti ora completamente silenzioso all'avvio
+- Notifiche mostrate SOLO quando è disponibile una nuova versione
+- Controllo manuale dal menu mantiene feedback visibile
+- Migliorata esperienza utente eliminando messaggi superflui
+
+### Fixed
+- UpdateNotificationService: parametro showNoUpdateMessage=false per controlli automatici
+- UpdateNotificationService: parametro showNoUpdateMessage=true solo per controlli manuali
+- Eliminati messaggi "già aggiornato" durante avvio e controlli periodici
+
 ## [1.2.2] - 2025-12-22
 
 ### Fixed

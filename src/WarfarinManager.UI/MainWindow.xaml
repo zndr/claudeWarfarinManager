@@ -174,7 +174,7 @@
             <TextBlock
                 FontSize="11"
                 Foreground="#7F8C8D"
-                Text="Versione 1.2.2" />
+                Text="Versione 1.2.2.1" />
         </Border>
     </Grid>
 </Window>

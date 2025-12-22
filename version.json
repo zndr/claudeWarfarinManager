@@ -4,6 +4,6 @@
   "ReleaseDate": "2025-12-22T00:00:00",
   "IsCritical": false,
   "FileSize": 66482889,
-  "Sha256Hash": "4c562b49cf3389344a22a03610fbf0654750133db873c60fc517884572b61263",
+  "Sha256Hash": "d1678200549492bd671d1eb8e22c2661a5f0a37004c333d8e8d06d6cb3f7dbb5",
   "ReleaseNotes": "✨ TaoGEST v1.2.2.1 - Miglioramento Sistema Notifiche\n\n🎯 MIGLIORIE IMPLEMENTATE:\n• Controllo aggiornamenti ora completamente silenzioso all'avvio\n• Notifica mostrata SOLO quando è disponibile una nuova versione\n• Eliminati messaggi superflui quando l'app è già aggiornata\n• Migliorata esperienza utente con notifiche meno invasive\n\n📋 DETTAGLI TECNICI:\n• Controllo automatico all'avvio: modalità silenziosa\n• Controllo periodico (24h): modalità silenziosa\n• Controllo manuale: feedback sempre visibile\n• Link diretto download nella notifica aggiornamento\n\n🔧 CARATTERISTICHE MANTENUTE (da v1.2.0):\n• Sistema controllo automatico aggiornamenti via HTTPS\n• Notifiche nuove versioni con dettagli release completi\n• Download diretto installer con un click\n• Verifica integrità file SHA256\n\n📥 INSTALLAZIONE:\n1. Chiudi TaoGEST se aperto\n2. Scarica e installa l'aggiornamento\n3. Riavvia l'applicazione\n\nPer maggiori dettagli:\nhttps://github.com/zndr/claudeWarfarinManager/releases/tag/v1.2.2.1"
 }

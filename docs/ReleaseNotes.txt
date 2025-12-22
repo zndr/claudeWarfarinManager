@@ -1,18 +1,19 @@
 ═══════════════════════════════════════════════════════════════
   TaoGEST - Gestione Terapia Anticoagulante Orale
-  Note di Rilascio - Versione 1.2.2
+  Note di Rilascio - Versione 1.2.2.1
 ═══════════════════════════════════════════════════════════════
 
 Data Rilascio: 22 Dicembre 2025
 
-CORREZIONE CRITICA
+MIGLIORAMENTI UX
 ─────────────────────────────────────────────────────────────
 
-🔧 Sistema Aggiornamenti
-  • Risolto problema critico che impediva il rilevamento automatico
-    delle nuove versioni disponibili
-  • Configurato correttamente URL HTTPS per controllo aggiornamenti
-  • Il sistema ora verifica correttamente la disponibilità di update
+✨ Sistema Notifiche Aggiornamenti
+  • Controllo aggiornamenti completamente silenzioso all'avvio
+  • Notifiche mostrate SOLO quando è disponibile una nuova versione
+  • Eliminati messaggi superflui quando l'app è già aggiornata
+  • Esperienza utente meno invasiva e più professionale
+  • Controllo manuale dal menu mantiene sempre il feedback visibile
 
 FEATURE VERSIONE 1.2.0 (Mantenute)
 ─────────────────────────────────────────────────────────────
@@ -42,7 +43,7 @@ REQUISITI DI SISTEMA
 INSTALLAZIONE
 ─────────────────────────────────────────────────────────────
 
-1. Eseguire TaoGEST-Setup-v1.2.2.exe
+1. Eseguire TaoGEST-Setup-v1.2.2.1.exe
 2. Seguire le istruzioni dell'installazione guidata
 3. Al primo avvio verrà creato il database locale
 4. Configurare i dati del medico in Impostazioni
@@ -56,15 +57,15 @@ AGGIORNAMENTO DA VERSIONE PRECEDENTE
 Il database si trova in:
 %LocalAppData%\WarfarinManager\warfarin.db
 
-CHANGELOG DA v1.2.1
+CHANGELOG DA v1.2.2
 ─────────────────────────────────────────────────────────────
 
-Questa è una versione di correzione critica (hotfix) che risolve
-il problema del sistema di aggiornamento automatico introdotto
-nella versione 1.2.0.
+Questa versione migliora l'esperienza utente del sistema di
+aggiornamenti, rendendolo più discreto e meno invasivo.
 
-Si raccomanda vivamente l'aggiornamento per assicurarsi di
-ricevere tutte le future notifiche di aggiornamento.
+Le notifiche vengono ora mostrate solo quando effettivamente
+necessario, eliminando messaggi superflui che disturbavano
+l'utilizzo quotidiano dell'applicazione.
 
 SUPPORTO
 ─────────────────────────────────────────────────────────────
