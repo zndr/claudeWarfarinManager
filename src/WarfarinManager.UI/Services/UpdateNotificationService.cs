@@ -32,10 +32,15 @@ public class UpdateNotificationService : IDisposable
         _updateChecker = updateChecker ?? throw new ArgumentNullException(nameof(updateChecker));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
-        // Ottieni la versione corrente dall'assembly
-        var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+        // Ottieni la versione corrente dall'assembly principale (entry point)
+        // Usa GetEntryAssembly per ottenere la versione dell'applicazione principale,
+        // non dell'assembly corrente che potrebbe avere versione diversa
+        var assembly = System.Reflection.Assembly.GetEntryAssembly()
+                       ?? System.Reflection.Assembly.GetExecutingAssembly();
         var version = assembly.GetName().Version;
         _currentVersion = version?.ToString() ?? "1.0.0.0";
+
+        _logger.LogDebug("Versione corrente dell'applicazione: {CurrentVersion}", _currentVersion);
 
         // Configura il timer per il controllo periodico
         _timer = new DispatcherTimer();

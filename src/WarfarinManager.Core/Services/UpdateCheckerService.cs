@@ -53,7 +53,15 @@ public class UpdateCheckerService : IUpdateCheckerService
             }
 
             // Verifica se la versione remota è più recente
-            if (IsNewerVersion(updateInfo.Version, currentVersion))
+            var isNewer = IsNewerVersion(updateInfo.Version, currentVersion);
+
+            _logger.LogDebug(
+                "Confronto versioni: remota={RemoteVersion}, locale={LocalVersion}, isNewer={IsNewer}",
+                updateInfo.Version,
+                currentVersion,
+                isNewer);
+
+            if (isNewer)
             {
                 _logger.LogInformation(
                     "Nuova versione disponibile: {NewVersion} (corrente: {CurrentVersion})",
@@ -62,7 +70,9 @@ public class UpdateCheckerService : IUpdateCheckerService
                 return updateInfo;
             }
 
-            _logger.LogInformation("Nessun aggiornamento disponibile. Versione corrente è aggiornata.");
+            _logger.LogInformation(
+                "Nessun aggiornamento disponibile. Versione corrente ({CurrentVersion}) è aggiornata.",
+                currentVersion);
             return null;
         }
         catch (Exception ex)
@@ -80,10 +90,25 @@ public class UpdateCheckerService : IUpdateCheckerService
             var cleanVersion = CleanVersionString(version);
             var cleanCurrentVersion = CleanVersionString(currentVersion);
 
+            _logger.LogDebug(
+                "Versioni pulite: remota='{CleanRemote}', locale='{CleanLocal}'",
+                cleanVersion,
+                cleanCurrentVersion);
+
             var remoteVersion = new Version(cleanVersion);
             var localVersion = new Version(cleanCurrentVersion);
 
-            return remoteVersion > localVersion;
+            // Confronto strettamente maggiore: la versione remota deve essere
+            // MAGGIORE della locale, non uguale
+            var result = remoteVersion > localVersion;
+
+            _logger.LogDebug(
+                "Confronto Version: {Remote} > {Local} = {Result}",
+                remoteVersion,
+                localVersion,
+                result);
+
+            return result;
         }
         catch (Exception ex)
         {

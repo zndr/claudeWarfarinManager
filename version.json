@@ -1,9 +1,9 @@
 {
-  "Version": "1.2.2.1",
-  "DownloadUrl": "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.2.2.1/TaoGEST-Setup-v1.2.2.1.exe",
+  "Version": "1.2.2.2",
+  "DownloadUrl": "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.2.2.2/TaoGEST-Setup-v1.2.2.2.exe",
   "ReleaseDate": "2025-12-22T00:00:00",
   "IsCritical": false,
-  "FileSize": 66482889,
-  "Sha256Hash": "d1678200549492bd671d1eb8e22c2661a5f0a37004c333d8e8d06d6cb3f7dbb5",
-  "ReleaseNotes": "✨ TaoGEST v1.2.2.1 - Miglioramento Sistema Notifiche\n\n🎯 MIGLIORIE IMPLEMENTATE:\n• Controllo aggiornamenti ora completamente silenzioso all'avvio\n• Notifica mostrata SOLO quando è disponibile una nuova versione\n• Eliminati messaggi superflui quando l'app è già aggiornata\n• Migliorata esperienza utente con notifiche meno invasive\n\n📋 DETTAGLI TECNICI:\n• Controllo automatico all'avvio: modalità silenziosa\n• Controllo periodico (24h): modalità silenziosa\n• Controllo manuale: feedback sempre visibile\n• Link diretto download nella notifica aggiornamento\n\n🔧 CARATTERISTICHE MANTENUTE (da v1.2.0):\n• Sistema controllo automatico aggiornamenti via HTTPS\n• Notifiche nuove versioni con dettagli release completi\n• Download diretto installer con un click\n• Verifica integrità file SHA256\n\n📥 INSTALLAZIONE:\n1. Chiudi TaoGEST se aperto\n2. Scarica e installa l'aggiornamento\n3. Riavvia l'applicazione\n\nPer maggiori dettagli:\nhttps://github.com/zndr/claudeWarfarinManager/releases/tag/v1.2.2.1"
+  "FileSize": 66466235,
+  "Sha256Hash": "160c6c74c981bbf11e1fcd0c3b19c5d72d37ceacc57a62d1372e08cd657e3eb3",
+  "ReleaseNotes": "🐛 TaoGEST v1.2.2.2 - Bugfix Controllo Aggiornamenti\n\n🔧 BUG RISOLTI:\n• Corretto bug che mostrava notifica di aggiornamento anche quando la versione era già aggiornata\n• Migliorata lettura versione assembly usando GetEntryAssembly()\n• Aggiunto logging dettagliato per diagnostica confronto versioni\n\n📋 DETTAGLI TECNICI:\n• UpdateNotificationService ora usa GetEntryAssembly() invece di GetExecutingAssembly()\n• AboutDialog mostra versione completa a 4 componenti (es. 1.2.2.2)\n• Logging dettagliato del confronto versioni per debug\n\n📥 INSTALLAZIONE:\n1. Chiudi TaoGEST se aperto\n2. Scarica e installa l'aggiornamento\n3. Riavvia l'applicazione\n\nPer maggiori dettagli:\nhttps://github.com/zndr/claudeWarfarinManager/releases/tag/v1.2.2.2"
 }

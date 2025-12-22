@@ -13,8 +13,12 @@ public partial class AboutDialog : Window
 
     private void SetVersionText()
     {
-        var version = Assembly.GetExecutingAssembly().GetName().Version;
-        var versionString = version != null ? $"{version.Major}.{version.Minor}.{version.Build}" : "1.1.2";
+        // Usa GetEntryAssembly per consistenza con UpdateNotificationService
+        var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+        var version = assembly.GetName().Version;
+        var versionString = version != null
+            ? $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}"
+            : "1.0.0.0";
         VersionText.Text = $"Versione {versionString}";
     }
 
