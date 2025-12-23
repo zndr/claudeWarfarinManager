@@ -34,6 +34,10 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
 UninstallDisplayIcon={app}\{#MyAppExeName}
+; Gestione aggiornamenti
+CloseApplications=force
+CloseApplicationsFilter=*.exe
+RestartApplications=yes
 
 [Languages]
 Name: "italian"; MessagesFile: "compiler:Languages\Italian.isl"
@@ -59,6 +63,19 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 [Code]
 // Rimosso il controllo .NET Runtime perché l'applicazione è pubblicata come self-contained
 // e include già tutti i runtime necessari
+
+function InitializeSetup(): Boolean;
+var
+  ResultCode: Integer;
+begin
+  // Chiude eventuali istanze in esecuzione dell'applicazione
+  if Exec('taskkill', '/F /IM WarfarinManager.UI.exe', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+  begin
+    // Attendi un momento per assicurarsi che il processo sia terminato
+    Sleep(500);
+  end;
+  Result := True;
+end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
 begin

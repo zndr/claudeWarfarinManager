@@ -92,7 +92,10 @@
       "Bash(cmd /c \"dir %LOCALAPPDATA%\\\\WarfarinManager\\\\Logs /s /b | findstr /i log\")",
       "Bash(cmd /c \"type d:\\\\Claude\\\\TaoGest\\\\src\\\\WarfarinManager.UI\\\\app.config 2>nul || echo File not found\")",
       "Bash(cmd /c \"dir /s /b src\\\\WarfarinManager.UI\\\\Properties\\\\Settings.*\")",
-      "Bash(cmd /c \"dir publish\\\\TaoGEST-Setup-v1.2.4.3.exe\")"
+      "Bash(cmd /c \"dir publish\\\\TaoGEST-Setup-v1.2.4.3.exe\")",
+      "Bash(cmd /c \"dir %LOCALAPPDATA%\\\\WarfarinManager\\\\*.db /s 2>nul\")",
+      "Bash(\"C:\\\\Program Files \\(x86\\)\\\\Inno Setup 6\\\\ISCC.exe\" \"e:\\\\Claude\\\\claudeWarfarinManager\\\\installer\\\\TaoGEST-Setup.iss\")",
+      "Bash(gh release delete-asset:*)"
     ],
     "deny": [],
     "ask": []

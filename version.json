@@ -3,6 +3,6 @@
     "ReleaseNotes":  "BUGFIX:\n- Risolto bug notifica aggiornamenti con versioni identiche\n- Aggiunto logging dettagliato per debug controllo aggiornamenti\n\nNUOVE FUNZIONALITÀ:\n- Implementato controllo istanza singola dell\u0027applicazione\n- Impedisce l\u0027esecuzione di multiple istanze simultanee\n- Messaggio informativo se si tenta di aprire una seconda istanza\n\nMIGLIORAMENTI TECNICI:\n- Test unit completi per confronto versioni (12 test)\n- Mutex globale per gestione istanza singola\n- Logging strutturato per troubleshooting aggiornamenti\n- Verifica robusta versioni con System.Version",
     "DownloadUrl":  "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.2.4.3/TaoGEST-Setup-v1.2.4.3.exe",
     "ReleaseDate":  "2025-12-23",
-    "Sha256Hash":  "0B875A473F2C0F4F4BB041A37CC5707EEF825231ABF13CB42D3EA700092E8E46",
-    "FileSize":  64667863
+    "Sha256Hash":  "D55C17C062A358A178885DA11DFD7602969C2D53A32F4C3FA73972A227A277B9",
+    "FileSize":  67621930
 }
