@@ -11,7 +11,7 @@
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
 
-    <Grid>
+    <Grid Background="{DynamicResource WindowBackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -44,13 +44,14 @@
         </Border>
 
         <!--  Contenuto con TabControl  -->
-        <TabControl Grid.Row="1" Margin="0">
+        <TabControl Grid.Row="1" Margin="0" Background="{DynamicResource WindowBackgroundBrush}">
             <!--  Tab Informazioni  -->
             <TabItem Header="Informazioni">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Background="{DynamicResource ContentBackgroundBrush}">
                     <StackPanel Margin="30,20">
                         <TextBlock
                             FontSize="14"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
                             Text="Sistema di gestione per la terapia anticoagulante orale con Warfarin destinato ai medici di medicina generale italiani."
                             TextWrapping="Wrap" />
 
@@ -58,28 +59,30 @@
                             Margin="0,20,0,5"
                             FontSize="14"
                             FontWeight="SemiBold"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
                             Text="Caratteristiche principali:" />
                         <StackPanel Margin="10,5,0,0">
-                            <TextBlock Margin="0,3" Text="• Calcolo automatico dosaggio Warfarin (linee guida FCSA/ACCP)" />
-                            <TextBlock Margin="0,3" Text="• Monitoraggio INR e grafici trend" />
-                            <TextBlock Margin="0,3" Text="• Gestione score CHA₂DS₂-VASc e HAS-BLED" />
-                            <TextBlock Margin="0,3" Text="• Verifica interazioni farmacologiche" />
-                            <TextBlock Margin="0,3" Text="• Export PDF per il paziente" />
-                            <TextBlock Margin="0,3" Text="• Guide professionali integrate" />
-                            <TextBlock Margin="0,3" Text="• Wizard configurazione iniziale paziente" />
+                            <TextBlock Margin="0,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Calcolo automatico dosaggio Warfarin (linee guida FCSA/ACCP)" />
+                            <TextBlock Margin="0,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Monitoraggio INR e grafici trend" />
+                            <TextBlock Margin="0,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Gestione score CHA₂DS₂-VASc e HAS-BLED" />
+                            <TextBlock Margin="0,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Verifica interazioni farmacologiche" />
+                            <TextBlock Margin="0,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Export PDF per il paziente" />
+                            <TextBlock Margin="0,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Guide professionali integrate" />
+                            <TextBlock Margin="0,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Wizard configurazione iniziale paziente" />
                         </StackPanel>
 
                         <TextBlock
                             Margin="0,20,0,5"
                             FontSize="14"
                             FontWeight="SemiBold"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
                             Text="Requisiti di sistema:" />
                         <StackPanel Margin="10,5,0,0">
-                            <TextBlock Margin="0,3" Text="• Windows 10 (versione 1809 o successiva) o Windows 11" />
-                            <TextBlock Margin="0,3" Text="• Nessun runtime richiesto (applicazione self-contained)" />
-                            <TextBlock Margin="0,3" Text="• 200 MB spazio su disco" />
-                            <TextBlock Margin="0,3" Text="• 4 GB RAM (consigliati)" />
-                            <TextBlock Margin="0,3" Text="• Risoluzione schermo: 1280x720 minima" />
+                            <TextBlock Margin="0,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Windows 10 (versione 1809 o successiva) o Windows 11" />
+                            <TextBlock Margin="0,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Nessun runtime richiesto (applicazione self-contained)" />
+                            <TextBlock Margin="0,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• 200 MB spazio su disco" />
+                            <TextBlock Margin="0,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• 4 GB RAM (consigliati)" />
+                            <TextBlock Margin="0,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Risoluzione schermo: 1280x720 minima" />
                         </StackPanel>
 
                         <TextBlock
@@ -99,27 +102,30 @@
 
             <!--  Tab Changelog  -->
             <TabItem Header="Novità">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Background="{DynamicResource ContentBackgroundBrush}">
                     <StackPanel Margin="30,20">
                         <!--  Versione 1.2.3.1  -->
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"
-                            Background="{DynamicResource StatusBarBackgroundBrush}"
+                            Background="{DynamicResource CardBackgroundBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock
                                     FontSize="16"
                                     FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimaryBrush}"
                                     Text="Versione 1.2.3.1 (23 Dicembre 2025)" />
                                 <TextBlock
                                     Margin="0,10,0,5"
                                     FontWeight="SemiBold"
                                     Foreground="#E74C3C"
                                     Text="Hotfix Installer:" />
-                                <TextBlock Margin="10,3" Text="• RISOLTO: Installer v1.2.3 richiedeva .NET 8 anche se già installato" />
-                                <TextBlock Margin="10,3" Text="• Rimosso controllo errato .NET Runtime dall'installer" />
-                                <TextBlock Margin="10,3" Text="• L'app è self-contained e non richiede .NET separato" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• RISOLTO: Installer v1.2.3 richiedeva .NET 8 anche se già installato" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Rimosso controllo errato .NET Runtime dall'installer" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• L'app è self-contained e non richiede .NET separato" />
                             </StackPanel>
                         </Border>
 
@@ -127,28 +133,31 @@
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"
-                            Background="{DynamicResource ContentBackgroundBrush}"
+                            Background="{DynamicResource CardBackgroundBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock
                                     FontSize="16"
                                     FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimaryBrush}"
                                     Text="Versione 1.2.3 (22 Dicembre 2025)" />
                                 <TextBlock
                                     Margin="0,10,0,5"
                                     FontWeight="SemiBold"
                                     Foreground="#E74C3C"
                                     Text="Bugfix:" />
-                                <TextBlock Margin="10,3" Text="• Risolto errore 'no such column certaintyLevel' su database legacy (v1.0.0)" />
-                                <TextBlock Margin="10,3" Text="• Correzione automatica schema database all'avvio" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Risolto errore 'no such column certaintyLevel' su database legacy (v1.0.0)" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Correzione automatica schema database all'avvio" />
                                 <TextBlock
                                     Margin="0,10,0,5"
                                     FontWeight="SemiBold"
                                     Foreground="#27AE60"
                                     Text="Miglioramenti:" />
-                                <TextBlock Margin="10,3" Text="• Finestra Controllo INR adattiva per schermi piccoli (laptop 15'')" />
-                                <TextBlock Margin="10,3" Text="• Finestra Modifica INR ora ridimensionabile" />
-                                <TextBlock Margin="10,3" Text="• Le finestre si centrano correttamente su tutti gli schermi" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Finestra Controllo INR adattiva per schermi piccoli (laptop 15'')" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Finestra Modifica INR ora ridimensionabile" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Le finestre si centrano correttamente su tutti gli schermi" />
                             </StackPanel>
                         </Border>
 
@@ -156,19 +165,22 @@
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"
-                            Background="{DynamicResource ContentBackgroundBrush}"
+                            Background="{DynamicResource CardBackgroundBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock
                                     FontSize="16"
                                     FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimaryBrush}"
                                     Text="Versione 1.2.2.2 (22 Dicembre 2025)" />
                                 <TextBlock
                                     Margin="0,10,0,5"
                                     FontWeight="SemiBold"
                                     Foreground="#E74C3C"
                                     Text="Bugfix:" />
-                                <TextBlock Margin="10,3" Text="• Corretto bug controllo aggiornamenti" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Corretto bug controllo aggiornamenti" />
                             </StackPanel>
                         </Border>
 
@@ -176,21 +188,24 @@
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"
-                            Background="{DynamicResource ContentBackgroundBrush}"
+                            Background="{DynamicResource CardBackgroundBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock
                                     FontSize="16"
                                     FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimaryBrush}"
                                     Text="Versione 1.2.2.1 (22 Dicembre 2025)" />
                                 <TextBlock
                                     Margin="0,10,0,5"
                                     FontWeight="SemiBold"
                                     Foreground="#27AE60"
                                     Text="Miglioramenti UX:" />
-                                <TextBlock Margin="10,3" Text="• Controllo aggiornamenti ora completamente silenzioso all'avvio" />
-                                <TextBlock Margin="10,3" Text="• Notifiche mostrate SOLO quando è disponibile una nuova versione" />
-                                <TextBlock Margin="10,3" Text="• Eliminati messaggi superflui quando l'app è già aggiornata" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Controllo aggiornamenti ora completamente silenzioso all'avvio" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Notifiche mostrate SOLO quando è disponibile una nuova versione" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Eliminati messaggi superflui quando l'app è già aggiornata" />
                             </StackPanel>
                         </Border>
 
@@ -198,20 +213,23 @@
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"
-                            Background="{DynamicResource ContentBackgroundBrush}"
+                            Background="{DynamicResource CardBackgroundBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock
                                     FontSize="16"
                                     FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimaryBrush}"
                                     Text="Versione 1.2.2 (22 Dicembre 2025)" />
                                 <TextBlock
                                     Margin="0,10,0,5"
                                     FontWeight="SemiBold"
                                     Foreground="#E74C3C"
                                     Text="Correzione critica:" />
-                                <TextBlock Margin="10,3" Text="• Risolto problema sistema aggiornamenti che non rilevava nuove versioni" />
-                                <TextBlock Margin="10,3" Text="• Configurato correttamente URL HTTPS per controllo aggiornamenti" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Risolto problema sistema aggiornamenti che non rilevava nuove versioni" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Configurato correttamente URL HTTPS per controllo aggiornamenti" />
                             </StackPanel>
                         </Border>
 
@@ -219,23 +237,28 @@
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"
-                            Background="{DynamicResource ContentBackgroundBrush}"
+                            Background="{DynamicResource CardBackgroundBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock
                                     FontSize="16"
                                     FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimaryBrush}"
                                     Text="Versione 1.2.1 (22 Dicembre 2025)" />
                                 <TextBlock
                                     Margin="0,10,0,5"
                                     FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimaryBrush}"
                                     Text="Feature:" />
-                                <TextBlock Margin="10,3" Text="• Aggiunto sistema automatico di controllo degli aggiornamenti" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Aggiunto sistema automatico di controllo degli aggiornamenti" />
                                 <TextBlock
                                     Margin="0,10,0,5"
                                     FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimaryBrush}"
                                     Text="Documentazione:" />
-                                <TextBlock Margin="10,3" Text="• Aggiunto file CHANGELOG.md con storico versioni" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Aggiunto file CHANGELOG.md con storico versioni" />
                             </StackPanel>
                         </Border>
 
@@ -243,26 +266,30 @@
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"
-                            Background="{DynamicResource ContentBackgroundBrush}"
+                            Background="{DynamicResource CardBackgroundBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock
                                     FontSize="16"
                                     FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimaryBrush}"
                                     Text="Versione 1.1.1 (20 Dicembre 2025)" />
                                 <TextBlock
                                     Margin="0,10,0,5"
                                     FontWeight="SemiBold"
                                     Foreground="#E74C3C"
                                     Text="Correzioni critiche:" />
-                                <TextBlock Margin="10,3" Text="• Risolto bug critico che generava warning inappropriati per INR normali" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Risolto bug critico che generava warning inappropriati per INR normali" />
                                 <TextBlock
                                     Margin="0,10,0,5"
                                     FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimaryBrush}"
                                     Text="Miglioramenti UI:" />
-                                <TextBlock Margin="10,3" Text="• Sistema di esclusione warning nelle esportazioni" />
-                                <TextBlock Margin="10,3" Text="• Miglioramenti PDF e esportazione testo" />
-                                <TextBlock Margin="10,3" Text="• UI più intuitiva e professionale" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Sistema di esclusione warning nelle esportazioni" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Miglioramenti PDF e esportazione testo" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• UI più intuitiva e professionale" />
                             </StackPanel>
                         </Border>
 
@@ -270,42 +297,50 @@
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"
-                            Background="{DynamicResource ContentBackgroundBrush}"
+                            Background="{DynamicResource CardBackgroundBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock
                                     FontSize="16"
                                     FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimaryBrush}"
                                     Text="Versione 1.1.0 (20 Dicembre 2025)" />
                                 <TextBlock
                                     Margin="0,10,0,5"
                                     FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimaryBrush}"
                                     Text="Nuove funzionalità:" />
-                                <TextBlock Margin="10,3" Text="• Wizard di configurazione iniziale paziente con step guidati" />
-                                <TextBlock Margin="10,3" Text="• Calcolo automatico score CHA₂DS₂-VASc e HAS-BLED" />
-                                <TextBlock Margin="10,3" Text="• Valutazione controindicazioni pre-TAO" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Wizard di configurazione iniziale paziente con step guidati" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Calcolo automatico score CHA₂DS₂-VASc e HAS-BLED" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Valutazione controindicazioni pre-TAO" />
                             </StackPanel>
                         </Border>
 
                         <!--  Versione 1.0.0  -->
                         <Border
                             Padding="15"
-                            Background="{DynamicResource ContentBackgroundBrush}"
+                            Background="{DynamicResource CardBackgroundBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock
                                     FontSize="16"
                                     FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimaryBrush}"
                                     Text="Versione 1.0.0 (15 Dicembre 2025)" />
                                 <TextBlock
                                     Margin="0,10,0,5"
                                     FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimaryBrush}"
                                     Text="Release iniziale:" />
-                                <TextBlock Margin="10,3" Text="• Gestione pazienti in terapia con Warfarin" />
-                                <TextBlock Margin="10,3" Text="• Calcolo dosaggio automatico" />
-                                <TextBlock Margin="10,3" Text="• Verifica interazioni farmacologiche" />
-                                <TextBlock Margin="10,3" Text="• Gestione bridge therapy" />
-                                <TextBlock Margin="10,3" Text="• Switch terapia Warfarin ↔ DOAC" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Gestione pazienti in terapia con Warfarin" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Calcolo dosaggio automatico" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Verifica interazioni farmacologiche" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Gestione bridge therapy" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Switch terapia Warfarin ↔ DOAC" />
                             </StackPanel>
                         </Border>
                     </StackPanel>

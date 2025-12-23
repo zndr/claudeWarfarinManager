@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows;
 using Microsoft.Web.WebView2.Core;
 using WarfarinManager.UI.ViewModels;
@@ -33,8 +34,24 @@ public partial class SwitchTherapyView : Window
     {
         try
         {
-            // Inizializza WebView2
-            await webView.EnsureCoreWebView2Async(null);
+            // Configura WebView2 per usare una cartella di dati nella directory utente
+            // invece di Program Files (che è protetta da scrittura)
+            var userDataFolder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "WarfarinManager",
+                "WebView2Data"
+            );
+
+            // Crea la cartella se non esiste
+            Directory.CreateDirectory(userDataFolder);
+
+            // Crea l'ambiente WebView2 con la cartella dati personalizzata
+            var environment = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(
+                userDataFolder: userDataFolder
+            );
+
+            // Inizializza WebView2 con l'ambiente configurato
+            await webView.EnsureCoreWebView2Async(environment);
 
             // Configura le impostazioni di WebView2
             webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = true;
