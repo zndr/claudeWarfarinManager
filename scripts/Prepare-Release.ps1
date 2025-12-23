@@ -34,56 +34,56 @@ param(
 $ErrorActionPreference = "Stop"
 $RootPath = Split-Path -Parent $PSScriptRoot
 
-Write-Host "╔════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-Write-Host "║       TaoGEST - Script Preparazione Release v$NewVersion       ║" -ForegroundColor Cyan
-Write-Host "╚════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+Write-Host "================================================================" -ForegroundColor Cyan
+Write-Host "       TaoGEST - Script Preparazione Release v$NewVersion       " -ForegroundColor Cyan
+Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host ""
 
 # ============================================================================
 # STEP 1: Richiedi Release Notes se non fornite
 # ============================================================================
 if ([string]::IsNullOrWhiteSpace($ReleaseNotes)) {
-    Write-Host "📝 STEP 1: Inserisci le release notes" -ForegroundColor Yellow
+    Write-Host "STEP 1: Inserisci le release notes" -ForegroundColor Yellow
     Write-Host "Scrivi le note di rilascio (premi CTRL+Z poi INVIO per terminare):" -ForegroundColor Gray
     $ReleaseNotes = [System.Console]::In.ReadToEnd()
 }
 
-Write-Host "✓ Release notes acquisite" -ForegroundColor Green
+Write-Host "[OK] Release notes acquisite" -ForegroundColor Green
 Write-Host ""
 
 # ============================================================================
 # STEP 2: Aggiorna Version.props
 # ============================================================================
-Write-Host "📦 STEP 2: Aggiornamento Version.props..." -ForegroundColor Yellow
+Write-Host "STEP 2: Aggiornamento Version.props..." -ForegroundColor Yellow
 
 $versionPropsPath = Join-Path $RootPath "Version.props"
 [xml]$versionProps = Get-Content $versionPropsPath
 
+$versionProps.Project.PropertyGroup.VersionPrefix = $NewVersion
 $versionProps.Project.PropertyGroup.AssemblyVersion = $NewVersion
 $versionProps.Project.PropertyGroup.FileVersion = $NewVersion
-$versionProps.Project.PropertyGroup.Version = $NewVersion
 
 $versionProps.Save($versionPropsPath)
-Write-Host "✓ Version.props aggiornato" -ForegroundColor Green
+Write-Host "[OK] Version.props aggiornato" -ForegroundColor Green
 Write-Host ""
 
 # ============================================================================
 # STEP 3: Aggiorna TaoGEST-Setup.iss
 # ============================================================================
-Write-Host "📦 STEP 3: Aggiornamento installer script..." -ForegroundColor Yellow
+Write-Host "STEP 3: Aggiornamento installer script..." -ForegroundColor Yellow
 
 $issPath = Join-Path $RootPath "installer\TaoGEST-Setup.iss"
 $issContent = Get-Content $issPath -Raw
 $issContent = $issContent -replace '#define MyAppVersion ".*"', "#define MyAppVersion `"$NewVersion`""
 
 Set-Content -Path $issPath -Value $issContent -NoNewline
-Write-Host "✓ TaoGEST-Setup.iss aggiornato" -ForegroundColor Green
+Write-Host "[OK] TaoGEST-Setup.iss aggiornato" -ForegroundColor Green
 Write-Host ""
 
 # ============================================================================
 # STEP 4: Aggiorna ReleaseNotes.txt
 # ============================================================================
-Write-Host "📦 STEP 4: Aggiornamento ReleaseNotes.txt..." -ForegroundColor Yellow
+Write-Host "STEP 4: Aggiornamento ReleaseNotes.txt..." -ForegroundColor Yellow
 
 $releaseNotesPath = Join-Path $RootPath "docs\ReleaseNotes.txt"
 $currentDate = Get-Date -Format "yyyy-MM-dd"
@@ -97,17 +97,21 @@ $ReleaseNotes
 
 "@
 
-$existingContent = Get-Content $releaseNotesPath -Raw
-$updatedContent = $newSection + "`r`n" + $existingContent
+$existingContent = Get-Content $releaseNotesPath -Raw -ErrorAction SilentlyContinue
+if ($existingContent) {
+    $updatedContent = $newSection + "`r`n" + $existingContent
+} else {
+    $updatedContent = $newSection
+}
 
 Set-Content -Path $releaseNotesPath -Value $updatedContent -NoNewline
-Write-Host "✓ ReleaseNotes.txt aggiornato" -ForegroundColor Green
+Write-Host "[OK] ReleaseNotes.txt aggiornato" -ForegroundColor Green
 Write-Host ""
 
 # ============================================================================
 # STEP 5: Aggiorna CHANGELOG.md
 # ============================================================================
-Write-Host "📦 STEP 5: Aggiornamento CHANGELOG.md..." -ForegroundColor Yellow
+Write-Host "STEP 5: Aggiornamento CHANGELOG.md..." -ForegroundColor Yellow
 
 $changelogPath = Join-Path $RootPath "CHANGELOG.md"
 $changelogSection = @"
@@ -133,13 +137,13 @@ $changelogSection
     Set-Content -Path $changelogPath -Value $newChangelog -NoNewline
 }
 
-Write-Host "✓ CHANGELOG.md aggiornato" -ForegroundColor Green
+Write-Host "[OK] CHANGELOG.md aggiornato" -ForegroundColor Green
 Write-Host ""
 
 # ============================================================================
 # STEP 6: Build Release
 # ============================================================================
-Write-Host "🔨 STEP 6: Compilazione Release..." -ForegroundColor Yellow
+Write-Host "STEP 6: Compilazione Release..." -ForegroundColor Yellow
 
 Push-Location $RootPath
 try {
@@ -151,7 +155,7 @@ try {
         throw "Errore durante la compilazione"
     }
 
-    Write-Host "✓ Build completato con successo" -ForegroundColor Green
+    Write-Host "[OK] Build completato con successo" -ForegroundColor Green
 } finally {
     Pop-Location
 }
@@ -160,7 +164,7 @@ Write-Host ""
 # ============================================================================
 # STEP 7: Publish
 # ============================================================================
-Write-Host "📤 STEP 7: Creazione publish self-contained..." -ForegroundColor Yellow
+Write-Host "STEP 7: Creazione publish self-contained..." -ForegroundColor Yellow
 
 $publishPath = Join-Path $RootPath "publish"
 if (Test-Path $publishPath) {
@@ -180,7 +184,7 @@ try {
         throw "Errore durante il publish"
     }
 
-    Write-Host "✓ Publish completato" -ForegroundColor Green
+    Write-Host "[OK] Publish completato" -ForegroundColor Green
 } finally {
     Pop-Location
 }
@@ -189,11 +193,11 @@ Write-Host ""
 # ============================================================================
 # STEP 8: Compila Installer
 # ============================================================================
-Write-Host "📦 STEP 8: Compilazione installer con Inno Setup..." -ForegroundColor Yellow
+Write-Host "STEP 8: Compilazione installer con Inno Setup..." -ForegroundColor Yellow
 
 $innoSetupPath = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
 if (-not (Test-Path $innoSetupPath)) {
-    Write-Host "⚠ Inno Setup non trovato in: $innoSetupPath" -ForegroundColor Red
+    Write-Host "[ERRORE] Inno Setup non trovato in: $innoSetupPath" -ForegroundColor Red
     Write-Host "Scaricalo da: https://jrsoftware.org/isdl.php" -ForegroundColor Yellow
     exit 1
 }
@@ -207,25 +211,25 @@ if (-not (Test-Path $installerPath)) {
     throw "Installer non trovato: $installerPath"
 }
 
-Write-Host "✓ Installer creato: $installerName" -ForegroundColor Green
+Write-Host "[OK] Installer creato: $installerName" -ForegroundColor Green
 Write-Host ""
 
 # ============================================================================
 # STEP 9: Calcola SHA256
 # ============================================================================
-Write-Host "🔐 STEP 9: Calcolo hash SHA256..." -ForegroundColor Yellow
+Write-Host "STEP 9: Calcolo hash SHA256..." -ForegroundColor Yellow
 
 $hash = (Get-FileHash -Path $installerPath -Algorithm SHA256).Hash
 $fileSize = (Get-Item $installerPath).Length
 
-Write-Host "✓ SHA256: $hash" -ForegroundColor Green
-Write-Host "✓ Dimensione: $([Math]::Round($fileSize / 1MB, 2)) MB" -ForegroundColor Green
+Write-Host "[OK] SHA256: $hash" -ForegroundColor Green
+Write-Host "[OK] Dimensione: $([Math]::Round($fileSize / 1MB, 2)) MB" -ForegroundColor Green
 Write-Host ""
 
 # ============================================================================
 # STEP 10: Aggiorna version.json
 # ============================================================================
-Write-Host "📦 STEP 10: Aggiornamento version.json..." -ForegroundColor Yellow
+Write-Host "STEP 10: Aggiornamento version.json..." -ForegroundColor Yellow
 
 $versionJsonPath = Join-Path $RootPath "version.json"
 $downloadUrl = "https://github.com/zndr/claudeWarfarinManager/releases/download/v$NewVersion/$installerName"
@@ -240,41 +244,42 @@ $versionJson = @{
 } | ConvertTo-Json -Depth 10
 
 Set-Content -Path $versionJsonPath -Value $versionJson -NoNewline
-Write-Host "✓ version.json aggiornato" -ForegroundColor Green
+Write-Host "[OK] version.json aggiornato" -ForegroundColor Green
 Write-Host ""
 
 # ============================================================================
 # STEP 11: Riepilogo e istruzioni finali
 # ============================================================================
-Write-Host "╔════════════════════════════════════════════════════════════╗" -ForegroundColor Green
-Write-Host "║              ✓ PREPARAZIONE COMPLETATA!                   ║" -ForegroundColor Green
-Write-Host "╚════════════════════════════════════════════════════════════╝" -ForegroundColor Green
+Write-Host "================================================================" -ForegroundColor Green
+Write-Host "              PREPARAZIONE COMPLETATA!                          " -ForegroundColor Green
+Write-Host "================================================================" -ForegroundColor Green
 Write-Host ""
 
-Write-Host "📋 RIEPILOGO:" -ForegroundColor Cyan
+Write-Host "RIEPILOGO:" -ForegroundColor Cyan
 Write-Host "   Versione:        $NewVersion" -ForegroundColor White
 Write-Host "   Installer:       $installerPath" -ForegroundColor White
 Write-Host "   SHA256:          $hash" -ForegroundColor White
 Write-Host "   Dimensione:      $([Math]::Round($fileSize / 1MB, 2)) MB" -ForegroundColor White
 Write-Host ""
 
-Write-Host "📝 PROSSIMI PASSI MANUALI:" -ForegroundColor Yellow
+Write-Host "PROSSIMI PASSI MANUALI:" -ForegroundColor Yellow
 Write-Host ""
 Write-Host "   1. Verifica che tutto sia corretto" -ForegroundColor White
 Write-Host "      - Controlla i file modificati con: git status" -ForegroundColor Gray
-Write-Host "      - Testa l'installer manualmente" -ForegroundColor Gray
+Write-Host "      - Testa l installer manualmente" -ForegroundColor Gray
 Write-Host ""
 Write-Host "   2. Commit e Push" -ForegroundColor White
 Write-Host "      git add -A" -ForegroundColor Gray
-Write-Host "      git commit -m 'chore: Preparazione release v$NewVersion'" -ForegroundColor Gray
+Write-Host "      git commit -m `"chore: Preparazione release v$NewVersion`"" -ForegroundColor Gray
 Write-Host "      git push" -ForegroundColor Gray
 Write-Host ""
 Write-Host "   3. Crea Tag" -ForegroundColor White
-Write-Host "      git tag -a v$NewVersion -m 'Release v$NewVersion'" -ForegroundColor Gray
+Write-Host "      git tag -a v$NewVersion -m `"Release v$NewVersion`"" -ForegroundColor Gray
 Write-Host "      git push origin v$NewVersion" -ForegroundColor Gray
 Write-Host ""
 Write-Host "   4. Crea Release GitHub" -ForegroundColor White
-Write-Host "      gh release create v$NewVersion $installerPath --title 'TaoGEST v$NewVersion' --notes '$($ReleaseNotes.Replace("`n", " "))'" -ForegroundColor Gray
+$ghCommand = "gh release create v$NewVersion `"$installerPath`" --title `"TaoGEST v$NewVersion`" --notes `"(vedi release notes sopra)`""
+Write-Host "      $ghCommand" -ForegroundColor Gray
 Write-Host ""
 Write-Host "   5. Verifica auto-updater" -ForegroundColor White
 Write-Host "      - Apri TaoGEST" -ForegroundColor Gray
@@ -282,4 +287,4 @@ Write-Host "      - Vai in Strumenti > Verifica aggiornamenti" -ForegroundColor 
 Write-Host "      - Controlla che rilevi la nuova versione" -ForegroundColor Gray
 Write-Host ""
 
-Write-Host "✅ Tutto pronto per la release!" -ForegroundColor Green
+Write-Host "[DONE] Tutto pronto per la release!" -ForegroundColor Green
