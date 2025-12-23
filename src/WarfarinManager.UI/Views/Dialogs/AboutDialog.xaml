@@ -76,7 +76,7 @@
                             Text="Requisiti di sistema:" />
                         <StackPanel Margin="10,5,0,0">
                             <TextBlock Margin="0,3" Text="• Windows 10 (versione 1809 o successiva) o Windows 11" />
-                            <TextBlock Margin="0,3" Text="• .NET 8.0 Desktop Runtime (x64)" />
+                            <TextBlock Margin="0,3" Text="• Nessun runtime richiesto (applicazione self-contained)" />
                             <TextBlock Margin="0,3" Text="• 200 MB spazio su disco" />
                             <TextBlock Margin="0,3" Text="• 4 GB RAM (consigliati)" />
                             <TextBlock Margin="0,3" Text="• Risoluzione schermo: 1280x720 minima" />
@@ -101,11 +101,33 @@
             <TabItem Header="Novità">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="30,20">
-                        <!--  Versione 1.2.3  -->
+                        <!--  Versione 1.2.3.1  -->
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"
                             Background="#ECF0F1"
+                            CornerRadius="5">
+                            <StackPanel>
+                                <TextBlock
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    Text="Versione 1.2.3.1 (23 Dicembre 2025)" />
+                                <TextBlock
+                                    Margin="0,10,0,5"
+                                    FontWeight="SemiBold"
+                                    Foreground="#E74C3C"
+                                    Text="Hotfix Installer:" />
+                                <TextBlock Margin="10,3" Text="• RISOLTO: Installer v1.2.3 richiedeva .NET 8 anche se già installato" />
+                                <TextBlock Margin="10,3" Text="• Rimosso controllo errato .NET Runtime dall'installer" />
+                                <TextBlock Margin="10,3" Text="• L'app è self-contained e non richiede .NET separato" />
+                            </StackPanel>
+                        </Border>
+
+                        <!--  Versione 1.2.3  -->
+                        <Border
+                            Margin="0,0,0,15"
+                            Padding="15"
+                            Background="#F8F9FA"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock

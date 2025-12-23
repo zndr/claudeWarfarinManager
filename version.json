@@ -1,9 +1,9 @@
 {
-  "Version": "1.2.3",
-  "DownloadUrl": "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.2.3/TaoGEST-Setup-v1.2.3.exe",
-  "ReleaseDate": "2025-12-22T00:00:00",
-  "IsCritical": false,
-  "FileSize": 18966731,
-  "Sha256Hash": "056750282249018ab27e7a2e7bfc8b3953e6c438a59b502100a4ef50c1603f57",
-  "ReleaseNotes": "🐛 TaoGEST v1.2.3 - Compatibilità Database & Schermi Piccoli\n\n🔧 BUG RISOLTI:\n• Risolto errore 'no such column certaintyLevel' su database legacy (v1.0.0)\n• Correzione automatica schema database all'avvio\n\n🖥️ SUPPORTO SCHERMI PICCOLI:\n• Finestra Controllo INR adattiva per laptop 15\"\n• Finestra Modifica INR ora ridimensionabile\n• Le finestre si centrano correttamente su tutti gli schermi\n\n📥 INSTALLAZIONE:\n1. Chiudi TaoGEST se aperto\n2. Scarica e installa l'aggiornamento\n3. Riavvia l'applicazione\n\nPer maggiori dettagli:\nhttps://github.com/zndr/claudeWarfarinManager/releases/tag/v1.2.3"
+  "Version": "1.2.3.1",
+  "DownloadUrl": "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.2.3.1/TaoGEST-Setup-v1.2.3.1.exe",
+  "ReleaseDate": "2025-12-23T00:00:00",
+  "IsCritical": true,
+  "FileSize": 64666940,
+  "Sha256Hash": "0C3D06D9AF17206C5E0EAA0A0BDC9FC826AB02880A88D7154260BB4D12AF7AAE",
+  "ReleaseNotes": "🔧 TaoGEST v1.2.3.1 - HOTFIX INSTALLER CRITICO\n\n⚠️ IMPORTANTE: Questa è una correzione critica all'installer della v1.2.3\n\n🔧 PROBLEMA RISOLTO:\n• RISOLTO: Installer v1.2.3 richiedeva .NET 8 anche se già installato\n• RISOLTO: Installazione bloccata da controllo errato del runtime\n• L'applicazione è self-contained e NON richiede .NET separato\n• Rimosso controllo .NET dall'installer\n\n📥 INSTALLAZIONE:\n1. Scarica e installa questa versione\n2. Non è più richiesto .NET 8 (l'app lo include)\n3. L'installazione procederà senza problemi\n\nPer maggiori dettagli:\nhttps://github.com/zndr/claudeWarfarinManager/releases/tag/v1.2.3.1"
 }

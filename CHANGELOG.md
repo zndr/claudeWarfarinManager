@@ -5,6 +5,15 @@ Tutte le modifiche importanti a questo progetto saranno documentate in questo fi
 Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.0.0/),
 e questo progetto aderisce al [Semantic Versioning](https://semver.org/lang/it/).
 
+## [1.2.3.1] - 2025-12-23
+
+### Fixed
+
+- **HOTFIX CRITICO**: Installer v1.2.3 richiedeva .NET 8 anche se già installato
+- Rimosso controllo errato .NET Runtime dall'installer (chiave registro sbagliata)
+- L'applicazione è self-contained e non richiede .NET installato separatamente
+- Aggiornati requisiti di sistema nelle note di rilascio (rimosso requisito .NET)
+
 ## [1.2.3] - 2025-12-22
 
 ### Fixed

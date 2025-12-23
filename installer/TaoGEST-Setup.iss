@@ -1,8 +1,8 @@
 ; Script Inno Setup per TaoGEST - Gestione Terapia Anticoagulante Orale
-; Versione 1.2.3
+; Versione 1.2.3.1
 
 #define MyAppName "TaoGEST"
-#define MyAppVersion "1.2.3"
+#define MyAppVersion "1.2.3.1"
 #define MyAppPublisher "dr Dario Giorgio Zani"
 #define MyAppURL "https://dottorgiorgio.it"
 #define MyAppExeName "WarfarinManager.UI.exe"
@@ -57,26 +57,8 @@ Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Fil
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [Code]
-function InitializeSetup(): Boolean;
-var
-  ResultCode: Integer;
-  NetFrameworkInstalled: Boolean;
-begin
-  Result := True;
-
-  // Verifica presenza .NET 8 Runtime
-  if not RegKeyExists(HKLM, 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedhost') then
-  begin
-    if MsgBox('.NET 8.0 Runtime non è installato sul sistema.' + #13#10 +
-              'Questa applicazione richiede .NET 8.0 Desktop Runtime per funzionare.' + #13#10#13#10 +
-              'Vuoi scaricare e installare .NET 8.0 Runtime ora?',
-              mbConfirmation, MB_YESNO) = IDYES then
-    begin
-      ShellExec('open', 'https://dotnet.microsoft.com/download/dotnet/8.0', '', '', SW_SHOW, ewNoWait, ResultCode);
-    end;
-    Result := False;
-  end;
-end;
+// Rimosso il controllo .NET Runtime perché l'applicazione è pubblicata come self-contained
+// e include già tutti i runtime necessari
 
 procedure CurStepChanged(CurStep: TSetupStep);
 begin

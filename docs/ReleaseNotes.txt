@@ -1,11 +1,20 @@
 ═══════════════════════════════════════════════════════════════
   TaoGEST - Gestione Terapia Anticoagulante Orale
-  Note di Rilascio - Versione 1.2.3
+  Note di Rilascio - Versione 1.2.3.1
 ═══════════════════════════════════════════════════════════════
 
-Data Rilascio: 22 Dicembre 2025
+Data Rilascio: 23 Dicembre 2025
 
-BUGFIX
+HOTFIX - INSTALLER
+─────────────────────────────────────────────────────────────
+
+🔧 Corretto Installer Difettoso (v1.2.3)
+  • RISOLTO: Installer v1.2.3 richiedeva .NET 8 anche se già installato
+  • RISOLTO: Installazione bloccata da controllo errato del runtime
+  • L'applicazione è self-contained e NON richiede .NET separato
+  • Rimosso controllo .NET dall'installer
+
+BUGFIX VERSIONE 1.2.3 (22 Dicembre 2025)
 ─────────────────────────────────────────────────────────────
 
 🐛 Compatibilità Database Legacy
@@ -48,7 +57,7 @@ REQUISITI DI SISTEMA
 ─────────────────────────────────────────────────────────────
 
 • Windows 10 (versione 1809 o successiva) o Windows 11
-• .NET 8.0 Desktop Runtime (x64)
+• Nessun runtime richiesto (applicazione self-contained)
 • 200 MB spazio su disco
 • 4 GB RAM (consigliati)
 • Risoluzione schermo: 1280x720 minima, 1920x1080 consigliata
@@ -56,7 +65,7 @@ REQUISITI DI SISTEMA
 INSTALLAZIONE
 ─────────────────────────────────────────────────────────────
 
-1. Eseguire TaoGEST-Setup-v1.2.3.exe
+1. Eseguire TaoGEST-Setup-v1.2.3.1.exe
 2. Seguire le istruzioni dell'installazione guidata
 3. Al primo avvio verrà creato il database locale
 4. Configurare i dati del medico in Impostazioni
