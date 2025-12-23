@@ -228,7 +228,13 @@
             </TabControl.Resources>
 
             <!--  Tab 1: Anagrafica  -->
-            <TabItem Header="📋 Anagrafica">
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource TabIcon.Anagrafica}"/>
+                        <TextBlock Text="Anagrafica"/>
+                    </StackPanel>
+                </TabItem.Header>
                 <ScrollViewer Padding="30" VerticalScrollBarVisibility="Auto" Background="{DynamicResource ContentBackgroundBrush}">
                     <StackPanel MaxWidth="700">
                         <TextBlock
@@ -341,12 +347,24 @@
             </TabItem>
 
             <!--  Tab 2: Valutazione Pre-TAO  -->
-            <TabItem Header="🩺 Valutazione Pre-TAO">
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource TabIcon.PreTao}"/>
+                        <TextBlock Text="Valutazione Pre-TAO"/>
+                    </StackPanel>
+                </TabItem.Header>
                 <local:PreTaoAssessmentSummary DataContext="{Binding PreTaoAssessmentViewModel}" />
             </TabItem>
 
             <!--  Tab 3: Indicazione alla TAO  -->
-            <TabItem Header="🎯 Indicazione alla TAO">
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource TabIcon.Indication}"/>
+                        <TextBlock Text="Indicazione alla TAO"/>
+                    </StackPanel>
+                </TabItem.Header>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -554,27 +572,51 @@
                 </Grid>
             </TabItem>
 
-            <!--  Tab 3: Farmaci  -->
-            <TabItem Header="💊 Farmaci">
+            <!--  Tab 4: Farmaci  -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource TabIcon.Medications}"/>
+                        <TextBlock Text="Farmaci"/>
+                    </StackPanel>
+                </TabItem.Header>
                 <local:MedicationsView DataContext="{Binding MedicationsViewModel}" />
             </TabItem>
 
-            <!--  Tab 4: Storico INR  -->
-            <TabItem Header="📊 Storico INR">
+            <!--  Tab 5: Storico INR  -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource TabIcon.INRHistory}"/>
+                        <TextBlock Text="Storico INR"/>
+                    </StackPanel>
+                </TabItem.Header>
                 <local:INRHistoryView DataContext="{Binding InrHistoryViewModel}" />
             </TabItem>
 
-            <!--  Tab 5: Bridge Therapy  -->
-            <TabItem Header="💉 Bridge Therapy">
+            <!--  Tab 6: Bridge Therapy  -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource TabIcon.BridgeTherapy}"/>
+                        <TextBlock Text="Bridge Therapy"/>
+                    </StackPanel>
+                </TabItem.Header>
                 <local:BridgeTherapyView DataContext="{Binding BridgeTherapyViewModel}" />
             </TabItem>
 
-            <!--  Tab 6: Eventi Avversi  -->
-            <TabItem Header="⚠ Eventi Avversi">
+            <!--  Tab 7: Eventi Avversi  -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource TabIcon.AdverseEvents}"/>
+                        <TextBlock Text="Eventi Avversi"/>
+                    </StackPanel>
+                </TabItem.Header>
                 <local:AdverseEventsView DataContext="{Binding AdverseEventsViewModel}" />
             </TabItem>
 
-            <!--  Tab 7: Switch Terapia  -->
+            <!--  Tab 8: Switch Terapia  -->
             <TabItem>
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
@@ -582,21 +624,26 @@
                             Text="{Binding SwitchTherapyViewModel.HasActiveSwitches, Converter={StaticResource BoolToVisibilityConverter}}"
                             Visibility="Collapsed" />
                         <TextBlock
-                            FontSize="14"
-                            Foreground="{DynamicResource WarningBrush}"
-                            FontWeight="Bold">
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="16"
+                            VerticalAlignment="Center"
+                            Margin="0,0,6,0">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
-                                    <Setter Property="Text" Value="🔄" />
+                                    <Setter Property="Text" Value="{StaticResource Icon.Tab.Switch}" />
+                                    <Setter Property="Foreground" Value="#9C27B0" /> <!-- Purple -->
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding SwitchTherapyViewModel.HasActiveSwitches}" Value="True">
-                                            <Setter Property="Text" Value="⚠️" />
+                                            <Setter Property="Text" Value="{StaticResource Icon.Tab.AdverseEvents}" /> <!-- Warning icon -->
+                                            <Setter Property="Foreground" Value="#FF9800" /> <!-- Orange -->
+                                            <Setter Property="FontSize" Value="18" />
+                                            <Setter Property="FontWeight" Value="Bold" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </TextBlock.Style>
                         </TextBlock>
-                        <TextBlock Text=" Switch Terapia" Margin="4,0,0,0" />
+                        <TextBlock Text="Switch Terapia" />
                     </StackPanel>
                 </TabItem.Header>
                 <local:SwitchTherapyTabView DataContext="{Binding SwitchTherapyViewModel}" />

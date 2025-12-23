@@ -72,6 +72,17 @@
     <system:String x:Key="Icon.TestTube" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE9C4;</system:String>
     <system:String x:Key="Icon.DNA" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE9C5;</system:String>
     <system:String x:Key="Icon.Blood" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE95E;</system:String>
+    <system:String x:Key="Icon.Syringe" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE950;</system:String>
+
+    <!-- Custom Tab Icons -->
+    <system:String x:Key="Icon.Tab.Anagrafica" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE779;</system:String> <!-- ContactInfo -->
+    <system:String x:Key="Icon.Tab.PreTao" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE95E;</system:String> <!-- Health -->
+    <system:String x:Key="Icon.Tab.Indication" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE8B8;</system:String> <!-- Compass - Orientamento diagnostico -->
+    <system:String x:Key="Icon.Tab.Medications" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE945;</system:String> <!-- LightningBolt - Interazioni farmacologiche -->
+    <system:String x:Key="Icon.Tab.INRHistory" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE9D2;</system:String> <!-- ChartLine -->
+    <system:String x:Key="Icon.Tab.BridgeTherapy" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE8BF;</system:String> <!-- CalendarDay - Pianificazione temporale -->
+    <system:String x:Key="Icon.Tab.AdverseEvents" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE7BA;</system:String> <!-- Warning -->
+    <system:String x:Key="Icon.Tab.Switch" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE8AB;</system:String> <!-- Switch -->
 
     <!-- Base Icon Style -->
     <Style x:Key="IconStyle" TargetType="TextBlock">
@@ -110,6 +121,61 @@
     <!-- Warning Icon Style -->
     <Style x:Key="WarningIconStyle" TargetType="TextBlock" BasedOn="{StaticResource IconStyle}">
         <Setter Property="Foreground" Value="{DynamicResource WarningBrush}"/>
+    </Style>
+
+    <!-- Tab Icon Styles with custom colors -->
+    <Style x:Key="TabIconStyle" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0,0,6,0"/>
+    </Style>
+
+    <!-- Specific Tab Icon Colors -->
+    <Style x:Key="TabIcon.Anagrafica" TargetType="TextBlock" BasedOn="{StaticResource TabIconStyle}">
+        <Setter Property="Foreground" Value="#0078D4"/> <!-- Blue -->
+        <Setter Property="Text" Value="{StaticResource Icon.Tab.Anagrafica}"/>
+    </Style>
+
+    <Style x:Key="TabIcon.PreTao" TargetType="TextBlock" BasedOn="{StaticResource TabIconStyle}">
+        <Setter Property="Foreground" Value="#107C10"/> <!-- Green -->
+        <Setter Property="Text" Value="{StaticResource Icon.Tab.PreTao}"/>
+    </Style>
+
+    <Style x:Key="TabIcon.Indication" TargetType="TextBlock" BasedOn="{StaticResource TabIconStyle}">
+        <Setter Property="Foreground" Value="#0078D4"/> <!-- Blue -->
+        <Setter Property="Text" Value="{StaticResource Icon.Tab.Indication}"/>
+    </Style>
+
+    <Style x:Key="TabIcon.Medications" TargetType="TextBlock" BasedOn="{StaticResource TabIconStyle}">
+        <Setter Property="Foreground" Value="#9C27B0"/> <!-- Purple -->
+        <Setter Property="Text" Value="{StaticResource Icon.Tab.Medications}"/>
+    </Style>
+
+    <Style x:Key="TabIcon.INRHistory" TargetType="TextBlock" BasedOn="{StaticResource TabIconStyle}">
+        <Setter Property="Foreground" Value="#FF9800"/> <!-- Orange -->
+        <Setter Property="Text" Value="{StaticResource Icon.Tab.INRHistory}"/>
+    </Style>
+
+    <Style x:Key="TabIcon.BridgeTherapy" TargetType="TextBlock" BasedOn="{StaticResource TabIconStyle}">
+        <Setter Property="Foreground" Value="#FF6B00"/> <!-- Dark Orange -->
+        <Setter Property="Text" Value="{StaticResource Icon.Tab.BridgeTherapy}"/>
+    </Style>
+
+    <Style x:Key="TabIcon.AdverseEvents" TargetType="TextBlock" BasedOn="{StaticResource TabIconStyle}">
+        <Setter Property="Foreground" Value="#D13438"/> <!-- Red -->
+        <Setter Property="Text" Value="{StaticResource Icon.Tab.AdverseEvents}"/>
+    </Style>
+
+    <Style x:Key="TabIcon.Switch" TargetType="TextBlock" BasedOn="{StaticResource TabIconStyle}">
+        <Setter Property="Foreground" Value="#9C27B0"/> <!-- Purple -->
+        <Setter Property="Text" Value="{StaticResource Icon.Tab.Switch}"/>
+    </Style>
+
+    <Style x:Key="TabIcon.SwitchActive" TargetType="TextBlock" BasedOn="{StaticResource TabIconStyle}">
+        <Setter Property="Foreground" Value="#FF9800"/> <!-- Warning Orange when active -->
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="FontWeight" Value="Bold"/>
     </Style>
 
 </ResourceDictionary>
