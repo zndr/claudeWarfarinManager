@@ -1,9 +1,8 @@
 {
-  "Version": "1.2.3.1",
-  "DownloadUrl": "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.2.3.1/TaoGEST-Setup-v1.2.3.1.exe",
-  "ReleaseDate": "2025-12-23T00:00:00",
-  "IsCritical": true,
-  "FileSize": 64666940,
-  "Sha256Hash": "0C3D06D9AF17206C5E0EAA0A0BDC9FC826AB02880A88D7154260BB4D12AF7AAE",
-  "ReleaseNotes": "🔧 TaoGEST v1.2.3.1 - HOTFIX INSTALLER CRITICO\n\n⚠️ IMPORTANTE: Questa è una correzione critica all'installer della v1.2.3\n\n🔧 PROBLEMA RISOLTO:\n• RISOLTO: Installer v1.2.3 richiedeva .NET 8 anche se già installato\n• RISOLTO: Installazione bloccata da controllo errato del runtime\n• L'applicazione è self-contained e NON richiede .NET separato\n• Rimosso controllo .NET dall'installer\n\n📥 INSTALLAZIONE:\n1. Scarica e installa questa versione\n2. Non è più richiesto .NET 8 (l'app lo include)\n3. L'installazione procederà senza problemi\n\nPer maggiori dettagli:\nhttps://github.com/zndr/claudeWarfarinManager/releases/tag/v1.2.3.1"
+    "Version":  "1.2.4.0",
+    "ReleaseNotes":  "NUOVE FUNZIONALIT�:\n- Sistema completo di temi chiaro/scuro con switcher UI\n- Preferenze tema persistenti (Light/Dark/System)\n- Auto-detect e sincronizzazione con tema di sistema Windows\n- Script PowerShell di automazione completa release\n\nMIGLIORAMENTI UX:\n- Transizioni fluide al cambio tema (senza restart)\n- Palette colori professionali ottimizzate per accessibilit�\n- Icone Fluent System contestuali (WB_Sunny/DarkMode)\n- Switcher accessibile dal menu Strumenti\n\nSVILUPPO:\n- Prepare-Release.ps1: automazione build, installer, hash SHA256\n- Documentazione aggiornata per processo release\n- ThemeManager con dependency injection\n- UserPreferencesService per persistenza JSON\n\nARCHITETTURA:\n- ThemeSwitcherDialog.xaml: UI modale con RadioButton\n- Dark.xaml/Light.xaml: Resource dictionaries completi\n- Eventi real-time per notifiche cambio tema\n- Fallback automatico a tema chiaro in caso errori",
+    "DownloadUrl":  "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.2.4.0/TaoGEST-Setup-v1.2.4.0.exe",
+    "ReleaseDate":  "2025-12-23",
+    "Sha256Hash":  "86E579F7181B87DB12026233DA7654BAA6B57DDFA21A9B9505DBEF8C1DB1F2E9",
+    "FileSize":  64667424
 }

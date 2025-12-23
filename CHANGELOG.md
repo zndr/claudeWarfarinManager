@@ -1,5 +1,31 @@
 # Changelog
 
+
+## [1.2.4.0] - 2025-12-23
+
+NUOVE FUNZIONALITÀ:
+- Sistema completo di temi chiaro/scuro con switcher UI
+- Preferenze tema persistenti (Light/Dark/System)
+- Auto-detect e sincronizzazione con tema di sistema Windows
+- Script PowerShell di automazione completa release
+
+MIGLIORAMENTI UX:
+- Transizioni fluide al cambio tema (senza restart)
+- Palette colori professionali ottimizzate per accessibilità
+- Icone Fluent System contestuali (WB_Sunny/DarkMode)
+- Switcher accessibile dal menu Strumenti
+
+SVILUPPO:
+- Prepare-Release.ps1: automazione build, installer, hash SHA256
+- Documentazione aggiornata per processo release
+- ThemeManager con dependency injection
+- UserPreferencesService per persistenza JSON
+
+ARCHITETTURA:
+- ThemeSwitcherDialog.xaml: UI modale con RadioButton
+- Dark.xaml/Light.xaml: Resource dictionaries completi
+- Eventi real-time per notifiche cambio tema
+- Fallback automatico a tema chiaro in caso errori
 Tutte le modifiche importanti a questo progetto saranno documentate in questo file.
 
 Il formato Ã¨ basato su [Keep a Changelog](https://keepachangelog.com/it/1.0.0/),
