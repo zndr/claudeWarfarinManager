@@ -72,7 +72,18 @@
       "Bash(gh api:*)",
       "Bash(cmd /c \"dir publish\\\\TaoGEST-Setup-v1.2.2.1.exe\")",
       "Bash(gh repo view:*)",
-      "Bash(gh repo edit:*)"
+      "Bash(gh repo edit:*)",
+      "Bash(gh release upload:*)",
+      "Bash(gh release edit:*)",
+      "Bash(git stash:*)",
+      "Bash(dotnet:*)",
+      "Bash(findstr:*)",
+      "Bash(echo:*)",
+      "Bash(git tag:*)",
+      "Bash(mkdir:*)",
+      "Bash(grep:*)",
+      "Bash(git restore:*)",
+      "Bash(git config:*)"
     ],
     "deny": [],
     "ask": []
