@@ -1,17 +1,16 @@
 <Project>
   <PropertyGroup>
     <!-- Versione applicazione -->
-    <VersionPrefix>1.2.3.1</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
-    <AssemblyVersion>1.2.3.1</AssemblyVersion>
-    <FileVersion>1.2.3.1</FileVersion>
-    
+    <VersionPrefix>1.2.4.0</VersionPrefix>
+    <VersionSuffix>
+    </VersionSuffix>
+    <AssemblyVersion>1.2.4.0</AssemblyVersion>
+    <FileVersion>1.2.4.0</FileVersion>
     <!-- Metadati prodotto -->
     <Product>TaoGEST</Product>
     <Company>dr Dario Giorgio Zani</Company>
-    <Copyright>Copyright © 2025</Copyright>
+    <Copyright>Copyright Â© 2025</Copyright>
     <Description>Gestione Terapia Anticoagulante Orale</Description>
-    
     <!-- Informazioni aggiuntive -->
     <Authors>Development Team</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
