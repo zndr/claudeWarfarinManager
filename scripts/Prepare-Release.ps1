@@ -166,11 +166,13 @@ Write-Host ""
 # STEP 7: Publish
 # ============================================================================
 Write-Host "STEP 7: Creazione publish self-contained..." -ForegroundColor Yellow
+Write-Host "ATTENZIONE: Il publish viene fatto nella cartella predefinita di dotnet" -ForegroundColor Gray
+Write-Host "            src/WarfarinManager.UI/bin/Release/net8.0-windows/win-x64/publish/" -ForegroundColor Gray
+Write-Host ""
 
-$publishPath = Join-Path $RootPath "publish"
-if (Test-Path $publishPath) {
-    Remove-Item $publishPath -Recurse -Force
-}
+# IMPORTANTE: NON specificare -o custom path!
+# L'installer Inno Setup legge da bin/Release/.../publish/
+# Se pubblichiamo in un path custom, l'installer prende i binari vecchi!
 
 Push-Location $RootPath
 try {
@@ -178,11 +180,23 @@ try {
         -c Release `
         -r win-x64 `
         --self-contained true `
-        -p:PublishSingleFile=false `
-        -o $publishPath
+        -p:PublishSingleFile=false
 
     if ($LASTEXITCODE -ne 0) {
         throw "Errore durante il publish"
+    }
+
+    # Verifica che i binari abbiano la versione corretta
+    $publishedExePath = Join-Path $RootPath "src\WarfarinManager.UI\bin\Release\net8.0-windows\win-x64\publish\WarfarinManager.UI.exe"
+    if (Test-Path $publishedExePath) {
+        $exeVersion = (Get-Item $publishedExePath).VersionInfo.FileVersion
+        if ($exeVersion -eq $NewVersion) {
+            Write-Host "[OK] Binario pubblicato con versione corretta: $exeVersion" -ForegroundColor Green
+        } else {
+            throw "ERRORE: Versione binario ($exeVersion) diversa da versione target ($NewVersion)!"
+        }
+    } else {
+        throw "ERRORE: Binario non trovato in $publishedExePath"
     }
 
     Write-Host "[OK] Publish completato" -ForegroundColor Green
@@ -205,14 +219,20 @@ if (-not (Test-Path $innoSetupPath)) {
 
 & $innoSetupPath $issPath
 
+if ($LASTEXITCODE -ne 0) {
+    throw "Errore durante la compilazione dell'installer"
+}
+
+# L'installer viene creato nella cartella publish/ (definita in TaoGEST-Setup.iss)
 $installerName = "TaoGEST-Setup-v$NewVersion.exe"
-$installerPath = Join-Path $publishPath $installerName
+$publishFolder = Join-Path $RootPath "publish"
+$installerPath = Join-Path $publishFolder $installerName
 
 if (-not (Test-Path $installerPath)) {
     throw "Installer non trovato: $installerPath"
 }
 
-Write-Host "[OK] Installer creato: $installerName" -ForegroundColor Green
+Write-Host "[OK] Installer creato: $installerPath" -ForegroundColor Green
 Write-Host ""
 
 # ============================================================================

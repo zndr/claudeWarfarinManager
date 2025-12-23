@@ -84,50 +84,174 @@ All projects import `Version.props` for centralized version management. Use the 
 .\Update-Version.ps1 -NewVersion "1.2.0.0"
 ```
 
-## PREPARAZIONE RELEASE AUTOMATIZZATA ⚡
+## 🚀 PROCESSO DI RELEASE - GUIDA DEFINITIVA
 
-**USA LO SCRIPT AUTOMATICO** per evitare errori e risparmiare tempo:
+> 📖 **Per Claude Code**: Leggi `docs/RELEASE-PROCESS-CLAUDE.md` per istruzioni dettagliate e troubleshooting completo.
+
+### ⚠️ REGOLA FONDAMENTALE
+
+**USARE SEMPRE E SOLO LO SCRIPT AUTOMATICO `Prepare-Release.ps1`**
+
+Non fare MAI release manuali. Lo script gestisce automaticamente tutti i passaggi critici e previene errori.
+
+---
+
+### 📋 PROCEDURA STANDARD (3 PASSI)
+
+#### PASSO 1: Esegui lo script automatico
 
 ```powershell
-# Script completo di preparazione release
 .\scripts\Prepare-Release.ps1 -NewVersion "1.3.0.0"
+```
 
-# Lo script chiederà interattivamente le release notes
-# Oppure passale direttamente:
+Lo script chiederà interattivamente le release notes, oppure passale direttamente:
+
+```powershell
 .\scripts\Prepare-Release.ps1 -NewVersion "1.3.0.0" -ReleaseNotes "Nuove funzionalità..."
 ```
 
-### Cosa fa automaticamente lo script:
-
-✅ Aggiorna tutti i file di versione (`Version.props`, `TaoGEST-Setup.iss`)
-✅ Aggiorna `ReleaseNotes.txt` e `CHANGELOG.md`
-✅ Esegue build e publish
-✅ Compila l'installer con Inno Setup
-✅ Calcola SHA256 hash
-✅ Aggiorna `version.json` con tutte le info
-✅ Fornisce i comandi pronti per commit, tag e GitHub release
-
-### Dopo lo script, esegui manualmente:
+#### PASSO 2: Verifica e Commit
 
 ```bash
-# 1. Verifica modifiche
+# Verifica modifiche
 git status
 
-# 2. Commit e push
+# Commit e push
 git add -A
 git commit -m "chore: Preparazione release vX.X.X.X"
 git push
+```
 
-# 3. Crea tag
+#### PASSO 3: Pubblica su GitHub
+
+```bash
+# Crea tag
 git tag -a vX.X.X.X -m "Release vX.X.X.X"
 git push origin vX.X.X.X
 
-# 4. Crea release GitHub (il comando esatto viene fornito dallo script)
+# Crea release GitHub (usa il comando fornito dallo script)
 gh release create vX.X.X.X publish/TaoGEST-Setup-vX.X.X.X.exe --title "TaoGEST vX.X.X.X" --notes "..."
+```
 
-# 5. Testa auto-updater
-# - Apri TaoGEST
-# - Vai in Strumenti > Verifica aggiornamenti
+#### PASSO 4: Verifica Auto-Updater
+
+- Apri TaoGEST
+- Vai in Strumenti > Verifica aggiornamenti
+- Controlla che rilevi la nuova versione
+
+---
+
+### ✅ Cosa fa automaticamente lo script
+
+Lo script `Prepare-Release.ps1` esegue **TUTTI** i seguenti passaggi in modo automatico e verificato:
+
+1. ✅ Aggiorna `Version.props` (AssemblyVersion, FileVersion, Version)
+2. ✅ Aggiorna `installer/TaoGEST-Setup.iss` (MyAppVersion)
+3. ✅ Aggiorna `docs/ReleaseNotes.txt` con la nuova sezione
+4. ✅ Aggiorna `CHANGELOG.md` con la nuova sezione
+5. ✅ Esegue `dotnet clean -c Release`
+6. ✅ Esegue `dotnet restore`
+7. ✅ Esegue `dotnet build -c Release`
+8. ✅ **CRITICO**: Esegue `dotnet publish` nella cartella predefinita (NON in una custom!)
+9. ✅ **VERIFICA**: Controlla che il binario pubblicato abbia la versione corretta
+10. ✅ Compila l'installer con Inno Setup
+11. ✅ Calcola SHA256 hash dell'installer
+12. ✅ Aggiorna `version.json` con versione, URL, data, hash, dimensione e note
+13. ✅ Fornisce i comandi git pronti per copia-incolla
+
+---
+
+### 🔴 ERRORI COMUNI DA EVITARE
+
+#### ❌ ERRORE #1: Pubblicare in una cartella custom
+
+**SBAGLIATO:**
+```powershell
+dotnet publish -o publish/custom/path
+```
+
+**CONSEGUENZA**: L'installer Inno Setup leggerà i binari dalla cartella predefinita `src/WarfarinManager.UI/bin/Release/net8.0-windows/win-x64/publish/` e troverà binari vecchi o inesistenti!
+
+**CORRETTO:**
+```powershell
+dotnet publish -c Release -r win-x64 --self-contained true
+# NON specificare -o !
+```
+
+#### ❌ ERRORE #2: Non verificare la versione dei binari
+
+Dopo il publish, verificare SEMPRE:
+
+```powershell
+(Get-Item 'src\WarfarinManager.UI\bin\Release\net8.0-windows\win-x64\publish\WarfarinManager.UI.exe').VersionInfo.FileVersion
+```
+
+Deve corrispondere alla versione target!
+
+#### ❌ ERRORE #3: Ricompilare l'installer senza rifare il publish
+
+Se modifichi il codice, devi:
+1. `dotnet clean -c Release`
+2. `dotnet publish` (sempre!)
+3. Compilare l'installer
+
+Mai saltare il paso 2!
+
+#### ❌ ERRORE #4: Dimenticare di fare clean prima del publish
+
+I binari vecchi potrebbero rimanere nella cartella di output. Sempre fare:
+
+```powershell
+dotnet clean -c Release
+```
+
+---
+
+### 📁 STRUTTURA FILE DI VERSIONING
+
+**File aggiornati automaticamente:**
+
+1. **`Version.props`** - Versione centralizzata .NET
+   - Percorso: root del progetto
+   - Proprietà: `AssemblyVersion`, `FileVersion`, `VersionPrefix`
+
+2. **`installer/TaoGEST-Setup.iss`** - Script Inno Setup
+   - Riga 5: `#define MyAppVersion "X.X.X.X"`
+
+3. **`version.json`** - Metadata per auto-updater
+   - Campi: Version, DownloadUrl, ReleaseDate, FileSize, Sha256Hash, ReleaseNotes
+   - URL GitHub: `https://github.com/zndr/claudeWarfarinManager/releases/download/vX.X.X.X/TaoGEST-Setup-vX.X.X.X.exe`
+
+4. **`docs/ReleaseNotes.txt`** - Note mostrate durante installazione
+   - Encoding: Windows-1252 (ANSI) per compatibilità Inno Setup
+
+5. **`CHANGELOG.md`** - Storico versioni
+   - Encoding: UTF-8
+
+**File con versione auto-aggiornata (binding):**
+
+6. **`src/WarfarinManager.UI/Views/Dialogs/AboutDialog.xaml`**
+   - Legge versione da: `Assembly.GetExecutingAssembly().GetName().Version`
+
+7. **`src/WarfarinManager.UI/MainWindow.xaml`**
+   - Binding dal ViewModel
+
+---
+
+### 🔍 VERIFICA POST-RELEASE
+
+Dopo aver pubblicato su GitHub, verifica:
+
+1. ✅ Download dell'installer funzionante
+2. ✅ Installazione corretta
+3. ✅ Versione visualizzata nell'app corrisponde
+4. ✅ Auto-updater rileva la nuova versione
+5. ✅ Hash SHA256 corrisponde a quello in `version.json`
+
+**Comando per verificare hash:**
+
+```powershell
+(Get-FileHash -Path "TaoGEST-Setup-vX.X.X.X.exe" -Algorithm SHA256).Hash
 ```
 
 ## CHECKLIST RELEASE (RIFERIMENTO MANUALE)
