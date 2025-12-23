@@ -1,6 +1,21 @@
 ﻿# Changelog
 
 
+
+## [1.2.4.4] - 2025-12-23
+
+Correzioni UI tema scuro e fix WebView2:
+- RISOLTO: Testo versione non aggiornato in MainWindow
+- RISOLTO: Menu illeggibili in tema scuro (sfondo chiaro, testo giallo)
+- RISOLTO: Dialog About con problemi di contrasto in tema scuro
+- RISOLTO: Dialog Gestione Database con colori hardcoded
+- RISOLTO: Errore WebView2 in Switch Terapia (impossibile scrivere in Program Files)
+
+Dettagli tecnici:
+- Aggiunto MenuItem Style globale con supporto tema dinamico
+- Tutti i dialog ora usano DynamicResource per background/foreground
+- WebView2 configurato per usare cartella utente (%LOCALAPPDATA%\WarfarinManager\WebView2Data)
+- Eliminati tutti i colori hardcoded nei dialog
 ## [1.2.4.3] - 2025-12-23
 
 BUGFIX:

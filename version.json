@@ -1,8 +1,8 @@
 {
-    "Version":  "1.2.4.3",
-    "ReleaseNotes":  "BUGFIX:\n- Risolto bug notifica aggiornamenti con versioni identiche\n- Aggiunto logging dettagliato per debug controllo aggiornamenti\n\nNUOVE FUNZIONALITÀ:\n- Implementato controllo istanza singola dell\u0027applicazione\n- Impedisce l\u0027esecuzione di multiple istanze simultanee\n- Messaggio informativo se si tenta di aprire una seconda istanza\n\nMIGLIORAMENTI TECNICI:\n- Test unit completi per confronto versioni (12 test)\n- Mutex globale per gestione istanza singola\n- Logging strutturato per troubleshooting aggiornamenti\n- Verifica robusta versioni con System.Version",
-    "DownloadUrl":  "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.2.4.3/TaoGEST-Setup-v1.2.4.3.exe",
+    "Version":  "1.2.4.4",
+    "ReleaseNotes":  "Correzioni UI tema scuro e fix WebView2:\n- RISOLTO: Testo versione non aggiornato in MainWindow\n- RISOLTO: Menu illeggibili in tema scuro (sfondo chiaro, testo giallo)\n- RISOLTO: Dialog About con problemi di contrasto in tema scuro\n- RISOLTO: Dialog Gestione Database con colori hardcoded\n- RISOLTO: Errore WebView2 in Switch Terapia (impossibile scrivere in Program Files)\n\nDettagli tecnici:\n- Aggiunto MenuItem Style globale con supporto tema dinamico\n- Tutti i dialog ora usano DynamicResource per background/foreground\n- WebView2 configurato per usare cartella utente (%LOCALAPPDATA%\\WarfarinManager\\WebView2Data)\n- Eliminati tutti i colori hardcoded nei dialog",
+    "DownloadUrl":  "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.2.4.4/TaoGEST-Setup-v1.2.4.4.exe",
     "ReleaseDate":  "2025-12-23",
-    "Sha256Hash":  "D55C17C062A358A178885DA11DFD7602969C2D53A32F4C3FA73972A227A277B9",
-    "FileSize":  67621930
+    "Sha256Hash":  "F16C26DA22A9ECD3A544B99D2BF73E07A9196115EAAD5C1ABE18D086F581D987",
+    "FileSize":  64668269
 }

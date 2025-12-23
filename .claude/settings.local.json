@@ -95,7 +95,9 @@
       "Bash(cmd /c \"dir publish\\\\TaoGEST-Setup-v1.2.4.3.exe\")",
       "Bash(cmd /c \"dir %LOCALAPPDATA%\\\\WarfarinManager\\\\*.db /s 2>nul\")",
       "Bash(\"C:\\\\Program Files \\(x86\\)\\\\Inno Setup 6\\\\ISCC.exe\" \"e:\\\\Claude\\\\claudeWarfarinManager\\\\installer\\\\TaoGEST-Setup.iss\")",
-      "Bash(gh release delete-asset:*)"
+      "Bash(gh release delete-asset:*)",
+      "Bash(git merge:*)",
+      "Bash(cmd /c \"dir publish\\\\TaoGEST-Setup-v1.2.4.4.exe\")"
     ],
     "deny": [],
     "ask": []

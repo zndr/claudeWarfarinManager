@@ -2,7 +2,7 @@
 ; Versione 1.2.3.1
 
 #define MyAppName "TaoGEST"
-#define MyAppVersion "1.2.4.3"
+#define MyAppVersion "1.2.4.4"
 #define MyAppPublisher "dr Dario Giorgio Zani"
 #define MyAppURL "https://dottorgiorgio.it"
 #define MyAppExeName "WarfarinManager.UI.exe"
