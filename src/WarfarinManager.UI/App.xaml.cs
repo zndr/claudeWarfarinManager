@@ -92,6 +92,7 @@ public partial class App : Application
         services.AddScoped<ITTRCalculatorService, TTRCalculatorService>();
         services.AddScoped<IBridgeTherapyService, BridgeTherapyService>();
         services.AddScoped<ISwitchCalculatorService, SwitchCalculatorService>();
+        services.AddScoped<PostgreSqlImportService>();
 
         // HttpClient per Update Checker
         services.AddHttpClient();
@@ -139,6 +140,7 @@ public partial class App : Application
         services.AddTransient<GuideViewModel>();
         services.AddTransient<SwitchTherapyViewModel>();
         services.AddTransient<NewPatientWizardViewModel>();
+        services.AddTransient<ImportPatientsViewModel>();
 
         // Views
         services.AddTransient<PatientListView>();
@@ -156,6 +158,7 @@ public partial class App : Application
         services.AddTransient<DoctorDataDialog>();
         services.AddTransient<DatabaseManagementDialog>();
         services.AddTransient<NewPatientWizardView>();
+        services.AddTransient<ImportPatientsDialog>();
 
         // Main Window
         services.AddSingleton<MainWindow>();

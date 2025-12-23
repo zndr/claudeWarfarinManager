@@ -65,7 +65,9 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void ImportData()
     {
-        _dialogService.ShowInformation("Funzionalità in fase di sviluppo", "Importa dati");
+        var dialog = _serviceProvider.GetRequiredService<ImportPatientsDialog>();
+        dialog.Owner = Application.Current.MainWindow;
+        dialog.ShowDialog();
     }
 
     [RelayCommand]
