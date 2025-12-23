@@ -1,9 +1,30 @@
 # Changelog
 
+## [1.2.4.2] - 2025-12-23
+
+### Bugfix
+
+- Risolto problema notifica ripetuta aggiornamenti all'avvio
+- La notifica di nuova versione viene mostrata solo la prima volta
+- Controllo manuale mostra sempre la finestra (comportamento corretto)
+- Aggiunta persistenza ultima versione notificata
+
+### Correzioni Encoding
+
+- Caratteri accentati (Ã , Ã¨, Ã²) ora visualizzati correttamente
+- Risolto problema caratteri corrotti nell'installer
+- ReleaseNotes.txt con encoding Windows-1252 per Inno Setup
+- CHANGELOG.md e version.json con encoding UTF-8 corretto
+
+### Tecnico
+
+- Settings.LastNotifiedUpdateVersion per tracking notifiche
+- UpdateNotificationService con logica anti-spam
+- Script Prepare-Release.ps1 con gestione encoding corretta
 
 ## [1.2.4.0] - 2025-12-23
 
-NUOVE FUNZIONALITÀ:
+NUOVE FUNZIONALITï¿½:
 - Sistema completo di temi chiaro/scuro con switcher UI
 - Preferenze tema persistenti (Light/Dark/System)
 - Auto-detect e sincronizzazione con tema di sistema Windows
@@ -11,7 +32,7 @@ NUOVE FUNZIONALITÀ:
 
 MIGLIORAMENTI UX:
 - Transizioni fluide al cambio tema (senza restart)
-- Palette colori professionali ottimizzate per accessibilità
+- Palette colori professionali ottimizzate per accessibilitï¿½
 - Icone Fluent System contestuali (WB_Sunny/DarkMode)
 - Switcher accessibile dal menu Strumenti
 

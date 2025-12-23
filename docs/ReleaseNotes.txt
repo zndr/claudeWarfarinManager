@@ -1,8 +1,29 @@
-═══════════════════════════════════════════════════════════════
-VERSIONE 1.2.4.0 - 2025-12-23
-═══════════════════════════════════════════════════════════════
+---------------------------------------------------------------
+VERSIONE 1.2.4.2 - 2025-12-23
+---------------------------------------------------------------
 
-NUOVE FUNZIONALIT�:
+BUGFIX:
+- Risolto problema notifica ripetuta aggiornamenti all'avvio
+- La notifica di nuova versione viene mostrata solo la prima volta
+- Controllo manuale mostra sempre la finestra (comportamento corretto)
+- Aggiunta persistenza ultima versione notificata
+
+CORREZIONI ENCODING:
+- Caratteri accentati (�, �, �) ora visualizzati correttamente
+- Risolto problema caratteri corrotti nell'installer
+- ReleaseNotes.txt con encoding Windows-1252 per Inno Setup
+- CHANGELOG.md e version.json con encoding UTF-8 corretto
+
+TECNICO:
+- Settings.LastNotifiedUpdateVersion per tracking notifiche
+- UpdateNotificationService con logica anti-spam
+- Script Prepare-Release.ps1 con gestione encoding corretta
+
+n---------------------------------------------------------------
+VERSIONE 1.2.4.0 - 2025-12-23
+---------------------------------------------------------------
+
+NUOVE FUNZIONALIT?:
 - Sistema completo di temi chiaro/scuro con switcher UI
 - Preferenze tema persistenti (Light/Dark/System)
 - Auto-detect e sincronizzazione con tema di sistema Windows
@@ -10,7 +31,7 @@ NUOVE FUNZIONALIT�:
 
 MIGLIORAMENTI UX:
 - Transizioni fluide al cambio tema (senza restart)
-- Palette colori professionali ottimizzate per accessibilit�
+- Palette colori professionali ottimizzate per accessibilit?
 - Icone Fluent System contestuali (WB_Sunny/DarkMode)
 - Switcher accessibile dal menu Strumenti
 
@@ -26,94 +47,94 @@ ARCHITETTURA:
 - Eventi real-time per notifiche cambio tema
 - Fallback automatico a tema chiaro in caso errori
 
-═══════════════════════════════════════════════════════════════
+---------------------------------------------------------------
   TaoGEST - Gestione Terapia Anticoagulante Orale
   Note di Rilascio - Versione 1.2.3.1
-═══════════════════════════════════════════════════════════════
+---------------------------------------------------------------
 
 Data Rilascio: 23 Dicembre 2025
 
 HOTFIX - INSTALLER
-─────────────────────────────────────────────────────────────
+-------------------------------------------------------------
 
-🔧 Corretto Installer Difettoso (v1.2.3)
-  • RISOLTO: Installer v1.2.3 richiedeva .NET 8 anche se già installato
-  • RISOLTO: Installazione bloccata da controllo errato del runtime
-  • L'applicazione è self-contained e NON richiede .NET separato
-  • Rimosso controllo .NET dall'installer
+?? Corretto Installer Difettoso (v1.2.3)
+  � RISOLTO: Installer v1.2.3 richiedeva .NET 8 anche se gi� installato
+  � RISOLTO: Installazione bloccata da controllo errato del runtime
+  � L'applicazione � self-contained e NON richiede .NET separato
+  � Rimosso controllo .NET dall'installer
 
 BUGFIX VERSIONE 1.2.3 (22 Dicembre 2025)
-─────────────────────────────────────────────────────────────
+-------------------------------------------------------------
 
-🐛 Compatibilità Database Legacy
-  • Risolto errore "SQLite error: no such column certaintyLevel"
+?? Compatibilit� Database Legacy
+  � Risolto errore "SQLite error: no such column certaintyLevel"
     durante eliminazione pazienti su database v1.0.0
-  • Correzione automatica dello schema database all'avvio
+  � Correzione automatica dello schema database all'avvio
     per database provenienti da versioni precedenti
 
-🖥️ Supporto Schermi Piccoli (Laptop 15")
-  • Finestra Controllo INR ora si adatta automaticamente
+??? Supporto Schermi Piccoli (Laptop 15")
+  � Finestra Controllo INR ora si adatta automaticamente
     agli schermi con risoluzione inferiore a 1400x950
-  • Finestra Modifica INR ora ridimensionabile
-  • Le finestre si centrano correttamente e non escono
-    più dai bordi dello schermo
+  � Finestra Modifica INR ora ridimensionabile
+  � Le finestre si centrano correttamente e non escono
+    pi� dai bordi dello schermo
 
 VERSIONE 1.2.2.2 (22 Dicembre 2025)
-─────────────────────────────────────────────────────────────
+-------------------------------------------------------------
 
-🐛 Controllo Aggiornamenti
-  • Corretto bug che mostrava notifica di aggiornamento anche
-    quando la versione era già aggiornata
+?? Controllo Aggiornamenti
+  � Corretto bug che mostrava notifica di aggiornamento anche
+    quando la versione era gi� aggiornata
 
 FEATURE VERSIONE 1.2.0 (Mantenute)
-─────────────────────────────────────────────────────────────
+-------------------------------------------------------------
 
-🆕 Sistema Aggiornamenti Automatici
-  • Controllo automatico aggiornamenti via HTTPS
-  • Notifiche per nuove versioni disponibili
-  • Download diretto installer dalla finestra di notifica
-  • Controllo periodico in background (ogni 24h)
-  • Verifica integrità file con hash SHA256
+?? Sistema Aggiornamenti Automatici
+  � Controllo automatico aggiornamenti via HTTPS
+  � Notifiche per nuove versioni disponibili
+  � Download diretto installer dalla finestra di notifica
+  � Controllo periodico in background (ogni 24h)
+  � Verifica integrit� file con hash SHA256
 
-🔒 Sicurezza
-  • Sistema aggiornamenti basato su HTTPS pubblico
-  • Nessuna credenziale richiesta nel codice
-  • Verifica hash SHA256 per integrità download
-  • Protezione contro file modificati o corrotti
+?? Sicurezza
+  � Sistema aggiornamenti basato su HTTPS pubblico
+  � Nessuna credenziale richiesta nel codice
+  � Verifica hash SHA256 per integrit� download
+  � Protezione contro file modificati o corrotti
 
 REQUISITI DI SISTEMA
-─────────────────────────────────────────────────────────────
+-------------------------------------------------------------
 
-• Windows 10 (versione 1809 o successiva) o Windows 11
-• Nessun runtime richiesto (applicazione self-contained)
-• 200 MB spazio su disco
-• 4 GB RAM (consigliati)
-• Risoluzione schermo: 1280x720 minima, 1920x1080 consigliata
+� Windows 10 (versione 1809 o successiva) o Windows 11
+� Nessun runtime richiesto (applicazione self-contained)
+� 200 MB spazio su disco
+� 4 GB RAM (consigliati)
+� Risoluzione schermo: 1280x720 minima, 1920x1080 consigliata
 
 INSTALLAZIONE
-─────────────────────────────────────────────────────────────
+-------------------------------------------------------------
 
 1. Eseguire TaoGEST-Setup-v1.2.3.1.exe
 2. Seguire le istruzioni dell'installazione guidata
-3. Al primo avvio verrà creato il database locale
+3. Al primo avvio verr� creato il database locale
 4. Configurare i dati del medico in Impostazioni
 
 AGGIORNAMENTO DA VERSIONE PRECEDENTE
-─────────────────────────────────────────────────────────────
+-------------------------------------------------------------
 
-⚠️ IMPORTANTE: Il database verrà aggiornato automaticamente.
-È consigliato effettuare un backup prima dell'aggiornamento.
+?? IMPORTANTE: Il database verr� aggiornato automaticamente.
+� consigliato effettuare un backup prima dell'aggiornamento.
 
 Il database si trova in:
 %LocalAppData%\WarfarinManager\warfarin.db
 
 SUPPORTO
-─────────────────────────────────────────────────────────────
+-------------------------------------------------------------
 
-Per segnalazioni bug o richieste di funzionalità:
+Per segnalazioni bug o richieste di funzionalit�:
 GitHub: https://github.com/zndr/claudeWarfarinManager
 
-═══════════════════════════════════════════════════════════════
-© 2025 - dr Dario Giorgio Zani
+---------------------------------------------------------------
+� 2025 - dr Dario Giorgio Zani
 Tutti i diritti riservati
-═══════════════════════════════════════════════════════════════
+---------------------------------------------------------------

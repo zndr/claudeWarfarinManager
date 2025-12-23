@@ -84,7 +84,11 @@
       "Bash(grep:*)",
       "Bash(git restore:*)",
       "Bash(git config:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(if [ -d \"publish\" ])",
+      "Bash(then rm -rf publish)",
+      "Bash(fi)",
+      "Bash(\"C:/Program Files \\(x86\\)/Inno Setup 6/ISCC.exe\" \"installer/TaoGEST-Setup.iss\")"
     ],
     "deny": [],
     "ask": []
