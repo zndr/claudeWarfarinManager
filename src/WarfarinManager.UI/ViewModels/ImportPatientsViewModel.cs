@@ -16,12 +16,15 @@ public partial class ImportPatientsViewModel : ObservableObject
     private readonly ILogger<ImportPatientsViewModel> _logger;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ImportPatientsCommand))]
     private string _codiceFiscaleMedico = string.Empty;
 
     [ObservableProperty]
     private ObservableCollection<MillepsPatientDto> _importedPatients = new();
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ImportPatientsCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SavePatientsCommand))]
     private bool _isLoading;
 
     [ObservableProperty]
