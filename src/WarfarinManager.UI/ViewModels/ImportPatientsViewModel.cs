@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using WarfarinManager.Core.Services;
 using WarfarinManager.Data.Context;
 using WarfarinManager.Data.Entities;
+using WarfarinManager.Shared.Enums;
 using WarfarinManager.Shared.Models;
 
 namespace WarfarinManager.UI.ViewModels;
@@ -18,6 +19,9 @@ public partial class ImportPatientsViewModel : ObservableObject
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ImportPatientsCommand))]
     private string _codiceFiscaleMedico = string.Empty;
+
+    [ObservableProperty]
+    private TherapyType _selectedTherapyType = TherapyType.Warfarin;
 
     [ObservableProperty]
     private ObservableCollection<MillepsPatientDto> _importedPatients = new();
@@ -91,7 +95,7 @@ public partial class ImportPatientsViewModel : ObservableObject
 
         try
         {
-            var patients = await _importService.ImportPatientsAsync(CodiceFiscaleMedico);
+            var patients = await _importService.ImportPatientsAsync(CodiceFiscaleMedico.ToUpper(), SelectedTherapyType);
 
             ImportedPatients.Clear();
             foreach (var patient in patients)

@@ -55,5 +55,15 @@ public class MillepsPatientDto : INotifyPropertyChanged
     /// </summary>
     public string? Email { get; set; }
 
+    /// <summary>
+    /// Tipo di anticoagulante (warfarin, dabigatran, rivaroxaban, apixaban, edoxaban)
+    /// </summary>
+    public string? Anticoagulante { get; set; }
+
+    /// <summary>
+    /// Data inizio terapia
+    /// </summary>
+    public DateTime? DataInizio { get; set; }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 }

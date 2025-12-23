@@ -39,16 +39,16 @@
             <!--  File Menu  -->
             <MenuItem Header="_File">
                 <MenuItem
-                    Command="{Binding NewPatientCommand}"
-                    Header="Nuovo paziente"
-                    InputGestureText="Ctrl+N" />
-                <Separator />
-                <MenuItem
                     Command="{Binding ExportDataCommand}"
                     Header="Esporta dati..." />
-                <MenuItem
-                    Command="{Binding ImportDataCommand}"
-                    Header="Importa dati..." />
+                <MenuItem Header="Importa dati...">
+                    <MenuItem
+                        Command="{Binding ImportDataCommand}"
+                        Header="Importa pazienti..." />
+                    <MenuItem
+                        Command="{Binding ImportINRCommand}"
+                        Header="Importa INR..." />
+                </MenuItem>
                 <Separator />
                 <MenuItem
                     Command="{Binding ExitCommand}"
@@ -58,6 +58,11 @@
 
             <!--  Pazienti Menu  -->
             <MenuItem Header="_Pazienti">
+                <MenuItem
+                    Command="{Binding NewPatientCommand}"
+                    Header="Nuovo paziente"
+                    InputGestureText="Ctrl+N" />
+                <Separator />
                 <MenuItem
                     Command="{Binding ShowPatientListCommand}"
                     Header="Lista pazienti"

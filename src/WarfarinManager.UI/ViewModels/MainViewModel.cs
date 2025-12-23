@@ -71,6 +71,12 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void ImportINR()
+    {
+        _dialogService.ShowInformation("Funzionalità in fase di sviluppo", "Importa INR");
+    }
+
+    [RelayCommand]
     private void Exit()
     {
         Application.Current.Shutdown();
