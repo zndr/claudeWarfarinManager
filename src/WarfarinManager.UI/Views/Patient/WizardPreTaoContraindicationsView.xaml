@@ -1,4 +1,4 @@
-<UserControl x:Class="WarfarinManager.UI.Views.Patient.WizardPreTaoContraindicationsView"
+﻿<UserControl x:Class="WarfarinManager.UI.Views.Patient.WizardPreTaoContraindicationsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -70,7 +70,7 @@
             <TextBox Text="{Binding AssessingPhysician, UpdateSourceTrigger=PropertyChanged}"
                      FontSize="14"
                      Padding="10"
-                     BorderBrush="#CCCCCC"
+                     BorderBrush="{DynamicResource BorderBrush}"
                      BorderThickness="1"/>
         </StackPanel>
     </ScrollViewer>

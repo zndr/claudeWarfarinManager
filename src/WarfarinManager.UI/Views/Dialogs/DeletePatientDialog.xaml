@@ -1,4 +1,4 @@
-<Window
+﻿<Window
     x:Class="WarfarinManager.UI.Views.Dialogs.DeletePatientDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -54,7 +54,7 @@
                 <TextBlock
                     FontSize="18"
                     FontWeight="Bold"
-                    Foreground="White"
+                    Foreground="{DynamicResource TextOnPrimaryBrush}"
                     Text="Elimina Paziente" />
                 <TextBlock
                     Margin="0,5,0,0"
@@ -69,13 +69,13 @@
             <TextBlock
                 Margin="0,0,0,15"
                 FontSize="13"
-                Foreground="#333333"
+                Foreground="{DynamicResource TextPrimaryBrush}"
                 Text="Scegli come procedere con l'eliminazione:"
                 TextWrapping="Wrap" />
 
             <!-- Opzione Soft Delete (Archivia) -->
             <Button
-                Background="White"
+                Background="{DynamicResource CardBackgroundBrush}"
                 BorderBrush="#27AE60"
                 Click="SoftDelete_Click"
                 Style="{StaticResource OptionButtonStyle}">
@@ -94,7 +94,7 @@
                     <TextBlock
                         Margin="22,5,0,0"
                         FontSize="11"
-                        Foreground="#666666"
+                        Foreground="{DynamicResource TextSecondaryBrush}"
                         Text="Il paziente sarà nascosto ma i dati resteranno nel database."
                         TextWrapping="Wrap" />
                     <TextBlock
@@ -107,7 +107,7 @@
 
             <!-- Opzione Hard Delete (Elimina definitivamente) -->
             <Button
-                Background="White"
+                Background="{DynamicResource CardBackgroundBrush}"
                 BorderBrush="#E81123"
                 Click="HardDelete_Click"
                 Style="{StaticResource OptionButtonStyle}">
@@ -115,25 +115,25 @@
                     <StackPanel Orientation="Horizontal">
                         <TextBlock
                             FontSize="16"
-                            Foreground="#E81123"
+                            Foreground="{DynamicResource DangerBrush}"
                             Text="🗑️ " />
                         <TextBlock
                             FontSize="14"
                             FontWeight="SemiBold"
-                            Foreground="#E81123"
+                            Foreground="{DynamicResource DangerBrush}"
                             Text="Elimina definitivamente" />
                     </StackPanel>
                     <TextBlock
                         Margin="22,5,0,0"
                         FontSize="11"
-                        Foreground="#666666"
+                        Foreground="{DynamicResource TextSecondaryBrush}"
                         Text="Il paziente e TUTTI i suoi dati saranno eliminati permanentemente."
                         TextWrapping="Wrap" />
                     <TextBlock
                         Margin="22,2,0,0"
                         FontSize="11"
                         FontWeight="SemiBold"
-                        Foreground="#E81123"
+                        Foreground="{DynamicResource DangerBrush}"
                         Text="Questa operazione NON può essere annullata!" />
                 </StackPanel>
             </Button>
@@ -143,8 +143,8 @@
         <Border
             Grid.Row="2"
             Padding="20,15"
-            Background="#F5F5F5"
-            BorderBrush="#E0E0E0"
+            Background="{DynamicResource ToolbarBackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="0,1,0,0">
             <Button
                 HorizontalAlignment="Right"

@@ -55,6 +55,22 @@
     <Resource Include="Resources\Icons\taogest.ico" />
   </ItemGroup>
 
+  <!-- Settings -->
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
   <!-- Guide HTML - Copia tutti i file nella cartella di output -->
   <ItemGroup>
     <None Update="Resources\Guides\**\*">

@@ -1,4 +1,4 @@
-<Window
+﻿<Window
     x:Class="WarfarinManager.UI.Views.Dialogs.ProfessionalGuidesDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -39,7 +39,7 @@
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="#F0F8FF" />
-                    <Setter Property="BorderBrush" Value="#0078D4" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
                     <Setter Property="Background" Value="#E6F2FF" />
@@ -59,12 +59,12 @@
         <Border
             Grid.Row="0"
             Padding="20,15"
-            Background="#0078D4">
+            Background="{DynamicResource PrimaryBrush}">
             <StackPanel>
                 <TextBlock
                     FontSize="18"
                     FontWeight="SemiBold"
-                    Foreground="White"
+                    Foreground="{DynamicResource TextOnPrimaryBrush}"
                     Text="📚 Guide Professionali alla TAO" />
                 <TextBlock
                     Margin="0,5,0,0"
@@ -85,12 +85,12 @@
                         <TextBlock
                             FontSize="14"
                             FontWeight="SemiBold"
-                            Foreground="#0078D4"
+                            Foreground="{DynamicResource PrimaryBrush}"
                             Text="💊 Interazioni Farmacologiche Warfarin" />
                         <TextBlock
                             Margin="0,5,0,0"
                             FontSize="11"
-                            Foreground="#666666"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
                             Text="Guida completa alle interazioni farmacologiche del Warfarin con altri farmaci"
                             TextWrapping="Wrap" />
                     </StackPanel>
@@ -104,12 +104,12 @@
                         <TextBlock
                             FontSize="14"
                             FontWeight="SemiBold"
-                            Foreground="#0078D4"
+                            Foreground="{DynamicResource PrimaryBrush}"
                             Text="📊 Flowchart Gestione INR" />
                         <TextBlock
                             Margin="0,5,0,0"
                             FontSize="11"
-                            Foreground="#666666"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
                             Text="Algoritmo decisionale interattivo per la gestione dei valori INR fuori range"
                             TextWrapping="Wrap" />
                     </StackPanel>
@@ -117,26 +117,26 @@
 
                 <!--  Switch DOAC-Warfarin  -->
                 <Border
-                    BorderBrush="#E0E0E0"
+                    BorderBrush="{DynamicResource BorderBrush}"
                     BorderThickness="1"
                     CornerRadius="4"
                     Margin="0,0,0,10">
                     <StackPanel>
                         <!--  Header principale  -->
                         <Border
-                            Background="White"
+                            Background="{DynamicResource CardBackgroundBrush}"
                             CornerRadius="4,4,0,0"
                             Padding="20,15">
                             <StackPanel>
                                 <TextBlock
                                     FontSize="14"
                                     FontWeight="SemiBold"
-                                    Foreground="#0078D4"
+                                    Foreground="{DynamicResource PrimaryBrush}"
                                     Text="🔄 Switch DOAC ↔ Warfarin" />
                                 <TextBlock
                                     Margin="0,5,0,0"
                                     FontSize="11"
-                                    Foreground="#666666"
+                                    Foreground="{DynamicResource TextSecondaryBrush}"
                                     Text="Protocolli per lo switch bidirezionale tra DOAC e anticoagulanti cumarolici"
                                     TextWrapping="Wrap" />
                             </StackPanel>
@@ -177,11 +177,11 @@
                                     <TextBlock
                                         FontSize="12"
                                         FontWeight="SemiBold"
-                                        Foreground="#0078D4"
+                                        Foreground="{DynamicResource PrimaryBrush}"
                                         Text="📕 " />
                                     <TextBlock
                                         FontSize="12"
-                                        Foreground="#333333"
+                                        Foreground="{DynamicResource TextPrimaryBrush}"
                                         Text="Guida Dettagliata (PDF)" />
                                 </StackPanel>
                             </Button>
@@ -219,11 +219,11 @@
                                     <TextBlock
                                         FontSize="12"
                                         FontWeight="SemiBold"
-                                        Foreground="#0078D4"
+                                        Foreground="{DynamicResource PrimaryBrush}"
                                         Text="📊 " />
                                     <TextBlock
                                         FontSize="12"
-                                        Foreground="#333333"
+                                        Foreground="{DynamicResource TextPrimaryBrush}"
                                         Text="Infografica Interattiva (HTML)" />
                                 </StackPanel>
                             </Button>
@@ -239,12 +239,12 @@
                         <TextBlock
                             FontSize="14"
                             FontWeight="SemiBold"
-                            Foreground="#0078D4"
+                            Foreground="{DynamicResource PrimaryBrush}"
                             Text="📋 Infografica Gestione TAO" />
                         <TextBlock
                             Margin="0,5,0,0"
                             FontSize="11"
-                            Foreground="#666666"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
                             Text="Visualizzazione grafica delle informazioni chiave per la gestione della TAO"
                             TextWrapping="Wrap" />
                     </StackPanel>
@@ -258,12 +258,12 @@
                         <TextBlock
                             FontSize="14"
                             FontWeight="SemiBold"
-                            Foreground="#0078D4"
+                            Foreground="{DynamicResource PrimaryBrush}"
                             Text="📄 Guida TAO per MMG (Testo)" />
                         <TextBlock
                             Margin="0,5,0,0"
                             FontSize="11"
-                            Foreground="#666666"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
                             Text="Guida completa alla terapia anticoagulante orale con Warfarin - versione HTML"
                             TextWrapping="Wrap" />
                     </StackPanel>
@@ -277,12 +277,12 @@
                         <TextBlock
                             FontSize="14"
                             FontWeight="SemiBold"
-                            Foreground="#0078D4"
+                            Foreground="{DynamicResource PrimaryBrush}"
                             Text="📕 Guida TAO per MMG (PDF)" />
                         <TextBlock
                             Margin="0,5,0,0"
                             FontSize="11"
-                            Foreground="#666666"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
                             Text="Guida completa alla terapia anticoagulante orale con Warfarin - versione PDF con bookmarks"
                             TextWrapping="Wrap" />
                     </StackPanel>
@@ -296,12 +296,12 @@
                         <TextBlock
                             FontSize="14"
                             FontWeight="SemiBold"
-                            Foreground="#0078D4"
+                            Foreground="{DynamicResource PrimaryBrush}"
                             Text="👥 Guida per Pazienti" />
                         <TextBlock
                             Margin="0,5,0,0"
                             FontSize="11"
-                            Foreground="#666666"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
                             Text="Informazioni per i pazienti in terapia con Warfarin - PDF"
                             TextWrapping="Wrap" />
                     </StackPanel>
@@ -313,8 +313,8 @@
         <Border
             Grid.Row="2"
             Padding="20,12"
-            Background="#F5F5F5"
-            BorderBrush="#E0E0E0"
+            Background="{DynamicResource ToolbarBackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="0,1,0,0">
             <Button
                 Width="100"

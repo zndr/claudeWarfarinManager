@@ -1,4 +1,4 @@
-<UserControl x:Class="WarfarinManager.UI.Views.BridgeTherapy.BridgeTherapyView"
+﻿<UserControl x:Class="WarfarinManager.UI.Views.BridgeTherapy.BridgeTherapyView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -40,7 +40,7 @@
                 <TextBlock Text="PIANIFICAZIONE BRIDGE THERAPY"
                            FontSize="16"
                            FontWeight="Bold"
-                           Foreground="#0078D4"
+                           Foreground="{DynamicResource PrimaryBrush}"
                            Margin="0,0,0,20"/>
 
                 <!-- Data Intervento -->
@@ -65,7 +65,7 @@
                     <StackPanel>
                         <TextBlock Text="Calcolato automaticamente in base al tipo di chirurgia"
                                    FontStyle="Italic"
-                                   Foreground="#666666"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
                                    Margin="0,0,0,10"/>
                         <Border Padding="15,10"
                                 CornerRadius="4">
@@ -117,7 +117,7 @@
                         <!-- CHA2DS2-VASc -->
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                             <TextBlock Text="CHA₂DS₂-VASc Score: " FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding Cha2ds2vascScore}" FontWeight="Bold" Foreground="#0078D4"/>
+                            <TextBlock Text="{Binding Cha2ds2vascScore}" FontWeight="Bold" Foreground="{DynamicResource PrimaryBrush}"/>
                         </StackPanel>
 
                         <!-- Protesi valvolare meccanica -->
@@ -189,8 +189,8 @@
                 <!-- Pulsante Calcola -->
                 <Button Content="🧮 CALCOLA BRIDGE THERAPY"
                         Command="{Binding CalculateBridgeCommand}"
-                        Background="#0078D4"
-                        Foreground="White"
+                        Background="{DynamicResource PrimaryBrush}"
+                        Foreground="{DynamicResource TextOnPrimaryBrush}"
                         FontWeight="Bold"
                         FontSize="14"
                         Height="45"
@@ -212,7 +212,7 @@
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#005A9E"/>
+                                    <Setter Property="Background" Value="{DynamicResource PrimaryPressedBrush}"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -230,7 +230,7 @@
         </ScrollViewer>
 
         <!-- Colonna destra: Risultato -->
-        <Grid Grid.Column="1" Background="#F5F5F5">
+        <Grid Grid.Column="1" Background="{DynamicResource ToolbarBackgroundBrush}">
             <!-- Placeholder quando non c'è risultato -->
             <StackPanel VerticalAlignment="Center"
                        HorizontalAlignment="Center"
@@ -241,11 +241,11 @@
                            Margin="0,0,0,10"/>
                 <TextBlock Text="Compila i parametri e clicca 'Calcola'"
                            FontSize="16"
-                           Foreground="#666666"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
                            HorizontalAlignment="Center"/>
                 <TextBlock Text="per generare il protocollo bridge therapy"
                            FontSize="14"
-                           Foreground="#999999"
+                           Foreground="{DynamicResource TextTertiaryBrush}"
                            HorizontalAlignment="Center"/>
             </StackPanel>
 
@@ -263,7 +263,7 @@
                                 <Setter Property="BorderThickness" Value="2"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding CurrentProtocol.BridgeRecommended}" Value="True">
-                                        <Setter Property="Background" Value="#E3F2FD"/>
+                                        <Setter Property="Background" Value="{DynamicResource DataGridSelectedBrush}"/>
                                         <Setter Property="BorderBrush" Value="#1976D2"/>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -293,9 +293,9 @@
                                  IsReadOnly="True"
                                  FontFamily="Consolas"
                                  FontSize="11"
-                                 Background="White"
+                                 Background="{DynamicResource CardBackgroundBrush}"
                                  BorderThickness="1"
-                                 BorderBrush="#E0E0E0"
+                                 BorderBrush="{DynamicResource BorderBrush}"
                                  VerticalScrollBarVisibility="Auto"
                                  HorizontalScrollBarVisibility="Auto"
                                  MinHeight="300"
@@ -309,8 +309,8 @@
                                Margin="0,15,0,0">
                         <Button Content="💾 Salva Piano"
                                 Command="{Binding SavePlanCommand}"
-                                Background="#107C10"
-                                Foreground="White"
+                                Background="{DynamicResource SuccessBrush}"
+                                Foreground="{DynamicResource TextOnPrimaryBrush}"
                                 FontWeight="SemiBold"
                                 Padding="20,10"
                                 Margin="0,0,10,0"
@@ -340,8 +340,8 @@
 
                         <Button Content="📋 Copia"
                                 Command="{Binding CopyToClipboardCommand}"
-                                Background="#0078D4"
-                                Foreground="White"
+                                Background="{DynamicResource PrimaryBrush}"
+                                Foreground="{DynamicResource TextOnPrimaryBrush}"
                                 FontWeight="SemiBold"
                                 Padding="20,10"
                                 Margin="0,0,10,0"
@@ -362,7 +362,7 @@
                                     </Setter>
                                     <Style.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="#005A9E"/>
+                                            <Setter Property="Background" Value="{DynamicResource PrimaryPressedBrush}"/>
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
@@ -372,7 +372,7 @@
                         <Button Content="💾 Esporta TXT"
                                 Command="{Binding ExportToFileCommand}"
                                 Background="#5C2D91"
-                                Foreground="White"
+                                Foreground="{DynamicResource TextOnPrimaryBrush}"
                                 FontWeight="SemiBold"
                                 Padding="20,10"
                                 Cursor="Hand">
@@ -435,7 +435,7 @@
                   Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}">
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                     <TextBlock Text="⏳" FontSize="32" HorizontalAlignment="Center"/>
-                    <TextBlock Text="Caricamento..." FontSize="14" Foreground="#666666"/>
+                    <TextBlock Text="Caricamento..." FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}"/>
                 </StackPanel>
             </Grid>
         </Grid>

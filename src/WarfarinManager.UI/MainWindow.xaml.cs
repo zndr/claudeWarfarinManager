@@ -28,11 +28,37 @@ public partial class MainWindow : Window
             var patientListView = serviceProvider.GetRequiredService<PatientListView>();
             ContentArea.Content = patientListView;
         };
+
+        // Ascolta i cambi di tema per aggiornare l'icona
+        ThemeManager.Instance.ThemeChanged += OnThemeChanged;
+        UpdateThemeIcon();
     }
 
     private void OnNavigationChanged(object? sender, System.EventArgs e)
     {
         // Aggiorna il ContentArea quando cambia la navigazione
         ContentArea.Content = _navigationService.CurrentView;
+    }
+
+    private void ThemeToggle_Click(object sender, RoutedEventArgs e)
+    {
+        ThemeManager.Instance.ToggleTheme();
+    }
+
+    private void OnThemeChanged(object? sender, ThemeChangedEventArgs e)
+    {
+        UpdateThemeIcon();
+    }
+
+    private void UpdateThemeIcon()
+    {
+        // Cambia l'icona in base al tema corrente
+        var iconResource = ThemeManager.Instance.CurrentTheme == AppTheme.Light
+            ? "Icon.Moon"  // Se il tema è chiaro, mostra la luna (per passare al dark)
+            : "Icon.Sun";   // Se il tema è scuro, mostra il sole (per passare al light)
+
+        var iconText = (string)FindResource(iconResource);
+        ThemeIcon.Text = iconText;
+        MenuThemeIcon.Text = iconText;
     }
 }

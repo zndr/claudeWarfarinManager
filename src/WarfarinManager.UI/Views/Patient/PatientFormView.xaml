@@ -1,4 +1,4 @@
-<UserControl x:Class="WarfarinManager.UI.Views.Patient.PatientFormView"
+﻿<UserControl x:Class="WarfarinManager.UI.Views.Patient.PatientFormView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -42,16 +42,16 @@
 
         <!-- Header -->
         <Border Grid.Row="0" 
-                Background="#0078D4" 
+                Background="{DynamicResource PrimaryBrush}" 
                 Padding="20,15">
             <StackPanel>
                 <TextBlock Text="Nuovo Paziente" 
                            FontSize="20" 
                            FontWeight="SemiBold" 
-                           Foreground="White"/>
+                           Foreground="{DynamicResource TextOnPrimaryBrush}"/>
                 <TextBlock Text="Inserisci i dati anagrafici del paziente"
                            FontSize="12" 
-                           Foreground="White" 
+                           Foreground="{DynamicResource TextOnPrimaryBrush}" 
                            Opacity="0.9"
                            Margin="0,4,0,0"/>
             </StackPanel>
@@ -67,7 +67,7 @@
                 <TextBlock Text="DATI PERSONALI" 
                            FontSize="14" 
                            FontWeight="SemiBold" 
-                           Foreground="#0078D4"
+                           Foreground="{DynamicResource PrimaryBrush}"
                            Margin="0,0,0,15"/>
 
                 <Grid>
@@ -89,7 +89,7 @@
                                  Tag="{Binding FirstNameError, Converter={StaticResource ErrorToTagConverter}}"
                                  Style="{StaticResource TextBoxWithValidation}"/>
                         <TextBlock Text="{Binding FirstNameError}" 
-                                   Foreground="#E81123" 
+                                   Foreground="{DynamicResource DangerBrush}" 
                                    FontSize="11"
                                    Margin="0,3,0,0"
                                    Visibility="{Binding FirstNameError, Converter={StaticResource StringToVisibilityConverter}}"/>
@@ -102,7 +102,7 @@
                                  Tag="{Binding LastNameError, Converter={StaticResource ErrorToTagConverter}}"
                                  Style="{StaticResource TextBoxWithValidation}"/>
                         <TextBlock Text="{Binding LastNameError}" 
-                                   Foreground="#E81123" 
+                                   Foreground="{DynamicResource DangerBrush}" 
                                    FontSize="11"
                                    Margin="0,3,0,0"
                                    Visibility="{Binding LastNameError, Converter={StaticResource StringToVisibilityConverter}}"/>
@@ -114,10 +114,10 @@
                         <DatePicker SelectedDate="{Binding BirthDate}"
                                    Padding="8"
                                    FontSize="13"
-                                   BorderBrush="#D0D0D0"
+                                   BorderBrush="{DynamicResource ControlBorderBrush}"
                                    BorderThickness="1"/>
                         <TextBlock Text="{Binding BirthDateError}" 
-                                   Foreground="#E81123" 
+                                   Foreground="{DynamicResource DangerBrush}" 
                                    FontSize="11"
                                    Margin="0,3,0,0"
                                    Visibility="{Binding BirthDateError, Converter={StaticResource StringToVisibilityConverter}}"/>
@@ -130,7 +130,7 @@
                                  SelectedItem="{Binding SelectedGender}"
                                  Padding="8"
                                  FontSize="13"
-                                 BorderBrush="#D0D0D0"
+                                 BorderBrush="{DynamicResource ControlBorderBrush}"
                                  BorderThickness="1"/>
                     </StackPanel>
 
@@ -143,7 +143,7 @@
                                  Tag="{Binding FiscalCodeError, Converter={StaticResource ErrorToTagConverter}}"
                                  Style="{StaticResource TextBoxWithValidation}"/>
                         <TextBlock Text="{Binding FiscalCodeError}" 
-                                   Foreground="#E81123" 
+                                   Foreground="{DynamicResource DangerBrush}" 
                                    FontSize="11"
                                    Margin="0,3,0,0"
                                    Visibility="{Binding FiscalCodeError, Converter={StaticResource StringToVisibilityConverter}}"/>
@@ -157,7 +157,7 @@
                 <TextBlock Text="CONTATTI" 
                            FontSize="14" 
                            FontWeight="SemiBold" 
-                           Foreground="#0078D4"
+                           Foreground="{DynamicResource PrimaryBrush}"
                            Margin="0,0,0,15"/>
 
                 <Grid>
@@ -173,7 +173,7 @@
                         <TextBox Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged}"
                                  Padding="8"
                                  FontSize="13"
-                                 BorderBrush="#D0D0D0"
+                                 BorderBrush="{DynamicResource ControlBorderBrush}"
                                  BorderThickness="1"/>
                     </StackPanel>
 
@@ -184,7 +184,7 @@
                                  Tag="{Binding EmailError, Converter={StaticResource ErrorToTagConverter}}"
                                  Style="{StaticResource TextBoxWithValidation}"/>
                         <TextBlock Text="{Binding EmailError}" 
-                                   Foreground="#E81123" 
+                                   Foreground="{DynamicResource DangerBrush}" 
                                    FontSize="11"
                                    Margin="0,3,0,0"
                                    Visibility="{Binding EmailError, Converter={StaticResource StringToVisibilityConverter}}"/>
@@ -197,7 +197,7 @@
                     <TextBox Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}"
                              Padding="8"
                              FontSize="13"
-                             BorderBrush="#D0D0D0"
+                             BorderBrush="{DynamicResource ControlBorderBrush}"
                              BorderThickness="1"/>
                 </StackPanel>
 
@@ -209,7 +209,7 @@
                     <TextBlock Text="NOTE ANAMNESTICHE" 
                                FontSize="14" 
                                FontWeight="SemiBold" 
-                               Foreground="#0078D4"
+                               Foreground="{DynamicResource PrimaryBrush}"
                                Margin="0,0,0,5"/>
                     <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
                              Height="100"
@@ -218,7 +218,7 @@
                              VerticalScrollBarVisibility="Auto"
                              Padding="8"
                              FontSize="13"
-                             BorderBrush="#D0D0D0"
+                             BorderBrush="{DynamicResource ControlBorderBrush}"
                              BorderThickness="1"/>
                 </StackPanel>
             </StackPanel>
@@ -226,16 +226,16 @@
 
         <!-- Action Buttons -->
         <Border Grid.Row="2" 
-                Background="#F5F5F5" 
+                Background="{DynamicResource ToolbarBackgroundBrush}" 
                 Padding="20,15"
-                BorderBrush="#E0E0E0"
+                BorderBrush="{DynamicResource BorderBrush}"
                 BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" 
                        HorizontalAlignment="Right">
                 <Button Content="✖ Annulla"
                         Command="{Binding CancelCommand}"
                         Background="#E0E0E0"
-                        Foreground="#333333"
+                        Foreground="{DynamicResource TextPrimaryBrush}"
                         FontWeight="SemiBold"
                         Padding="20,10"
                         Margin="0,0,10,0"
@@ -267,8 +267,8 @@
 
                 <Button Content="✓ Salva Paziente"
                         Command="{Binding SaveCommand}"
-                        Background="#107C10"
-                        Foreground="White"
+                        Background="{DynamicResource SuccessBrush}"
+                        Foreground="{DynamicResource TextOnPrimaryBrush}"
                         FontWeight="SemiBold"
                         Padding="20,10"
                         BorderThickness="0"
@@ -312,7 +312,7 @@
                 <TextBlock Text="💾 Salvataggio in corso..."
                            FontSize="18"
                            FontWeight="SemiBold"
-                           Foreground="White"
+                           Foreground="{DynamicResource TextOnPrimaryBrush}"
                            HorizontalAlignment="Center"/>
             </StackPanel>
         </Grid>

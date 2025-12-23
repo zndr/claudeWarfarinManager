@@ -74,6 +74,12 @@ public partial class MainViewModel : ObservableObject
         Application.Current.Shutdown();
     }
 
+    [RelayCommand]
+    private void ToggleTheme()
+    {
+        ThemeManager.Instance.ToggleTheme();
+    }
+
     #endregion
 
     #region Pazienti Menu Commands

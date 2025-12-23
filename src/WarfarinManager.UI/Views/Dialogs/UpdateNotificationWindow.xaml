@@ -1,4 +1,4 @@
-<Window x:Class="WarfarinManager.UI.Views.Dialogs.UpdateNotificationWindow"
+﻿<Window x:Class="WarfarinManager.UI.Views.Dialogs.UpdateNotificationWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Aggiornamento Disponibile"
@@ -46,7 +46,7 @@
 
         <!-- Info versione -->
         <Border Grid.Row="1"
-                Background="#F5F5F5"
+                Background="{DynamicResource ToolbarBackgroundBrush}"
                 Padding="15"
                 CornerRadius="5"
                 Margin="0,0,0,15">
@@ -111,7 +111,7 @@
                 Margin="0,0,0,15"
                 Visibility="Collapsed">
             <TextBlock Text="⚠ Aggiornamento critico - Si consiglia l'installazione immediata"
-                       Foreground="White"
+                       Foreground="{DynamicResource TextOnPrimaryBrush}"
                        FontWeight="Bold"
                        TextWrapping="Wrap"/>
         </Border>
@@ -139,7 +139,7 @@
                     Content="Scarica Aggiornamento"
                     Click="DownloadButton_Click"
                     Background="#2E7D32"
-                    Foreground="White"
+                    Foreground="{DynamicResource TextOnPrimaryBrush}"
                     FontWeight="Bold"/>
             <Button x:Name="RemindLaterButton"
                     Content="Ricordamelo Dopo"

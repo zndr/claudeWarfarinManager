@@ -1,4 +1,4 @@
-<Window
+﻿<Window
     x:Class="WarfarinManager.UI.Views.Dialogs.AboutDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -22,12 +22,12 @@
         <Border
             Grid.Row="0"
             Padding="30,25"
-            Background="#2C3E50">
+            Background="{DynamicResource HeaderBackgroundBrush}">
             <StackPanel HorizontalAlignment="Center">
                 <TextBlock
                     FontSize="28"
                     FontWeight="Bold"
-                    Foreground="White"
+                    Foreground="{DynamicResource TextOnPrimaryBrush}"
                     Text="TaoGEST" />
                 <TextBlock
                     Margin="0,5,0,0"
@@ -85,7 +85,7 @@
                         <TextBlock
                             Margin="0,30,0,10"
                             FontSize="13"
-                            Foreground="#7F8C8D"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
                             Text="© 2025 - dr Dario Giorgio Zani"
                             TextAlignment="Center" />
                         <TextBlock
@@ -105,7 +105,7 @@
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"
-                            Background="#ECF0F1"
+                            Background="{DynamicResource StatusBarBackgroundBrush}"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock
@@ -127,7 +127,7 @@
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"
-                            Background="#F8F9FA"
+                            Background="{DynamicResource ContentBackgroundBrush}"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock
@@ -156,7 +156,7 @@
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"
-                            Background="#F8F9FA"
+                            Background="{DynamicResource ContentBackgroundBrush}"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock
@@ -176,7 +176,7 @@
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"
-                            Background="#F8F9FA"
+                            Background="{DynamicResource ContentBackgroundBrush}"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock
@@ -198,7 +198,7 @@
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"
-                            Background="#F8F9FA"
+                            Background="{DynamicResource ContentBackgroundBrush}"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock
@@ -219,7 +219,7 @@
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"
-                            Background="#F8F9FA"
+                            Background="{DynamicResource ContentBackgroundBrush}"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock
@@ -243,7 +243,7 @@
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"
-                            Background="#F8F9FA"
+                            Background="{DynamicResource ContentBackgroundBrush}"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock
@@ -270,7 +270,7 @@
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"
-                            Background="#F8F9FA"
+                            Background="{DynamicResource ContentBackgroundBrush}"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock
@@ -290,7 +290,7 @@
                         <!--  Versione 1.0.0  -->
                         <Border
                             Padding="15"
-                            Background="#F8F9FA"
+                            Background="{DynamicResource ContentBackgroundBrush}"
                             CornerRadius="5">
                             <StackPanel>
                                 <TextBlock
@@ -317,7 +317,7 @@
         <Border
             Grid.Row="2"
             Padding="20"
-            Background="#F5F5F5"
+            Background="{DynamicResource ToolbarBackgroundBrush}"
             BorderBrush="#DDD"
             BorderThickness="0,1,0,0">
             <Button
@@ -329,7 +329,7 @@
                 BorderThickness="0"
                 Click="CloseButton_Click"
                 Content="Chiudi"
-                Foreground="White">
+                Foreground="{DynamicResource TextOnPrimaryBrush}">
                 <Button.Style>
                     <Style TargetType="Button">
                         <Setter Property="Template">
