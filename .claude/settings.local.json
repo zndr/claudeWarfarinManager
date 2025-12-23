@@ -83,7 +83,8 @@
       "Bash(mkdir:*)",
       "Bash(grep:*)",
       "Bash(git restore:*)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

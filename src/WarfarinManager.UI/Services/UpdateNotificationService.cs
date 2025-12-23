@@ -103,11 +103,42 @@ public class UpdateNotificationService : IDisposable
                     updateInfo.Version,
                     _currentVersion);
 
-                // Mostra la finestra di notifica nel thread UI SOLO quando c'è un aggiornamento
-                await Application.Current.Dispatcher.InvokeAsync(() =>
+                // Controlla se questa versione è già stata notificata
+                var lastNotifiedVersion = Properties.Settings.Default.LastNotifiedUpdateVersion;
+                var alreadyNotified = !string.IsNullOrEmpty(lastNotifiedVersion) &&
+                                     lastNotifiedVersion == updateInfo.Version;
+
+                _logger.LogDebug(
+                    "Versione {Version} già notificata: {AlreadyNotified}. Ultima notifica: {LastNotified}",
+                    updateInfo.Version,
+                    alreadyNotified,
+                    lastNotifiedVersion);
+
+                // Mostra la notifica solo se:
+                // 1. È un controllo manuale (showNoUpdateMessage = true), oppure
+                // 2. È un controllo automatico MA la versione non è stata ancora notificata
+                if (showNoUpdateMessage || !alreadyNotified)
                 {
-                    ShowUpdateNotification(updateInfo);
-                });
+                    // Mostra la finestra di notifica nel thread UI
+                    await Application.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        ShowUpdateNotification(updateInfo);
+                    });
+
+                    // Salva questa versione come già notificata (solo per controlli automatici)
+                    if (!showNoUpdateMessage)
+                    {
+                        Properties.Settings.Default.LastNotifiedUpdateVersion = updateInfo.Version;
+                        Properties.Settings.Default.Save();
+                        _logger.LogInformation("Versione {Version} marcata come notificata", updateInfo.Version);
+                    }
+                }
+                else
+                {
+                    _logger.LogInformation(
+                        "Versione {Version} già notificata in precedenza, salto la notifica",
+                        updateInfo.Version);
+                }
             }
             else
             {
