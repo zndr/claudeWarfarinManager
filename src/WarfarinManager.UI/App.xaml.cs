@@ -165,6 +165,9 @@ public partial class App : Application
         {
             await _host.StartAsync();
 
+            // Inizializza il sistema di temi
+            ThemeManager.Instance.Initialize();
+
             // Assicura che il database esista e sia aggiornato
             await EnsureDatabaseAsync();
 

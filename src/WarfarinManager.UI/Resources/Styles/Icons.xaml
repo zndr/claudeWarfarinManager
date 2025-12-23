@@ -1,0 +1,115 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Segoe MDL2 Assets Icon Mappings
+        Font: Segoe MDL2 Assets (built-in Windows 10+)
+        Reference: https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-ui-symbol-font
+    -->
+
+    <!-- Icon Glyphs as String Resources -->
+    <system:String x:Key="Icon.Add" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE710;</system:String>
+    <system:String x:Key="Icon.AddFriend" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE8FA;</system:String>
+    <system:String x:Key="Icon.Calendar" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE787;</system:String>
+    <system:String x:Key="Icon.Contact" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE77B;</system:String>
+    <system:String x:Key="Icon.ContactInfo" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE779;</system:String>
+    <system:String x:Key="Icon.Copy" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE8C8;</system:String>
+    <system:String x:Key="Icon.Delete" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE74D;</system:String>
+    <system:String x:Key="Icon.Document" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE8A5;</system:String>
+    <system:String x:Key="Icon.Edit" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE70F;</system:String>
+    <system:String x:Key="Icon.Flag" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE7C1;</system:String>
+    <system:String x:Key="Icon.Health" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE95E;</system:String>
+    <system:String x:Key="Icon.Heart" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xEB51;</system:String>
+    <system:String x:Key="Icon.HeartBroken" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xEA92;</system:String>
+    <system:String x:Key="Icon.Home" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE80F;</system:String>
+    <system:String x:Key="Icon.Important" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE8C9;</system:String>
+    <system:String x:Key="Icon.Info" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE946;</system:String>
+    <system:String x:Key="Icon.List" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE8FD;</system:String>
+    <system:String x:Key="Icon.Medical" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE91C;</system:String>
+    <system:String x:Key="Icon.Medication" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE95E;</system:String>
+    <system:String x:Key="Icon.More" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE712;</system:String>
+    <system:String x:Key="Icon.Page" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE7C3;</system:String>
+    <system:String x:Key="Icon.Paste" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE77F;</system:String>
+    <system:String x:Key="Icon.People" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE716;</system:String>
+    <system:String x:Key="Icon.Pills" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE950;</system:String>
+    <system:String x:Key="Icon.Print" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE749;</system:String>
+    <system:String x:Key="Icon.Refresh" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE72C;</system:String>
+    <system:String x:Key="Icon.Report" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE9F9;</system:String>
+    <system:String x:Key="Icon.Save" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE74E;</system:String>
+    <system:String x:Key="Icon.Search" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE721;</system:String>
+    <system:String x:Key="Icon.Settings" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE713;</system:String>
+    <system:String x:Key="Icon.Stethoscope" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE95E;</system:String>
+    <system:String x:Key="Icon.Switch" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE8AB;</system:String>
+    <system:String x:Key="Icon.Target" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE1C3;</system:String>
+    <system:String x:Key="Icon.Warning" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE7BA;</system:String>
+    <system:String x:Key="Icon.Chart" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE9D2;</system:String>
+    <system:String x:Key="Icon.ChartLine" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE9D2;</system:String>
+    <system:String x:Key="Icon.ChartBar" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE9D2;</system:String>
+    <system:String x:Key="Icon.Back" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE72B;</system:String>
+    <system:String x:Key="Icon.Forward" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE72A;</system:String>
+    <system:String x:Key="Icon.Up" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE74A;</system:String>
+    <system:String x:Key="Icon.Down" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE74B;</system:String>
+    <system:String x:Key="Icon.Close" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE711;</system:String>
+    <system:String x:Key="Icon.Check" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE73E;</system:String>
+    <system:String x:Key="Icon.CheckMark" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE8FB;</system:String>
+    <system:String x:Key="Icon.Cancel" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE711;</system:String>
+    <system:String x:Key="Icon.Filter" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE71C;</system:String>
+    <system:String x:Key="Icon.Sort" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE8CB;</system:String>
+    <system:String x:Key="Icon.Sun" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE706;</system:String>
+    <system:String x:Key="Icon.Moon" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE708;</system:String>
+    <system:String x:Key="Icon.Database" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE950;</system:String>
+    <system:String x:Key="Icon.Export" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xEDE1;</system:String>
+    <system:String x:Key="Icon.Import" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE8B5;</system:String>
+    <system:String x:Key="Icon.Download" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE896;</system:String>
+    <system:String x:Key="Icon.Upload" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE898;</system:String>
+    <system:String x:Key="Icon.Sync" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE895;</system:String>
+    <system:String x:Key="Icon.Link" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE71B;</system:String>
+    <system:String x:Key="Icon.Unlink" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE77A;</system:String>
+    <system:String x:Key="Icon.Hospital" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE911;</system:String>
+    <system:String x:Key="Icon.Emergency" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE990;</system:String>
+    <system:String x:Key="Icon.Clock" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE917;</system:String>
+    <system:String x:Key="Icon.History" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE81C;</system:String>
+    <system:String x:Key="Icon.TestTube" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE9C4;</system:String>
+    <system:String x:Key="Icon.DNA" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE9C5;</system:String>
+    <system:String x:Key="Icon.Blood" xmlns:system="clr-namespace:System;assembly=mscorlib">&#xE95E;</system:String>
+
+    <!-- Base Icon Style -->
+    <Style x:Key="IconStyle" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+    </Style>
+
+    <!-- Large Icon Style -->
+    <Style x:Key="LargeIconStyle" TargetType="TextBlock" BasedOn="{StaticResource IconStyle}">
+        <Setter Property="FontSize" Value="24"/>
+    </Style>
+
+    <!-- Small Icon Style -->
+    <Style x:Key="SmallIconStyle" TargetType="TextBlock" BasedOn="{StaticResource IconStyle}">
+        <Setter Property="FontSize" Value="12"/>
+    </Style>
+
+    <!-- Primary Icon Style -->
+    <Style x:Key="PrimaryIconStyle" TargetType="TextBlock" BasedOn="{StaticResource IconStyle}">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
+    </Style>
+
+    <!-- Success Icon Style -->
+    <Style x:Key="SuccessIconStyle" TargetType="TextBlock" BasedOn="{StaticResource IconStyle}">
+        <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}"/>
+    </Style>
+
+    <!-- Danger Icon Style -->
+    <Style x:Key="DangerIconStyle" TargetType="TextBlock" BasedOn="{StaticResource IconStyle}">
+        <Setter Property="Foreground" Value="{DynamicResource DangerBrush}"/>
+    </Style>
+
+    <!-- Warning Icon Style -->
+    <Style x:Key="WarningIconStyle" TargetType="TextBlock" BasedOn="{StaticResource IconStyle}">
+        <Setter Property="Foreground" Value="{DynamicResource WarningBrush}"/>
+    </Style>
+
+</ResourceDictionary>

@@ -27,7 +27,7 @@
         <Border
             Grid.Row="0"
             Padding="20,15"
-            Background="#0078D4">
+            Background="{DynamicResource PrimaryBrush}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -46,7 +46,7 @@
                     Content="◄ Torna alla Lista"
                     Cursor="Hand"
                     FontSize="13"
-                    Foreground="White">
+                    Foreground="{DynamicResource TextOnPrimaryBrush}">
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="Template">
@@ -60,7 +60,7 @@
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#005A9E" />
+                                    <Setter Property="Background" Value="{DynamicResource PrimaryPressedBrush}" />
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -72,37 +72,37 @@
                     <TextBlock
                         FontSize="20"
                         FontWeight="SemiBold"
-                        Foreground="White"
+                        Foreground="{DynamicResource TextOnPrimaryBrush}"
                         Text="{Binding Patient.FullName, Mode=OneWay}" />
                     <StackPanel Margin="0,4,0,0" Orientation="Horizontal">
                         <TextBlock
                             FontSize="12"
-                            Foreground="White"
+                            Foreground="{DynamicResource TextOnPrimaryBrush}"
                             Opacity="0.9"
                             Text="CF: " />
                         <TextBlock
                             FontSize="12"
-                            Foreground="White"
+                            Foreground="{DynamicResource TextOnPrimaryBrush}"
                             Opacity="0.9"
                             Text="{Binding Patient.FiscalCode, Mode=OneWay}" />
                         <TextBlock
                             FontSize="12"
-                            Foreground="White"
+                            Foreground="{DynamicResource TextOnPrimaryBrush}"
                             Opacity="0.9"
                             Text=" | Età: " />
                         <TextBlock
                             FontSize="12"
-                            Foreground="White"
+                            Foreground="{DynamicResource TextOnPrimaryBrush}"
                             Opacity="0.9"
                             Text="{Binding Patient.Age, Mode=OneWay}" />
                         <TextBlock
                             FontSize="12"
-                            Foreground="White"
+                            Foreground="{DynamicResource TextOnPrimaryBrush}"
                             Opacity="0.9"
                             Text=" anni | Nato il: " />
                         <TextBlock
                             FontSize="12"
-                            Foreground="White"
+                            Foreground="{DynamicResource TextOnPrimaryBrush}"
                             Opacity="0.9"
                             Text="{Binding Patient.BirthDate, StringFormat=dd/MM/yyyy, Mode=OneWay}" />
                     </StackPanel>
@@ -115,14 +115,14 @@
                     <Button
                         Margin="0,0,10,0"
                         Padding="15,8"
-                        Background="#FFA500"
+                        Background="{DynamicResource WarningBrush}"
                         BorderThickness="0"
                         Command="{Binding OpenINRControlCommand}"
                         Content="📊 Aggiungi INR"
                         Cursor="Hand"
                         FontSize="13"
                         FontWeight="SemiBold"
-                        Foreground="White">
+                        Foreground="{DynamicResource TextOnPrimaryBrush}">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="Template">
@@ -139,10 +139,10 @@
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#E59400" />
+                                        <Setter Property="Background" Value="{DynamicResource WarningHoverBrush}" />
                                     </Trigger>
                                     <Trigger Property="IsPressed" Value="True">
-                                        <Setter Property="Background" Value="#CC8400" />
+                                        <Setter Property="Background" Value="{DynamicResource WarningHoverBrush}" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -152,14 +152,14 @@
                     <!--  Pulsante Modifica Anagrafica  -->
                     <Button
                         Padding="15,8"
-                        Background="White"
+                        Background="{DynamicResource CardBackgroundBrush}"
                         BorderThickness="0"
                         Command="{Binding EditPatientCommand}"
                         Content="✏ Modifica Anagrafica"
                         Cursor="Hand"
                         FontSize="13"
                         FontWeight="SemiBold"
-                        Foreground="#0078D4">
+                        Foreground="{DynamicResource PrimaryBrush}">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="Template">
@@ -176,7 +176,7 @@
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#F0F0F0" />
+                                        <Setter Property="Background" Value="{DynamicResource HoverBackgroundBrush}" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -210,12 +210,12 @@
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
-                                        <Setter TargetName="Border" Property="Background" Value="White" />
+                                        <Setter TargetName="Border" Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
                                         <Setter TargetName="Border" Property="BorderThickness" Value="0,0,0,3" />
-                                        <Setter TargetName="Border" Property="BorderBrush" Value="#0078D4" />
+                                        <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
                                     </Trigger>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="Border" Property="Background" Value="#F5F5F5" />
+                                        <Setter TargetName="Border" Property="Background" Value="{DynamicResource HoverBackgroundBrush}" />
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
@@ -223,18 +223,19 @@
                     </Setter>
                     <Setter Property="FontSize" Value="12" />
                     <Setter Property="FontWeight" Value="SemiBold" />
+                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                 </Style>
             </TabControl.Resources>
 
             <!--  Tab 1: Anagrafica  -->
             <TabItem Header="📋 Anagrafica">
-                <ScrollViewer Padding="30" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer Padding="30" VerticalScrollBarVisibility="Auto" Background="{DynamicResource ContentBackgroundBrush}">
                     <StackPanel MaxWidth="700">
                         <TextBlock
                             Margin="0,0,0,15"
                             FontSize="14"
                             FontWeight="SemiBold"
-                            Foreground="#0078D4"
+                            Foreground="{DynamicResource PrimaryBrush}"
                             Text="DATI PERSONALI" />
 
                         <Grid>
@@ -256,11 +257,13 @@
                                 Grid.Column="0"
                                 Margin="0,8"
                                 FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextSecondaryBrush}"
                                 Text="Nome:" />
                             <TextBlock
                                 Grid.Row="0"
                                 Grid.Column="1"
                                 Margin="0,8"
+                                Foreground="{DynamicResource TextPrimaryBrush}"
                                 Text="{Binding Patient.FirstName}" />
 
                             <TextBlock
@@ -268,11 +271,13 @@
                                 Grid.Column="0"
                                 Margin="0,8"
                                 FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextSecondaryBrush}"
                                 Text="Cognome:" />
                             <TextBlock
                                 Grid.Row="1"
                                 Grid.Column="1"
                                 Margin="0,8"
+                                Foreground="{DynamicResource TextPrimaryBrush}"
                                 Text="{Binding Patient.LastName}" />
 
                             <TextBlock
@@ -280,11 +285,13 @@
                                 Grid.Column="0"
                                 Margin="0,8"
                                 FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextSecondaryBrush}"
                                 Text="Codice Fiscale:" />
                             <TextBlock
                                 Grid.Row="2"
                                 Grid.Column="1"
                                 Margin="0,8"
+                                Foreground="{DynamicResource TextPrimaryBrush}"
                                 Text="{Binding Patient.FiscalCode}" />
 
                             <TextBlock
@@ -292,11 +299,13 @@
                                 Grid.Column="0"
                                 Margin="0,8"
                                 FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextSecondaryBrush}"
                                 Text="Sesso:" />
                             <TextBlock
                                 Grid.Row="3"
                                 Grid.Column="1"
                                 Margin="0,8"
+                                Foreground="{DynamicResource TextPrimaryBrush}"
                                 Text="{Binding Patient.Gender}" />
 
                             <TextBlock
@@ -304,11 +313,13 @@
                                 Grid.Column="0"
                                 Margin="0,8"
                                 FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextSecondaryBrush}"
                                 Text="Telefono:" />
                             <TextBlock
                                 Grid.Row="4"
                                 Grid.Column="1"
                                 Margin="0,8"
+                                Foreground="{DynamicResource TextPrimaryBrush}"
                                 Text="{Binding Patient.Phone}" />
 
                             <TextBlock
@@ -316,11 +327,13 @@
                                 Grid.Column="0"
                                 Margin="0,8"
                                 FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextSecondaryBrush}"
                                 Text="Email:" />
                             <TextBlock
                                 Grid.Row="5"
                                 Grid.Column="1"
                                 Margin="0,8"
+                                Foreground="{DynamicResource TextPrimaryBrush}"
                                 Text="{Binding Patient.Email}" />
                         </Grid>
                     </StackPanel>
@@ -344,20 +357,20 @@
                     <Border
                         Grid.Row="0"
                         Padding="20,15"
-                        Background="#F5F5F5"
-                        BorderBrush="#E0E0E0"
+                        Background="{DynamicResource ToolbarBackgroundBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
                         BorderThickness="0,0,0,1">
                         <StackPanel Orientation="Horizontal">
                             <Button
                                 Margin="0,0,10,0"
                                 Padding="15,8"
-                                Background="#107C10"
+                                Background="{DynamicResource SuccessBrush}"
                                 BorderThickness="0"
                                 Command="{Binding AddIndicationCommand}"
                                 Content="➕ Nuova Indicazione"
                                 Cursor="Hand"
                                 FontWeight="SemiBold"
-                                Foreground="White">
+                                Foreground="{DynamicResource TextOnPrimaryBrush}">
                                 <Button.Style>
                                     <Style TargetType="Button">
                                         <Setter Property="Template">
@@ -374,7 +387,7 @@
                                         </Setter>
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#0F6B0D" />
+                                                <Setter Property="Background" Value="{DynamicResource SuccessHoverBrush}" />
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>
@@ -383,13 +396,13 @@
 
                             <Button
                                 Padding="15,8"
-                                Background="#D13438"
+                                Background="{DynamicResource DangerBrush}"
                                 BorderThickness="0"
                                 Command="{Binding EndIndicationCommand}"
                                 Content="⏹ Termina Indicazione"
                                 Cursor="Hand"
                                 FontWeight="SemiBold"
-                                Foreground="White">
+                                Foreground="{DynamicResource TextOnPrimaryBrush}">
                                 <Button.Style>
                                     <Style TargetType="Button">
                                         <Setter Property="Template">
@@ -406,10 +419,10 @@
                                         </Setter>
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#A72B2E" />
+                                                <Setter Property="Background" Value="{DynamicResource DangerHoverBrush}" />
                                             </Trigger>
                                             <Trigger Property="IsEnabled" Value="False">
-                                                <Setter Property="Background" Value="#C0C0C0" />
+                                                <Setter Property="Background" Value="{DynamicResource ControlDisabledBrush}" />
                                                 <Setter Property="Cursor" Value="Arrow" />
                                             </Trigger>
                                         </Style.Triggers>
@@ -422,7 +435,7 @@
                     <!--  Lista Indicazioni  -->
                     <DataGrid
                         Grid.Row="1"
-                        AlternatingRowBackground="#F9F9F9"
+                        AlternatingRowBackground="{DynamicResource DataGridAlternateRowBrush}"
                         AutoGenerateColumns="False"
                         CanUserResizeRows="False"
                         CanUserSortColumns="True"
@@ -433,16 +446,19 @@
                         ItemsSource="{Binding Indications}"
                         RowHeight="50"
                         SelectedItem="{Binding SelectedIndication}"
-                        SelectionMode="Single">
+                        SelectionMode="Single"
+                        Background="{DynamicResource CardBackgroundBrush}"
+                        Foreground="{DynamicResource TextPrimaryBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}">
 
                         <DataGrid.ColumnHeaderStyle>
                             <Style TargetType="DataGridColumnHeader">
-                                <Setter Property="Background" Value="#E8E8E8" />
-                                <Setter Property="Foreground" Value="#333333" />
+                                <Setter Property="Background" Value="{DynamicResource DataGridHeaderBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                                 <Setter Property="FontWeight" Value="SemiBold" />
                                 <Setter Property="Padding" Value="12,10" />
                                 <Setter Property="BorderThickness" Value="0,0,1,1" />
-                                <Setter Property="BorderBrush" Value="#D0D0D0" />
+                                <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
                                 <Setter Property="HorizontalContentAlignment" Value="Left" />
                             </Style>
                         </DataGrid.ColumnHeaderStyle>
@@ -451,23 +467,38 @@
                             <Style TargetType="DataGridCell">
                                 <Setter Property="Padding" Value="12,0" />
                                 <Setter Property="BorderThickness" Value="0" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="DataGridCell">
                                             <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
-                                                <ContentPresenter VerticalAlignment="Center" />
+                                                <ContentPresenter VerticalAlignment="Center" TextElement.Foreground="{TemplateBinding Foreground}" />
                                             </Border>
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="Background" Value="#E3F2FD" />
-                                        <Setter Property="Foreground" Value="Black" />
+                                        <Setter Property="Background" Value="{DynamicResource DataGridSelectedBrush}" />
+                                        <Setter Property="Foreground" Value="{DynamicResource DataGridSelectedTextBrush}" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
                         </DataGrid.CellStyle>
+
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Setter Property="Background" Value="{DynamicResource DataGridRowBrush}" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource DataGridHoverBrush}" />
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource DataGridSelectedBrush}" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
 
                         <DataGrid.Columns>
                             <!--  Stato  -->
@@ -512,12 +543,12 @@
                             Margin="0,0,0,10"
                             HorizontalAlignment="Center"
                             FontSize="16"
-                            Foreground="#A0A0A0"
+                            Foreground="{DynamicResource TextTertiaryBrush}"
                             Text="📋 Nessuna indicazione registrata" />
                         <TextBlock
                             HorizontalAlignment="Center"
                             FontSize="13"
-                            Foreground="#A0A0A0"
+                            Foreground="{DynamicResource TextTertiaryBrush}"
                             Text="Clicca su 'Nuova Indicazione' per aggiungerne una" />
                     </StackPanel>
                 </Grid>
@@ -552,7 +583,7 @@
                             Visibility="Collapsed" />
                         <TextBlock
                             FontSize="14"
-                            Foreground="#f59e0b"
+                            Foreground="{DynamicResource WarningBrush}"
                             FontWeight="Bold">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
@@ -582,7 +613,7 @@
                     HorizontalAlignment="Center"
                     FontSize="16"
                     FontWeight="SemiBold"
-                    Foreground="#0078D4"
+                    Foreground="{DynamicResource PrimaryBrush}"
                     Text="⏳ Caricamento dati paziente..." />
             </StackPanel>
         </Grid>

@@ -1,4 +1,4 @@
-<UserControl x:Class="WarfarinManager.UI.Views.Patient.PatientSummaryView"
+﻿<UserControl x:Class="WarfarinManager.UI.Views.Patient.PatientSummaryView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -33,7 +33,7 @@
         <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="16"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#0078D4"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
             <Setter Property="Margin" Value="0,0,0,10"/>
         </Style>
 
@@ -71,14 +71,14 @@
         </Grid.RowDefinitions>
 
         <!-- Toolbar con pulsanti -->
-        <Border Grid.Row="0" Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="15,10">
+        <Border Grid.Row="0" Background="{DynamicResource ToolbarBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="15,10">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Content="◄ Indietro"
                         Command="{Binding GoBackCommand}"
                         Padding="12,6"
                         Margin="0,0,10,0"
                         Background="#6C757D"
-                        Foreground="White"
+                        Foreground="{DynamicResource TextOnPrimaryBrush}"
                         BorderThickness="0"
                         Cursor="Hand"
                         FontWeight="SemiBold">
@@ -108,7 +108,7 @@
                         Command="{Binding ExportToPdfCommand}"
                         Padding="12,6"
                         Background="#DC3545"
-                        Foreground="White"
+                        Foreground="{DynamicResource TextOnPrimaryBrush}"
                         BorderThickness="0"
                         Cursor="Hand"
                         FontWeight="SemiBold">
@@ -140,7 +140,7 @@
             <StackPanel MaxWidth="1200">
 
                 <!-- Header Paziente -->
-                <Border Style="{StaticResource CardStyle}" Background="#0078D4">
+                <Border Style="{StaticResource CardStyle}" Background="{DynamicResource PrimaryBrush}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -151,7 +151,7 @@
                             <TextBlock Text="{Binding PatientFullName}"
                                       FontSize="24"
                                   FontWeight="Bold"
-                                  Foreground="White"
+                                  Foreground="{DynamicResource TextOnPrimaryBrush}"
                                   Margin="0,0,0,5"/>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="CF: "
@@ -160,7 +160,7 @@
                             <TextBlock Text="{Binding FiscalCode}"
                                       FontSize="13"
                                       FontWeight="SemiBold"
-                                      Foreground="White"
+                                      Foreground="{DynamicResource TextOnPrimaryBrush}"
                                       Margin="5,0,20,0"/>
                             <TextBlock Text="Età: "
                                       FontSize="13"
@@ -168,7 +168,7 @@
                             <TextBlock Text="{Binding Age}"
                                       FontSize="13"
                                       FontWeight="SemiBold"
-                                      Foreground="White"
+                                      Foreground="{DynamicResource TextOnPrimaryBrush}"
                                       Margin="5,0,5,0"/>
                             <TextBlock Text="anni"
                                       FontSize="13"
@@ -180,7 +180,7 @@
                             <TextBlock Text="{Binding Gender}"
                                       FontSize="13"
                                       FontWeight="SemiBold"
-                                      Foreground="White"
+                                      Foreground="{DynamicResource TextOnPrimaryBrush}"
                                       Margin="5,0,0,0"/>
                         </StackPanel>
                     </StackPanel>
@@ -189,7 +189,7 @@
                         <TextBlock Text="📄 RIASSUNTO CLINICO"
                                   FontSize="14"
                                   FontWeight="SemiBold"
-                                  Foreground="White"
+                                  Foreground="{DynamicResource TextOnPrimaryBrush}"
                                   HorizontalAlignment="Right"/>
                     </StackPanel>
                 </Grid>
@@ -220,7 +220,7 @@
                             <!-- CHA2DS2-VASc -->
                             <Border Grid.Column="0"
                                    Background="#F0F8FF"
-                                   BorderBrush="#0078D4"
+                                   BorderBrush="{DynamicResource FocusBorderBrush}"
                                    BorderThickness="2"
                                    CornerRadius="8"
                                    Padding="15"
@@ -229,12 +229,12 @@
                                     <TextBlock Text="CHA₂DS₂-VASc"
                                               FontSize="11"
                                               FontWeight="SemiBold"
-                                              Foreground="#0078D4"
+                                              Foreground="{DynamicResource PrimaryBrush}"
                                               HorizontalAlignment="Center"/>
                                     <TextBlock Text="{Binding Cha2DS2VAScScore}"
                                               FontSize="32"
                                               FontWeight="Bold"
-                                              Foreground="#0078D4"
+                                              Foreground="{DynamicResource PrimaryBrush}"
                                               HorizontalAlignment="Center"
                                               Margin="0,5"/>
                                 </StackPanel>
@@ -252,12 +252,12 @@
                                     <TextBlock Text="HAS-BLED"
                                               FontSize="11"
                                               FontWeight="SemiBold"
-                                              Foreground="#E81123"
+                                              Foreground="{DynamicResource DangerBrush}"
                                               HorizontalAlignment="Center"/>
                                     <TextBlock Text="{Binding HasbledScore}"
                                               FontSize="32"
                                               FontWeight="Bold"
-                                              Foreground="#E81123"
+                                              Foreground="{DynamicResource DangerBrush}"
                                               HorizontalAlignment="Center"
                                               Margin="0,5"/>
                                 </StackPanel>
@@ -275,7 +275,7 @@
                                 <TextBlock Text="Valutazione:"
                                           FontSize="11"
                                           FontWeight="SemiBold"
-                                          Foreground="#107C10"
+                                          Foreground="{DynamicResource SuccessBrush}"
                                           Margin="0,0,0,5"/>
                                 <TextBlock Text="{Binding OverallAssessment}"
                                           FontSize="12"
@@ -318,7 +318,7 @@
                         <StackPanel Margin="0,0,0,15">
                             <TextBlock Text="Indicazione:"
                                       FontSize="11"
-                                      Foreground="#666666"
+                                      Foreground="{DynamicResource TextSecondaryBrush}"
                                       Margin="0,0,0,3"/>
                             <TextBlock Text="{Binding CurrentIndication}"
                                       FontSize="13"
@@ -330,7 +330,7 @@
                         <StackPanel Margin="0,0,0,15">
                             <TextBlock Text="Inizio terapia:"
                                       FontSize="11"
-                                      Foreground="#666666"
+                                      Foreground="{DynamicResource TextSecondaryBrush}"
                                       Margin="0,0,0,3"/>
                             <TextBlock Text="{Binding TaoStartDate, StringFormat='dd/MM/yyyy'}"
                                       FontSize="13"
@@ -341,7 +341,7 @@
                         <StackPanel Margin="0,0,0,15">
                             <TextBlock Text="Range INR target:"
                                       FontSize="11"
-                                      Foreground="#666666"
+                                      Foreground="{DynamicResource TextSecondaryBrush}"
                                       Margin="0,0,0,3"/>
                             <TextBlock Text="{Binding TargetINRRange}"
                                       FontSize="13"
@@ -350,7 +350,7 @@
 
                         <!-- TTR -->
                         <Border Background="#F0F8FF"
-                               BorderBrush="#0078D4"
+                               BorderBrush="{DynamicResource FocusBorderBrush}"
                                BorderThickness="2"
                                CornerRadius="8"
                                Padding="15">
@@ -364,15 +364,15 @@
                                     <TextBlock Text="TTR (Time in Therapeutic Range)"
                                               FontSize="12"
                                               FontWeight="SemiBold"
-                                              Foreground="#0078D4"
+                                              Foreground="{DynamicResource PrimaryBrush}"
                                               Margin="0,0,0,5"/>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{Binding CurrentTTR, StringFormat='{}{0:F1}%'}"
                                                   FontSize="28"
                                                   FontWeight="Bold"
-                                                  Foreground="#0078D4"
+                                                  Foreground="{DynamicResource PrimaryBrush}"
                                                   VerticalAlignment="Center"/>
-                                        <Border Background="#107C10"
+                                        <Border Background="{DynamicResource SuccessBrush}"
                                                CornerRadius="10"
                                                Padding="8,4"
                                                Margin="10,0,0,0"
@@ -380,22 +380,22 @@
                                             <TextBlock Text="{Binding TTRQualityLevel}"
                                                       FontSize="11"
                                                       FontWeight="SemiBold"
-                                                      Foreground="White"/>
+                                                      Foreground="{DynamicResource TextOnPrimaryBrush}"/>
                                         </Border>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                         <TextBlock Text="{Binding TotalControlsCount}"
                                                   FontSize="11"
-                                                  Foreground="#666666"/>
+                                                  Foreground="{DynamicResource TextSecondaryBrush}"/>
                                         <TextBlock Text=" controlli in "
                                                   FontSize="11"
-                                                  Foreground="#666666"/>
+                                                  Foreground="{DynamicResource TextSecondaryBrush}"/>
                                         <TextBlock Text="{Binding DaysInTherapy}"
                                                   FontSize="11"
-                                                  Foreground="#666666"/>
+                                                  Foreground="{DynamicResource TextSecondaryBrush}"/>
                                         <TextBlock Text=" giorni di terapia"
                                                   FontSize="11"
-                                                  Foreground="#666666"/>
+                                                  Foreground="{DynamicResource TextSecondaryBrush}"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>
@@ -423,7 +423,7 @@
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="FontWeight" Value="SemiBold"/>
-                                        <Setter Property="Foreground" Value="#0078D4"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>

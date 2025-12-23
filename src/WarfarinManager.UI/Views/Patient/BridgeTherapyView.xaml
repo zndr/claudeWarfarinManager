@@ -1,4 +1,4 @@
-<UserControl x:Class="WarfarinManager.UI.Views.Patient.BridgeTherapyView"
+﻿<UserControl x:Class="WarfarinManager.UI.Views.Patient.BridgeTherapyView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -28,7 +28,7 @@
         <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#0078D4"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}"/>
             <Setter Property="Margin" Value="0,0,0,15"/>
         </Style>
         
@@ -41,7 +41,7 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid Background="#F5F5F5">
+    <Grid Background="{DynamicResource ToolbarBackgroundBrush}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
@@ -84,7 +84,7 @@
                                     <Setter Property="BorderThickness" Value="1"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding HasSurgeryTypeError}" Value="True">
-                                            <Setter Property="BorderBrush" Value="#D13438"/>
+                                            <Setter Property="BorderBrush" Value="{DynamicResource DangerBrush}"/>
                                             <Setter Property="BorderThickness" Value="2"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -103,19 +103,19 @@
                                     <Style TargetType="Border">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding BleedingRisk}" Value="Low">
-                                                <Setter Property="Background" Value="#107C10"/>
+                                                <Setter Property="Background" Value="{DynamicResource SuccessBrush}"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding BleedingRisk}" Value="Moderate">
                                                 <Setter Property="Background" Value="#FFB900"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding BleedingRisk}" Value="High">
-                                                <Setter Property="Background" Value="#D13438"/>
+                                                <Setter Property="Background" Value="{DynamicResource DangerBrush}"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Border.Style>
                                 <TextBlock Text="{Binding BleedingRisk}" 
-                                           Foreground="White"
+                                           Foreground="{DynamicResource TextOnPrimaryBrush}"
                                            FontWeight="SemiBold"
                                            FontSize="12"/>
                             </Border>
@@ -158,12 +158,12 @@
                             <TextBlock Text="CHA₂DS₂-VASc Score: " 
                                        FontSize="13"
                                        VerticalAlignment="Center"/>
-                            <Border Background="#0078D4" 
+                            <Border Background="{DynamicResource PrimaryBrush}" 
                                     CornerRadius="12"
                                     Padding="10,4"
                                     MinWidth="30">
                                 <TextBlock Text="{Binding Cha2ds2vascScore}" 
-                                           Foreground="White"
+                                           Foreground="{DynamicResource TextOnPrimaryBrush}"
                                            FontWeight="Bold"
                                            FontSize="14"
                                            HorizontalAlignment="Center"/>
@@ -197,19 +197,19 @@
                                     <Style TargetType="Border">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding ThromboembolicRisk}" Value="Low">
-                                                <Setter Property="Background" Value="#107C10"/>
+                                                <Setter Property="Background" Value="{DynamicResource SuccessBrush}"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding ThromboembolicRisk}" Value="Moderate">
                                                 <Setter Property="Background" Value="#FFB900"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding ThromboembolicRisk}" Value="High">
-                                                <Setter Property="Background" Value="#D13438"/>
+                                                <Setter Property="Background" Value="{DynamicResource DangerBrush}"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Border.Style>
                                 <TextBlock Text="{Binding ThromboembolicRisk}" 
-                                           Foreground="White"
+                                           Foreground="{DynamicResource TextOnPrimaryBrush}"
                                            FontWeight="SemiBold"
                                            FontSize="12"/>
                             </Border>
@@ -239,8 +239,8 @@
                 <!-- Pulsante Calcola -->
                 <Button Content="🔬 CALCOLA PROTOCOLLO BRIDGE"
                         Command="{Binding CalculateBridgeCommand}"
-                        Background="#0078D4"
-                        Foreground="White"
+                        Background="{DynamicResource PrimaryBrush}"
+                        Foreground="{DynamicResource TextOnPrimaryBrush}"
                         FontSize="15"
                         FontWeight="Bold"
                         Padding="20,12"
@@ -263,7 +263,7 @@
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#005A9E"/>
+                                    <Setter Property="Background" Value="{DynamicResource PrimaryPressedBrush}"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -272,7 +272,7 @@
                 
                 <!-- Messaggio errore -->
                 <TextBlock Text="{Binding ErrorMessage}"
-                           Foreground="#D13438"
+                           Foreground="{DynamicResource DangerBrush}"
                            FontSize="13"
                            FontWeight="SemiBold"
                            TextWrapping="Wrap"
@@ -285,7 +285,7 @@
         <ScrollViewer Grid.Column="1" 
                       VerticalScrollBarVisibility="Auto"
                       Padding="20"
-                      Background="White">
+                      Background="{DynamicResource CardBackgroundBrush}">
             <StackPanel>
                 
                 <!-- Placeholder quando non c'è risultato (visibile di default) -->
@@ -296,15 +296,15 @@
                     <TextBlock Text="🏥" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,15"/>
                     <TextBlock Text="Inserisci i dati dell'intervento"
                                FontSize="16"
-                               Foreground="#A0A0A0"
+                               Foreground="{DynamicResource TextTertiaryBrush}"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="e clicca su 'Calcola Protocollo' per generare"
                                FontSize="14"
-                               Foreground="#A0A0A0"
+                               Foreground="{DynamicResource TextTertiaryBrush}"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="le raccomandazioni bridge therapy"
                                FontSize="14"
-                               Foreground="#A0A0A0"
+                               Foreground="{DynamicResource TextTertiaryBrush}"
                                HorizontalAlignment="Center"/>
                 </StackPanel>
                 
@@ -320,7 +320,7 @@
                                         <Setter Property="Background" Value="#FFB900"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding CurrentProtocol.BridgeRecommended}" Value="False">
-                                        <Setter Property="Background" Value="#107C10"/>
+                                        <Setter Property="Background" Value="{DynamicResource SuccessBrush}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -328,7 +328,7 @@
                         <StackPanel>
                             <TextBlock FontSize="20" 
                                        FontWeight="Bold"
-                                       Foreground="White"
+                                       Foreground="{DynamicResource TextOnPrimaryBrush}"
                                        HorizontalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
@@ -344,7 +344,7 @@
                                 </TextBlock.Style>
                             </TextBlock>
                             <TextBlock Text="{Binding FcsaRecommendation.Rationale}"
-                                       Foreground="White"
+                                       Foreground="{DynamicResource TextOnPrimaryBrush}"
                                        FontSize="13"
                                        TextWrapping="Wrap"
                                        HorizontalAlignment="Center"
@@ -362,7 +362,7 @@
                             <TextBlock Text="PRE-OPERATORIO" 
                                        FontWeight="Bold"
                                        FontSize="12"
-                                       Foreground="#666666"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
                                        Margin="0,0,0,10"/>
                             
                             <StackPanel Margin="10,0,0,15">
@@ -384,7 +384,7 @@
                                     <Run Text="💉 Giorno -1: " FontWeight="SemiBold"/>
                                     <Run Text="Ultima dose EBPM (24h prima)"/>
                                 </TextBlock>
-                                <TextBlock Margin="0,3" FontWeight="Bold" Foreground="#D13438">
+                                <TextBlock Margin="0,3" FontWeight="Bold" Foreground="{DynamicResource DangerBrush}">
                                     <Run Text="🏥 Giorno 0: "/>
                                     <Run Text="*** INTERVENTO ***"/>
                                 </TextBlock>
@@ -394,7 +394,7 @@
                             <TextBlock Text="POST-OPERATORIO" 
                                        FontWeight="Bold"
                                        FontSize="12"
-                                       Foreground="#666666"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
                                        Margin="0,10,0,10"/>
                             
                             <StackPanel Margin="10,0,0,0">
@@ -473,8 +473,8 @@
                         
                         <Button Content="💾 Salva Piano"
                                 Command="{Binding SavePlanCommand}"
-                                Background="#107C10"
-                                Foreground="White"
+                                Background="{DynamicResource SuccessBrush}"
+                                Foreground="{DynamicResource TextOnPrimaryBrush}"
                                 FontWeight="SemiBold"
                                 Padding="15,10"
                                 Margin="0,0,10,0"
@@ -505,8 +505,8 @@
                         
                         <Button Content="📋 Copia"
                                 Command="{Binding CopyToClipboardCommand}"
-                                Background="#0078D4"
-                                Foreground="White"
+                                Background="{DynamicResource PrimaryBrush}"
+                                Foreground="{DynamicResource TextOnPrimaryBrush}"
                                 FontWeight="SemiBold"
                                 Padding="15,10"
                                 Margin="0,0,10,0"
@@ -528,7 +528,7 @@
                                     </Setter>
                                     <Style.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="#005A9E"/>
+                                            <Setter Property="Background" Value="{DynamicResource PrimaryPressedBrush}"/>
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
@@ -538,7 +538,7 @@
                         <Button Content="📄 Esporta PDF"
                                 Command="{Binding ExportToPdfCommand}"
                                 Background="#6C757D"
-                                Foreground="White"
+                                Foreground="{DynamicResource TextOnPrimaryBrush}"
                                 FontWeight="SemiBold"
                                 Padding="15,10"
                                 BorderThickness="0"
@@ -578,7 +578,7 @@
                 <TextBlock Text="⏳ Elaborazione in corso..."
                            FontSize="16"
                            FontWeight="SemiBold"
-                           Foreground="#0078D4"
+                           Foreground="{DynamicResource PrimaryBrush}"
                            HorizontalAlignment="Center"/>
             </StackPanel>
         </Grid>

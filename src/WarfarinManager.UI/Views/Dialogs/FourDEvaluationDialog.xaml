@@ -1,4 +1,4 @@
-<Window
+﻿<Window
     x:Class="WarfarinManager.UI.Views.Dialogs.FourDEvaluationDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -17,7 +17,7 @@
         <Style x:Key="HeaderStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="14" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="#0078D4" />
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
             <Setter Property="Margin" Value="0,0,0,10" />
         </Style>
 
@@ -57,7 +57,7 @@
         <Border
             Grid.Row="0"
             Padding="20,15"
-            Background="#FFA500">
+            Background="{DynamicResource WarningBrush}">
             <StackPanel>
                 <TextBlock
                     FontSize="16"
@@ -67,12 +67,12 @@
                 <TextBlock
                     Margin="0,5,0,0"
                     FontSize="11"
-                    Foreground="#333333"
+                    Foreground="{DynamicResource TextPrimaryBrush}"
                     Text="Il valore INR è significativamente fuori dal range terapeutico." />
                 <TextBlock
                     Margin="0,2,0,0"
                     FontSize="11"
-                    Foreground="#333333"
+                    Foreground="{DynamicResource TextPrimaryBrush}"
                     Text="Valuta i seguenti fattori per identificare la causa:" />
             </StackPanel>
         </Border>
@@ -97,7 +97,7 @@
                             x:Name="DietCharCount"
                             Margin="20,2,0,0"
                             FontSize="9"
-                            Foreground="#666666"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
                             Text="0/100 caratteri"
                             Visibility="Collapsed" />
                     </StackPanel>
@@ -120,7 +120,7 @@
                             x:Name="DosageCharCount"
                             Margin="20,2,0,0"
                             FontSize="9"
-                            Foreground="#666666"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
                             Text="0/100 caratteri"
                             Visibility="Collapsed" />
                     </StackPanel>
@@ -143,7 +143,7 @@
                             x:Name="DrugsCharCount"
                             Margin="20,2,0,0"
                             FontSize="9"
-                            Foreground="#666666"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
                             Text="0/100 caratteri"
                             Visibility="Collapsed" />
                     </StackPanel>
@@ -166,7 +166,7 @@
                             x:Name="DiseasesCharCount"
                             Margin="20,2,0,0"
                             FontSize="9"
-                            Foreground="#666666"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
                             Text="0/100 caratteri"
                             Visibility="Collapsed" />
                     </StackPanel>
@@ -186,8 +186,8 @@
         <Border
             Grid.Row="2"
             Padding="20,12"
-            Background="#F5F5F5"
-            BorderBrush="#E0E0E0"
+            Background="{DynamicResource ToolbarBackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="0,1,0,0">
             <StackPanel
                 HorizontalAlignment="Right"
@@ -206,7 +206,7 @@
                     IsDefault="True">
                     <Button.Style>
                         <Style TargetType="Button">
-                            <Setter Property="Background" Value="#0078D4" />
+                            <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
                             <Setter Property="Foreground" Value="White" />
                             <Setter Property="BorderThickness" Value="0" />
                             <Setter Property="FontWeight" Value="SemiBold" />
@@ -226,7 +226,7 @@
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#005A9E" />
+                                    <Setter Property="Background" Value="{DynamicResource PrimaryPressedBrush}" />
                                 </Trigger>
                             </Style.Triggers>
                         </Style>

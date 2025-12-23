@@ -1,4 +1,4 @@
-<Window
+﻿<Window
     x:Class="WarfarinManager.UI.Views.Dialogs.DoctorDataDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -107,7 +107,7 @@
                 Background="#2ECC71"
                 Command="{Binding SaveCommand}"
                 Content="Salva"
-                Foreground="White" />
+                Foreground="{DynamicResource TextOnPrimaryBrush}" />
         </StackPanel>
     </Grid>
 </Window>

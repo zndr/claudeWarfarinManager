@@ -4,16 +4,28 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="clr-namespace:WarfarinManager.UI.Converters">
     <Application.Resources>
-        <!-- Converters globali -->
-        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
-        <converters:InverseBoolToVisibility x:Key="InverseBoolToVisibility"/>
-        <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
-        <converters:CountToVisibilityInverseConverter x:Key="CountToVisibilityInverseConverter"/>
-        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
-        <converters:NullableBoolConverter x:Key="NullableBoolConverter"/>
-        <converters:EnumToBoolConverter x:Key="EnumToBoolConverter"/>
-        <converters:SeverityToColorConverter x:Key="SeverityToColorConverter"/>
-        <converters:AdverseReactionTypeConverter x:Key="AdverseReactionTypeConverter"/>
-        <converters:CertaintyLevelConverter x:Key="CertaintyLevelConverter"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Theme (Light/Dark) - Loaded first and managed by ThemeManager -->
+                <ResourceDictionary Source="pack://application:,,,/Resources/Themes/LightTheme.xaml"/>
+
+                <!-- Styles -->
+                <ResourceDictionary Source="pack://application:,,,/Resources/Styles/Icons.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Resources/Styles/Buttons.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Resources/Styles/Common.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Converters globali -->
+            <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+            <converters:InverseBoolToVisibility x:Key="InverseBoolToVisibility"/>
+            <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
+            <converters:CountToVisibilityInverseConverter x:Key="CountToVisibilityInverseConverter"/>
+            <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+            <converters:NullableBoolConverter x:Key="NullableBoolConverter"/>
+            <converters:EnumToBoolConverter x:Key="EnumToBoolConverter"/>
+            <converters:SeverityToColorConverter x:Key="SeverityToColorConverter"/>
+            <converters:AdverseReactionTypeConverter x:Key="AdverseReactionTypeConverter"/>
+            <converters:CertaintyLevelConverter x:Key="CertaintyLevelConverter"/>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

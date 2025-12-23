@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:WarfarinManager.UI.ViewModels"
-    Title="{Binding Title}"
+    Title="TaoGEST - Gestione Terapia Anticoagulante Orale"
     Width="1050"
     Height="600"
     MinWidth="900"
@@ -13,38 +13,29 @@
     d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
     WindowStartupLocation="CenterScreen"
     Icon="Resources/Icons/taogest.ico"
+    Background="{DynamicResource WindowBackgroundBrush}"
     mc:Ignorable="d">
 
     <Window.InputBindings>
         <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding NewPatientCommand}" />
         <KeyBinding Key="L" Modifiers="Ctrl" Command="{Binding ShowPatientListCommand}" />
         <KeyBinding Key="F" Modifiers="Ctrl" Command="{Binding SearchPatientCommand}" />
+        <KeyBinding Key="T" Modifiers="Ctrl" Command="{Binding ToggleThemeCommand}" />
         <KeyBinding Key="F1" Command="{Binding ShowUserGuideCommand}" />
         <KeyBinding Key="F1" Modifiers="Shift" Command="{Binding ShowProfessionalGuidesDialogCommand}" />
     </Window.InputBindings>
 
-    <Grid>
+    <Grid Background="{DynamicResource WindowBackgroundBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!--  Header  -->
-        <Border
-            Grid.Row="0"
-            Padding="20,10"
-            Background="#2C3E50">
-            <TextBlock
-                FontSize="18"
-                FontWeight="SemiBold"
-                Foreground="White"
-                Text="TaoGEST - Gestione Terapia Anticoagulante Orale" />
-        </Border>
-
         <!--  Menu  -->
-        <Menu Grid.Row="1" Background="White">
+        <Menu Grid.Row="0"
+              Background="{DynamicResource WindowBackgroundBrush}"
+              Foreground="{DynamicResource TextPrimaryBrush}">
             <!--  File Menu  -->
             <MenuItem Header="_File">
                 <MenuItem
@@ -108,6 +99,19 @@
                     Header="Preferenze applicazione..." />
                 <Separator />
                 <MenuItem
+                    Click="ThemeToggle_Click"
+                    Header="Cambia tema (Chiaro/Scuro)"
+                    InputGestureText="Ctrl+T">
+                    <MenuItem.Icon>
+                        <TextBlock x:Name="MenuThemeIcon"
+                                   Text="{StaticResource Icon.Moon}"
+                                   FontFamily="Segoe MDL2 Assets"
+                                   FontSize="16"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem
                     Command="{Binding ShowDatabaseSettingsCommand}"
                     Header="Impostazioni database..." />
             </MenuItem>
@@ -164,17 +168,56 @@
         </Menu>
 
         <!--  Content Area  -->
-        <ContentControl x:Name="ContentArea" Grid.Row="2" />
+        <ContentControl x:Name="ContentArea"
+                        Grid.Row="1"
+                        Background="{DynamicResource ContentBackgroundBrush}" />
 
         <!--  Status Bar  -->
         <Border
-            Grid.Row="3"
+            Grid.Row="2"
             Padding="10,5"
-            Background="#ECF0F1">
-            <TextBlock
-                FontSize="11"
-                Foreground="#7F8C8D"
-                Text="Versione 1.2.3.1" />
+            Background="{DynamicResource StatusBarBackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="0,1,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Grid.Column="0"
+                    FontSize="11"
+                    Foreground="{DynamicResource TextSecondaryBrush}"
+                    Text="Versione 1.2.3.1"
+                    VerticalAlignment="Center" />
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,0,0">
+                    <TextBlock
+                        Text="Tema:"
+                        FontSize="11"
+                        Foreground="{DynamicResource TextSecondaryBrush}"
+                        VerticalAlignment="Center"
+                        Margin="0,0,8,0" />
+                    <Button
+                        Style="{StaticResource IconButtonStyle}"
+                        ToolTip="Cambia tema (Chiaro/Scuro) - Ctrl+T"
+                        Click="ThemeToggle_Click"
+                        Width="36"
+                        Height="28"
+                        Padding="6">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock
+                                x:Name="ThemeIcon"
+                                Text="{StaticResource Icon.Moon}"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontSize="16"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource PrimaryBrush}" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
         </Border>
     </Grid>
 </Window>

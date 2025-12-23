@@ -28,7 +28,7 @@
         <Border
             Grid.Row="0"
             Padding="20,15"
-            Background="#0078D4">
+            Background="{DynamicResource PrimaryBrush}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -39,12 +39,12 @@
                     <TextBlock
                         FontSize="20"
                         FontWeight="SemiBold"
-                        Foreground="White"
+                        Foreground="{DynamicResource TextOnPrimaryBrush}"
                         Text="Gestione Pazienti" />
                     <TextBlock
                         Margin="0,4,0,0"
                         FontSize="12"
-                        Foreground="White"
+                        Foreground="{DynamicResource TextOnPrimaryBrush}"
                         Opacity="0.9">
                         <Run Text="Pazienti totali:" />
                         <Run FontWeight="SemiBold" Text="{Binding TotalPatientsCount, Mode=OneWay}" />
@@ -60,13 +60,13 @@
                     <Button
                         Margin="0,0,10,0"
                         Padding="15,8"
-                        Background="#FFA500"
+                        Background="{DynamicResource WarningBrush}"
                         BorderThickness="0"
                         Command="{Binding AddNewPatientCommand}"
                         Content="➕ Nuovo Paziente"
                         Cursor="Hand"
                         FontWeight="SemiBold"
-                        Foreground="White">
+                        Foreground="{DynamicResource TextOnPrimaryBrush}">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="Template">
@@ -83,7 +83,7 @@
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#E59400" />
+                                        <Setter Property="Background" Value="{DynamicResource WarningHoverBrush}" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -92,13 +92,13 @@
 
                     <Button
                         Padding="15,8"
-                        Background="White"
+                        Background="{DynamicResource CardBackgroundBrush}"
                         BorderThickness="0"
                         Command="{Binding RefreshCommand}"
                         Content="🔄 Aggiorna"
                         Cursor="Hand"
                         FontWeight="SemiBold"
-                        Foreground="#0078D4">
+                        Foreground="{DynamicResource PrimaryBrush}">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="Template">
@@ -115,7 +115,7 @@
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#F0F0F0" />
+                                        <Setter Property="Background" Value="{DynamicResource HoverBackgroundBrush}" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -129,8 +129,8 @@
         <Border
             Grid.Row="1"
             Padding="20,15"
-            Background="#F5F5F5"
-            BorderBrush="#E0E0E0"
+            Background="{DynamicResource ToolbarBackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="0,0,0,1">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -149,9 +149,11 @@
                         Width="400"
                         Padding="8"
                         VerticalContentAlignment="Center"
-                        BorderBrush="#D0D0D0"
+                        BorderBrush="{DynamicResource ControlBorderBrush}"
                         BorderThickness="1"
                         FontSize="13"
+                        Background="{DynamicResource ControlBackgroundBrush}"
+                        Foreground="{DynamicResource TextPrimaryBrush}"
                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
                         <TextBox.Resources>
                             <Style TargetType="TextBox">
@@ -163,7 +165,7 @@
                                                     <VisualBrush.Visual>
                                                         <TextBlock
                                                             Margin="5,0"
-                                                            Foreground="#A0A0A0"
+                                                            Foreground="{DynamicResource TextTertiaryBrush}"
                                                             Text="Cerca per nome, cognome o codice fiscale..." />
                                                     </VisualBrush.Visual>
                                                 </VisualBrush>
@@ -181,7 +183,7 @@
         <!--  DataGrid Pazienti  -->
         <DataGrid
             Grid.Row="2"
-            AlternatingRowBackground="#F9F9F9"
+            AlternatingRowBackground="{DynamicResource DataGridAlternateRowBrush}"
             AutoGenerateColumns="False"
             CanUserResizeRows="False"
             CanUserSortColumns="True"
@@ -193,16 +195,19 @@
             MouseDoubleClick="DataGrid_MouseDoubleClick"
             RowHeight="40"
             SelectedItem="{Binding SelectedPatient}"
-            SelectionMode="Single">
+            SelectionMode="Single"
+            Background="{DynamicResource CardBackgroundBrush}"
+            Foreground="{DynamicResource TextPrimaryBrush}"
+            BorderBrush="{DynamicResource BorderBrush}">
 
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
-                    <Setter Property="Background" Value="#E8E8E8" />
-                    <Setter Property="Foreground" Value="#333333" />
+                    <Setter Property="Background" Value="{DynamicResource DataGridHeaderBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                     <Setter Property="FontWeight" Value="SemiBold" />
                     <Setter Property="Padding" Value="12,10" />
                     <Setter Property="BorderThickness" Value="0,0,1,1" />
-                    <Setter Property="BorderBrush" Value="#D0D0D0" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
                     <Setter Property="HorizontalContentAlignment" Value="Left" />
                 </Style>
             </DataGrid.ColumnHeaderStyle>
@@ -211,23 +216,38 @@
                 <Style TargetType="DataGridCell">
                     <Setter Property="Padding" Value="12,0" />
                     <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="DataGridCell">
                                 <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
-                                    <ContentPresenter VerticalAlignment="Center" />
+                                    <ContentPresenter VerticalAlignment="Center" TextElement.Foreground="{TemplateBinding Foreground}" />
                                 </Border>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="#E3F2FD" />
-                            <Setter Property="Foreground" Value="Black" />
+                            <Setter Property="Background" Value="{DynamicResource DataGridSelectedBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource DataGridSelectedTextBrush}" />
                         </Trigger>
                     </Style.Triggers>
                 </Style>
             </DataGrid.CellStyle>
+
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Background" Value="{DynamicResource DataGridRowBrush}" />
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource DataGridHoverBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource DataGridSelectedBrush}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
 
             <DataGrid.Columns>
                 <!--  Cognome  -->
@@ -261,11 +281,11 @@
                     Header="Indicazione">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
-                            <Setter Property="Foreground" Value="Black" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ActiveIndication}" Value="{x:Null}">
                                     <Setter Property="Text" Value="-" />
-                                    <Setter Property="Foreground" Value="#A0A0A0" />
+                                    <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
                                     <Setter Property="FontStyle" Value="Italic" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -280,11 +300,11 @@
                     </DataGridTextColumn.Binding>
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
-                            <Setter Property="Foreground" Value="Black" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding LastINR}" Value="{x:Null}">
                                     <Setter Property="Text" Value="-" />
-                                    <Setter Property="Foreground" Value="#A0A0A0" />
+                                    <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
                                     <Setter Property="FontStyle" Value="Italic" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -300,11 +320,11 @@
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Right" />
-                            <Setter Property="Foreground" Value="#333333" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding CurrentWeeklyDose}" Value="{x:Null}">
                                     <Setter Property="Text" Value="-" />
-                                    <Setter Property="Foreground" Value="#A0A0A0" />
+                                    <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
                                     <Setter Property="FontStyle" Value="Italic" />
                                     <Setter Property="HorizontalAlignment" Value="Center" />
                                 </DataTrigger>
@@ -322,21 +342,21 @@
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Center" />
                             <Setter Property="FontWeight" Value="SemiBold" />
-                            <Setter Property="Foreground" Value="Black" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding TTRPercentage}" Value="{x:Null}">
                                     <Setter Property="Text" Value="-" />
-                                    <Setter Property="Foreground" Value="#A0A0A0" />
+                                    <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
                                     <Setter Property="FontStyle" Value="Italic" />
                                     <Setter Property="FontWeight" Value="Normal" />
                                 </DataTrigger>
                                 <!--  TTR >= 70% Verde  -->
                                 <DataTrigger Binding="{Binding IsTTRCritical}" Value="False">
-                                    <Setter Property="Foreground" Value="#107C10" />
+                                    <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
                                 </DataTrigger>
                                 <!--  TTR < 60% Rosso  -->
                                 <DataTrigger Binding="{Binding IsTTRCritical}" Value="True">
-                                    <Setter Property="Foreground" Value="#E81123" />
+                                    <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -352,14 +372,14 @@
                                 <Button
                                     Padding="6,3"
                                     Margin="0,0,4,0"
-                                    Background="#0078D4"
+                                    Background="{DynamicResource PrimaryBrush}"
                                     BorderThickness="0"
                                     Command="{Binding DataContext.OpenPatientDetailsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                     Content="Vedi"
                                     Cursor="Hand"
                                     FontSize="10"
                                     FontWeight="SemiBold"
-                                    Foreground="White">
+                                    Foreground="{DynamicResource TextOnPrimaryBrush}">
                                     <Button.Style>
                                         <Style TargetType="Button">
                                             <Setter Property="Template">
@@ -376,7 +396,7 @@
                                             </Setter>
                                             <Style.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Background" Value="#005A9E" />
+                                                    <Setter Property="Background" Value="{DynamicResource PrimaryPressedBrush}" />
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>
@@ -387,14 +407,14 @@
                                 <Button
                                     Padding="6,3"
                                     Margin="0,0,4,0"
-                                    Background="#28A745"
+                                    Background="{DynamicResource SuccessBrush}"
                                     BorderThickness="0"
                                     Command="{Binding DataContext.OpenPatientSummaryCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                     Content="Riassunto"
                                     Cursor="Hand"
                                     FontSize="10"
                                     FontWeight="SemiBold"
-                                    Foreground="White">
+                                    Foreground="{DynamicResource TextOnPrimaryBrush}">
                                     <Button.Style>
                                         <Style TargetType="Button">
                                             <Setter Property="Template">
@@ -411,7 +431,7 @@
                                             </Setter>
                                             <Style.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Background" Value="#218838" />
+                                                    <Setter Property="Background" Value="{DynamicResource SuccessHoverBrush}" />
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>
@@ -421,14 +441,14 @@
                                 <!-- Bottone Elimina -->
                                 <Button
                                     Padding="6,3"
-                                    Background="#E81123"
+                                    Background="{DynamicResource DangerBrush}"
                                     BorderThickness="0"
                                     Command="{Binding DataContext.DeletePatientCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                     Content="Elimina"
                                     Cursor="Hand"
                                     FontSize="10"
                                     FontWeight="SemiBold"
-                                    Foreground="White"
+                                    Foreground="{DynamicResource TextOnPrimaryBrush}"
                                     ToolTip="Elimina o archivia il paziente">
                                     <Button.Style>
                                         <Style TargetType="Button">
@@ -446,7 +466,7 @@
                                             </Setter>
                                             <Style.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Background" Value="#C4000A" />
+                                                    <Setter Property="Background" Value="{DynamicResource DangerHoverBrush}" />
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>
@@ -469,7 +489,7 @@
                     HorizontalAlignment="Center"
                     FontSize="16"
                     FontWeight="SemiBold"
-                    Foreground="#0078D4"
+                    Foreground="{DynamicResource PrimaryBrush}"
                     Text="⏳ Caricamento pazienti in corso..." />
             </StackPanel>
         </Grid>
@@ -478,10 +498,10 @@
         <Border
             Grid.Row="3"
             Padding="15,8"
-            Background="#F5F5F5"
-            BorderBrush="#E0E0E0"
+            Background="{DynamicResource StatusBarBackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="0,1,0,0">
-            <TextBlock FontSize="11" Foreground="#666666">
+            <TextBlock FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}">
                 <Run Text="Doppio click su una riga per aprire i dettagli del paziente" />
             </TextBlock>
         </Border>
