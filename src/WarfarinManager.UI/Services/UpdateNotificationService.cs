@@ -92,7 +92,9 @@ public class UpdateNotificationService : IDisposable
     {
         try
         {
-            _logger.LogInformation("Controllo aggiornamenti in corso...");
+            _logger.LogInformation("========== CONTROLLO AGGIORNAMENTI INIZIATO ==========");
+            _logger.LogInformation("Versione corrente: {CurrentVersion}", _currentVersion);
+            _logger.LogInformation("Modalità: {Mode}", showNoUpdateMessage ? "MANUALE (con messaggi)" : "AUTOMATICO (silenzioso)");
 
             var updateInfo = await _updateChecker.CheckForUpdateAsync(_currentVersion);
 
@@ -108,17 +110,24 @@ public class UpdateNotificationService : IDisposable
                 var alreadyNotified = !string.IsNullOrEmpty(lastNotifiedVersion) &&
                                      lastNotifiedVersion == updateInfo.Version;
 
-                _logger.LogDebug(
-                    "Versione {Version} già notificata: {AlreadyNotified}. Ultima notifica: {LastNotified}",
+                _logger.LogInformation(
+                    "Ultima versione notificata salvata: '{LastNotified}' (vuoto se mai notificata)",
+                    lastNotifiedVersion ?? "(vuota)");
+                _logger.LogInformation(
+                    "Confronto stringhe: '{Remote}' == '{Saved}' ? {Result}",
                     updateInfo.Version,
-                    alreadyNotified,
-                    lastNotifiedVersion);
+                    lastNotifiedVersion ?? "(vuota)",
+                    alreadyNotified);
 
                 // Mostra la notifica solo se:
                 // 1. È un controllo manuale (showNoUpdateMessage = true), oppure
                 // 2. È un controllo automatico MA la versione non è stata ancora notificata
                 if (showNoUpdateMessage || !alreadyNotified)
                 {
+                    _logger.LogInformation(
+                        "MOSTRO NOTIFICA - Motivo: {Reason}",
+                        showNoUpdateMessage ? "Controllo manuale" : "Nuova versione mai notificata");
+
                     // Mostra la finestra di notifica nel thread UI
                     await Application.Current.Dispatcher.InvokeAsync(() =>
                     {
@@ -128,26 +137,36 @@ public class UpdateNotificationService : IDisposable
                     // Salva questa versione come già notificata (solo per controlli automatici)
                     if (!showNoUpdateMessage)
                     {
+                        var beforeSave = Properties.Settings.Default.LastNotifiedUpdateVersion;
                         Properties.Settings.Default.LastNotifiedUpdateVersion = updateInfo.Version;
                         Properties.Settings.Default.Save();
-                        _logger.LogInformation("Versione {Version} marcata come notificata", updateInfo.Version);
+                        var afterSave = Properties.Settings.Default.LastNotifiedUpdateVersion;
+
+                        _logger.LogInformation(
+                            "Salvataggio versione notificata: Prima='{Before}', Dopo='{After}', Salvato='{Saved}'",
+                            beforeSave ?? "(vuota)",
+                            afterSave ?? "(vuota)",
+                            updateInfo.Version);
                     }
                 }
                 else
                 {
                     _logger.LogInformation(
-                        "Versione {Version} già notificata in precedenza, salto la notifica",
-                        updateInfo.Version);
+                        "SALTO NOTIFICA - Versione {Version} già notificata in precedenza (salvata: {Saved})",
+                        updateInfo.Version,
+                        lastNotifiedVersion);
                 }
             }
             else
             {
-                _logger.LogInformation("Nessun aggiornamento disponibile. Versione corrente: {CurrentVersion}", _currentVersion);
+                _logger.LogInformation("========== NESSUN AGGIORNAMENTO DISPONIBILE ==========");
+                _logger.LogInformation("Versione corrente {CurrentVersion} è la più recente", _currentVersion);
 
                 // NON mostrare alcun messaggio quando non ci sono aggiornamenti (comportamento silenzioso)
                 // Il messaggio viene mostrato SOLO se l'utente controlla manualmente (showNoUpdateMessage = true)
                 if (showNoUpdateMessage)
                 {
+                    _logger.LogInformation("Mostro messaggio 'Nessun aggiornamento' (controllo manuale)");
                     await Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         MessageBox.Show(
@@ -157,11 +176,17 @@ public class UpdateNotificationService : IDisposable
                             MessageBoxImage.Information);
                     });
                 }
+                else
+                {
+                    _logger.LogInformation("Non mostro messaggi (controllo automatico silenzioso)");
+                }
             }
+
+            _logger.LogInformation("========== CONTROLLO AGGIORNAMENTI COMPLETATO ==========");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Errore durante il controllo degli aggiornamenti");
+            _logger.LogError(ex, "========== ERRORE DURANTE CONTROLLO AGGIORNAMENTI ==========");
 
             // NON mostrare errori durante il controllo automatico all'avvio
             // Gli errori vengono mostrati SOLO per controlli manuali

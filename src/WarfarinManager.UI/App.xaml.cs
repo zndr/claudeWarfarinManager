@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Threading;
 using System.Windows;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -29,6 +30,7 @@ namespace WarfarinManager.UI;
 public partial class App : Application
 {
     private readonly IHost _host;
+    private static Mutex? _instanceMutex;
 
     public App()
     {
@@ -161,6 +163,35 @@ public partial class App : Application
 
     protected override async void OnStartup(StartupEventArgs e)
     {
+        // Controlla se un'altra istanza dell'applicazione è già in esecuzione
+        const string mutexName = "Global\\TaoGEST_SingleInstance_Mutex_5E7F8A9B";
+        bool createdNew;
+
+        try
+        {
+            _instanceMutex = new Mutex(true, mutexName, out createdNew);
+
+            if (!createdNew)
+            {
+                // Un'altra istanza è già in esecuzione
+                Log.Information("Tentativo di avviare una seconda istanza dell'applicazione - bloccato");
+                MessageBox.Show(
+                    "TaoGEST è già in esecuzione.\n\nÈ possibile avere una sola istanza dell'applicazione alla volta.",
+                    "TaoGEST già in esecuzione",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+                Shutdown();
+                return;
+            }
+
+            Log.Information("Istanza singola acquisita correttamente");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Errore durante il controllo dell'istanza singola");
+            // Continua comunque l'avvio in caso di errore nel mutex
+        }
+
         try
         {
             await _host.StartAsync();
@@ -283,6 +314,10 @@ public partial class App : Application
             {
                 await _host.StopAsync();
             }
+
+            // Rilascia il mutex dell'istanza singola
+            _instanceMutex?.ReleaseMutex();
+            _instanceMutex?.Dispose();
 
             Log.Information("WarfarinManager Pro chiuso");
             Log.CloseAndFlush();

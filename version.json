@@ -1,8 +1,8 @@
 {
-    "Version":  "1.2.4.2",
-    "ReleaseNotes":  "BUGFIX:\n- Risolto problema notifica ripetuta aggiornamenti all\u0027avvio\n- La notifica di nuova versione viene mostrata solo la prima volta\n- Controllo manuale mostra sempre la finestra (comportamento corretto)\n- Aggiunta persistenza ultima versione notificata\n\nCORREZIONI ENCODING:\n- Caratteri accentati (├á, ├¿, ├▓) ora visualizzati correttamente\n- Risolto problema caratteri corrotti nell\u0027installer\n- ReleaseNotes.txt con encoding Windows-1252 per Inno Setup\n- CHANGELOG.md e version.json con encoding UTF-8 corretto\n\nTECNICO:\n- Settings.LastNotifiedUpdateVersion per tracking notifiche\n- UpdateNotificationService con logica anti-spam\n- Script Prepare-Release.ps1 con gestione encoding corretta",
-    "DownloadUrl":  "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.2.4.2/TaoGEST-Setup-v1.2.4.2.exe",
+    "Version":  "1.2.4.3",
+    "ReleaseNotes":  "BUGFIX:\n- Risolto bug notifica aggiornamenti con versioni identiche\n- Aggiunto logging dettagliato per debug controllo aggiornamenti\n\nNUOVE FUNZIONALITÀ:\n- Implementato controllo istanza singola dell\u0027applicazione\n- Impedisce l\u0027esecuzione di multiple istanze simultanee\n- Messaggio informativo se si tenta di aprire una seconda istanza\n\nMIGLIORAMENTI TECNICI:\n- Test unit completi per confronto versioni (12 test)\n- Mutex globale per gestione istanza singola\n- Logging strutturato per troubleshooting aggiornamenti\n- Verifica robusta versioni con System.Version",
+    "DownloadUrl":  "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.2.4.3/TaoGEST-Setup-v1.2.4.3.exe",
     "ReleaseDate":  "2025-12-23",
-    "Sha256Hash":  "14CB74CBEF0A15C4FD39FDBA4BA63C0BBD3AD1C47E6D87A276893DBE76D18780",
-    "FileSize":  64667679
+    "Sha256Hash":  "0B875A473F2C0F4F4BB041A37CC5707EEF825231ABF13CB42D3EA700092E8E46",
+    "FileSize":  64667863
 }

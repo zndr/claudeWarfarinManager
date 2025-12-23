@@ -1,5 +1,22 @@
-# Changelog
+﻿# Changelog
 
+
+## [1.2.4.3] - 2025-12-23
+
+BUGFIX:
+- Risolto bug notifica aggiornamenti con versioni identiche
+- Aggiunto logging dettagliato per debug controllo aggiornamenti
+
+NUOVE FUNZIONALITÀ:
+- Implementato controllo istanza singola dell'applicazione
+- Impedisce l'esecuzione di multiple istanze simultanee
+- Messaggio informativo se si tenta di aprire una seconda istanza
+
+MIGLIORAMENTI TECNICI:
+- Test unit completi per confronto versioni (12 test)
+- Mutex globale per gestione istanza singola
+- Logging strutturato per troubleshooting aggiornamenti
+- Verifica robusta versioni con System.Version
 ## [1.2.4.2] - 2025-12-23
 
 ### Bugfix
