@@ -84,14 +84,61 @@ All projects import `Version.props` for centralized version management. Use the 
 .\Update-Version.ps1 -NewVersion "1.2.0.0"
 ```
 
-## CHECKLIST RELEASE (IMPORTANTE!)
+## PREPARAZIONE RELEASE AUTOMATIZZATA ⚡
 
-**Quando si crea una nuova release, TUTTI questi file devono essere aggiornati:**
+**USA LO SCRIPT AUTOMATICO** per evitare errori e risparmiare tempo:
 
-### File da aggiornare con la nuova versione:
+```powershell
+# Script completo di preparazione release
+.\scripts\Prepare-Release.ps1 -NewVersion "1.3.0.0"
+
+# Lo script chiederà interattivamente le release notes
+# Oppure passale direttamente:
+.\scripts\Prepare-Release.ps1 -NewVersion "1.3.0.0" -ReleaseNotes "Nuove funzionalità..."
+```
+
+### Cosa fa automaticamente lo script:
+
+✅ Aggiorna tutti i file di versione (`Version.props`, `TaoGEST-Setup.iss`)
+✅ Aggiorna `ReleaseNotes.txt` e `CHANGELOG.md`
+✅ Esegue build e publish
+✅ Compila l'installer con Inno Setup
+✅ Calcola SHA256 hash
+✅ Aggiorna `version.json` con tutte le info
+✅ Fornisce i comandi pronti per commit, tag e GitHub release
+
+### Dopo lo script, esegui manualmente:
+
+```bash
+# 1. Verifica modifiche
+git status
+
+# 2. Commit e push
+git add -A
+git commit -m "chore: Preparazione release vX.X.X.X"
+git push
+
+# 3. Crea tag
+git tag -a vX.X.X.X -m "Release vX.X.X.X"
+git push origin vX.X.X.X
+
+# 4. Crea release GitHub (il comando esatto viene fornito dallo script)
+gh release create vX.X.X.X publish/TaoGEST-Setup-vX.X.X.X.exe --title "TaoGEST vX.X.X.X" --notes "..."
+
+# 5. Testa auto-updater
+# - Apri TaoGEST
+# - Vai in Strumenti > Verifica aggiornamenti
+```
+
+## CHECKLIST RELEASE (RIFERIMENTO MANUALE)
+
+<details>
+<summary>File aggiornati automaticamente dallo script Prepare-Release.ps1</summary>
+
+**Quando si crea una nuova release, questi file vengono aggiornati automaticamente:**
 
 1. **`Version.props`** - Versione centralizzata .NET
-   - `AssemblyVersion`, `FileVersion`
+   - `AssemblyVersion`, `FileVersion`, `Version`
 
 2. **`version.json`** - File remoto per update checker
    - `Version`, `DownloadUrl`, `ReleaseDate`, `FileSize`, `Sha256Hash`, `ReleaseNotes`
@@ -100,27 +147,20 @@ All projects import `Version.props` for centralized version management. Use the 
    - `MyAppVersion` (riga 5)
 
 4. **`docs/ReleaseNotes.txt`** - Note di rilascio mostrate durante installazione
-   - Aggiungere le note della nuova versione
+   - Aggiunge le note della nuova versione in cima
 
 5. **`CHANGELOG.md`** - Storico versioni
-   - Aggiungere sezione per la nuova versione
+   - Aggiunge sezione per la nuova versione
+
+**File da verificare manualmente (se contengono versioni hardcoded):**
 
 6. **`src/WarfarinManager.UI/Views/Dialogs/AboutDialog.xaml`** - Dialog "Info su TaoGEST"
-   - Verificare che il testo delle note di versione sia aggiornato (se presente testo statico)
+   - La versione viene letta da `Assembly.GetExecutingAssembly()`, quindi si aggiorna automaticamente
 
 7. **`src/WarfarinManager.UI/MainWindow.xaml`** - TextBlock versione in basso a sinistra
-   - Aggiornare il testo della versione nel StatusBar (se hardcoded)
+   - La versione viene bindata dal ViewModel, quindi si aggiorna automaticamente
 
-### Passi per creare una release:
-
-1. Aggiornare TUTTI i file sopra elencati
-2. `dotnet build -c Release` - Verificare compilazione
-3. `dotnet publish` - Creare build self-contained
-4. Compilare installer con InnoSetup
-5. Calcolare SHA256 dell'installer e aggiornare `version.json`
-6. `git add -A && git commit && git push`
-7. `git tag -a vX.X.X.X && git push origin vX.X.X.X`
-8. `gh release create` - Creare release GitHub con installer
+</details>
 
 ## Testing
 
