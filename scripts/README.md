@@ -2,9 +2,79 @@
 
 Raccolta di script PowerShell per automatizzare operazioni comuni nello sviluppo di TaoGEST.
 
+## 🚀 Prepare-Release.ps1
+
+**Script completo di automazione release** - Esegue TUTTI i passaggi necessari per creare una nuova release in modo automatico e sicuro.
+
+### Utilizzo
+
+```powershell
+# Modalità interattiva (chiede le release notes)
+.\scripts\Prepare-Release.ps1 -NewVersion "1.3.0.0"
+
+# Modalità con release notes pre-compilate
+.\scripts\Prepare-Release.ps1 -NewVersion "1.3.0.0" -ReleaseNotes "- Nuova funzionalità X`n- Bugfix Y"
+```
+
+### Cosa fa automaticamente
+
+1. **Aggiornamento versioni**
+   - `Version.props` (AssemblyVersion, FileVersion, Version)
+   - `installer/TaoGEST-Setup.iss` (MyAppVersion)
+
+2. **Documentazione**
+   - `docs/ReleaseNotes.txt` (aggiunge nuova sezione in testa)
+   - `CHANGELOG.md` (aggiunge nuova versione con data)
+
+3. **Build e Publish**
+   - `dotnet clean -c Release`
+   - `dotnet restore` e `dotnet build -c Release`
+   - `dotnet publish` (self-contained, win-x64)
+
+4. **Creazione installer**
+   - Compila installer con Inno Setup
+   - Output: `publish/TaoGEST-Setup-vX.X.X.X.exe`
+
+5. **Hash e metadata**
+   - Calcola SHA256 hash dell'installer
+   - Aggiorna `version.json` con tutti i dettagli
+
+6. **Istruzioni finali**
+   - Mostra riepilogo completo
+   - Fornisce comandi pronti per commit, tag e GitHub release
+
+### Prerequisiti
+
+- PowerShell 5.1+
+- .NET 8 SDK
+- Inno Setup 6 in `C:\Program Files (x86)\Inno Setup 6\`
+- GitHub CLI (`gh`) per creare release
+
+### Esempio completo
+
+```powershell
+# 1. Esegui script
+.\scripts\Prepare-Release.ps1 -NewVersion "1.3.0.0"
+# (inserisci release notes, poi CTRL+Z e INVIO)
+
+# 2. Lo script compila tutto e mostra comandi pronti
+
+# 3. Esegui i comandi mostrati:
+git add -A
+git commit -m "chore: Preparazione release v1.3.0.0"
+git push
+git tag -a v1.3.0.0 -m "Release v1.3.0.0"
+git push origin v1.3.0.0
+gh release create v1.3.0.0 publish/TaoGEST-Setup-v1.3.0.0.exe --title "..." --notes "..."
+
+# 4. Testa auto-updater nell'app
+```
+
+---
+
 ## 🔢 Update-Version.ps1
 
-Aggiorna la versione del progetto in modo centralizzato.
+Aggiorna solo `Version.props` (usa `Prepare-Release.ps1` per il flusso completo).
 
 ```powershell
 .\Update-Version.ps1 -NewVersion "1.2.0.0"
