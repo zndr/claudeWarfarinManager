@@ -97,14 +97,15 @@ $ReleaseNotes
 
 "@
 
-$existingContent = Get-Content $releaseNotesPath -Raw -ErrorAction SilentlyContinue
+$existingContent = Get-Content $releaseNotesPath -Raw -ErrorAction SilentlyContinue -Encoding UTF8
 if ($existingContent) {
     $updatedContent = $newSection + "`r`n" + $existingContent
 } else {
     $updatedContent = $newSection
 }
 
-Set-Content -Path $releaseNotesPath -Value $updatedContent -NoNewline
+# Salva con encoding Windows-1252 (ANSI) per compatibilità con Inno Setup
+[System.IO.File]::WriteAllText($releaseNotesPath, $updatedContent, [System.Text.Encoding]::GetEncoding("Windows-1252"))
 Write-Host "[OK] ReleaseNotes.txt aggiornato" -ForegroundColor Green
 Write-Host ""
 
@@ -122,10 +123,10 @@ $ReleaseNotes
 "@
 
 if (Test-Path $changelogPath) {
-    $changelogContent = Get-Content $changelogPath -Raw
+    $changelogContent = Get-Content $changelogPath -Raw -Encoding UTF8
     # Inserisci dopo il titolo principale
     $changelogContent = $changelogContent -replace '(# Changelog\s+)', "`$1`r`n$changelogSection"
-    Set-Content -Path $changelogPath -Value $changelogContent -NoNewline
+    [System.IO.File]::WriteAllText($changelogPath, $changelogContent, [System.Text.Encoding]::UTF8)
 } else {
     $newChangelog = @"
 # Changelog
@@ -134,7 +135,7 @@ Tutte le modifiche importanti di questo progetto verranno documentate in questo 
 
 $changelogSection
 "@
-    Set-Content -Path $changelogPath -Value $newChangelog -NoNewline
+    [System.IO.File]::WriteAllText($changelogPath, $newChangelog, [System.Text.Encoding]::UTF8)
 }
 
 Write-Host "[OK] CHANGELOG.md aggiornato" -ForegroundColor Green
@@ -243,7 +244,9 @@ $versionJson = @{
     ReleaseNotes = $ReleaseNotes
 } | ConvertTo-Json -Depth 10
 
-Set-Content -Path $versionJsonPath -Value $versionJson -NoNewline
+# Salva con encoding UTF-8 senza BOM per JSON
+$utf8NoBom = New-Object System.Text.UTF8Encoding $false
+[System.IO.File]::WriteAllText($versionJsonPath, $versionJson, $utf8NoBom)
 Write-Host "[OK] version.json aggiornato" -ForegroundColor Green
 Write-Host ""
 

@@ -34,5 +34,17 @@ namespace WarfarinManager.UI.Properties {
                 this["AppTheme"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastNotifiedUpdateVersion {
+            get {
+                return ((string)(this["LastNotifiedUpdateVersion"]));
+            }
+            set {
+                this["LastNotifiedUpdateVersion"] = value;
+            }
+        }
     }
 }
