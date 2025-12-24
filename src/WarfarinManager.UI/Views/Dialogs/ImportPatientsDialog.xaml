@@ -8,11 +8,38 @@
         Title="Importa Pazienti da Milleps"
         Height="700" Width="900"
         WindowStartupLocation="CenterOwner"
-        Background="{DynamicResource BackgroundBrush}">
+        Background="{DynamicResource WindowBackgroundBrush}">
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
+
+        <!-- Styles for dark theme compatibility -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}"/>
+        </Style>
+
+        <Style TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+        </Style>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+        </Style>
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="{DynamicResource DataGridHeaderBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="Padding" Value="8"/>
+        </Style>
+
+        <Style TargetType="DataGridCell">
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+        </Style>
     </Window.Resources>
 
     <Grid Margin="20">
@@ -130,8 +157,10 @@
                          SelectionMode="Extended"
                          GridLinesVisibility="Horizontal"
                          HeadersVisibility="Column"
-                         AlternatingRowBackground="{DynamicResource AlternateRowBrush}"
-                         RowBackground="{DynamicResource RowBackgroundBrush}">
+                         Background="{DynamicResource CardBackgroundBrush}"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         AlternatingRowBackground="{DynamicResource DataGridAlternateRowBrush}"
+                         RowBackground="{DynamicResource DataGridRowBrush}">
                     <DataGrid.Columns>
                         <DataGridCheckBoxColumn Header="Sel." Width="50" Binding="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <DataGridTextColumn Header="Cognome" Binding="{Binding Cognome}" Width="*" MinWidth="100" IsReadOnly="True"/>

@@ -11,21 +11,21 @@
     d:DataContext="{d:DesignInstance Type=vm:DoctorDataViewModel}"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner"
-    Background="{DynamicResource BackgroundBrush}"
+    Background="{DynamicResource WindowBackgroundBrush}"
     mc:Ignorable="d">
 
     <Window.Resources>
         <Style TargetType="Label">
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Margin" Value="0,10,0,5" />
-            <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style TargetType="TextBox">
             <Setter Property="Padding" Value="8" />
             <Setter Property="FontSize" Value="13" />
-            <Setter Property="Background" Value="{DynamicResource InputBackgroundBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}" />
         </Style>
     </Window.Resources>
 
@@ -46,7 +46,7 @@
             <TextBlock
                 Margin="0,5,0,0"
                 FontSize="12"
-                Foreground="{DynamicResource SecondaryForegroundBrush}"
+                Foreground="{DynamicResource TextSecondaryBrush}"
                 Text="Questi dati verranno utilizzati nelle stampe generate dall'applicazione"
                 TextWrapping="Wrap" />
         </StackPanel>
@@ -94,7 +94,7 @@
                     Margin="0,20,0,0"
                     FontSize="11"
                     FontStyle="Italic"
-                    Foreground="{DynamicResource SecondaryForegroundBrush}"
+                    Foreground="{DynamicResource TextSecondaryBrush}"
                     Text="* Campo obbligatorio" />
             </StackPanel>
         </ScrollViewer>
