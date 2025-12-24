@@ -26,6 +26,12 @@
             <converters:SeverityToColorConverter x:Key="SeverityToColorConverter"/>
             <converters:AdverseReactionTypeConverter x:Key="AdverseReactionTypeConverter"/>
             <converters:CertaintyLevelConverter x:Key="CertaintyLevelConverter"/>
+
+            <!-- Converters per Anticoagulanti -->
+            <converters:AnticoagulantTypeToAbbreviationConverter x:Key="AnticoagulantTypeToAbbreviation"/>
+            <converters:AnticoagulantTypeToDisplayNameConverter x:Key="AnticoagulantTypeToDisplayName"/>
+            <converters:AnticoagulantTypeToVisibilityConverter x:Key="AnticoagulantTypeToVisibility"/>
+            <converters:DoacTypeToVisibilityConverter x:Key="DoacTypeToVisibility"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

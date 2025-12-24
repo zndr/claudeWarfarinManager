@@ -111,7 +111,7 @@
                 <!--  Azioni  -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
 
-                    <!--  Pulsante Gestione INR  -->
+                    <!--  Pulsante Gestione INR (solo per pazienti Warfarin) -->
                     <Button
                         Margin="0,0,10,0"
                         Padding="15,8"
@@ -122,7 +122,8 @@
                         Cursor="Hand"
                         FontSize="13"
                         FontWeight="SemiBold"
-                        Foreground="{DynamicResource TextOnPrimaryBrush}">
+                        Foreground="{DynamicResource TextOnPrimaryBrush}"
+                        Visibility="{Binding IsWarfarinPatient, Converter={StaticResource BoolToVisibilityConverter}}">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="Template">
@@ -583,8 +584,8 @@
                 <local:MedicationsView DataContext="{Binding MedicationsViewModel}" />
             </TabItem>
 
-            <!--  Tab 5: Storico INR  -->
-            <TabItem>
+            <!--  Tab 5: Storico INR (solo per pazienti Warfarin) -->
+            <TabItem Visibility="{Binding IsWarfarinPatient, Converter={StaticResource BoolToVisibilityConverter}}">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Style="{StaticResource TabIcon.INRHistory}"/>
@@ -594,8 +595,8 @@
                 <local:INRHistoryView DataContext="{Binding InrHistoryViewModel}" />
             </TabItem>
 
-            <!--  Tab 6: Bridge Therapy  -->
-            <TabItem>
+            <!--  Tab 6: Bridge Therapy (solo per pazienti Warfarin) -->
+            <TabItem Visibility="{Binding IsWarfarinPatient, Converter={StaticResource BoolToVisibilityConverter}}">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Style="{StaticResource TabIcon.BridgeTherapy}"/>

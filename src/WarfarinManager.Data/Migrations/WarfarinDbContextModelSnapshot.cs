@@ -1075,6 +1075,12 @@ namespace WarfarinManager.Data.Migrations
                     b.Property<bool>("IsInitialWizardCompleted")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("AnticoagulantType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("TherapyStartDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("HasRenalDisease")
                         .HasColumnType("INTEGER");
 

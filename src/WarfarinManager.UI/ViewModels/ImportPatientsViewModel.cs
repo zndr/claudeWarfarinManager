@@ -100,6 +100,8 @@ public partial class ImportPatientsViewModel : ObservableObject
             ImportedPatients.Clear();
             foreach (var patient in patients)
             {
+                // Sottoscrivi all'evento PropertyChanged per aggiornare CanSavePatients
+                patient.PropertyChanged += OnPatientPropertyChanged;
                 ImportedPatients.Add(patient);
             }
 
@@ -163,6 +165,18 @@ public partial class ImportPatientsViewModel : ObservableObject
                     continue;
                 }
 
+                // Converti il sesso da stringa 'M'/'F' a enum Gender
+                Gender? gender = null;
+                if (!string.IsNullOrWhiteSpace(dto.Sesso))
+                {
+                    gender = dto.Sesso.ToUpperInvariant() switch
+                    {
+                        "M" => Gender.Male,
+                        "F" => Gender.Female,
+                        _ => null
+                    };
+                }
+
                 // Crea nuovo paziente
                 var newPatient = new Patient
                 {
@@ -170,8 +184,11 @@ public partial class ImportPatientsViewModel : ObservableObject
                     LastName = dto.Cognome,
                     BirthDate = dto.Nascita ?? DateTime.MinValue,
                     FiscalCode = dto.CodiceFiscale,
+                    Gender = gender,
                     Phone = dto.TelCell ?? string.Empty,
                     Email = dto.Email ?? string.Empty,
+                    AnticoagulantType = dto.Anticoagulante,
+                    TherapyStartDate = dto.DataInizio,
                     CreatedAt = DateTime.Now,
                     IsDeleted = false
                 };
@@ -182,10 +199,22 @@ public partial class ImportPatientsViewModel : ObservableObject
 
             await _dbContext.SaveChangesAsync();
 
-            StatusMessage = $"✓ Salvati {savedCount} pazienti";
-            if (skippedCount > 0)
+            // Costruisci messaggio dettagliato sull'esito dell'importazione
+            if (savedCount > 0 && skippedCount > 0)
             {
-                StatusMessage += $", {skippedCount} già presenti";
+                StatusMessage = $"✓ Importazione completata: {savedCount} pazienti importati, {skippedCount} già presenti nel database (non importati)";
+            }
+            else if (savedCount > 0 && skippedCount == 0)
+            {
+                StatusMessage = $"✓ Importazione completata: {savedCount} pazienti importati con successo";
+            }
+            else if (savedCount == 0 && skippedCount > 0)
+            {
+                StatusMessage = $"⚠ Nessun paziente importato: tutti i {skippedCount} pazienti selezionati sono già presenti nel database";
+            }
+            else
+            {
+                StatusMessage = "⚠ Nessun paziente importato";
             }
 
             _logger.LogInformation("Importazione completata: {Saved} salvati, {Skipped} saltati", savedCount, skippedCount);
@@ -232,5 +261,17 @@ public partial class ImportPatientsViewModel : ObservableObject
             patient.IsSelected = false;
         }
         SavePatientsCommand.NotifyCanExecuteChanged();
+    }
+
+    /// <summary>
+    /// Handler per l'evento PropertyChanged dei pazienti importati
+    /// Aggiorna lo stato del comando SavePatients quando cambia IsSelected
+    /// </summary>
+    private void OnPatientPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MillepsPatientDto.IsSelected))
+        {
+            SavePatientsCommand.NotifyCanExecuteChanged();
+        }
     }
 }

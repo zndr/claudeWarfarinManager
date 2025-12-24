@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WarfarinManager.Data.Repositories.Interfaces;
+using WarfarinManager.Shared.Constants;
 using WarfarinManager.UI.Models;
 using WarfarinManager.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -79,6 +80,21 @@ namespace WarfarinManager.UI.ViewModels
         [ObservableProperty]
         private SwitchTherapyViewModel? _switchTherapyViewModel;
 
+        /// <summary>
+        /// Indica se il paziente corrente assume Warfarin (per visibilità tab INR)
+        /// </summary>
+        public bool IsWarfarinPatient => Patient?.IsWarfarinPatient ?? true; // Default true per backward compatibility
+
+        /// <summary>
+        /// Indica se il paziente corrente assume un DOAC
+        /// </summary>
+        public bool IsDoacPatient => Patient?.IsDoacPatient ?? false;
+
+        /// <summary>
+        /// Nome completo del farmaco anticoagulante (per TextBox indicatore)
+        /// </summary>
+        public string AnticoagulantDisplayName => Patient?.AnticoagulantDisplayName ?? "Non specificato";
+
         public PatientDetailsViewModel(
             IUnitOfWork unitOfWork,
             INavigationService navigationService,
@@ -149,6 +165,11 @@ namespace WarfarinManager.UI.ViewModels
                 }
 
                 Patient = MapPatientToDto(patient);
+
+                // Notifica cambio proprietà computed (per binding visibilità tab INR)
+                OnPropertyChanged(nameof(IsWarfarinPatient));
+                OnPropertyChanged(nameof(IsDoacPatient));
+                OnPropertyChanged(nameof(AnticoagulantDisplayName));
 
                 // Verifica se è un paziente appena creato senza controlli INR
                 await CheckAndShowNaivePatientDialogAsync(patient);
@@ -475,6 +496,8 @@ namespace WarfarinManager.UI.ViewModels
                 Phone = patient.Phone,
                 Email = patient.Email,
                 IsSlowMetabolizer = patient.IsSlowMetabolizer,
+                AnticoagulantType = patient.AnticoagulantType,
+                TherapyStartDate = patient.TherapyStartDate,
                 // TODO: Caricare indicazione attiva, ultimo INR, TTR
                 ActiveIndication = null,
                 LastINR = null,

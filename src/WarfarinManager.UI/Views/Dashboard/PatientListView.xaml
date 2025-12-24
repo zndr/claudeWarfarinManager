@@ -134,10 +134,12 @@
             BorderThickness="0,0,0,1">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
+                <!-- Ricerca testuale -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                     <TextBlock
                         Margin="0,0,10,0"
@@ -176,6 +178,28 @@
                             </Style>
                         </TextBox.Resources>
                     </TextBox>
+                </StackPanel>
+
+                <!-- Filtro Anticoagulante -->
+                <StackPanel Grid.Column="1" Margin="20,0,0,0" Orientation="Horizontal">
+                    <TextBlock
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center"
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource TextPrimaryBrush}"
+                        Text="Anticoagulante in uso:" />
+                    <ComboBox
+                        Width="150"
+                        Padding="8"
+                        VerticalContentAlignment="Center"
+                        BorderBrush="{DynamicResource ControlBorderBrush}"
+                        BorderThickness="1"
+                        FontSize="13"
+                        Background="{DynamicResource ControlBackgroundBrush}"
+                        Foreground="{DynamicResource TextPrimaryBrush}"
+                        ItemsSource="{Binding AnticoagulantFilterOptions}"
+                        SelectedItem="{Binding SelectedAnticoagulantFilter, Mode=TwoWay}" />
                 </StackPanel>
             </Grid>
         </Border>
@@ -250,6 +274,48 @@
             </DataGrid.RowStyle>
 
             <DataGrid.Columns>
+                <!--  Tipo Anticoagulante  -->
+                <DataGridTextColumn
+                    Width="50"
+                    Binding="{Binding AnticoagulantAbbreviation}"
+                    Header="Tipo">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                            <Setter Property="FontSize" Value="14" />
+                            <Setter Property="ToolTip" Value="{Binding AnticoagulantDisplayName}" />
+                            <Style.Triggers>
+                                <!-- Warfarin = Blu -->
+                                <DataTrigger Binding="{Binding AnticoagulantAbbreviation}" Value="W">
+                                    <Setter Property="Foreground" Value="#2196F3" />
+                                </DataTrigger>
+                                <!-- Apixaban = Verde -->
+                                <DataTrigger Binding="{Binding AnticoagulantAbbreviation}" Value="A">
+                                    <Setter Property="Foreground" Value="#4CAF50" />
+                                </DataTrigger>
+                                <!-- Dabigatran = Arancione -->
+                                <DataTrigger Binding="{Binding AnticoagulantAbbreviation}" Value="D">
+                                    <Setter Property="Foreground" Value="#FF9800" />
+                                </DataTrigger>
+                                <!-- Edoxaban = Viola -->
+                                <DataTrigger Binding="{Binding AnticoagulantAbbreviation}" Value="E">
+                                    <Setter Property="Foreground" Value="#9C27B0" />
+                                </DataTrigger>
+                                <!-- Rivaroxaban = Rosso -->
+                                <DataTrigger Binding="{Binding AnticoagulantAbbreviation}" Value="R">
+                                    <Setter Property="Foreground" Value="#F44336" />
+                                </DataTrigger>
+                                <!-- Non specificato = Grigio -->
+                                <DataTrigger Binding="{Binding AnticoagulantAbbreviation}" Value="-">
+                                    <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+                                    <Setter Property="FontStyle" Value="Italic" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
                 <!--  Cognome  -->
                 <DataGridTextColumn
                     Width="100"

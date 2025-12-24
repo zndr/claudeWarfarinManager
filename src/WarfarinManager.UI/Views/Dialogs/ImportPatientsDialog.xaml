@@ -122,21 +122,20 @@
                          CanUserAddRows="False"
                          CanUserDeleteRows="False"
                          SelectionMode="Extended"
-                         IsReadOnly="True"
                          GridLinesVisibility="Horizontal"
                          HeadersVisibility="Column"
                          AlternatingRowBackground="{DynamicResource AlternateRowBrush}"
                          RowBackground="{DynamicResource RowBackgroundBrush}">
                     <DataGrid.Columns>
                         <DataGridCheckBoxColumn Header="Sel." Width="50" Binding="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <DataGridTextColumn Header="Cognome" Binding="{Binding Cognome}" Width="*" MinWidth="100"/>
-                        <DataGridTextColumn Header="Nome" Binding="{Binding Nome}" Width="*" MinWidth="100"/>
-                        <DataGridTextColumn Header="Data Nascita" Binding="{Binding Nascita, StringFormat=dd/MM/yyyy}" Width="100"/>
-                        <DataGridTextColumn Header="Codice Fiscale" Binding="{Binding CodiceFiscale}" Width="120"/>
-                        <DataGridTextColumn Header="Anticoagulante" Binding="{Binding Anticoagulante}" Width="110"/>
-                        <DataGridTextColumn Header="Inizio TAO" Binding="{Binding DataInizio, StringFormat=dd/MM/yyyy}" Width="90"/>
-                        <DataGridTextColumn Header="Telefono" Binding="{Binding TelCell}" Width="100"/>
-                        <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*" MinWidth="120"/>
+                        <DataGridTextColumn Header="Cognome" Binding="{Binding Cognome}" Width="*" MinWidth="100" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Nome" Binding="{Binding Nome}" Width="*" MinWidth="100" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Data Nascita" Binding="{Binding Nascita, StringFormat=dd/MM/yyyy}" Width="100" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Codice Fiscale" Binding="{Binding CodiceFiscale}" Width="120" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Anticoagulante" Binding="{Binding Anticoagulante}" Width="110" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Inizio TAO" Binding="{Binding DataInizio, StringFormat=dd/MM/yyyy}" Width="90" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Telefono" Binding="{Binding TelCell}" Width="100" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*" MinWidth="120" IsReadOnly="True"/>
                     </DataGrid.Columns>
                 </DataGrid>
 

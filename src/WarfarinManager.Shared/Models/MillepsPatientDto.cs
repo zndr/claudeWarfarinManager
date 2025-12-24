@@ -65,5 +65,10 @@ public class MillepsPatientDto : INotifyPropertyChanged
     /// </summary>
     public DateTime? DataInizio { get; set; }
 
+    /// <summary>
+    /// Sesso del paziente ('M' o 'F')
+    /// </summary>
+    public string? Sesso { get; set; }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 }
