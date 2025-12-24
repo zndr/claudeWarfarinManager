@@ -94,6 +94,11 @@ public partial class App : Application
         services.AddScoped<ISwitchCalculatorService, SwitchCalculatorService>();
         services.AddScoped<PostgreSqlImportService>();
 
+        // DOAC Services
+        services.AddScoped<IDOACInteractionService, DOACInteractionService>();
+        services.AddScoped<IDOACClinicalService, DOACClinicalService>();
+        services.AddScoped<IDOACPerioperativeService, DOACPerioperativeService>();
+
         // HttpClient per Update Checker
         services.AddHttpClient();
 
