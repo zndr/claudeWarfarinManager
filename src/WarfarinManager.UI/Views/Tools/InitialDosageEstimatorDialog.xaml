@@ -1,0 +1,310 @@
+<Window x:Class="WarfarinManager.UI.Views.Tools.InitialDosageEstimatorDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Stima dosaggio warfarin (Nomogramma Pengo)"
+        Width="600" Height="650"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize"
+        MinWidth="550" MinHeight="500"
+        Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+
+    <Window.Resources>
+        <!-- String to Visibility Converter -->
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20,15,20,15">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Title -->
+                <RowDefinition Height="Auto"/>
+                <!-- Input section -->
+                <RowDefinition Height="Auto"/>
+                <!-- Calculate button -->
+                <RowDefinition Height="Auto"/>
+                <!-- Validation error -->
+                <RowDefinition Height="Auto"/>
+                <!-- Results section -->
+                <RowDefinition Height="*"/>
+                <!-- Spacer -->
+                <RowDefinition Height="Auto"/>
+                <!-- Export buttons -->
+            </Grid.RowDefinitions>
+
+        <!-- Title -->
+        <TextBlock Grid.Row="0"
+                   Text="Stima dosaggio iniziale warfarin"
+                   FontSize="18" FontWeight="Bold"
+                   Foreground="#0078D4"
+                   Margin="0,0,0,12"/>
+
+        <!-- Input section -->
+        <GroupBox Grid.Row="1"
+                  Header="Parametri paziente"
+                  Padding="12"
+                  Margin="0,0,0,12">
+            <StackPanel>
+                <!-- Age -->
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Età (anni):" VerticalAlignment="Center" FontSize="13"/>
+                    <TextBox Grid.Column="1"
+                             Text="{Binding PatientAge, UpdateSourceTrigger=PropertyChanged}"
+                             Padding="5"
+                             FontSize="13"/>
+                </Grid>
+
+                <!-- HAS-BLED Score -->
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="HAS-BLED score:" VerticalAlignment="Center" FontSize="13"/>
+                    <ComboBox Grid.Column="1"
+                              SelectedValue="{Binding HasBleedScore}"
+                              SelectedValuePath="Tag"
+                              Padding="5"
+                              FontSize="13">
+                        <ComboBoxItem Content="0" Tag="0"/>
+                        <ComboBoxItem Content="1" Tag="1"/>
+                        <ComboBoxItem Content="2" Tag="2"/>
+                        <ComboBoxItem Content="3" Tag="3"/>
+                        <ComboBoxItem Content="4" Tag="4"/>
+                        <ComboBoxItem Content="5" Tag="5"/>
+                        <ComboBoxItem Content="6" Tag="6"/>
+                        <ComboBoxItem Content="7" Tag="7"/>
+                        <ComboBoxItem Content="8" Tag="8"/>
+                        <ComboBoxItem Content="9" Tag="9"/>
+                    </ComboBox>
+                </Grid>
+
+                <!-- Target INR -->
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Target INR:" VerticalAlignment="Center" FontSize="13"/>
+                    <ComboBox Grid.Column="1"
+                              SelectedValue="{Binding TargetInrRange}"
+                              SelectedValuePath="Tag"
+                              Padding="5"
+                              FontSize="13">
+                        <ComboBoxItem Content="2.0 - 3.0" Tag="2.0-3.0" IsSelected="True"/>
+                        <ComboBoxItem Content="2.5 - 3.5" Tag="2.5-3.5"/>
+                    </ComboBox>
+                </Grid>
+
+                <!-- INR measurement -->
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="INR giorno 5" FontSize="13"/>
+                        <TextBlock Text="(dopo 4 dosi da 5mg):" FontSize="11" FontStyle="Italic" Foreground="#666666"/>
+                    </StackPanel>
+                    <TextBox Grid.Column="1"
+                             Text="{Binding MeasuredInr, UpdateSourceTrigger=PropertyChanged}"
+                             Padding="5"
+                             FontSize="13"/>
+                </Grid>
+
+                <!-- Exclude quarters checkbox -->
+                <CheckBox Content="Escludi quarti di compressa (1.25 mg)"
+                          IsChecked="{Binding ExcludeQuarters}"
+                          FontSize="12"
+                          Margin="0,5,0,0"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Calculate button -->
+        <Button Grid.Row="2"
+                Content="Calcola dosaggio"
+                Command="{Binding CalculateCommand}"
+                HorizontalAlignment="Center"
+                Padding="40,8"
+                FontSize="13"
+                FontWeight="Bold"
+                Background="#0078D4"
+                Foreground="White"
+                BorderThickness="0"
+                Margin="0,0,0,10">
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        Padding="{TemplateBinding Padding}"
+                                        CornerRadius="4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#106EBE"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+
+        <!-- Validation error -->
+        <Border Grid.Row="3"
+                Background="#FFE5E5"
+                BorderBrush="#D13438"
+                BorderThickness="1"
+                Padding="10"
+                Margin="0,0,0,10">
+            <Border.Visibility>
+                <Binding Path="ValidationError">
+                    <Binding.Converter>
+                        <BooleanToVisibilityConverter/>
+                    </Binding.Converter>
+                </Binding>
+            </Border.Visibility>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="⚠ " FontSize="16" Foreground="#D13438" Margin="0,0,5,0"/>
+                <TextBlock Text="{Binding ValidationError}"
+                           TextWrapping="Wrap"
+                           Foreground="#D13438"
+                           FontWeight="SemiBold"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Results section -->
+        <GroupBox Grid.Row="4"
+                  Header="Risultato"
+                  Padding="12"
+                  Margin="0,0,0,12"
+                  Visibility="{Binding HasResult, Converter={StaticResource BoolToVisConverter}}">
+            <StackPanel>
+                <TextBlock Margin="0,0,0,5">
+                    <Run Text="Dose settimanale (nomogramma): " FontWeight="Bold"/>
+                    <Run Text="{Binding RawWeeklyDose, Mode=OneWay}" Foreground="#0078D4"/>
+                </TextBlock>
+
+                <TextBlock Margin="0,0,0,5">
+                    <Run Text="Dose aggiustata: " FontWeight="Bold"/>
+                    <Run Text="{Binding AdjustedWeeklyDose, Mode=OneWay}"
+                         FontSize="16"
+                         FontWeight="Bold"
+                         Foreground="#107C10"/>
+                </TextBlock>
+
+                <TextBlock Text="{Binding AdjustmentReason}"
+                           FontStyle="Italic"
+                           Foreground="#666666"
+                           Margin="0,0,0,10"/>
+
+                <Border Background="#F5F5F5"
+                        BorderBrush="#CCCCCC"
+                        BorderThickness="1"
+                        Padding="10">
+                    <StackPanel>
+                        <TextBlock Text="Schema settimanale:"
+                                   FontWeight="Bold"
+                                   FontSize="12"
+                                   Margin="0,0,0,5"/>
+                        <TextBlock Text="{Binding DistributedSchedule}"
+                                   TextWrapping="Wrap"
+                                   FontSize="12"
+                                   Foreground="#0078D4"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="#FFF4CE"
+                        BorderBrush="#FFB900"
+                        BorderThickness="1"
+                        Padding="8"
+                        Margin="0,10,0,0">
+                    <TextBlock TextWrapping="Wrap"
+                               FontSize="11"
+                               Foreground="#333333">
+                        <Run Text="ℹ Nota: " FontWeight="Bold"/>
+                        <Run Text="Questa è una stima orientativa basata sul Nomogramma di Pengo. Verificare sempre con valutazione clinica completa del paziente."/>
+                    </TextBlock>
+                </Border>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Export buttons -->
+        <UniformGrid Grid.Row="6"
+                     Rows="1" Columns="2"
+                     HorizontalAlignment="Stretch"
+                     Visibility="{Binding HasResult, Converter={StaticResource BoolToVisConverter}}">
+            <Button Content="Copia negli appunti"
+                    Command="{Binding CopyToClipboardCommand}"
+                    Margin="0,0,5,0"
+                    Padding="12,8"
+                    Background="#107C10"
+                    Foreground="White"
+                    BorderThickness="0"
+                    FontWeight="SemiBold">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            Padding="{TemplateBinding Padding}"
+                                            CornerRadius="3">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#0E6B0E"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <Button Content="Esporta PDF"
+                    Command="{Binding ExportPdfCommand}"
+                    Margin="5,0,0,0"
+                    Padding="12,8"
+                    Background="#D13438"
+                    Foreground="White"
+                    BorderThickness="0"
+                    FontWeight="SemiBold">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            Padding="{TemplateBinding Padding}"
+                                            CornerRadius="3">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#B72C2F"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </UniformGrid>
+    </Grid>
+    </ScrollViewer>
+</Window>

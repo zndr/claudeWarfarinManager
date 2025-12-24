@@ -8,6 +8,7 @@ using QuestPDF.Infrastructure;
 using WarfarinManager.Data.Context;
 using WarfarinManager.Data.Entities;
 using WarfarinManager.Core.Models;
+using WarfarinManager.UI.Helpers;
 
 namespace WarfarinManager.UI.Services;
 
@@ -52,6 +53,13 @@ public class WeeklySchedulePdfService
         DosageSuggestionResult? accpSuggestion,
         bool isWarningIgnored = false)
     {
+        // Assicurati che la directory di destinazione esista
+        var directory = System.IO.Path.GetDirectoryName(filePath);
+        if (!string.IsNullOrEmpty(directory) && !System.IO.Directory.Exists(directory))
+        {
+            System.IO.Directory.CreateDirectory(directory);
+        }
+
         // Carica i dati del medico
         var doctorData = await _context.DoctorData.FirstOrDefaultAsync();
 
@@ -233,7 +241,7 @@ public class WeeklySchedulePdfService
                             col.Item().Text("NUOVO SCHEMA SETTIMANALE")
                                 .SemiBold().FontSize(12).FontColor(SuccessGreen);
                             col.Item().Height(5);
-                            col.Item().Element(c => ComposeWeeklyScheduleTable(c, suggestedSchedule, null));
+                            col.Item().Element(c => ComposeWeeklyScheduleTable(c, suggestedSchedule));
                         });
 
                         row.ConstantItem(15); // Spaziatura tra le colonne
@@ -244,7 +252,7 @@ public class WeeklySchedulePdfService
                             col.Item().Text("SCHEMA PRECEDENTE")
                                 .SemiBold().FontSize(12).FontColor(Colors.Grey.Darken1);
                             col.Item().Height(5);
-                            col.Item().Element(c => ComposeWeeklyScheduleTable(c, currentSchedule, null));
+                            col.Item().Element(c => ComposeWeeklyScheduleTable(c, currentSchedule));
                         });
                     });
                 }
@@ -262,7 +270,7 @@ public class WeeklySchedulePdfService
                         .SemiBold().FontSize(12);
                     content.Item().Height(5);
 
-                    content.Item().Element(c => ComposeWeeklyScheduleTable(c, suggestedSchedule, null));
+                    content.Item().Element(c => ComposeWeeklyScheduleTable(c, suggestedSchedule));
                 }
 
                 content.Item().Height(15);
@@ -290,7 +298,7 @@ public class WeeklySchedulePdfService
         });
     }
 
-    private void ComposeWeeklyScheduleTable(IContainer container, decimal[] schedule, string[]? descriptions)
+    private void ComposeWeeklyScheduleTable(IContainer container, decimal[] schedule)
     {
         var days = new[] { "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica" };
 
@@ -300,8 +308,7 @@ public class WeeklySchedulePdfService
             {
                 columns.ConstantColumn(80);  // Giorno
                 columns.ConstantColumn(60);  // Dose mg
-                if (descriptions != null)
-                    columns.RelativeColumn(); // Descrizione compresse
+                columns.RelativeColumn();    // Compresse (sempre presente)
             });
 
             // Header
@@ -311,9 +318,8 @@ public class WeeklySchedulePdfService
                     .Text("Giorno").FontSize(10).SemiBold();
                 header.Cell().Background(Colors.Grey.Lighten2).Padding(5)
                     .Text("Dose (mg)").FontSize(10).SemiBold();
-                if (descriptions != null)
-                    header.Cell().Background(Colors.Grey.Lighten2).Padding(5)
-                        .Text("Compresse").FontSize(10).SemiBold();
+                header.Cell().Background(Colors.Grey.Lighten2).Padding(5)
+                    .Text("Compresse").FontSize(10).SemiBold();
             });
 
             // Righe
@@ -322,12 +328,28 @@ public class WeeklySchedulePdfService
                 table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten3).Padding(5)
                     .Text(days[i]).FontSize(10);
                 table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten3).Padding(5)
-                    .Text($"{schedule[i]:F1}").FontSize(10).SemiBold().FontColor(PrimaryBlue);
-                if (descriptions != null)
-                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten3).Padding(5)
-                        .Text(descriptions[i] ?? "—").FontSize(9).FontColor(Colors.Grey.Darken1);
+                    .Text($"{FormatDoseMg(schedule[i])}").FontSize(10).SemiBold().FontColor(PrimaryBlue);
+                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten3).Padding(5)
+                    .Text($"{DoseDistributionHelper.FormatAsTablets(schedule[i])} cp").FontSize(9).FontColor(Colors.Grey.Darken1);
             }
         });
+    }
+
+    /// <summary>
+    /// Formatta il dosaggio in mg mostrando solo i decimali necessari
+    /// </summary>
+    private static string FormatDoseMg(decimal doseMg)
+    {
+        // Se è un numero intero, mostra senza decimali
+        if (doseMg % 1 == 0)
+            return doseMg.ToString("F0");
+
+        // Se ha solo un decimale significativo (es: 2.5), mostra 1 decimale
+        if ((doseMg * 10) % 10 == 0)
+            return doseMg.ToString("F1");
+
+        // Altrimenti mostra 2 decimali (es: 1.25)
+        return doseMg.ToString("F2");
     }
 
     private void ComposeFooter(IContainer container, DoctorData? doctorData)
@@ -395,4 +417,112 @@ public class WeeklySchedulePdfService
             });
         });
     }
+
+    /// <summary>
+    /// Genera PDF per strumenti standalone (senza paziente)
+    /// </summary>
+    public async Task GenerateStandalonePdfAsync(
+        string filePath,
+        string title,
+        decimal[] weeklySchedule,
+        string? metadata = null)
+    {
+        // DEBUG: Mostra il percorso ricevuto
+        System.Diagnostics.Debug.WriteLine($"PDF Path ricevuto: {filePath}");
+        System.Diagnostics.Debug.WriteLine($"File path completo: {System.IO.Path.GetFullPath(filePath)}");
+
+        // Assicurati che la directory di destinazione esista
+        var directory = System.IO.Path.GetDirectoryName(filePath);
+        System.Diagnostics.Debug.WriteLine($"Directory estratta: {directory}");
+        System.Diagnostics.Debug.WriteLine($"Directory esiste: {System.IO.Directory.Exists(directory)}");
+
+        if (!string.IsNullOrEmpty(directory) && !System.IO.Directory.Exists(directory))
+        {
+            System.Diagnostics.Debug.WriteLine($"Creazione directory: {directory}");
+            System.IO.Directory.CreateDirectory(directory);
+        }
+
+        // Carica i dati del medico prima di creare il documento
+        var doctorData = await _context.DoctorData.FirstOrDefaultAsync();
+
+        QuestPDF.Settings.License = LicenseType.Community;
+
+        try
+        {
+            var document = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(40);
+                    page.DefaultTextStyle(x => x.FontSize(11));  // Rimosso FontFamily per evitare problemi
+
+                    page.Header().Element(c => ComposeStandaloneHeader(c, title));
+                    page.Content().Element(c => ComposeStandaloneContent(c, weeklySchedule, metadata));
+                    page.Footer().Element(c => ComposeFooter(c, doctorData));
+                });
+            });
+
+            // Genera PDF usando FileStream per controllo totale
+            using (var stream = new System.IO.FileStream(filePath, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None))
+            {
+                document.GeneratePdf(stream);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Rilancia con più dettagli per debug
+            throw new Exception($"Errore durante la generazione del PDF '{filePath}': {ex.Message}\n\nInner: {ex.InnerException?.Message}\n\nStackTrace: {ex.StackTrace}", ex);
+        }
+    }
+
+    private void ComposeStandaloneHeader(IContainer container, string title)
+    {
+        container.Column(column =>
+        {
+            column.Item().Background(PrimaryBlue).Padding(15).Row(row =>
+            {
+                row.RelativeItem().Text(title)
+                    .FontSize(18).Bold().FontColor(Colors.White);
+                row.ConstantItem(100).AlignRight().Text("TaoGEST")
+                    .FontSize(10).FontColor(Colors.White);
+            });
+        });
+    }
+
+    private void ComposeStandaloneContent(IContainer container, decimal[] schedule, string? metadata)
+    {
+        container.PaddingVertical(20).Column(column =>
+        {
+            // Metadata (parametri input)
+            if (!string.IsNullOrEmpty(metadata))
+            {
+                column.Item().Background(LightGray).Padding(8).Text("PARAMETRI")
+                    .FontSize(14).SemiBold().FontColor(PrimaryBlue);
+                column.Item().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(12)
+                    .Text(metadata).FontSize(11);
+                column.Item().Height(15);
+            }
+
+            // Tabella schema settimanale
+            column.Item().Background(LightGray).Padding(8).Text("SCHEMA SETTIMANALE")
+                .FontSize(14).SemiBold().FontColor(PrimaryBlue);
+            column.Item().Element(c => ComposeWeeklyScheduleTable(c, schedule));
+
+            // Totale
+            decimal total = schedule.Sum();
+            column.Item().Height(15);
+            column.Item().Background(Colors.Green.Lighten4).Padding(10).Text(text =>
+            {
+                text.Span("Dose settimanale totale: ").SemiBold();
+                text.Span($"{total:F1} mg").FontSize(16).Bold().FontColor(PrimaryBlue);
+            });
+
+            // Short schedule
+            string shortSchedule = DoseDistributionHelper.GenerateShortSchedule(schedule);
+            column.Item().Height(10);
+            column.Item().Text(shortSchedule).FontSize(11).Italic();
+        });
+    }
+
 }

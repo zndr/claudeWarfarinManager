@@ -34,9 +34,26 @@ namespace WarfarinManager.UI.Models
         {
             DoseMg = doseMg;
             TabletDescription = FormatTablets(doseMg);
-            DisplayText = doseMg == 0 
-                ? "0 mg (nessuna)" 
-                : $"{doseMg:F2} mg ({TabletDescription})";
+            DisplayText = doseMg == 0
+                ? "0 mg (nessuna)"
+                : $"{FormatDoseMg(doseMg)} mg ({TabletDescription})";
+        }
+
+        /// <summary>
+        /// Formatta il dosaggio in mg mostrando solo i decimali necessari
+        /// </summary>
+        private static string FormatDoseMg(decimal doseMg)
+        {
+            // Se è un numero intero, mostra senza decimali
+            if (doseMg % 1 == 0)
+                return doseMg.ToString("F0");
+
+            // Se ha solo un decimale significativo (es: 2.5), mostra 1 decimale
+            if ((doseMg * 10) % 10 == 0)
+                return doseMg.ToString("F1");
+
+            // Altrimenti mostra 2 decimali (es: 1.25)
+            return doseMg.ToString("F2");
         }
 
         /// <summary>

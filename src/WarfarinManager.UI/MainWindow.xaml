@@ -92,6 +92,13 @@
                 <MenuItem
                     Command="{Binding ShowDrugDatabaseCommand}"
                     Header="Database farmaci interagenti" />
+                <Separator />
+                <MenuItem
+                    Command="{Binding ShowWeeklyDoseCalculatorCommand}"
+                    Header="Calcola dose settimanale warfarin" />
+                <MenuItem
+                    Command="{Binding ShowInitialDosageEstimatorCommand}"
+                    Header="Stima dosaggio warfarin (Nomogramma Pengo)" />
             </MenuItem>
 
             <!--  Opzioni Menu  -->

@@ -92,6 +92,7 @@ public partial class App : Application
         services.AddScoped<ITTRCalculatorService, TTRCalculatorService>();
         services.AddScoped<IBridgeTherapyService, BridgeTherapyService>();
         services.AddScoped<ISwitchCalculatorService, SwitchCalculatorService>();
+        services.AddScoped<PengoNomogramService>();
         services.AddScoped<PostgreSqlImportService>();
 
         // DOAC Services
@@ -147,6 +148,10 @@ public partial class App : Application
         services.AddTransient<NewPatientWizardViewModel>();
         services.AddTransient<ImportPatientsViewModel>();
 
+        // Tools ViewModels
+        services.AddTransient<ViewModels.Tools.WeeklyDoseCalculatorViewModel>();
+        services.AddTransient<ViewModels.Tools.InitialDosageEstimatorViewModel>();
+
         // Views
         services.AddTransient<PatientListView>();
         services.AddTransient<PatientFormView>();
@@ -164,6 +169,10 @@ public partial class App : Application
         services.AddTransient<DatabaseManagementDialog>();
         services.AddTransient<NewPatientWizardView>();
         services.AddTransient<ImportPatientsDialog>();
+
+        // Tools Views
+        services.AddTransient<Views.Tools.WeeklyDoseCalculatorDialog>();
+        services.AddTransient<Views.Tools.InitialDosageEstimatorDialog>();
 
         // Main Window
         services.AddSingleton<MainWindow>();

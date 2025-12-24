@@ -34,12 +34,19 @@ public class BridgeTherapyPdfService
 
     public async Task GeneratePdfAsync(string filePath, BridgeProtocol protocol, Patient patient, BridgeRecommendation recommendation)
     {
+        // Assicurati che la directory di destinazione esista
+        var directory = System.IO.Path.GetDirectoryName(filePath);
+        if (!string.IsNullOrEmpty(directory) && !System.IO.Directory.Exists(directory))
+        {
+            System.IO.Directory.CreateDirectory(directory);
+        }
+
         // Carica i dati del medico
         var doctorData = await _context.DoctorData.FirstOrDefaultAsync();
 
         // Configura QuestPDF per uso community (gratuito)
         QuestPDF.Settings.License = LicenseType.Community;
-        
+
         var document = Document.Create(container =>
         {
             container.Page(page =>
@@ -47,13 +54,13 @@ public class BridgeTherapyPdfService
                 page.Size(PageSizes.A4);
                 page.Margin(40);
                 page.DefaultTextStyle(x => x.FontSize(11).FontFamily("Segoe UI"));
-                
+
                 page.Header().Element(c => ComposeHeader(c, patient, protocol));
                 page.Content().Element(c => ComposeContent(c, protocol, recommendation));
                 page.Footer().Element(c => ComposeFooter(c, doctorData));
             });
         });
-        
+
         document.GeneratePdf(filePath);
     }
     

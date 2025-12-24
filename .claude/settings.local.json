@@ -105,7 +105,15 @@
       "Bash(Select-Object -First 10)",
       "Bash(dotnet ef migrations:*)",
       "Bash(Select-String -Pattern \"error|Compilazione completata\")",
-      "Bash(Select-Object -Last 10)"
+      "Bash(Select-Object -Last 10)",
+      "Bash(git push)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfix: Migliorato supporto tema scuro per dialog\n\n- Dialog \"Dati del medico\": corrette risorse tema per leggibilità\n  - Sostituito BackgroundBrush con WindowBackgroundBrush\n  - Sostituito ForegroundBrush con TextPrimaryBrush\n  - Sostituito InputBackgroundBrush con ControlBackgroundBrush\n  - Sostituito SecondaryForegroundBrush con TextSecondaryBrush\n  \n- Dialog \"Importa Pazienti\": migliorato contrasto nel tema scuro\n  - Corretti colori TextBox, RadioButton e TextBlock\n  - Corretti colori DataGrid \\(header, celle, righe alternate\\)\n  - Tutti i controlli ora rispettano i colori del tema attivo\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(gh pr create --title \"Miglioramenti UI e supporto tema scuro per dialog\" --body \"$\\(cat <<''EOF''\n## Sommario\n\nQuesta PR include miglioramenti all''interfaccia utente e correzioni per il supporto del tema scuro nei dialog dell''applicazione.\n\n## Modifiche principali\n\n### 🎨 Miglioramenti tema scuro\n\n- **Dialog \"Dati del Medico\"**: corrette risorse tema per garantire leggibilità\n  - Sostituito `BackgroundBrush` con `WindowBackgroundBrush`\n  - Sostituito `ForegroundBrush` con `TextPrimaryBrush`\n  - Sostituito `InputBackgroundBrush` con `ControlBackgroundBrush`\n  - Sostituito `SecondaryForegroundBrush` con `TextSecondaryBrush`\n\n- **Dialog \"Importa Pazienti\"**: migliorato contrasto nel tema scuro\n  - Corretti colori TextBox, RadioButton e TextBlock\n  - Corretti colori DataGrid \\(header, celle, righe alternate\\)\n  - Tutti i controlli ora rispettano i colori del tema attivo\n\n### 🔧 Miglioramenti sistema di migrazione database\n\n- Sistema robusto di migrazione database con gestione idempotente\n- Correzioni per loop wizard e bug StaticResourceExtension\n- Migrazione AdverseEvents sincronizzata correttamente\n\n### 🩺 Supporto multi-anticoagulanti\n\n- Implementazione completa supporto DOACs con servizi clinici\n- Supporto completo multi-anticoagulanti con visibilità condizionale UI\n- Importazione pazienti da database PostgreSQL Milleps\n\n## Test\n\n- ✅ Build completata con successo\n- ✅ Verificata leggibilità dei dialog in entrambi i temi \\(chiaro/scuro\\)\n- ✅ Verificato funzionamento importazione pazienti\n\n## Note\n\nIl campo Codice Fiscale nel dialog \"Dati del Medico\" aveva già l''attributo `CharacterCasing=\"Upper\"` che converte automaticamente in maiuscolo.\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\nEOF\n\\)\" --base master)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr merge:*)",
+      "Bash(git stash push:*)",
+      "Bash(powershell -Command \"Stop-Process -Id 69192 -Force\")",
+      "Bash(dir \"C:\\\\Users\\\\ZANDA\\\\Documents\\\\TaoGEST*.pdf\")"
     ],
     "deny": [],
     "ask": []

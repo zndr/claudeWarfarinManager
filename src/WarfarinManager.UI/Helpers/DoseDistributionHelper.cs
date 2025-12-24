@@ -181,7 +181,7 @@ namespace WarfarinManager.UI.Helpers
 
         /// <summary>
         /// Genera una descrizione breve dello schema settimanale.
-        /// Es: "Lun ½, Mar 1, Mer ½, Gio 1, Ven ½, Sab 1, Dom ½"
+        /// Es: "Lun 2.5 mg (½ cp), Mar 5 mg (1 cp), Mer 2.5 mg (½ cp)..."
         /// </summary>
         public static string GenerateShortSchedule(decimal[] doses)
         {
@@ -193,10 +193,29 @@ namespace WarfarinManager.UI.Helpers
 
             for (int i = 0; i < 7; i++)
             {
-                parts.Add($"{days[i]} {FormatAsTablets(doses[i])}");
+                string mgFormatted = FormatDoseMg(doses[i]);
+                string tablets = FormatAsTablets(doses[i]);
+                parts.Add($"{days[i]} {mgFormatted} mg ({tablets} cp)");
             }
 
             return string.Join(", ", parts);
+        }
+
+        /// <summary>
+        /// Formatta il dosaggio in mg mostrando solo i decimali necessari
+        /// </summary>
+        private static string FormatDoseMg(decimal doseMg)
+        {
+            // Se è un numero intero, mostra senza decimali
+            if (doseMg % 1 == 0)
+                return doseMg.ToString("F0");
+
+            // Se ha solo un decimale significativo (es: 2.5), mostra 1 decimale
+            if ((doseMg * 10) % 10 == 0)
+                return doseMg.ToString("F1");
+
+            // Altrimenti mostra 2 decimali (es: 1.25)
+            return doseMg.ToString("F2");
         }
 
         /// <summary>

@@ -47,6 +47,13 @@ public class PatientSummaryPdfService
         int totalControlsCount,
         int daysInTherapy)
     {
+        // Assicurati che la directory di destinazione esista
+        var directory = System.IO.Path.GetDirectoryName(filePath);
+        if (!string.IsNullOrEmpty(directory) && !System.IO.Directory.Exists(directory))
+        {
+            System.IO.Directory.CreateDirectory(directory);
+        }
+
         // Carica i dati del medico
         var doctorData = await _context.DoctorData.FirstOrDefaultAsync();
 

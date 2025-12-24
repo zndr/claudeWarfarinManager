@@ -185,6 +185,36 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    private void ShowWeeklyDoseCalculator()
+    {
+        try
+        {
+            var dialog = _serviceProvider.GetRequiredService<Views.Tools.WeeklyDoseCalculatorDialog>();
+            dialog.Owner = Application.Current.MainWindow;
+            dialog.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            _dialogService.ShowError($"Errore nell'apertura del calcolatore dose settimanale:\n{ex.Message}", "Errore");
+        }
+    }
+
+    [RelayCommand]
+    private void ShowInitialDosageEstimator()
+    {
+        try
+        {
+            var dialog = _serviceProvider.GetRequiredService<Views.Tools.InitialDosageEstimatorDialog>();
+            dialog.Owner = Application.Current.MainWindow;
+            dialog.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            _dialogService.ShowError($"Errore nell'apertura dello stimatore dosaggio:\n{ex.Message}", "Errore");
+        }
+    }
+
     private bool CanExecutePatientSpecificCommand() => !IsInHomePage;
 
     #endregion
