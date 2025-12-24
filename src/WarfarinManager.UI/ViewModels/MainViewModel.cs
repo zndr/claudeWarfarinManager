@@ -63,11 +63,29 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ImportData()
+    private async Task ImportDataAsync()
     {
         var dialog = _serviceProvider.GetRequiredService<ImportPatientsDialog>();
         dialog.Owner = Application.Current.MainWindow;
-        dialog.ShowDialog();
+        var result = dialog.ShowDialog();
+
+        // Dopo la chiusura del dialog, aggiorna la lista pazienti se siamo nella view corrispondente
+        if (result == true || result == false) // Dialog chiuso (non cancellato con X)
+        {
+            // Verifica se la view corrente è PatientListView
+            if (_navigationService.CurrentView is Views.Dashboard.PatientListView view)
+            {
+                // Ottieni il ViewModel dalla view e ricarica i dati
+                if (view.DataContext is PatientListViewModel patientListVm)
+                {
+                    // Usa il comando Refresh generato da CommunityToolkit
+                    if (patientListVm.RefreshCommand.CanExecute(null))
+                    {
+                        await patientListVm.RefreshCommand.ExecuteAsync(null);
+                    }
+                }
+            }
+        }
     }
 
     [RelayCommand]

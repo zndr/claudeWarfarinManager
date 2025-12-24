@@ -11,6 +11,11 @@ public class DoctorData : BaseEntity
     public string FullName { get; set; } = string.Empty;
 
     /// <summary>
+    /// Codice fiscale del medico
+    /// </summary>
+    public string FiscalCode { get; set; } = string.Empty;
+
+    /// <summary>
     /// Via e numero civico
     /// </summary>
     public string Street { get; set; } = string.Empty;

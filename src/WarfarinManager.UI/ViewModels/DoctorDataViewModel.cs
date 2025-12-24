@@ -25,6 +25,9 @@ public partial class DoctorDataViewModel : ObservableObject
     private string _fullName = string.Empty;
 
     [ObservableProperty]
+    private string _fiscalCode = string.Empty;
+
+    [ObservableProperty]
     private string _street = string.Empty;
 
     [ObservableProperty]
@@ -58,6 +61,7 @@ public partial class DoctorDataViewModel : ObservableObject
             if (_doctorData != null)
             {
                 FullName = _doctorData.FullName;
+                FiscalCode = _doctorData.FiscalCode;
                 Street = _doctorData.Street;
                 PostalCode = _doctorData.PostalCode;
                 City = _doctorData.City;
@@ -86,6 +90,18 @@ public partial class DoctorDataViewModel : ObservableObject
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(FiscalCode))
+            {
+                _dialogService.ShowWarning("Il campo 'Codice Fiscale' è obbligatorio", "Validazione");
+                return;
+            }
+
+            if (FiscalCode.Length != 16)
+            {
+                _dialogService.ShowWarning("Il Codice Fiscale deve essere di 16 caratteri", "Validazione");
+                return;
+            }
+
             if (_doctorData == null)
             {
                 // Crea nuovo record
@@ -95,6 +111,7 @@ public partial class DoctorDataViewModel : ObservableObject
 
             // Aggiorna i valori
             _doctorData.FullName = FullName;
+            _doctorData.FiscalCode = FiscalCode.ToUpperInvariant();
             _doctorData.Street = Street;
             _doctorData.PostalCode = PostalCode;
             _doctorData.City = City;

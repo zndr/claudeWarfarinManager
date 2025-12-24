@@ -100,7 +100,12 @@
       "Bash(cmd /c \"dir publish\\\\TaoGEST-Setup-v1.2.4.4.exe\")",
       "Bash(cmd /c \"dir /s /b src\\\\WarfarinManager.UI\\\\bin\\\\Release\\\\net8.0-windows\\\\win-x64\\\\publish\\\\WarfarinManager.UI.exe\")",
       "Bash(gh release delete:*)",
-      "Bash(cmd /c \"dir src\\\\WarfarinManager.Data\\\\Migrations /b\")"
+      "Bash(cmd /c \"dir src\\\\WarfarinManager.Data\\\\Migrations /b\")",
+      "Bash(Select-String -Pattern \"error|warning.*CS\")",
+      "Bash(Select-Object -First 10)",
+      "Bash(dotnet ef migrations:*)",
+      "Bash(Select-String -Pattern \"error|Compilazione completata\")",
+      "Bash(Select-Object -Last 10)"
     ],
     "deny": [],
     "ask": []

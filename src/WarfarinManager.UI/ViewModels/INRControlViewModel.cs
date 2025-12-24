@@ -542,7 +542,7 @@ namespace WarfarinManager.UI.ViewModels
 
             // Crea nuove opzioni
             var options = DoseOption.CreateOptions(ExcludeQuarterTablets);
-            
+
             AvailableDoses.Clear();
             foreach (var option in options)
             {
@@ -557,6 +557,10 @@ namespace WarfarinManager.UI.ViewModels
             FridayDose = DoseOption.FindNearest(options, fridayMg);
             SaturdayDose = DoseOption.FindNearest(options, saturdayMg);
             SundayDose = DoseOption.FindNearest(options, sundayMg);
+
+            // Ricalcola il dosaggio settimanale dopo aver impostato le dosi giornaliere
+            // Questo è importante per la prima apertura del dialog quando non ci sono controlli precedenti
+            RecalculateWeeklyDose();
         }
 
         /// <summary>

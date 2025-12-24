@@ -11,16 +11,21 @@
     d:DataContext="{d:DesignInstance Type=vm:DoctorDataViewModel}"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner"
+    Background="{DynamicResource BackgroundBrush}"
     mc:Ignorable="d">
 
     <Window.Resources>
         <Style TargetType="Label">
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Margin" Value="0,10,0,5" />
+            <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
         </Style>
         <Style TargetType="TextBox">
             <Setter Property="Padding" Value="8" />
             <Setter Property="FontSize" Value="13" />
+            <Setter Property="Background" Value="{DynamicResource InputBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
         </Style>
     </Window.Resources>
 
@@ -36,11 +41,12 @@
             <TextBlock
                 FontSize="18"
                 FontWeight="Bold"
+                Foreground="{DynamicResource PrimaryBrush}"
                 Text="Dati del medico" />
             <TextBlock
                 Margin="0,5,0,0"
                 FontSize="12"
-                Foreground="#666"
+                Foreground="{DynamicResource SecondaryForegroundBrush}"
                 Text="Questi dati verranno utilizzati nelle stampe generate dall'applicazione"
                 TextWrapping="Wrap" />
         </StackPanel>
@@ -51,6 +57,10 @@
                 <!--  Cognome e nome  -->
                 <Label Content="Cognome e nome *" />
                 <TextBox Text="{Binding FullName, UpdateSourceTrigger=PropertyChanged}" />
+
+                <!--  Codice Fiscale  -->
+                <Label Content="Codice Fiscale *" />
+                <TextBox Text="{Binding FiscalCode, UpdateSourceTrigger=PropertyChanged}" MaxLength="16" CharacterCasing="Upper" />
 
                 <!--  Indirizzo  -->
                 <Label Content="Via e numero civico" Margin="0,20,0,5" />
@@ -84,7 +94,7 @@
                     Margin="0,20,0,0"
                     FontSize="11"
                     FontStyle="Italic"
-                    Foreground="#999"
+                    Foreground="{DynamicResource SecondaryForegroundBrush}"
                     Text="* Campo obbligatorio" />
             </StackPanel>
         </ScrollViewer>

@@ -575,10 +575,29 @@ namespace WarfarinManager.UI.ViewModels
                         OnPropertyChanged(nameof(AnticoagulantDisplayName));
                     }
 
-                    _dialogService.ShowInformation(
-                        "Configurazione iniziale completata con successo.\n\n" +
-                        "Ora puoi gestire i controlli INR e tutte le altre funzionalità del paziente.",
-                        "Configurazione Completata");
+                    // Verifica se l'utente vuole inserire il primo INR
+                    if (wizardViewModel.ShouldOpenINRForm)
+                    {
+                        _logger.LogInformation("Apertura dialog Controllo INR per inserimento primo valore");
+
+                        // Apri il dialog di Controllo INR
+                        var inrView = _serviceProvider.GetRequiredService<INRControlView>();
+                        var inrViewModel = _serviceProvider.GetRequiredService<INRControlViewModel>();
+
+                        await inrViewModel.LoadPatientDataAsync(patientId);
+                        inrView.DataContext = inrViewModel;
+                        inrView.ShowDialog();
+
+                        // Ricarica i dati dopo l'inserimento
+                        await LoadPatientDataAsync(patientId);
+                    }
+                    else
+                    {
+                        _dialogService.ShowInformation(
+                            "Configurazione iniziale completata con successo.\n\n" +
+                            "Ora puoi gestire i controlli INR e tutte le altre funzionalità del paziente.",
+                            "Configurazione Completata");
+                    }
                 }
             }
             catch (Exception ex)

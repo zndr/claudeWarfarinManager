@@ -19,6 +19,10 @@ public class DoctorDataConfiguration : IEntityTypeConfiguration<DoctorData>
             .IsRequired()
             .HasMaxLength(200);
 
+        builder.Property(d => d.FiscalCode)
+            .IsRequired()
+            .HasMaxLength(16);
+
         builder.Property(d => d.Street)
             .HasMaxLength(200);
 

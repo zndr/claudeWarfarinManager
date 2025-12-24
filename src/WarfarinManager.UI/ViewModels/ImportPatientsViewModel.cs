@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using WarfarinManager.Core.Services;
@@ -7,6 +8,7 @@ using WarfarinManager.Data.Context;
 using WarfarinManager.Data.Entities;
 using WarfarinManager.Shared.Enums;
 using WarfarinManager.Shared.Models;
+using WarfarinManager.UI.Services;
 
 namespace WarfarinManager.UI.ViewModels;
 
@@ -15,6 +17,7 @@ public partial class ImportPatientsViewModel : ObservableObject
     private readonly PostgreSqlImportService _importService;
     private readonly WarfarinDbContext _dbContext;
     private readonly ILogger<ImportPatientsViewModel> _logger;
+    private readonly IDialogService _dialogService;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ImportPatientsCommand))]
@@ -43,11 +46,71 @@ public partial class ImportPatientsViewModel : ObservableObject
     public ImportPatientsViewModel(
         PostgreSqlImportService importService,
         WarfarinDbContext dbContext,
-        ILogger<ImportPatientsViewModel> logger)
+        ILogger<ImportPatientsViewModel> logger,
+        IDialogService dialogService)
     {
         _importService = importService;
         _dbContext = dbContext;
         _logger = logger;
+        _dialogService = dialogService;
+    }
+
+    /// <summary>
+    /// Inizializza il ViewModel: esegue test automatico connessione e pre-compila codice fiscale medico
+    /// </summary>
+    public async Task InitializeAsync()
+    {
+        // Pre-compila il codice fiscale del medico dai dati salvati
+        try
+        {
+            var doctorData = await _dbContext.DoctorData.FirstOrDefaultAsync();
+            if (doctorData != null && !string.IsNullOrWhiteSpace(doctorData.FiscalCode))
+            {
+                CodiceFiscaleMedico = doctorData.FiscalCode;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Impossibile caricare il codice fiscale del medico");
+        }
+
+        // Test automatico della connessione
+        IsLoading = true;
+        StatusMessage = "Test connessione in corso...";
+
+        try
+        {
+            IsConnectionSuccessful = await _importService.TestConnectionAsync();
+
+            if (IsConnectionSuccessful)
+            {
+                StatusMessage = "✓ Connessione al database Milleps riuscita";
+            }
+            else
+            {
+                // Mostra avviso solo se il test fallisce
+                StatusMessage = "✗ Impossibile connettersi al database Milleps";
+                _dialogService.ShowWarning(
+                    "Impossibile connettersi al database Milleps.\n\n" +
+                    "Verifica che il database sia attivo e configurato correttamente.",
+                    "Connessione Fallita");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Errore durante il test automatico di connessione");
+            StatusMessage = $"✗ Errore: {ex.Message}";
+            IsConnectionSuccessful = false;
+
+            // Mostra avviso in caso di errore
+            _dialogService.ShowWarning(
+                $"Errore durante il test di connessione:\n\n{ex.Message}",
+                "Errore Connessione");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
     [RelayCommand]
@@ -200,24 +263,49 @@ public partial class ImportPatientsViewModel : ObservableObject
             await _dbContext.SaveChangesAsync();
 
             // Costruisci messaggio dettagliato sull'esito dell'importazione
+            string dialogMessage;
+            string dialogTitle;
+
             if (savedCount > 0 && skippedCount > 0)
             {
-                StatusMessage = $"✓ Importazione completata: {savedCount} pazienti importati, {skippedCount} già presenti nel database (non importati)";
+                dialogMessage = $"Importazione completata con successo!\n\n" +
+                               $"✓ {savedCount} pazienti importati\n" +
+                               $"⚠ {skippedCount} pazienti già presenti (non importati)";
+                dialogTitle = "Importazione Completata";
+                StatusMessage = $"✓ Importati {savedCount} pazienti, {skippedCount} già presenti";
             }
             else if (savedCount > 0 && skippedCount == 0)
             {
-                StatusMessage = $"✓ Importazione completata: {savedCount} pazienti importati con successo";
+                dialogMessage = $"Importazione completata con successo!\n\n" +
+                               $"✓ {savedCount} pazienti importati";
+                dialogTitle = "Importazione Completata";
+                StatusMessage = $"✓ {savedCount} pazienti importati con successo";
             }
             else if (savedCount == 0 && skippedCount > 0)
             {
-                StatusMessage = $"⚠ Nessun paziente importato: tutti i {skippedCount} pazienti selezionati sono già presenti nel database";
+                dialogMessage = $"Nessun paziente importato.\n\n" +
+                               $"Tutti i {skippedCount} pazienti selezionati sono già presenti nel database.";
+                dialogTitle = "Nessuna Importazione";
+                StatusMessage = $"⚠ Tutti i {skippedCount} pazienti già presenti";
             }
             else
             {
+                dialogMessage = "Nessun paziente importato.";
+                dialogTitle = "Nessuna Importazione";
                 StatusMessage = "⚠ Nessun paziente importato";
             }
 
             _logger.LogInformation("Importazione completata: {Saved} salvati, {Skipped} saltati", savedCount, skippedCount);
+
+            // Mostra dialog con risultato importazione
+            if (savedCount > 0)
+            {
+                _dialogService.ShowInformation(dialogMessage, dialogTitle);
+            }
+            else
+            {
+                _dialogService.ShowWarning(dialogMessage, dialogTitle);
+            }
 
             // Rimuovi i pazienti salvati dalla lista
             foreach (var patient in patientsToSave)
