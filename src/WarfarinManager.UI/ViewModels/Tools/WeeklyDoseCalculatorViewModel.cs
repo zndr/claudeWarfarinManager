@@ -212,10 +212,124 @@ public partial class WeeklyDoseCalculatorViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(CurrentWeeklyTablets))]
     private decimal _currentWeeklyDose;
 
+    // Dose settimanale editabile dall'utente (stringa per gestire input parziali)
+    [ObservableProperty]
+    private string _targetWeeklyDoseText = "";
+
     /// <summary>
     /// Numero di compresse settimanali formattato (1 cp = 5 mg)
     /// </summary>
     public string CurrentWeeklyTablets => DoseDistributionHelper.FormatAsTablets(CurrentWeeklyDose);
+
+    /// <summary>
+    /// Chiamato quando l'utente modifica manualmente il dosaggio settimanale target
+    /// </summary>
+    partial void OnTargetWeeklyDoseTextChanged(string value)
+    {
+        // Ignora se stiamo applicando uno schema programmaticamente
+        if (_isApplyingSchedule) return;
+
+        // Prova a parsare il valore
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            // Campo vuoto, nessuna azione
+            return;
+        }
+
+        // Sostituisci virgola con punto per il parsing
+        string normalizedValue = value.Replace(',', '.');
+
+        if (decimal.TryParse(normalizedValue, System.Globalization.NumberStyles.AllowDecimalPoint,
+            System.Globalization.CultureInfo.InvariantCulture, out decimal targetDose))
+        {
+            // Validazione base
+            if (targetDose < 0)
+            {
+                MessageBox.Show("Il dosaggio settimanale non può essere negativo.",
+                    "Valore non valido", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (targetDose == 0)
+            {
+                // Azzera tutti i giorni
+                ApplyWeeklyDoseDistribution(0);
+                return;
+            }
+
+            // Verifica se il dosaggio è ragionevole (< 70 mg)
+            if (targetDose >= 70)
+            {
+                var result = MessageBox.Show(
+                    $"Il dosaggio settimanale inserito ({targetDose:F1} mg) è molto elevato.\n\n" +
+                    "Un dosaggio tipico per warfarin è tra 17.5 e 52.5 mg/settimana.\n" +
+                    "Dosaggi superiori a 70 mg sono estremamente rari.\n\n" +
+                    "Continuare comunque?",
+                    "Dosaggio elevato",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                if (result != MessageBoxResult.Yes)
+                {
+                    // Ripristina il valore precedente
+                    _isApplyingSchedule = true;
+                    TargetWeeklyDoseText = CurrentWeeklyDose > 0 ? CurrentWeeklyDose.ToString("F1") : "";
+                    _isApplyingSchedule = false;
+                    return;
+                }
+            }
+
+            // Applica la distribuzione
+            ApplyWeeklyDoseDistribution(targetDose);
+        }
+    }
+
+    /// <summary>
+    /// Applica una distribuzione equilibrata per il dosaggio settimanale target
+    /// </summary>
+    private void ApplyWeeklyDoseDistribution(decimal targetWeeklyDose)
+    {
+        try
+        {
+            _isApplyingSchedule = true;
+
+            if (targetWeeklyDose == 0)
+            {
+                // Azzera tutti i giorni
+                SelectedMondayDose = FindDoseOption(0);
+                SelectedTuesdayDose = FindDoseOption(0);
+                SelectedWednesdayDose = FindDoseOption(0);
+                SelectedThursdayDose = FindDoseOption(0);
+                SelectedFridayDose = FindDoseOption(0);
+                SelectedSaturdayDose = FindDoseOption(0);
+                SelectedSundayDose = FindDoseOption(0);
+            }
+            else
+            {
+                // Genera distribuzione equilibrata
+                var newSchedule = DoseDistributionHelper.DistributeWeeklyDose(
+                    targetWeeklyDose,
+                    ExcludeQuarters);
+
+                // Applica il nuovo schema
+                SelectedMondayDose = FindDoseOption(newSchedule[0]);
+                SelectedTuesdayDose = FindDoseOption(newSchedule[1]);
+                SelectedWednesdayDose = FindDoseOption(newSchedule[2]);
+                SelectedThursdayDose = FindDoseOption(newSchedule[3]);
+                SelectedFridayDose = FindDoseOption(newSchedule[4]);
+                SelectedSaturdayDose = FindDoseOption(newSchedule[5]);
+                SelectedSundayDose = FindDoseOption(newSchedule[6]);
+            }
+        }
+        finally
+        {
+            _isApplyingSchedule = false;
+        }
+
+        // Aggiorna il totale e lo schema breve
+        RecalculateWeeklyTotal();
+        UpdateShortSchedule();
+    }
 
     /// <summary>
     /// Verifica se è possibile ricalcolare lo schema (dose totale > 0)
