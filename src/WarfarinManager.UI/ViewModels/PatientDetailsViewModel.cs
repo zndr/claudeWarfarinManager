@@ -12,6 +12,7 @@ using WarfarinManager.UI.Models;
 using WarfarinManager.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
 using WarfarinManager.UI.Views.INR;
+using WarfarinManager.UI.Views.Patient;
 
 namespace WarfarinManager.UI.ViewModels
 {
@@ -419,8 +420,8 @@ namespace WarfarinManager.UI.ViewModels
 
                 // Mostra il dialog solo se:
                 // 1. Il paziente non ha ancora controlli INR
-                // 2. Il flag IsNaive non è già stato impostato (evita di chiedere più volte)
-                if (!hasINRControls && !patient.IsNaive)
+                // 2. Il wizard iniziale non è già stato completato
+                if (!hasINRControls && !patient.IsInitialWizardCompleted)
                 {
                     var isNaive = _dialogService.ShowNaivePatientDialog(patient.FullName);
 
@@ -439,6 +440,10 @@ namespace WarfarinManager.UI.ViewModels
                         {
                             _dialogService.ShowInductionPhaseInfo();
                         }
+
+                        // SEMPRE apri il wizard di configurazione iniziale
+                        // (sia per pazienti naive che non-naive appena importati)
+                        await OpenInitialConfigurationWizardAsync(patient.Id);
                     }
                 }
             }
@@ -528,6 +533,59 @@ namespace WarfarinManager.UI.ViewModels
                 Notes = indication.Notes,
                 TypicalDuration = indication.IndicationType?.TypicalDuration
             };
+        }
+
+        /// <summary>
+        /// Apre il wizard di configurazione iniziale per il paziente
+        /// </summary>
+        private async Task OpenInitialConfigurationWizardAsync(int patientId)
+        {
+            try
+            {
+                _logger.LogInformation("Apertura wizard configurazione iniziale per paziente {PatientId}", patientId);
+
+                // Risolvi il wizard dal DI
+                var wizardView = _serviceProvider.GetRequiredService<NewPatientWizardView>();
+                var wizardViewModel = _serviceProvider.GetRequiredService<NewPatientWizardViewModel>();
+
+                // Inizializza il wizard con i dati del paziente
+                await wizardViewModel.InitializeAsync(patientId);
+
+                // Assegna il DataContext
+                wizardView.DataContext = wizardViewModel;
+
+                // Mostra il wizard in modalità dialog
+                var result = wizardView.ShowDialog();
+
+                // Se il wizard è stato completato con successo, aggiorna solo le proprietà necessarie
+                if (result == true)
+                {
+                    _logger.LogInformation("Wizard completato per paziente {PatientId}, aggiorno dati", patientId);
+
+                    // Ricarica solo le indicazioni e i dati del paziente senza ri-trigger del dialog naive
+                    var patient = await _unitOfWork.Patients.GetByIdAsync(patientId);
+                    if (patient != null)
+                    {
+                        Patient = MapPatientToDto(patient);
+                        await LoadIndicationsAsync();
+
+                        // Notifica cambio proprietà
+                        OnPropertyChanged(nameof(IsWarfarinPatient));
+                        OnPropertyChanged(nameof(IsDoacPatient));
+                        OnPropertyChanged(nameof(AnticoagulantDisplayName));
+                    }
+
+                    _dialogService.ShowInformation(
+                        "Configurazione iniziale completata con successo.\n\n" +
+                        "Ora puoi gestire i controlli INR e tutte le altre funzionalità del paziente.",
+                        "Configurazione Completata");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Errore apertura wizard configurazione iniziale");
+                _dialogService.ShowError($"Errore: {ex.Message}", "Errore");
+            }
         }
     }
 
