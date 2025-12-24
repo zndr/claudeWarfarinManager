@@ -308,11 +308,6 @@ public partial class IndicationFormViewModel : ObservableObject, INavigationAwar
             StartDateError = "La data di inizio non può essere futura";
             isValid = false;
         }
-        else if (StartDate < DateTime.Today.AddYears(-10))
-        {
-            StartDateError = "La data di inizio non può essere più vecchia di 10 anni";
-            isValid = false;
-        }
         else
         {
             StartDateError = null;

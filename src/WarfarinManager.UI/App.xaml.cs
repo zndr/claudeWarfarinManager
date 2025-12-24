@@ -92,6 +92,12 @@ public partial class App : Application
         services.AddScoped<ITTRCalculatorService, TTRCalculatorService>();
         services.AddScoped<IBridgeTherapyService, BridgeTherapyService>();
         services.AddScoped<ISwitchCalculatorService, SwitchCalculatorService>();
+        services.AddScoped<PostgreSqlImportService>();
+
+        // DOAC Services
+        services.AddScoped<IDOACInteractionService, DOACInteractionService>();
+        services.AddScoped<IDOACClinicalService, DOACClinicalService>();
+        services.AddScoped<IDOACPerioperativeService, DOACPerioperativeService>();
 
         // HttpClient per Update Checker
         services.AddHttpClient();
@@ -139,6 +145,7 @@ public partial class App : Application
         services.AddTransient<GuideViewModel>();
         services.AddTransient<SwitchTherapyViewModel>();
         services.AddTransient<NewPatientWizardViewModel>();
+        services.AddTransient<ImportPatientsViewModel>();
 
         // Views
         services.AddTransient<PatientListView>();
@@ -156,6 +163,7 @@ public partial class App : Application
         services.AddTransient<DoctorDataDialog>();
         services.AddTransient<DatabaseManagementDialog>();
         services.AddTransient<NewPatientWizardView>();
+        services.AddTransient<ImportPatientsDialog>();
 
         // Main Window
         services.AddSingleton<MainWindow>();
@@ -250,6 +258,8 @@ public partial class App : Application
     /// <summary>
     /// Corregge problemi di schema in database provenienti da versioni precedenti.
     /// Aggiunge colonne mancanti che potrebbero causare errori durante le operazioni.
+    /// IMPORTANTE: Questo metodo viene eseguito PRIMA di MigrateAsync() per prevenire errori
+    /// durante l'applicazione delle migrazioni su database di versioni precedenti.
     /// </summary>
     private async System.Threading.Tasks.Task FixLegacyDatabaseSchemaAsync(WarfarinDbContext context)
     {
@@ -258,51 +268,101 @@ public partial class App : Application
             var connection = context.Database.GetDbConnection();
             await connection.OpenAsync();
 
-            using var command = connection.CreateCommand();
+            Log.Information("Inizio verifica e correzione schema database legacy");
 
-            // Verifica se la tabella AdverseEvents esiste e se ha la colonna CertaintyLevel
-            command.CommandText = "SELECT name FROM sqlite_master WHERE type='table' AND name='AdverseEvents';";
-            var tableExists = await command.ExecuteScalarAsync() != null;
+            // =========================================================================
+            // TABELLA: AdverseEvents
+            // =========================================================================
+            await EnsureColumnExistsAsync(connection, "AdverseEvents", "CertaintyLevel",
+                "TEXT NOT NULL DEFAULT 'Possible'");
 
-            if (tableExists)
-            {
-                // Verifica se la colonna CertaintyLevel esiste
-                command.CommandText = "PRAGMA table_info(AdverseEvents);";
-                var hasColumnCertaintyLevel = false;
-
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        var columnName = reader.GetString(1); // La colonna 'name' è all'indice 1
-                        if (columnName.Equals("CertaintyLevel", StringComparison.OrdinalIgnoreCase))
-                        {
-                            hasColumnCertaintyLevel = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (!hasColumnCertaintyLevel)
-                {
-                    Log.Warning("Colonna CertaintyLevel mancante nella tabella AdverseEvents. Aggiunta in corso...");
-
-                    // Aggiungi la colonna mancante con un valore di default
-                    using var addColumnCommand = connection.CreateCommand();
-                    addColumnCommand.CommandText = "ALTER TABLE AdverseEvents ADD COLUMN CertaintyLevel TEXT NOT NULL DEFAULT 'Possible';";
-                    await addColumnCommand.ExecuteNonQueryAsync();
-
-                    Log.Information("Colonna CertaintyLevel aggiunta con successo alla tabella AdverseEvents");
-                }
-            }
+            // =========================================================================
+            // TABELLA: DoctorData
+            // =========================================================================
+            // FiscalCode: Aggiunto nella versione 1.X.X per supportare l'importazione pazienti
+            await EnsureColumnExistsAsync(connection, "DoctorData", "FiscalCode",
+                "TEXT NOT NULL DEFAULT ''");
 
             await connection.CloseAsync();
+            Log.Information("Verifica e correzione schema database legacy completata");
         }
         catch (Exception ex)
         {
             // Non bloccare l'avvio dell'app se questa correzione fallisce
             // Le migrazioni standard potrebbero gestirlo comunque
-            Log.Warning(ex, "Impossibile verificare/correggere lo schema legacy del database. Le migrazioni standard potrebbero gestirlo.");
+            Log.Warning(ex, "Impossibile verificare/correggere completamente lo schema legacy del database. Le migrazioni standard potrebbero gestirlo.");
+        }
+    }
+
+    /// <summary>
+    /// Verifica se una colonna esiste in una tabella e la aggiunge se mancante.
+    /// Metodo generico riutilizzabile per tutte le correzioni di schema.
+    /// </summary>
+    /// <param name="connection">Connessione al database aperta</param>
+    /// <param name="tableName">Nome della tabella</param>
+    /// <param name="columnName">Nome della colonna</param>
+    /// <param name="columnDefinition">Definizione SQL della colonna (es. "TEXT NOT NULL DEFAULT ''")</param>
+    private async System.Threading.Tasks.Task EnsureColumnExistsAsync(
+        System.Data.Common.DbConnection connection,
+        string tableName,
+        string columnName,
+        string columnDefinition)
+    {
+        try
+        {
+            // Verifica se la tabella esiste
+            using var checkTableCommand = connection.CreateCommand();
+            checkTableCommand.CommandText = $"SELECT name FROM sqlite_master WHERE type='table' AND name='{tableName}';";
+            var tableExists = await checkTableCommand.ExecuteScalarAsync() != null;
+
+            if (!tableExists)
+            {
+                Log.Debug("Tabella {TableName} non esiste ancora - verrà creata dalle migrazioni", tableName);
+                return;
+            }
+
+            // Verifica se la colonna esiste
+            using var checkColumnCommand = connection.CreateCommand();
+            checkColumnCommand.CommandText = $"PRAGMA table_info({tableName});";
+            var hasColumn = false;
+
+            using (var reader = await checkColumnCommand.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    var existingColumnName = reader.GetString(1); // La colonna 'name' è all'indice 1
+                    if (existingColumnName.Equals(columnName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        hasColumn = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!hasColumn)
+            {
+                Log.Warning("Colonna {ColumnName} mancante nella tabella {TableName}. Aggiunta in corso...",
+                    columnName, tableName);
+
+                // Aggiungi la colonna mancante
+                using var addColumnCommand = connection.CreateCommand();
+                addColumnCommand.CommandText = $"ALTER TABLE {tableName} ADD COLUMN {columnName} {columnDefinition};";
+                await addColumnCommand.ExecuteNonQueryAsync();
+
+                Log.Information("Colonna {ColumnName} aggiunta con successo alla tabella {TableName}",
+                    columnName, tableName);
+            }
+            else
+            {
+                Log.Debug("Colonna {ColumnName} già presente nella tabella {TableName}",
+                    columnName, tableName);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Errore durante la verifica/aggiunta della colonna {ColumnName} nella tabella {TableName}",
+                columnName, tableName);
+            // Non rilanciare l'eccezione - lascia che le migrazioni standard tentino di gestirla
         }
     }
 

@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WarfarinManager.Core.Interfaces;
 using WarfarinManager.Data.Repositories.Interfaces;
+using WarfarinManager.Shared.Constants;
 using WarfarinManager.UI.Models;
 using WarfarinManager.UI.Services;
 
@@ -38,6 +39,9 @@ public partial class PatientListViewModel : ObservableObject
     private string _searchText = string.Empty;
 
     [ObservableProperty]
+    private string _selectedAnticoagulantFilter = "TUTTI";
+
+    [ObservableProperty]
     private bool _isLoading;
 
     [ObservableProperty]
@@ -48,6 +52,20 @@ public partial class PatientListViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _shouldFocusSearchBox;
+
+    /// <summary>
+    /// Opzioni per il filtro anticoagulante
+    /// </summary>
+    public ObservableCollection<string> AnticoagulantFilterOptions { get; } = new()
+    {
+        "TUTTI",
+        "Warfarin",
+        "DOACs",
+        "Apixaban",
+        "Dabigatran",
+        "Edoxaban",
+        "Rivaroxaban"
+    };
 
     public PatientListViewModel(
         IUnitOfWork unitOfWork,
@@ -114,35 +132,53 @@ public partial class PatientListViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Esegue la ricerca sui pazienti
+    /// Esegue la ricerca sui pazienti con filtro combinato (testo + anticoagulante)
     /// </summary>
     [RelayCommand]
     private void Search()
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(SearchText))
-            {
-                // Nessuna ricerca: mostra tutti
-                FilteredPatients = new ObservableCollection<PatientDto>(Patients);
-            }
-            else
+            IEnumerable<PatientDto> filtered = Patients;
+
+            // Filtro testuale
+            if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 var searchLower = SearchText.ToLowerInvariant();
-                
-                var filtered = Patients
-                    .Where(p =>
-                        p.FirstName.ToLowerInvariant().Contains(searchLower) ||
-                        p.LastName.ToLowerInvariant().Contains(searchLower) ||
-                        p.FiscalCode.ToLowerInvariant().Contains(searchLower) ||
-                        p.FullName.ToLowerInvariant().Contains(searchLower))
-                    .ToList();
-
-                FilteredPatients = new ObservableCollection<PatientDto>(filtered);
+                filtered = filtered.Where(p =>
+                    p.FirstName.ToLowerInvariant().Contains(searchLower) ||
+                    p.LastName.ToLowerInvariant().Contains(searchLower) ||
+                    p.FiscalCode.ToLowerInvariant().Contains(searchLower) ||
+                    p.FullName.ToLowerInvariant().Contains(searchLower));
             }
 
+            // Filtro anticoagulante
+            if (SelectedAnticoagulantFilter != "TUTTI")
+            {
+                filtered = SelectedAnticoagulantFilter switch
+                {
+                    "Warfarin" => filtered.Where(p => p.IsWarfarinPatient),
+                    "DOACs" => filtered.Where(p => p.IsDoacPatient),
+                    "Apixaban" => filtered.Where(p =>
+                        string.Equals(p.AnticoagulantType, AnticoagulantTypes.Apixaban, StringComparison.OrdinalIgnoreCase)),
+                    "Dabigatran" => filtered.Where(p =>
+                        string.Equals(p.AnticoagulantType, AnticoagulantTypes.Dabigatran, StringComparison.OrdinalIgnoreCase)),
+                    "Edoxaban" => filtered.Where(p =>
+                        string.Equals(p.AnticoagulantType, AnticoagulantTypes.Edoxaban, StringComparison.OrdinalIgnoreCase)),
+                    "Rivaroxaban" => filtered.Where(p =>
+                        string.Equals(p.AnticoagulantType, AnticoagulantTypes.Rivaroxaban, StringComparison.OrdinalIgnoreCase)),
+                    _ => filtered
+                };
+            }
+
+            FilteredPatients = new ObservableCollection<PatientDto>(filtered.ToList());
             FilteredPatientsCount = FilteredPatients.Count;
-            _logger.LogDebug("Ricerca '{SearchText}': trovati {Count} risultati", SearchText, FilteredPatientsCount);
+
+            _logger.LogDebug(
+                "Ricerca '{SearchText}' + Filtro '{AnticoagulantFilter}': trovati {Count} risultati",
+                SearchText,
+                SelectedAnticoagulantFilter,
+                FilteredPatientsCount);
         }
         catch (Exception ex)
         {
@@ -154,6 +190,14 @@ public partial class PatientListViewModel : ObservableObject
     /// Aggiorna automaticamente la ricerca quando cambia il testo
     /// </summary>
     partial void OnSearchTextChanged(string value)
+    {
+        Search();
+    }
+
+    /// <summary>
+    /// Aggiorna automaticamente la ricerca quando cambia il filtro anticoagulante
+    /// </summary>
+    partial void OnSelectedAnticoagulantFilterChanged(string value)
     {
         Search();
     }
@@ -325,7 +369,9 @@ public partial class PatientListViewModel : ObservableObject
             Gender = patient.Gender?.ToString(),
             Phone = patient.Phone,
             Email = patient.Email,
-            IsSlowMetabolizer = patient.IsSlowMetabolizer
+            IsSlowMetabolizer = patient.IsSlowMetabolizer,
+            AnticoagulantType = patient.AnticoagulantType,
+            TherapyStartDate = patient.TherapyStartDate
         };
 
         // Carica indicazione attiva

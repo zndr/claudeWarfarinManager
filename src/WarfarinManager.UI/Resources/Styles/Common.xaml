@@ -94,6 +94,9 @@
         </Setter>
     </Style>
 
+    <!-- Alias per InputTextBoxStyle -->
+    <Style x:Key="InputTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource ModernTextBoxStyle}"/>
+
     <!-- ComboBox Style -->
     <Style x:Key="ModernComboBoxStyle" TargetType="ComboBox">
         <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>

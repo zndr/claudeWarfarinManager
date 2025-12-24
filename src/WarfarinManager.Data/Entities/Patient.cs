@@ -69,6 +69,16 @@ public class Patient : BaseEntity
     public bool IsInitialWizardCompleted { get; set; }
 
     /// <summary>
+    /// Tipo di anticoagulante in uso (warfarin, dabigatran, rivaroxaban, apixaban, edoxaban, altro)
+    /// </summary>
+    public string? AnticoagulantType { get; set; }
+
+    /// <summary>
+    /// Data di inizio della terapia anticoagulante
+    /// </summary>
+    public DateTime? TherapyStartDate { get; set; }
+
+    /// <summary>
     /// Flag per soft delete - se true il paziente è "eliminato" ma i dati restano nel DB
     /// </summary>
     public bool IsDeleted { get; set; }

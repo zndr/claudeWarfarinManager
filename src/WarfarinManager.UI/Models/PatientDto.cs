@@ -1,4 +1,5 @@
 using System;
+using WarfarinManager.Shared.Constants;
 
 namespace WarfarinManager.UI.Models;
 
@@ -61,6 +62,16 @@ public class PatientDto
     /// Flag metabolizzatore lento (dose < 15mg/sett)
     /// </summary>
     public bool IsSlowMetabolizer { get; set; }
+
+    /// <summary>
+    /// Tipo di anticoagulante in uso (es. "warfarin", "apixaban", ecc.)
+    /// </summary>
+    public string? AnticoagulantType { get; set; }
+
+    /// <summary>
+    /// Data di inizio della terapia anticoagulante
+    /// </summary>
+    public DateTime? TherapyStartDate { get; set; }
     
     /// <summary>
     /// Indica se il controllo è scaduto
@@ -78,6 +89,47 @@ public class PatientDto
     /// Indica se il TTR è critico (<60%)
     /// </summary>
     public bool IsTTRCritical => TTRPercentage.HasValue && TTRPercentage.Value < 60;
+
+    // === Computed Properties per Anticoagulanti ===
+
+    /// <summary>
+    /// Abbreviazione del tipo di anticoagulante (W/A/D/E/R/-)
+    /// </summary>
+    public string AnticoagulantAbbreviation =>
+        AnticoagulantTypes.GetAbbreviation(AnticoagulantType);
+
+    /// <summary>
+    /// Nome completo del farmaco per visualizzazione (es. "Apixaban (Eliquis)")
+    /// </summary>
+    public string AnticoagulantDisplayName =>
+        AnticoagulantTypes.GetDisplayName(AnticoagulantType);
+
+    /// <summary>
+    /// Indica se il paziente assume Warfarin
+    /// </summary>
+    public bool IsWarfarinPatient =>
+        AnticoagulantTypes.IsWarfarin(AnticoagulantType);
+
+    /// <summary>
+    /// Indica se il paziente assume un DOAC (Direct Oral Anticoagulant)
+    /// </summary>
+    public bool IsDoacPatient =>
+        AnticoagulantTypes.IsDoac(AnticoagulantType);
+
+    /// <summary>
+    /// Durata della terapia in mesi (arrotondata)
+    /// </summary>
+    public int? TherapyDurationMonths
+    {
+        get
+        {
+            if (!TherapyStartDate.HasValue)
+                return null;
+
+            var duration = DateTime.Today - TherapyStartDate.Value;
+            return (int)Math.Round(duration.TotalDays / 30.0);
+        }
+    }
     
     private int CalculateAge()
     {

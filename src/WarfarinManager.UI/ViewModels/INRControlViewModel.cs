@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,6 +18,7 @@ using WarfarinManager.Shared.Enums;
 using WarfarinManager.UI.Helpers;
 using WarfarinManager.UI.Models;
 using WarfarinManager.UI.Services;
+using WarfarinManager.UI.Views.Patient;
 
 namespace WarfarinManager.UI.ViewModels
 {
@@ -32,6 +34,7 @@ namespace WarfarinManager.UI.ViewModels
         private readonly INavigationService _navigationService;
         private readonly WeeklySchedulePdfService _pdfService;
         private readonly Core.Services.PengoNomogramService _pengoNomogramService;
+        private readonly IServiceProvider _serviceProvider;
 
         #region Properties - Dati Paziente
 
@@ -434,7 +437,8 @@ namespace WarfarinManager.UI.ViewModels
             ITTRCalculatorService ttrCalculator,
             IDialogService dialogService,
             INavigationService navigationService,
-            WeeklySchedulePdfService pdfService)
+            WeeklySchedulePdfService pdfService,
+            IServiceProvider serviceProvider)
         {
             _unitOfWork = unitOfWork;
             _dosageCalculator = dosageCalculator;
@@ -442,6 +446,7 @@ namespace WarfarinManager.UI.ViewModels
             _dialogService = dialogService;
             _navigationService = navigationService;
             _pdfService = pdfService;
+            _serviceProvider = serviceProvider;
             _pengoNomogramService = new Core.Services.PengoNomogramService();
 
             // Inizializza lista dosi disponibili e valori default
@@ -537,7 +542,7 @@ namespace WarfarinManager.UI.ViewModels
 
             // Crea nuove opzioni
             var options = DoseOption.CreateOptions(ExcludeQuarterTablets);
-            
+
             AvailableDoses.Clear();
             foreach (var option in options)
             {
@@ -552,6 +557,10 @@ namespace WarfarinManager.UI.ViewModels
             FridayDose = DoseOption.FindNearest(options, fridayMg);
             SaturdayDose = DoseOption.FindNearest(options, saturdayMg);
             SundayDose = DoseOption.FindNearest(options, sundayMg);
+
+            // Ricalcola il dosaggio settimanale dopo aver impostato le dosi giornaliere
+            // Questo è importante per la prima apertura del dialog quando non ci sono controlli precedenti
+            RecalculateWeeklyDose();
         }
 
         /// <summary>
@@ -659,21 +668,36 @@ namespace WarfarinManager.UI.ViewModels
                 // Verifica se il wizard iniziale è stato completato
                 if (!patient.IsInitialWizardCompleted)
                 {
-                    _dialogService.ShowWarning(
+                    var startWizard = _dialogService.ShowConfirmation(
                         "Non è possibile inserire controlli INR per questo paziente.\n\n" +
                         "È necessario completare prima la configurazione iniziale obbligatoria:\n" +
                         "• Indicazione alla TAO\n" +
                         "• Valutazione Pre-TAO\n" +
                         "• Score CHA2DS2-VASc\n" +
                         "• Score HAS-BLED\n\n" +
-                        "Accedere ai dettagli del paziente per completare la configurazione.",
+                        "Vuoi completare ora la configurazione iniziale?",
                         "Configurazione Iniziale Richiesta");
 
-                    // Chiudi la finestra
-                    Application.Current.Windows
-                        .OfType<Window>()
-                        .FirstOrDefault(w => w.DataContext == this)?
-                        .Close();
+                    if (startWizard)
+                    {
+                        // Chiudi la finestra INR Control
+                        var currentWindow = Application.Current.Windows
+                            .OfType<Window>()
+                            .FirstOrDefault(w => w.DataContext == this);
+
+                        currentWindow?.Close();
+
+                        // Apri il wizard di configurazione iniziale
+                        await OpenInitialConfigurationWizardAsync(patientId);
+                    }
+                    else
+                    {
+                        // Chiudi la finestra se l'utente non vuole completare la configurazione
+                        Application.Current.Windows
+                            .OfType<Window>()
+                            .FirstOrDefault(w => w.DataContext == this)?
+                            .Close();
+                    }
                     return;
                 }
 
@@ -2075,6 +2099,46 @@ valutazione clinica finale e della decisione terapeutica.
                     // Nessuna nota esistente, imposta direttamente
                     Notes = evaluationText;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Apre il wizard di configurazione iniziale per il paziente
+        /// </summary>
+        private async Task OpenInitialConfigurationWizardAsync(int patientId)
+        {
+            try
+            {
+                // Risolvi il wizard dal DI
+                var wizardView = _serviceProvider.GetRequiredService<NewPatientWizardView>();
+                var wizardViewModel = _serviceProvider.GetRequiredService<NewPatientWizardViewModel>();
+
+                // Inizializza il wizard con i dati del paziente
+                await wizardViewModel.InitializeAsync(patientId);
+
+                // Assegna il DataContext
+                wizardView.DataContext = wizardViewModel;
+
+                // Mostra il wizard in modalità dialog
+                var result = wizardView.ShowDialog();
+
+                // Se il wizard è stato completato con successo, ricarica i dettagli del paziente
+                if (result == true)
+                {
+                    _dialogService.ShowInformation(
+                        "Configurazione iniziale completata con successo.\n\n" +
+                        "Ora puoi inserire i controlli INR per questo paziente.",
+                        "Configurazione Completata");
+
+                    // Non riaprire automaticamente la finestra INR Control
+                    // L'utente può farlo manualmente dal pulsante "Aggiungi INR"
+                }
+            }
+            catch (Exception ex)
+            {
+                _dialogService.ShowError(
+                    $"Errore durante l'apertura del wizard di configurazione:\n{ex.Message}",
+                    "Errore");
             }
         }
 

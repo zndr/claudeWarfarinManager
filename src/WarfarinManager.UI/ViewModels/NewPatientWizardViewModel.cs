@@ -102,6 +102,10 @@ public partial class NewPatientWizardViewModel : ObservableObject
             IndicationFormViewModel = _serviceProvider.GetRequiredService<IndicationFormViewModel>();
             PreTaoAssessmentViewModel = _serviceProvider.GetRequiredService<PreTaoAssessmentViewModel>();
 
+            // IMPORTANTE: Imposta modalità wizard per evitare navigazione automatica
+            IndicationFormViewModel.IsWizardMode = true;
+            PreTaoAssessmentViewModel.IsWizardMode = true;
+
             // Carica i dati per lo step corrente
             await LoadCurrentStepAsync();
 
