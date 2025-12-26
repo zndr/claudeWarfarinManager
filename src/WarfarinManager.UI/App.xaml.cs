@@ -147,6 +147,7 @@ public partial class App : Application
         services.AddTransient<SwitchTherapyViewModel>();
         services.AddTransient<NewPatientWizardViewModel>();
         services.AddTransient<ImportPatientsViewModel>();
+        services.AddTransient<DoacGestViewModel>();
 
         // Tools ViewModels
         services.AddTransient<ViewModels.Tools.WeeklyDoseCalculatorViewModel>();
@@ -169,10 +170,13 @@ public partial class App : Application
         services.AddTransient<DatabaseManagementDialog>();
         services.AddTransient<NewPatientWizardView>();
         services.AddTransient<ImportPatientsDialog>();
+        services.AddTransient<DoacGestView>();
+        services.AddTransient<DoacGestWindow>();
 
         // Tools Views
         services.AddTransient<Views.Tools.WeeklyDoseCalculatorDialog>();
         services.AddTransient<Views.Tools.InitialDosageEstimatorDialog>();
+        services.AddTransient<Views.Tools.DoacGestWebViewWindow>();
 
         // Main Window
         services.AddSingleton<MainWindow>();
@@ -292,6 +296,16 @@ public partial class App : Application
             await EnsureColumnExistsAsync(connection, "DoctorData", "FiscalCode",
                 "TEXT NOT NULL DEFAULT ''");
 
+            // =========================================================================
+            // TABELLA: DoacMonitoring (nuova per modulo DOAC)
+            // =========================================================================
+            await EnsureDoacMonitoringTableExistsAsync(connection);
+
+            // =========================================================================
+            // TABELLA: TerapieContinuative (nuova per modulo DOAC)
+            // =========================================================================
+            await EnsureTerapieContinuativeTableExistsAsync(connection);
+
             await connection.CloseAsync();
             Log.Information("Verifica e correzione schema database legacy completata");
         }
@@ -372,6 +386,137 @@ public partial class App : Application
             Log.Error(ex, "Errore durante la verifica/aggiunta della colonna {ColumnName} nella tabella {TableName}",
                 columnName, tableName);
             // Non rilanciare l'eccezione - lascia che le migrazioni standard tentino di gestirla
+        }
+    }
+
+    /// <summary>
+    /// Crea la tabella DoacMonitoring se non esiste
+    /// </summary>
+    private async System.Threading.Tasks.Task EnsureDoacMonitoringTableExistsAsync(
+        System.Data.Common.DbConnection connection)
+    {
+        try
+        {
+            using var checkTableCommand = connection.CreateCommand();
+            checkTableCommand.CommandText = "SELECT name FROM sqlite_master WHERE type='table' AND name='DoacMonitoring';";
+            var tableExists = await checkTableCommand.ExecuteScalarAsync() != null;
+
+            if (!tableExists)
+            {
+                Log.Information("Creazione tabella DoacMonitoring...");
+
+                using var createCommand = connection.CreateCommand();
+                createCommand.CommandText = @"
+                    CREATE TABLE DoacMonitoring (
+                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        PatientId INTEGER NOT NULL,
+                        DataRilevazione TEXT NOT NULL,
+                        Peso TEXT,
+                        Creatinina TEXT,
+                        Emoglobina TEXT,
+                        Ematocrito TEXT,
+                        Piastrine INTEGER,
+                        AST INTEGER,
+                        ALT INTEGER,
+                        Bilirubina TEXT,
+                        GGT TEXT,
+                        CrCl_Cockroft INTEGER,
+                        CrCl_Calcolato INTEGER NOT NULL DEFAULT 1,
+                        DoacSelezionato TEXT,
+                        Indicazione TEXT,
+                        Ipertensione INTEGER NOT NULL DEFAULT 0,
+                        DisfunzioneRenale INTEGER NOT NULL DEFAULT 0,
+                        DisfunzioneEpatica INTEGER NOT NULL DEFAULT 0,
+                        Cirrosi INTEGER NOT NULL DEFAULT 0,
+                        IpertensPortale INTEGER NOT NULL DEFAULT 0,
+                        StoriaStroke INTEGER NOT NULL DEFAULT 0,
+                        StoriaSanguinamento INTEGER NOT NULL DEFAULT 0,
+                        INRLabile INTEGER NOT NULL DEFAULT 0,
+                        Antiaggreganti INTEGER NOT NULL DEFAULT 0,
+                        FANS INTEGER NOT NULL DEFAULT 0,
+                        AbusoDiAlcol INTEGER NOT NULL DEFAULT 0,
+                        HasBledScore INTEGER NOT NULL DEFAULT 0,
+                        DosaggioSuggerito TEXT,
+                        RazionaleDosaggio TEXT,
+                        IntervalloControlloMesi INTEGER,
+                        DataProssimoControllo TEXT,
+                        CreatedAt TEXT NOT NULL,
+                        UpdatedAt TEXT NOT NULL,
+                        FOREIGN KEY (PatientId) REFERENCES Patients(Id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IX_DoacMonitoring_PatientId_DataRilevazione ON DoacMonitoring(PatientId, DataRilevazione DESC);
+                    CREATE INDEX IX_DoacMonitoring_DataProssimoControllo ON DoacMonitoring(DataProssimoControllo) WHERE DataProssimoControllo IS NOT NULL;
+                ";
+                await createCommand.ExecuteNonQueryAsync();
+
+                Log.Information("Tabella DoacMonitoring creata con successo");
+            }
+            else
+            {
+                Log.Debug("Tabella DoacMonitoring già esistente");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Errore durante la creazione della tabella DoacMonitoring");
+        }
+    }
+
+    /// <summary>
+    /// Crea la tabella TerapieContinuative se non esiste
+    /// </summary>
+    private async System.Threading.Tasks.Task EnsureTerapieContinuativeTableExistsAsync(
+        System.Data.Common.DbConnection connection)
+    {
+        try
+        {
+            using var checkTableCommand = connection.CreateCommand();
+            checkTableCommand.CommandText = "SELECT name FROM sqlite_master WHERE type='table' AND name='TerapieContinuative';";
+            var tableExists = await checkTableCommand.ExecuteScalarAsync() != null;
+
+            if (!tableExists)
+            {
+                Log.Information("Creazione tabella TerapieContinuative...");
+
+                using var createCommand = connection.CreateCommand();
+                createCommand.CommandText = @"
+                    CREATE TABLE TerapieContinuative (
+                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        PatientId INTEGER NOT NULL,
+                        Classe TEXT NOT NULL,
+                        PrincipioAttivo TEXT NOT NULL,
+                        NomeCommerciale TEXT,
+                        Dosaggio TEXT,
+                        FrequenzaGiornaliera TEXT,
+                        ViaAssunzione TEXT,
+                        DataInizio TEXT,
+                        DataFine TEXT,
+                        Attiva INTEGER NOT NULL DEFAULT 1,
+                        Indicazione TEXT,
+                        Note TEXT,
+                        MotivoSospensione TEXT,
+                        Importato INTEGER NOT NULL DEFAULT 0,
+                        FonteDati TEXT,
+                        CreatedAt TEXT NOT NULL,
+                        UpdatedAt TEXT NOT NULL,
+                        FOREIGN KEY (PatientId) REFERENCES Patients(Id) ON DELETE CASCADE
+                    );
+                    CREATE INDEX IX_TerapieContinuative_PatientId ON TerapieContinuative(PatientId);
+                    CREATE INDEX IX_TerapieContinuative_Attiva_PatientId ON TerapieContinuative(Attiva, PatientId);
+                    CREATE INDEX IX_TerapieContinuative_Classe_PatientId_Attiva ON TerapieContinuative(Classe, PatientId, Attiva);
+                ";
+                await createCommand.ExecuteNonQueryAsync();
+
+                Log.Information("Tabella TerapieContinuative creata con successo");
+            }
+            else
+            {
+                Log.Debug("Tabella TerapieContinuative già esistente");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Errore durante la creazione della tabella TerapieContinuative");
         }
     }
 
