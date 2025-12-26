@@ -96,6 +96,9 @@ public partial class App : Application
         services.AddScoped<PostgreSqlImportService>();
         services.AddScoped<IMillepsDataService, MillepsDataService>();
 
+        // Millewin Integration Service (singleton per mantenere lo stato)
+        services.AddSingleton<IMillewinIntegrationService, MillewinIntegrationService>();
+
         // DOAC Services
         services.AddScoped<IDOACInteractionService, DOACInteractionService>();
         services.AddScoped<IDOACClinicalService, DOACClinicalService>();
@@ -152,6 +155,7 @@ public partial class App : Application
         services.AddTransient<NewPatientWizardViewModel>();
         services.AddTransient<ImportPatientsViewModel>();
         services.AddTransient<DoacGestViewModel>();
+        services.AddTransient<PreferencesViewModel>();
 
         // Tools ViewModels
         services.AddTransient<ViewModels.Tools.WeeklyDoseCalculatorViewModel>();
@@ -174,6 +178,7 @@ public partial class App : Application
         services.AddTransient<DatabaseManagementDialog>();
         services.AddTransient<NewPatientWizardView>();
         services.AddTransient<ImportPatientsDialog>();
+        services.AddTransient<PreferencesDialog>();
         services.AddTransient<DoacGestView>();
         services.AddTransient<DoacGestWindow>();
 
@@ -229,6 +234,10 @@ public partial class App : Application
 
             // Assicura che il database esista e sia aggiornato
             await EnsureDatabaseAsync();
+
+            // Inizializza il servizio di integrazione Millewin
+            var millewinService = _host.Services.GetRequiredService<IMillewinIntegrationService>();
+            await millewinService.InitializeAsync();
 
             // Avvia il servizio di controllo aggiornamenti
             var updateService = _host.Services.GetRequiredService<UpdateNotificationService>();

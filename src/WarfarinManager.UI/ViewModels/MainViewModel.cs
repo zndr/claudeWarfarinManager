@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.Reflection;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
+using WarfarinManager.Core.Interfaces;
 using WarfarinManager.UI.Services;
 using WarfarinManager.UI.Views.Dialogs;
 
@@ -16,6 +17,7 @@ public partial class MainViewModel : ObservableObject
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IMillewinIntegrationService _millewinService;
 
     [ObservableProperty]
     private string _title = "TaoGEST";
@@ -26,14 +28,34 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isInHomePage = true;
 
-    public MainViewModel(INavigationService navigationService, IDialogService dialogService, IServiceProvider serviceProvider)
+    /// <summary>
+    /// Indica se l'integrazione con Millewin è attiva (abilitata + connessione disponibile)
+    /// </summary>
+    public bool IsMillewinIntegrationActive => _millewinService.IsIntegrationActive;
+
+    public MainViewModel(
+        INavigationService navigationService,
+        IDialogService dialogService,
+        IServiceProvider serviceProvider,
+        IMillewinIntegrationService millewinService)
     {
         _navigationService = navigationService;
         _dialogService = dialogService;
         _serviceProvider = serviceProvider;
+        _millewinService = millewinService;
 
         // Sottoscrivi agli eventi di navigazione
         _navigationService.CurrentViewChanged += OnCurrentViewChanged;
+
+        // Sottoscrivi ai cambiamenti dello stato dell'integrazione Millewin
+        _millewinService.IntegrationStateChanged += OnMillewinIntegrationStateChanged;
+    }
+
+    private void OnMillewinIntegrationStateChanged(object? sender, bool isActive)
+    {
+        // Notifica che lo stato dell'integrazione è cambiato
+        OnPropertyChanged(nameof(IsMillewinIntegrationActive));
+        ImportDataCommand.NotifyCanExecuteChanged();
     }
 
     private void OnCurrentViewChanged(object? sender, EventArgs e)
@@ -62,7 +84,7 @@ public partial class MainViewModel : ObservableObject
         _dialogService.ShowInformation("Funzionalità in fase di sviluppo", "Esporta dati");
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanImportData))]
     private async Task ImportDataAsync()
     {
         var dialog = _serviceProvider.GetRequiredService<ImportPatientsDialog>();
@@ -87,6 +109,8 @@ public partial class MainViewModel : ObservableObject
             }
         }
     }
+
+    private bool CanImportData() => IsMillewinIntegrationActive;
 
     [RelayCommand]
     private void ImportINR()
@@ -246,7 +270,16 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void ShowPreferences()
     {
-        _dialogService.ShowInformation("Funzionalità in fase di sviluppo", "Preferenze");
+        try
+        {
+            var dialog = _serviceProvider.GetRequiredService<PreferencesDialog>();
+            dialog.Owner = Application.Current.MainWindow;
+            dialog.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            _dialogService.ShowError($"Errore nell'apertura delle preferenze:\n{ex.Message}", "Errore");
+        }
     }
 
     [RelayCommand]

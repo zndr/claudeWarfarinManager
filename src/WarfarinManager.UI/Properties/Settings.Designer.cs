@@ -46,5 +46,17 @@ namespace WarfarinManager.UI.Properties {
                 this["LastNotifiedUpdateVersion"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MillewinIntegrationEnabled {
+            get {
+                return ((bool)(this["MillewinIntegrationEnabled"]));
+            }
+            set {
+                this["MillewinIntegrationEnabled"] = value;
+            }
+        }
     }
 }

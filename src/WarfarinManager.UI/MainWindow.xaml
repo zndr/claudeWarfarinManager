@@ -45,7 +45,18 @@
                 <MenuItem Header="Importa dati...">
                     <MenuItem
                         Command="{Binding ImportDataCommand}"
-                        Header="Importa pazienti..." />
+                        Header="Importa pazienti da Millewin...">
+                        <MenuItem.Style>
+                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                <Setter Property="ToolTip" Value="Importa pazienti dal database Millewin"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="ToolTip" Value="Integrazione Millewin non attiva. Vai in Opzioni > Preferenze per abilitarla."/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </MenuItem.Style>
+                    </MenuItem>
                     <MenuItem
                         Command="{Binding ImportINRCommand}"
                         Header="Importa INR..." />

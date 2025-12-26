@@ -364,7 +364,18 @@
                                         Command="{Binding RefreshBiometricDataCommand}"
                                         Content="Aggiorna da Millewin"
                                         FontSize="11"
-                                        Cursor="Hand"/>
+                                        Cursor="Hand">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                                <Setter Property="ToolTip" Value="Aggiorna i dati biometrici dal database Millewin"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter Property="ToolTip" Value="Integrazione Millewin non attiva. Vai in Opzioni > Preferenze per abilitarla."/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
                                 </Grid>
 
                                 <Grid Margin="0,15,0,0">

@@ -28,6 +28,7 @@ namespace WarfarinManager.UI.ViewModels
         private readonly ILogger<PatientDetailsViewModel> _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly IMillepsDataService _millepsDataService;
+        private readonly IMillewinIntegrationService _millewinIntegrationService;
 
         [ObservableProperty]
         private int _patientId;
@@ -121,13 +122,19 @@ namespace WarfarinManager.UI.ViewModels
         /// </summary>
         public string AnticoagulantDisplayName => Patient?.AnticoagulantDisplayName ?? "Non specificato";
 
+        /// <summary>
+        /// Indica se l'integrazione con Millewin è attiva (abilitata + connessione disponibile)
+        /// </summary>
+        public bool IsMillewinIntegrationActive => _millewinIntegrationService.IsIntegrationActive;
+
         public PatientDetailsViewModel(
             IUnitOfWork unitOfWork,
             INavigationService navigationService,
             IDialogService dialogService,
             ILogger<PatientDetailsViewModel> logger,
             IServiceProvider serviceProvider,
-            IMillepsDataService millepsDataService)
+            IMillepsDataService millepsDataService,
+            IMillewinIntegrationService millewinIntegrationService)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
@@ -135,6 +142,7 @@ namespace WarfarinManager.UI.ViewModels
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             _millepsDataService = millepsDataService ?? throw new ArgumentNullException(nameof(millepsDataService));
+            _millewinIntegrationService = millewinIntegrationService ?? throw new ArgumentNullException(nameof(millewinIntegrationService));
 
             // Inizializza il MedicationsViewModel dal DI
             MedicationsViewModel = _serviceProvider.GetRequiredService<MedicationsViewModel>();
@@ -443,7 +451,7 @@ namespace WarfarinManager.UI.ViewModels
         /// <summary>
         /// Aggiorna i dati biometrici del paziente dal database Millewin
         /// </summary>
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanRefreshBiometricData))]
         private async Task RefreshBiometricDataAsync()
         {
             if (Patient == null) return;
@@ -519,6 +527,8 @@ namespace WarfarinManager.UI.ViewModels
                 _dialogService.ShowError($"Errore durante l'aggiornamento: {ex.Message}", "Errore");
             }
         }
+
+        private bool CanRefreshBiometricData() => IsMillewinIntegrationActive;
 
         /// <summary>
         /// Termina l'indicazione selezionata
