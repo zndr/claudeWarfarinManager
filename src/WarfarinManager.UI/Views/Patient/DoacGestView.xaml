@@ -93,17 +93,17 @@
 
                         <StackPanel Grid.Column="0" Margin="0,0,8,0" ToolTip="Peso (kg)">
                             <TextBlock Text="Peso" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding Peso, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Text="{Binding Peso, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.#}}"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Margin="0,0,8,0" ToolTip="Creatinina (mg/dL)">
                             <TextBlock Text="Creat." Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding Creatinina, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Text="{Binding Creatinina, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="2" Margin="0,0,8,0" ToolTip="Emoglobina (g/dL)">
                             <TextBlock Text="Hb" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding Emoglobina, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Text="{Binding Emoglobina, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.#}}"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="3" Margin="0,0,8,0" ToolTip="Piastrine (/μL)">
@@ -123,12 +123,12 @@
 
                         <StackPanel Grid.Column="6" Margin="0,0,8,0" ToolTip="Bilirubina (mg/dL)">
                             <TextBlock Text="Bil" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding Bilirubina, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Text="{Binding Bilirubina, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="7" Margin="0,0,8,0" ToolTip="GGT (U/L)">
                             <TextBlock Text="GGT" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding Ggt, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Text="{Binding Ggt, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.#}}"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="8" Margin="0,0,8,0" ToolTip="CrCl (mL/min) - Cockcroft-Gault">
