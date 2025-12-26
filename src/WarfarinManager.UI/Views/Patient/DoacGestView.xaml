@@ -95,42 +95,42 @@
 
                         <StackPanel Grid.Column="0" Margin="0,0,8,0" ToolTip="Peso (kg)">
                             <TextBlock Text="Peso" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding Peso, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableDecimalConverter}, ConverterParameter=1}"/>
+                            <TextBox Text="{Binding Peso, UpdateSourceTrigger=LostFocus, Converter={StaticResource NullableDecimalConverter}}"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Margin="0,0,8,0" ToolTip="Creatinina (mg/dL)">
                             <TextBlock Text="Creat." Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding Creatinina, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableDecimalConverter}, ConverterParameter=2}"/>
+                            <TextBox Text="{Binding Creatinina, UpdateSourceTrigger=LostFocus, Converter={StaticResource NullableDecimalConverter}}"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="2" Margin="0,0,8,0" ToolTip="Emoglobina (g/dL)">
                             <TextBlock Text="Hb" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding Emoglobina, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableDecimalConverter}, ConverterParameter=1}"/>
+                            <TextBox Text="{Binding Emoglobina, UpdateSourceTrigger=LostFocus, Converter={StaticResource NullableDecimalConverter}}"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="3" Margin="0,0,8,0" ToolTip="Piastrine (/μL)">
                             <TextBlock Text="PP" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding Piastrine, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Text="{Binding Piastrine, UpdateSourceTrigger=LostFocus}"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="4" Margin="0,0,8,0" ToolTip="AST (U/L)">
                             <TextBlock Text="AST" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding Ast, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Text="{Binding Ast, UpdateSourceTrigger=LostFocus}"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="5" Margin="0,0,8,0" ToolTip="ALT (U/L)">
                             <TextBlock Text="ALT" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding Alt, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Text="{Binding Alt, UpdateSourceTrigger=LostFocus}"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="6" Margin="0,0,8,0" ToolTip="Bilirubina (mg/dL)">
                             <TextBlock Text="Bil" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding Bilirubina, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableDecimalConverter}, ConverterParameter=2}"/>
+                            <TextBox Text="{Binding Bilirubina, UpdateSourceTrigger=LostFocus, Converter={StaticResource NullableDecimalConverter}}"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="7" Margin="0,0,8,0" ToolTip="GGT (U/L)">
                             <TextBlock Text="GGT" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding Ggt, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableDecimalConverter}, ConverterParameter=1}"/>
+                            <TextBox Text="{Binding Ggt, UpdateSourceTrigger=LostFocus, Converter={StaticResource NullableDecimalConverter}}"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="8" Margin="0,0,8,0" ToolTip="CrCl (mL/min) - Cockcroft-Gault">
