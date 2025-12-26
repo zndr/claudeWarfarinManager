@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CrCl (Cockcroft–Gault) + Checker interazioni DOAC</title>
+  <style>
+    :root { --bg:#0b1220; --card:#121a2b; --muted:#9fb0d0; --text:#eaf0ff; --line:#22304d; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:linear-gradient(180deg,#070b14,#0b1220); color:var(--text); }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 18px; }
+    h1 { font-size: 20px; margin: 4px 0 12px; }
+    .grid { display:grid; grid-template-columns: 1fr; gap: 14px; }
+    @media (min-width: 980px) { .grid { grid-template-columns: 1.1fr 0.9fr; } }
+    .card { background: rgba(18,26,43,0.92); border: 1px solid var(--line); border-radius: 16px; padding: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+    .row { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .row3 { display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    @media (max-width: 520px){ .row, .row3{ grid-template-columns: 1fr; } }
+    label { display:block; font-size: 12px; color: var(--muted); margin: 0 0 6px; }
+    input, select, textarea { width: 100%; padding: 10px 11px; border-radius: 12px; border: 1px solid #2a3b5f; background:#0d1425; color: var(--text); outline:none; box-sizing:border-box; }
+    input:focus, select:focus, textarea:focus { border-color:#5f86ff; box-shadow: 0 0 0 3px rgba(95,134,255,.18); }
+    textarea { min-height: 80px; resize: vertical; }
+    .btns { display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; }
+    button { border: 1px solid #2a3b5f; background:#0d1425; color:var(--text); padding: 10px 12px; border-radius: 12px; cursor:pointer; font-weight:700; }
+    button:hover { border-color:#5f86ff; }
+    .kpi { display:flex; gap: 10px; flex-wrap:wrap; margin-top: 10px; }
+    .pill { padding: 8px 10px; border-radius: 999px; border:1px solid var(--line); background: rgba(13,20,37,.7); font-size: 13px; }
+    .pill strong { font-weight:800; }
+    .muted { color: var(--muted); font-size: 12px; line-height: 1.35; }
+    .section-title { font-size: 14px; margin: 0 0 8px; color:#cfe0ff; }
+    .checks { display:grid; grid-template-columns: 1fr; gap: 8px; margin-top: 8px; }
+    @media (min-width: 720px) { .checks { grid-template-columns: 1fr 1fr; } }
+    .check { display:flex; gap:10px; align-items:flex-start; padding: 10px; border-radius: 12px; border:1px solid var(--line); background: rgba(13,20,37,.55); }
+    .check input { width:auto; margin-top: 2px; }
+    .check b { display:block; font-size: 13px; }
+    .check span { display:block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .alerts { margin-top: 10px; display:flex; flex-direction:column; gap:8px; }
+    .alert { padding: 10px 12px; border-radius: 12px; border:1px solid var(--line); background: rgba(13,20,37,.55); }
+    .tag { display:inline-block; padding: 3px 8px; border-radius: 999px; font-size: 12px; border:1px solid var(--line); margin-right: 8px; font-weight:900; }
+    .t-red { border-color:#ff6b6b; color:#ffd7d7; }
+    .t-amber { border-color:#ffcc66; color:#fff0cc; }
+    .t-blue { border-color:#6fb5ff; color:#d9efff; }
+    .t-green { border-color:#7ee787; color:#dbffe0; }
+    .small { font-size: 12px; color: var(--muted); margin-top: 10px; }
+    .hr { height:1px; background: var(--line); margin: 12px 0; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+    /* Free list UI */
+    .freeBox { margin-top: 10px; padding: 10px; border-radius: 14px; border:1px solid var(--line); background: rgba(13,20,37,.35); }
+    .chipRow { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+    .chip {
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px; border-radius:999px;
+      border:1px solid var(--line); background:#0d1425; font-size:12px;
+    }
+    .chip .x { cursor:pointer; border:1px solid #2a3b5f; border-radius:999px; padding:0 8px; font-weight:900; }
+    .chip .x:hover { border-color:#5f86ff; }
+    .chip.ok { border-color: rgba(126,231,135,.6); }
+    .chip.bad { border-color: rgba(255,107,107,.65); }
+    .chip .meta { color: var(--muted); font-size: 11px; }
+    .warnInline { margin-top: 8px; font-size: 12px; color:#ffd7d7; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>CrCl (Cockcroft–Gault) + Checker interazioni DOAC (supporto rapido)</h1>
+
+    <div class="grid">
+      <!-- LEFT: CALCOLO -->
+      <div class="card">
+        <p class="section-title">1) Calcolo clearance della creatinina (Cockcroft–Gault)</p>
+
+        <div class="row">
+          <div>
+            <label for="sex">Sesso</label>
+            <select id="sex">
+              <option value="M">Maschio</option>
+              <option value="F">Femmina</option>
+            </select>
+          </div>
+          <div>
+            <label for="age">Età (anni)</label>
+            <input id="age" type="number" min="0" step="1" placeholder="es. 78" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="weight">Peso (kg)</label>
+            <input id="weight" type="number" min="0" step="0.1" placeholder="es. 72" />
+          </div>
+          <div>
+            <label for="scr">Creatinina (mg/dL)</label>
+            <input id="scr" type="number" min="0" step="0.01" placeholder="es. 1.30" />
+          </div>
+        </div>
+
+        <div class="btns">
+          <button id="calcBtn">Calcola</button>
+          <button id="resetBtn">Reset</button>
+          <button id="exampleBtn">Esempio</button>
+        </div>
+
+        <div class="kpi" id="kpiArea" style="display:none;">
+          <div class="pill"><strong>CrCl:</strong> <span class="mono" id="crclOut"></span> mL/min</div>
+          <div class="pill"><strong>Categoria:</strong> <span id="crclBand"></span></div>
+          <div class="pill"><strong>Alert renale:</strong> <span id="renalFlag"></span></div>
+        </div>
+
+        <div class="small" id="formulaNote" style="display:none;">
+          Formula: CrCl = ((140 − età) × peso) / (72 × SCr) × (0.85 se femmina).<br/>
+          <span class="muted">Nota: peso = peso reale. In estremi corporei può essere appropriato un peso “aggiustato” secondo protocollo locale.</span>
+        </div>
+      </div>
+
+      <!-- RIGHT: DOAC + INTERAZIONI -->
+      <div class="card">
+        <p class="section-title">2) Checker interazioni (DOAC + farmaci comuni)</p>
+
+        <div class="row">
+          <div>
+            <label for="doac">DOAC</label>
+            <select id="doac">
+              <option value="apixaban">Apixaban</option>
+              <option value="rivaroxaban">Rivaroxaban</option>
+              <option value="dabigatran">Dabigatran</option>
+              <option value="edoxaban">Edoxaban</option>
+            </select>
+          </div>
+          <div>
+            <label for="indication">Contesto (solo note)</label>
+            <select id="indication">
+              <option value="nvaf">FANV (NVAF)</option>
+              <option value="vte">TEV (TVP/EP)</option>
+              <option value="other">Altro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="muted">
+          Puoi spuntare le categorie qui sotto <b>oppure</b> usare la <b>lista libera</b> (meglio in ambulatorio).
+        </div>
+
+        <!-- Free list -->
+        <div class="freeBox">
+          <label for="freeDrug">Lista farmaci libera (scrivi e premi “Aggiungi”)</label>
+          <div class="row">
+            <div>
+              <input id="freeDrug" list="drugSuggestions" placeholder="es. amiodarone, verapamil, rifampicina, ketoconazolo..." />
+              <datalist id="drugSuggestions"></datalist>
+              <div class="muted" style="margin-top:6px;">
+                Puoi incollare più nomi separati da <span class="mono">, ;</span> o a capo.
+              </div>
+            </div>
+            <div>
+              <button id="addFreeBtn" style="width:100%;">Aggiungi</button>
+              <button id="clearFreeBtn" style="width:100%; margin-top:10px;">Svuota lista</button>
+            </div>
+          </div>
+
+          <div class="chipRow" id="chips"></div>
+          <div class="warnInline" id="unmappedWarn" style="display:none;">
+            Attenzione: alcuni farmaci inseriti non sono stati riconosciuti/mappati → nessun alert specifico garantito per quelli.
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="checks" id="checks"></div>
+        <div class="alerts" id="alerts"></div>
+
+        <div class="small">
+          <b>Promemoria:</b> l’associazione con antiaggreganti/NSAID/SSRI-SNRI aumenta il rischio emorragico.<br/>
+          <span class="muted">Questo checker non sostituisce la SmPC completa né include tutte le interazioni possibili.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  // -----------------------
+  // Categorie selezionabili (checkbox)
+  // -----------------------
+  const options = [
+    { id:"azole", label:"Azoli sistemici", detail:"ketoconazolo / itraconazolo / voriconazolo / posaconazolo (sistemici)" },
+    { id:"ritonavir", label:"Ritonavir (o booster simili)", detail:"ritonavir (attenzione anche a cobicistat)" },
+    { id:"rifampicin", label:"Rifampicina", detail:"forte induttore; riduce esposizione DOAC" },
+    { id:"antiepileptics", label:"Carbamazepina / Fenitoina / Fenobarbital", detail:"forti induttori; riducono esposizione DOAC" },
+    { id:"stjohn", label:"Iperico (St. John’s wort)", detail:"induttore; riduce esposizione DOAC" },
+
+    { id:"dronedarone", label:"Dronedarone", detail:"inibitore P-gp; interazione rilevante (specie con dabigatran)" },
+    { id:"cyclosporine", label:"Ciclosporina", detail:"inibitore P-gp; (edoxaban: riduzione dose)" },
+    { id:"erythromycin", label:"Eritromicina", detail:"inibitore P-gp/CYP (rilevante per edoxaban)" },
+    { id:"clarithro", label:"Claritromicina", detail:"macrolide; può aumentare esposizione di alcuni DOAC" },
+    { id:"verapamil", label:"Verapamil", detail:"inibitore P-gp (rilevante per dabigatran)" },
+    { id:"amiodarone", label:"Amiodarone", detail:"inibitore P-gp (rilevante per dabigatran)" },
+    { id:"quinidine", label:"Chinidina", detail:"inibitore P-gp (rilevante per dabigatran)" },
+
+    { id:"nsaids", label:"FANS", detail:"aumentano rischio emorragico (farmacodinamico)" },
+    { id:"asa", label:"ASA", detail:"antiaggregante; aumenta rischio emorragico" },
+    { id:"clopidogrel", label:"Clopidogrel", detail:"antiaggregante; aumenta rischio emorragico" },
+    { id:"ssri_snri", label:"SSRI / SNRI", detail:"possibile aumento rischio emorragico" },
+
+    { id:"glecap_pibr", label:"Glecaprevir/Pibrentasvir", detail:"HCV; aumenta esposizione dabigatran (attenzione)" }
+  ];
+
+  // -----------------------
+  // MAPPATURA "lista libera" -> categorie
+  // (sinonimi / varianti; normalizzati)
+  // -----------------------
+  const drugMap = [
+    // Azoli
+    { keys:["ketoconazolo","ketoconazole","nizoral"], cat:"azole", note:"Azolo (forte inibitore)" },
+    { keys:["itraconazolo","itraconazole","sporanox"], cat:"azole", note:"Azolo" },
+    { keys:["voriconazolo","voriconazole","vfend"], cat:"azole", note:"Azolo" },
+    { keys:["posaconazolo","posaconazole","noxafil"], cat:"azole", note:"Azolo" },
+    { keys:["fluconazolo","fluconazole","diflucan"], cat:"azole", note:"Azolo (inibitore; impatto variabile)" },
+
+    // Booster HIV
+    { keys:["ritonavir","norvir"], cat:"ritonavir", note:"Booster" },
+    { keys:["cobicistat","tybost"], cat:"ritonavir", note:"Booster (trattato come ritonavir qui)" },
+
+    // Induttori
+    { keys:["rifampicina","rifampicin","rifampin","rifadin","rimactan"], cat:"rifampicin", note:"Forte induttore" },
+    { keys:["carbamazepina","carbamazepine","tegretol"], cat:"antiepileptics", note:"Forte induttore" },
+    { keys:["fenitoina","phenytoin","dintoina","dilantin"], cat:"antiepileptics", note:"Forte induttore" },
+    { keys:["fenobarbital","phenobarbital","gardenale"], cat:"antiepileptics", note:"Forte induttore" },
+    { keys:["iperico","hypericum","st john","st. john","erba di san giovanni"], cat:"stjohn", note:"Induttore" },
+
+    // P-gp inibitori / macrolidi
+    { keys:["dronedarone","multaq"], cat:"dronedarone", note:"P-gp inibitore (forte/rilevante)" },
+    { keys:["ciclosporina","ciclosporin","cyclosporine","sandimmun","neoral"], cat:"cyclosporine", note:"P-gp inibitore" },
+    { keys:["eritromicina","erythromycin"], cat:"erythromycin", note:"Macrolide" },
+    { keys:["claritromicina","clarithromycin","klacid"], cat:"clarithro", note:"Macrolide" },
+    { keys:["verapamil","isoptin"], cat:"verapamil", note:"P-gp inibitore" },
+    { keys:["amiodarone","cordarone"], cat:"amiodarone", note:"P-gp inibitore" },
+    { keys:["chinidina","quinidine"], cat:"quinidine", note:"P-gp inibitore" },
+
+    // PD bleeding enhancers
+    { keys:["ibuprofene","ibuprofen","ketoprofene","ketoprofen","naprossene","naproxen","diclofenac","indometacina","indomethacin","celecoxib","etoricoxib","fans","nsaid","nsaids"], cat:"nsaids", note:"FANS (PD)" },
+    { keys:["asa","acido acetilsalicilico","aspirina","aspirin"], cat:"asa", note:"Antiaggregante (PD)" },
+    { keys:["clopidogrel","plavix"], cat:"clopidogrel", note:"Antiaggregante (PD)" },
+
+    // SSRI/SNRI (alcuni esempi)
+    { keys:["sertralina","sertraline","paroxetina","paroxetine","fluoxetina","fluoxetine","citalopram","escitalopram","venlafaxina","venlafaxine","duloxetina","duloxetine","ssri","snri"], cat:"ssri_snri", note:"SSRI/SNRI (PD)" },
+
+    // HCV
+    { keys:["glecaprevir","pibrentasvir","maviret"], cat:"glecap_pibr", note:"DAA HCV" },
+  ];
+
+  function norm(s){
+    return (s || "")
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g," ")
+      .replace(/[().]/g,"")
+      .replace(/’/g,"'")
+      ;
+  }
+
+  function splitMany(text){
+    return text
+      .split(/[,;\n]+/g)
+      .map(x => x.trim())
+      .filter(Boolean);
+  }
+
+  // -----------------------
+  // RULE ENGINE
+  // -----------------------
+  function evaluateInteractions(doac, picked, crcl){
+    const alerts = [];
+    const has = (id) => picked.includes(id);
+    const renalLow = (crcl !== null && crcl < 30);
+    const renalVeryLow = (crcl !== null && crcl < 15);
+
+    // PD bleeding enhancers
+    const pd = [];
+    if (has("nsaids")) pd.push("FANS");
+    if (has("asa")) pd.push("ASA");
+    if (has("clopidogrel")) pd.push("clopidogrel");
+    if (has("ssri_snri")) pd.push("SSRI/SNRI");
+    if (pd.length){
+      alerts.push({
+        level:"blue",
+        title:"Rischio emorragico aumentato (farmacodinamico)",
+        text:`Concomitanza con ${pd.join(", ")}: valutare indicazione, durata, fattori di rischio e (se appropriato) gastroprotezione.`
+      });
+    }
+
+    if (renalVeryLow){
+      alerts.push({
+        level:"amber",
+        title:"Funzione renale molto ridotta",
+        text:"CrCl < 15 mL/min: molte indicazioni/DOAC possono non essere raccomandati o controindicati a seconda della scheda tecnica e dell’indicazione. Verificare SmPC e alternativa terapeutica."
+      });
+    }
+
+    if (doac === "apixaban"){
+      if (has("azole") || has("ritonavir")){
+        alerts.push({
+          level:"amber",
+          title:"Non raccomandato (forti inibitori CYP3A4 + P-gp)",
+          text:"Azoli sistemici e/o ritonavir possono aumentare significativamente l’esposizione → rischio emorragico: in generale evitare/non raccomandato."
+        });
+      }
+      if (has("rifampicin") || has("antiepileptics") || has("stjohn")){
+        alerts.push({
+          level:"blue",
+          title:"Cautela (forti induttori CYP3A4 + P-gp)",
+          text:"Rifampicina / carbamazepina / fenitoina / fenobarbital / iperico possono ridurre l’esposizione → possibile riduzione efficacia."
+        });
+      }
+      if (has("verapamil") || has("amiodarone") || has("quinidine") || has("clarithro")){
+        alerts.push({
+          level:"green",
+          title:"Nota (inibitori non “forti”)",
+          text:"Alcuni inibitori (es. verapamil, amiodarone, claritromicina) possono aumentare l’esposizione in misura minore: valutare rischio emorragico individuale."
+        });
+      }
+    }
+
+    if (doac === "rivaroxaban"){
+      if (has("azole") || has("ritonavir")){
+        alerts.push({
+          level:"amber",
+          title:"Non raccomandato (forti inibitori CYP3A4 + P-gp)",
+          text:"Azoli sistemici e/o ritonavir possono aumentare significativamente i livelli → rischio emorragico: non raccomandato."
+        });
+      }
+      if (has("rifampicin") || has("antiepileptics") || has("stjohn")){
+        alerts.push({
+          level:"amber",
+          title:"Evitare (forti induttori)",
+          text:"Rifampicina e altri forti induttori riducono l’esposizione → evitare salvo stretta sorveglianza per segni/sintomi di trombosi."
+        });
+      }
+      if (renalLow && (has("azole") || has("ritonavir"))){
+        alerts.push({
+          level:"amber",
+          title:"Nefropatia + forti inibitori: attenzione extra",
+          text:"Con CrCl < 30 mL/min l’aumento di esposizione può essere più rilevante: rivalutare appropriatezza/alternative."
+        });
+      }
+    }
+
+    if (doac === "dabigatran"){
+      if (has("azole")){
+        alerts.push({
+          level:"red",
+          title:"Contraindicato (P-gp inibitore forte: azoli selezionati)",
+          text:"Con ketoconazolo (e azoli sistemici rilevanti) l’esposizione può aumentare marcatamente: controindicato/da evitare secondo SmPC."
+        });
+      }
+      if (has("dronedarone")){
+        alerts.push({
+          level:"red",
+          title:"Contraindicato (dronedarone)",
+          text:"Dronedarone aumenta significativamente l’esposizione a dabigatran: controindicato secondo SmPC."
+        });
+      }
+      if (has("cyclosporine")){
+        alerts.push({
+          level:"red",
+          title:"Evitare/controindicato (ciclosporina)",
+          text:"Ciclosporina (forte inibitore P-gp) può aumentare molto l’esposizione: da evitare/controindicato in molte situazioni."
+        });
+      }
+      if (has("glecap_pibr")){
+        alerts.push({
+          level:"amber",
+          title:"Attenzione (glecaprevir/pibrentasvir)",
+          text:"Può aumentare l’esposizione e il rischio di sanguinamento: considerare alternative o monitoraggio clinico stretto."
+        });
+      }
+      if (has("verapamil") || has("amiodarone") || has("quinidine") || has("clarithro") || has("erythromycin")){
+        alerts.push({
+          level:"blue",
+          title:"Cautela (inibitori P-gp)",
+          text:"Verapamil/amiodarone/chinidina e macrolidi possono aumentare l’esposizione (dipende anche dal timing per verapamil). Con ridotta funzione renale il rischio cresce: valutare dose/alternative secondo SmPC."
+        });
+      }
+      if (has("rifampicin") || has("antiepileptics") || has("stjohn")){
+        alerts.push({
+          level:"amber",
+          title:"Evitare (induttori P-gp)",
+          text:"Induttori P-gp (rifampicina, carbamazepina, fenitoina, fenobarbital, iperico) riducono concentrazioni/efficacia: da evitare."
+        });
+      }
+    }
+
+    if (doac === "edoxaban"){
+      const reducers = [];
+      if (has("cyclosporine")) reducers.push("ciclosporina");
+      if (has("dronedarone")) reducers.push("dronedarone");
+      if (has("erythromycin")) reducers.push("eritromicina");
+      if (has("azole")) reducers.push("ketoconazolo/azoli rilevanti");
+      if (reducers.length){
+        alerts.push({
+          level:"amber",
+          title:"Riduzione dose edoxaban (SmPC)",
+          text:`Con ${reducers.join(", ")}: spesso indicata riduzione a 30 mg/die (verificare indicazione e criteri associati).`
+        });
+      }
+      if (has("rifampicin") || has("antiepileptics") || has("stjohn")){
+        alerts.push({
+          level:"blue",
+          title:"Cautela (induttori P-gp)",
+          text:"Rifampicina e induttori (carbamazepina/fenitoina/fenobarbital/iperico) possono ridurre le concentrazioni: valutare alternative."
+        });
+      }
+      if (has("verapamil") || has("amiodarone") || has("quinidine") || has("clarithro")){
+        alerts.push({
+          level:"green",
+          title:"Nota (P-gp inibitori: spesso senza riduzione)",
+          text:"Per alcuni inibitori (amiodarone/quinidina/verapamil; claritromicina) la SmPC riporta aumento esposizione ma in genere senza riduzione standard (salvo altri criteri)."
+        });
+      }
+    }
+
+    if (!alerts.length){
+      alerts.push({ level:"green", title:"Nessuna interazione maggiore selezionata", text:"Con i farmaci selezionati non emergono alert maggiori in questo checker. Verificare comunque terapia completa e SmPC." });
+    }
+
+    if (renalLow && (has("verapamil") || has("amiodarone") || has("quinidine") || has("clarithro") || has("erythromycin") || has("cyclosporine") || has("dronedarone") || has("azole"))){
+      alerts.push({
+        level:"blue",
+        title:"Nefropatia + aumento esposizione: attenzione extra",
+        text:"Con CrCl < 30 mL/min e farmaci che aumentano l’esposizione, il rischio di sanguinamento può crescere: rivalutare dose/alternativa e rischio/beneficio."
+      });
+    }
+
+    return alerts;
+  }
+
+  // -----------------------
+  // UI
+  // -----------------------
+  const checksEl = document.getElementById("checks");
+  const alertsEl = document.getElementById("alerts");
+  const doacEl = document.getElementById("doac");
+
+  const freeDrugEl = document.getElementById("freeDrug");
+  const addFreeBtn = document.getElementById("addFreeBtn");
+  const clearFreeBtn = document.getElementById("clearFreeBtn");
+  const chipsEl = document.getElementById("chips");
+  const unmappedWarnEl = document.getElementById("unmappedWarn");
+  const datalistEl = document.getElementById("drugSuggestions");
+
+  // Build datalist from mapping keys (dedupe)
+  (function buildDatalist(){
+    const set = new Set();
+    drugMap.forEach(m => m.keys.forEach(k => set.add(k)));
+    Array.from(set).sort().forEach(k => {
+      const opt = document.createElement("option");
+      opt.value = k;
+      datalistEl.appendChild(opt);
+    });
+  })();
+
+  function renderChecks(){
+    checksEl.innerHTML = "";
+    options.forEach(opt => {
+      const div = document.createElement("label");
+      div.className = "check";
+      div.innerHTML = `
+        <input type="checkbox" data-id="${opt.id}">
+        <div>
+          <b>${opt.label}</b>
+          <span>${opt.detail}</span>
+        </div>
+      `;
+      checksEl.appendChild(div);
+    });
+  }
+
+  function pickedIds(){
+    return Array.from(checksEl.querySelectorAll("input[type=checkbox]:checked"))
+      .map(x => x.getAttribute("data-id"));
+  }
+
+  function setCategoryChecked(catId, checked){
+    const cb = checksEl.querySelector(`input[type=checkbox][data-id="${catId}"]`);
+    if (cb) cb.checked = !!checked;
+  }
+
+  function tagClass(level){
+    if (level==="red") return "tag t-red";
+    if (level==="amber") return "tag t-amber";
+    if (level==="blue") return "tag t-blue";
+    return "tag t-green";
+  }
+  function tagText(level){
+    if (level==="red") return "CONTRAINDICATO";
+    if (level==="amber") return "NON RACCOMANDATO / EVITARE";
+    if (level==="blue") return "CAUTELA";
+    return "INFO";
+  }
+
+  let lastCrCl = null;
+
+  function renderAlerts(){
+    const doac = doacEl.value;
+    const picked = pickedIds();
+    const alerts = evaluateInteractions(doac, picked, lastCrCl);
+
+    alertsEl.innerHTML = "";
+    alerts.forEach(a => {
+      const div = document.createElement("div");
+      div.className = "alert";
+      div.innerHTML = `
+        <span class="${tagClass(a.level)}">${tagText(a.level)}</span>
+        <b>${a.title}</b>
+        <div class="muted" style="margin-top:4px;">${a.text}</div>
+      `;
+      alertsEl.appendChild(div);
+    });
+  }
+
+  // -----------------------
+  // Free list state
+  // Each item: {name, mappedCat, note, id}
+  // -----------------------
+  let freeItems = [];
+  let seq = 1;
+
+  function matchDrugToCategory(raw){
+    const n = norm(raw);
+    if (!n) return null;
+
+    // direct contains match by keys
+    for (const m of drugMap){
+      for (const k of m.keys){
+        const kk = norm(k);
+        if (!kk) continue;
+        // match if equals or contains word-boundary-ish
+        if (n === kk) return { cat:m.cat, note:m.note };
+        if (n.includes(kk)) return { cat:m.cat, note:m.note };
+      }
+    }
+    return null;
+  }
+
+  function recalcCategoriesFromFreeList(){
+    // Reset all categories first (but keep manual checks too? -> unify: free list should only add, not wipe manual)
+    // Approach: do NOT uncheck anything automatically here; we only ensure mapped cats are checked.
+    const mapped = freeItems.filter(x => x.mappedCat).map(x => x.mappedCat);
+    mapped.forEach(cat => setCategoryChecked(cat, true));
+  }
+
+  function renderChips(){
+    chipsEl.innerHTML = "";
+    const hasUnmapped = freeItems.some(x => !x.mappedCat);
+    unmappedWarnEl.style.display = hasUnmapped ? "" : "none";
+
+    freeItems.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "chip " + (item.mappedCat ? "ok" : "bad");
+      div.innerHTML = `
+        <span><b>${escapeHtml(item.name)}</b> <span class="meta">${item.mappedCat ? "→ " + item.mappedCat : "→ non mappato"}</span></span>
+        <span class="x" title="Rimuovi" data-x="${item.id}">×</span>
+      `;
+      chipsEl.appendChild(div);
+    });
+
+    // chip remove
+    chipsEl.querySelectorAll(".x").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-x");
+        freeItems = freeItems.filter(x => String(x.id) !== String(id));
+        // Note: non “smarchiamo” automaticamente categorie perché potrebbero essere state selezionate anche manualmente.
+        renderChips();
+        renderAlerts();
+      });
+    });
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({
+      "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
+    }[c]));
+  }
+
+  function addFreeText(text){
+    const parts = splitMany(text);
+    if (!parts.length) return;
+
+    parts.forEach(p => {
+      const name = p.trim();
+      if (!name) return;
+      // avoid duplicates by name (case-insensitive)
+      const already = freeItems.some(x => norm(x.name) === norm(name));
+      if (already) return;
+
+      const hit = matchDrugToCategory(name);
+      freeItems.push({
+        id: seq++,
+        name,
+        mappedCat: hit ? hit.cat : null,
+        note: hit ? hit.note : null
+      });
+      if (hit) setCategoryChecked(hit.cat, true);
+    });
+
+    renderChips();
+    renderAlerts();
+  }
+
+  addFreeBtn.addEventListener("click", () => {
+    addFreeText(freeDrugEl.value);
+    freeDrugEl.value = "";
+    freeDrugEl.focus();
+  });
+
+  // Enter to add
+  freeDrugEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addFreeText(freeDrugEl.value);
+      freeDrugEl.value = "";
+    }
+  });
+
+  clearFreeBtn.addEventListener("click", () => {
+    freeItems = [];
+    renderChips();
+    renderAlerts();
+  });
+
+  // -----------------------
+  // CrCl calc
+  // -----------------------
+  const sexEl = document.getElementById("sex");
+  const ageEl = document.getElementById("age");
+  const weightEl = document.getElementById("weight");
+  const scrEl = document.getElementById("scr");
+  const calcBtn = document.getElementById("calcBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const exampleBtn = document.getElementById("exampleBtn");
+
+  const kpiArea = document.getElementById("kpiArea");
+  const crclOut = document.getElementById("crclOut");
+  const crclBand = document.getElementById("crclBand");
+  const renalFlag = document.getElementById("renalFlag");
+  const formulaNote = document.getElementById("formulaNote");
+
+  function bandForCrCl(v){
+    if (v === null) return "";
+    if (v < 15) return "Grave (<15)";
+    if (v < 30) return "Bassa (15–29)";
+    if (v < 50) return "Moderata (30–49)";
+    if (v < 80) return "Lieve (50–79)";
+    return "≥80";
+  }
+  function renalFlagText(v){
+    if (v === null) return "—";
+    if (v < 15) return "Molto alta criticità";
+    if (v < 30) return "Alta criticità";
+    if (v < 50) return "Criticità moderata";
+    return "OK / standard";
+  }
+
+  function calcCrCl(){
+    const sex = sexEl.value;
+    const age = Number(ageEl.value);
+    const wt  = Number(weightEl.value);
+    const scr = Number(scrEl.value);
+
+    if (!age || !wt || !scr || age <= 0 || wt <= 0 || scr <= 0){
+      alert("Inserisci età, peso e creatinina (valori > 0).");
+      return;
+    }
+
+    let crcl = ((140 - age) * wt) / (72 * scr);
+    if (sex === "F") crcl = crcl * 0.85;
+
+    crcl = Math.round(crcl * 10) / 10;
+    lastCrCl = crcl;
+
+    kpiArea.style.display = "";
+    formulaNote.style.display = "";
+    crclOut.textContent = crcl.toFixed(1);
+    crclBand.textContent = bandForCrCl(crcl);
+    renalFlag.textContent = renalFlagText(crcl);
+
+    renderAlerts();
+  }
+
+  function resetAll(){
+    sexEl.value = "M";
+    ageEl.value = "";
+    weightEl.value = "";
+    scrEl.value = "";
+    doacEl.value = "apixaban";
+    document.getElementById("indication").value = "nvaf";
+
+    Array.from(checksEl.querySelectorAll("input[type=checkbox]")).forEach(x => x.checked = false);
+    lastCrCl = null;
+
+    freeItems = [];
+    freeDrugEl.value = "";
+    renderChips();
+
+    kpiArea.style.display = "none";
+    formulaNote.style.display = "none";
+    alertsEl.innerHTML = "";
+    renderAlerts();
+  }
+
+  exampleBtn.addEventListener("click", () => {
+    sexEl.value = "F";
+    ageEl.value = 83;
+    weightEl.value = 59;
+    scrEl.value = 1.6;
+    doacEl.value = "dabigatran";
+    // add some free drugs
+    addFreeText("verapamil, ASA, rifampicina");
+    calcCrCl();
+  });
+
+  // -----------------------
+  // Events
+  // -----------------------
+  renderChecks();
+  renderChips();
+  renderAlerts();
+
+  checksEl.addEventListener("change", renderAlerts);
+  doacEl.addEventListener("change", renderAlerts);
+  document.getElementById("indication").addEventListener("change", renderAlerts);
+
+  calcBtn.addEventListener("click", calcCrCl);
+  resetBtn.addEventListener("click", resetAll);
+
+})();
+</script>
+</body>
+</html>

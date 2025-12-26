@@ -100,6 +100,9 @@ public partial class App : Application
         services.AddScoped<IDOACClinicalService, DOACClinicalService>();
         services.AddScoped<IDOACPerioperativeService, DOACPerioperativeService>();
 
+        // Document Library Service
+        services.AddSingleton<IDocumentLibraryService, DocumentLibraryService>();
+
         // HttpClient per Update Checker
         services.AddHttpClient();
 
@@ -177,6 +180,9 @@ public partial class App : Application
         services.AddTransient<Views.Tools.WeeklyDoseCalculatorDialog>();
         services.AddTransient<Views.Tools.InitialDosageEstimatorDialog>();
         services.AddTransient<Views.Tools.DoacGestWebViewWindow>();
+
+        // Dialog Views
+        services.AddTransient<Views.Dialogs.DocumentBrowserDialog>();
 
         // Main Window
         services.AddSingleton<MainWindow>();

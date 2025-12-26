@@ -293,6 +293,21 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void ShowDocumentBrowser()
+    {
+        try
+        {
+            var dialog = _serviceProvider.GetRequiredService<Views.Dialogs.DocumentBrowserDialog>();
+            dialog.Owner = Application.Current.MainWindow;
+            dialog.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            _dialogService.ShowError($"Errore nell'apertura della biblioteca documenti:\n{ex.Message}", "Errore");
+        }
+    }
+
+    [RelayCommand]
     private void ShowProfessionalGuide(string fileName)
     {
         try

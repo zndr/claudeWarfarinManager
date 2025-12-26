@@ -22,6 +22,7 @@
         <KeyBinding Key="F" Modifiers="Ctrl" Command="{Binding SearchPatientCommand}" />
         <KeyBinding Key="T" Modifiers="Ctrl" Command="{Binding ToggleThemeCommand}" />
         <KeyBinding Key="F1" Command="{Binding ShowUserGuideCommand}" />
+        <KeyBinding Key="F2" Command="{Binding ShowDocumentBrowserCommand}" />
         <KeyBinding Key="F1" Modifiers="Shift" Command="{Binding ShowProfessionalGuidesDialogCommand}" />
     </Window.InputBindings>
 
@@ -136,18 +137,20 @@
             <MenuItem Header="_Aiuto">
                 <MenuItem
                     Command="{Binding ShowUserGuideCommand}"
-                    Header="Guida utente"
+                    Header="📖 Guida utente"
                     InputGestureText="F1" />
                 <Separator />
                 <MenuItem
-                    Command="{Binding ShowProfessionalGuidesDialogCommand}"
-                    Header="Guide professionali"
-                    InputGestureText="Shift+F1" />
-                <MenuItem Header="Linee guida professionali">
+                    Command="{Binding ShowDocumentBrowserCommand}"
+                    Header="📚 Biblioteca Documenti..."
+                    InputGestureText="F2"
+                    ToolTip="Accedi a tutte le guide, linee guida, RCP DOAC e documenti di riferimento con ricerca integrata" />
+                <Separator />
+                <MenuItem Header="📋 Warfarin / TAO">
                     <MenuItem
                         Command="{Binding ShowProfessionalGuideCommand}"
                         CommandParameter="interactions.html"
-                        Header="💊 Interazioni Farmacologiche Warfarin" />
+                        Header="💊 Interazioni Farmacologiche" />
                     <MenuItem
                         Command="{Binding ShowProfessionalGuideCommand}"
                         CommandParameter="algoritmo-gestione-inr.html"
@@ -156,30 +159,76 @@
                         Command="{Binding ShowProfessionalGuideCommand}"
                         CommandParameter="infografica-tao.html"
                         Header="📋 Infografica Gestione TAO" />
-                    <MenuItem Header="📖 Guida alla TAO con Warfarin per MMG">
-                        <MenuItem
-                            Command="{Binding ShowProfessionalGuideCommand}"
-                            CommandParameter="linee-guida-tao.html"
-                            Header="📄 Testo" />
-                        <MenuItem
-                            Command="{Binding OpenPdfGuideCommand}"
-                            CommandParameter="LineeGuida.pdf"
-                            Header="📕 PDF" />
-                    </MenuItem>
+                    <Separator />
+                    <MenuItem
+                        Command="{Binding ShowProfessionalGuideCommand}"
+                        CommandParameter="linee-guida-tao.html"
+                        Header="📄 Guida TAO per MMG (Testo)" />
+                    <MenuItem
+                        Command="{Binding OpenPdfGuideCommand}"
+                        CommandParameter="LineeGuida.pdf"
+                        Header="📕 Guida TAO per MMG (PDF)" />
+                </MenuItem>
+                <MenuItem Header="💊 DOAC (NAO)">
+                    <MenuItem
+                        Command="{Binding ShowProfessionalGuideCommand}"
+                        CommandParameter="DoacsInteractions.html"
+                        Header="🔍 Checker Interazioni DOAC" />
                     <Separator />
                     <MenuItem
                         Command="{Binding OpenPdfGuideCommand}"
-                        CommandParameter="Guida Warfarin per pazienti.pdf"
-                        Header="👥 Guida per pazienti" />
+                        CommandParameter="RCP_apixaban.pdf"
+                        Header="📕 RCP Apixaban (Eliquis)" />
+                    <MenuItem
+                        Command="{Binding OpenPdfGuideCommand}"
+                        CommandParameter="RCP_rivaroxaban.pdf"
+                        Header="📕 RCP Rivaroxaban (Xarelto)" />
+                    <MenuItem
+                        Command="{Binding OpenPdfGuideCommand}"
+                        CommandParameter="RCP_dabigatran.pdf"
+                        Header="📕 RCP Dabigatran (Pradaxa)" />
+                    <MenuItem
+                        Command="{Binding OpenPdfGuideCommand}"
+                        CommandParameter="RCP_edoxaban.pdf"
+                        Header="📕 RCP Edoxaban (Lixiana)" />
+                </MenuItem>
+                <MenuItem Header="🔄 Switch Terapia">
+                    <MenuItem
+                        Command="{Binding ShowProfessionalGuideCommand}"
+                        CommandParameter="guida-switch-infografica.html"
+                        Header="📊 Infografica Switch DOAC ↔ Warfarin" />
+                    <MenuItem
+                        Command="{Binding OpenPdfGuideCommand}"
+                        CommandParameter="Switch_Doac_Warf.pdf"
+                        Header="📕 Guida Dettagliata (PDF)" />
+                </MenuItem>
+                <MenuItem Header="📚 Linee Guida">
+                    <MenuItem
+                        Command="{Binding OpenPdfGuideCommand}"
+                        CommandParameter="lgFCSA-SIMG-2018.pdf"
+                        Header="📚 FCSA-SIMG 2018" />
+                    <MenuItem
+                        Command="{Binding OpenPdfGuideCommand}"
+                        CommandParameter="lgFCSA.pdf"
+                        Header="📚 FCSA" />
+                    <MenuItem
+                        Command="{Binding OpenPdfGuideCommand}"
+                        CommandParameter="lgESC2024-raffronto-con-altre.pdf"
+                        Header="📚 ESC 2024 - Raffronto" />
                 </MenuItem>
                 <Separator />
                 <MenuItem
+                    Command="{Binding OpenPdfGuideCommand}"
+                    CommandParameter="Guida Warfarin per pazienti.pdf"
+                    Header="👥 Guida per pazienti" />
+                <Separator />
+                <MenuItem
                     Command="{Binding CheckUpdatesCommand}"
-                    Header="Verifica aggiornamenti" />
+                    Header="🔄 Verifica aggiornamenti" />
                 <Separator />
                 <MenuItem
                     Command="{Binding ShowAboutCommand}"
-                    Header="About TaoGEST..." />
+                    Header="ℹ️ About TaoGEST..." />
             </MenuItem>
         </Menu>
 

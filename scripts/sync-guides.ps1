@@ -24,13 +24,34 @@ if (-not (Test-Path $TargetDir)) {
 
 # Definisci i file da sincronizzare
 $filesToSync = @(
+    # Warfarin / TAO
     "interactions.html",
     "LineeGuida.html",
     "LineeGuida.pdf",
     "Guida Warfarin per pazienti.pdf",
     "Algoritmo Gestione INR.html",
     "infografica-tao.html",
-    "nomogramma-pengo.html"
+    "nomogramma-pengo.html",
+
+    # DOAC
+    "DoacsInteractions.html",
+    "RCP_apixaban.pdf",
+    "RCP_rivaroxaban.pdf",
+    "RCP_dabigatran.pdf",
+    "RCP_edoxaban.pdf",
+
+    # Switch terapia
+    "guida-switch-infografica.html",
+    "Switch_Doac_Warf.pdf",
+
+    # Linee guida
+    "lgFCSA-SIMG-2018.pdf",
+    "lgFCSA.pdf",
+    "lgESC2024-raffronto-con-altre.pdf",
+
+    # Riferimenti
+    "Bridge therapia per TAO - differenze FCSA-ACCP.pdf",
+    "Reazioni Avverse Warfarin - PDF.pdf"
 )
 
 $syncedCount = 0

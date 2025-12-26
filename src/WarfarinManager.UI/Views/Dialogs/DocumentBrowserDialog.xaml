@@ -1,0 +1,377 @@
+<Window
+    x:Class="WarfarinManager.UI.Views.Dialogs.DocumentBrowserDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Biblioteca Documenti - TaoGEST"
+    Width="900"
+    Height="650"
+    MinWidth="700"
+    MinHeight="500"
+    WindowStartupLocation="CenterOwner"
+    Background="{DynamicResource WindowBackgroundBrush}"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <!-- Stile per i pulsanti documento -->
+        <Style x:Key="DocumentButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="15,12" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="6">
+                            <ContentPresenter
+                                Margin="{TemplateBinding Padding}"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource HoverBackgroundBrush}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource PressedBackgroundBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Stile per i tab delle categorie -->
+        <Style x:Key="CategoryTabStyle" TargetType="RadioButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="Padding" Value="15,10" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border
+                            x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="Transparent"
+                            BorderThickness="0,0,0,3"
+                            Padding="{TemplateBinding Padding}">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource HoverBackgroundBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border
+            Grid.Row="0"
+            Padding="20,15"
+            Background="{DynamicResource PrimaryBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock
+                        FontSize="20"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource TextOnPrimaryBrush}"
+                        Text="📚 Biblioteca Documenti" />
+                    <TextBlock
+                        Margin="0,5,0,0"
+                        FontSize="12"
+                        Foreground="#E6F2FF"
+                        Text="Guide professionali, linee guida e schede tecniche per la gestione della terapia anticoagulante" />
+                </StackPanel>
+
+                <!-- Contatore documenti -->
+                <Border
+                    Grid.Column="1"
+                    Background="#FFFFFF30"
+                    CornerRadius="15"
+                    Padding="12,6"
+                    VerticalAlignment="Center">
+                    <TextBlock
+                        x:Name="DocumentCountText"
+                        FontSize="12"
+                        FontWeight="SemiBold"
+                        Foreground="White"
+                        Text="0 documenti" />
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Barra di ricerca -->
+        <Border
+            Grid.Row="1"
+            Padding="20,15"
+            Background="{DynamicResource ToolbarBackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="0,0,0,1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Border
+                    Grid.Column="0"
+                    Background="{DynamicResource InputBackgroundBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="20"
+                    Padding="5,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            Grid.Column="0"
+                            Margin="10,0,5,0"
+                            VerticalAlignment="Center"
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="16"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
+                            Text="&#xE721;" />
+
+                        <TextBox
+                            x:Name="SearchTextBox"
+                            Grid.Column="1"
+                            Height="36"
+                            VerticalContentAlignment="Center"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            FontSize="14"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
+                            TextChanged="SearchTextBox_TextChanged">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="CaretBrush" Value="{DynamicResource PrimaryBrush}" />
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+
+                        <TextBlock
+                            x:Name="SearchPlaceholder"
+                            Grid.Column="1"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            FontSize="14"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
+                            IsHitTestVisible="False"
+                            Text="Cerca documenti... (es: DOAC, interazioni, INR, switch)" />
+
+                        <Button
+                            x:Name="ClearSearchButton"
+                            Grid.Column="2"
+                            Width="28"
+                            Height="28"
+                            Margin="5,0"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Click="ClearSearch_Click"
+                            Cursor="Hand"
+                            Visibility="Collapsed">
+                            <TextBlock
+                                FontFamily="Segoe MDL2 Assets"
+                                FontSize="12"
+                                Foreground="{DynamicResource TextSecondaryBrush}"
+                                Text="&#xE711;" />
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <TextBlock
+                    Grid.Column="1"
+                    Margin="15,0,0,0"
+                    VerticalAlignment="Center"
+                    FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}"
+                    Text="Premi Invio per cercare" />
+            </Grid>
+        </Border>
+
+        <!-- Tab categorie -->
+        <Border
+            Grid.Row="2"
+            Background="{DynamicResource CardBackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="0,0,0,1">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                <StackPanel
+                    x:Name="CategoryPanel"
+                    Orientation="Horizontal"
+                    Margin="10,0">
+                    <RadioButton
+                        x:Name="AllCategoryButton"
+                        Content="📁 Tutti"
+                        IsChecked="True"
+                        Style="{StaticResource CategoryTabStyle}"
+                        Checked="Category_Checked"
+                        Tag="" />
+                    <RadioButton
+                        Content="📋 Warfarin / TAO"
+                        Style="{StaticResource CategoryTabStyle}"
+                        Checked="Category_Checked"
+                        Tag="Warfarin" />
+                    <RadioButton
+                        Content="💊 DOAC (NAO)"
+                        Style="{StaticResource CategoryTabStyle}"
+                        Checked="Category_Checked"
+                        Tag="DOAC" />
+                    <RadioButton
+                        Content="🔄 Switch Terapia"
+                        Style="{StaticResource CategoryTabStyle}"
+                        Checked="Category_Checked"
+                        Tag="Switch" />
+                    <RadioButton
+                        Content="📚 Linee Guida"
+                        Style="{StaticResource CategoryTabStyle}"
+                        Checked="Category_Checked"
+                        Tag="LineGuida" />
+                    <RadioButton
+                        Content="👥 Per Pazienti"
+                        Style="{StaticResource CategoryTabStyle}"
+                        Checked="Category_Checked"
+                        Tag="PerPazienti" />
+                    <RadioButton
+                        Content="📖 Riferimenti"
+                        Style="{StaticResource CategoryTabStyle}"
+                        Checked="Category_Checked"
+                        Tag="Riferimenti" />
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Lista documenti -->
+        <ScrollViewer
+            Grid.Row="3"
+            Padding="20"
+            VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="DocumentsPanel" />
+        </ScrollViewer>
+
+        <!-- Messaggio nessun risultato -->
+        <Border
+            x:Name="NoResultsPanel"
+            Grid.Row="3"
+            Visibility="Collapsed">
+            <StackPanel
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+                <TextBlock
+                    FontSize="48"
+                    HorizontalAlignment="Center"
+                    Text="🔍" />
+                <TextBlock
+                    Margin="0,10,0,0"
+                    FontSize="16"
+                    FontWeight="SemiBold"
+                    Foreground="{DynamicResource TextSecondaryBrush}"
+                    HorizontalAlignment="Center"
+                    Text="Nessun documento trovato" />
+                <TextBlock
+                    Margin="0,5,0,0"
+                    FontSize="13"
+                    Foreground="{DynamicResource TextSecondaryBrush}"
+                    HorizontalAlignment="Center"
+                    Text="Prova a modificare i termini di ricerca" />
+            </StackPanel>
+        </Border>
+
+        <!-- Footer -->
+        <Border
+            Grid.Row="4"
+            Padding="20,12"
+            Background="{DynamicResource ToolbarBackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="0,1,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    FontSize="11"
+                    Foreground="{DynamicResource TextSecondaryBrush}"
+                    Text="Clicca su un documento per aprirlo. I PDF si aprono con il visualizzatore predefinito, le guide HTML nell'app." />
+
+                <Button
+                    Grid.Column="1"
+                    Width="100"
+                    Height="32"
+                    Click="CloseButton_Click"
+                    Content="Chiudi"
+                    IsCancel="True">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#6C757D" />
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="FontWeight" Value="SemiBold" />
+                            <Setter Property="Cursor" Value="Hand" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border
+                                            Background="{TemplateBinding Background}"
+                                            CornerRadius="3">
+                                            <ContentPresenter
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center" />
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#5A6268" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
