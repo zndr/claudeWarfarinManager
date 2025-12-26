@@ -87,7 +87,29 @@ public class Patient : BaseEntity
     /// Data di eliminazione (soft delete)
     /// </summary>
     public DateTime? DeletedAt { get; set; }
-    
+
+    // Dati biometrici (importati da Millewin)
+
+    /// <summary>
+    /// Peso corporeo in kg
+    /// </summary>
+    public decimal? Weight { get; set; }
+
+    /// <summary>
+    /// Altezza in cm
+    /// </summary>
+    public decimal? Height { get; set; }
+
+    /// <summary>
+    /// Data ultimo aggiornamento peso
+    /// </summary>
+    public DateTime? WeightLastUpdated { get; set; }
+
+    /// <summary>
+    /// Data ultimo aggiornamento altezza
+    /// </summary>
+    public DateTime? HeightLastUpdated { get; set; }
+
     // CHA₂DS₂-VASc Score Components (per calcolo rischio bridge therapy)
     
     /// <summary>
@@ -201,6 +223,13 @@ public class Patient : BaseEntity
     /// Nome completo
     /// </summary>
     public string FullName => $"{LastName} {FirstName}";
+
+    /// <summary>
+    /// Body Mass Index calcolato (kg/m²)
+    /// </summary>
+    public decimal? BMI => (Weight.HasValue && Height.HasValue && Height.Value > 0)
+        ? Math.Round(Weight.Value / ((Height.Value / 100m) * (Height.Value / 100m)), 1)
+        : null;
 
     /// <summary>
     /// Calcola il punteggio HAS-BLED per valutare il rischio emorragico

@@ -37,7 +37,16 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
             
         builder.Property(p => p.Address)
             .HasMaxLength(500);
-            
+
+        // Dati biometrici
+        builder.Property(p => p.Weight)
+            .HasPrecision(5, 2)
+            .HasComment("Peso in kg");
+
+        builder.Property(p => p.Height)
+            .HasPrecision(5, 2)
+            .HasComment("Altezza in cm");
+
         // Indici
         builder.HasIndex(p => p.FiscalCode)
             .IsUnique()
@@ -75,5 +84,6 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
         // Ignore computed properties
         builder.Ignore(p => p.Age);
         builder.Ignore(p => p.FullName);
+        builder.Ignore(p => p.BMI);
     }
 }

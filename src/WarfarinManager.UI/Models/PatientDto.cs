@@ -116,6 +116,47 @@ public class PatientDto
     public bool IsDoacPatient =>
         AnticoagulantTypes.IsDoac(AnticoagulantType);
 
+    // === Dati Biometrici (da Millewin) ===
+
+    /// <summary>
+    /// Peso corporeo in kg
+    /// </summary>
+    public decimal? Weight { get; set; }
+
+    /// <summary>
+    /// Altezza in cm
+    /// </summary>
+    public decimal? Height { get; set; }
+
+    /// <summary>
+    /// Data ultimo aggiornamento peso
+    /// </summary>
+    public DateTime? WeightLastUpdated { get; set; }
+
+    /// <summary>
+    /// Data ultimo aggiornamento altezza
+    /// </summary>
+    public DateTime? HeightLastUpdated { get; set; }
+
+    /// <summary>
+    /// Body Mass Index calcolato (kg/m²)
+    /// </summary>
+    public decimal? BMI => (Weight.HasValue && Height.HasValue && Height.Value > 0)
+        ? Math.Round(Weight.Value / ((Height.Value / 100m) * (Height.Value / 100m)), 1)
+        : null;
+
+    /// <summary>
+    /// Categoria BMI per visualizzazione
+    /// </summary>
+    public string? BMICategory => BMI switch
+    {
+        null => null,
+        < 18.5m => "Sottopeso",
+        < 25m => "Normopeso",
+        < 30m => "Sovrappeso",
+        _ => "Obesità"
+    };
+
     /// <summary>
     /// Durata della terapia in mesi (arrotondata)
     /// </summary>

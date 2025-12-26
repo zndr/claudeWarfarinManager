@@ -94,6 +94,7 @@ public partial class App : Application
         services.AddScoped<ISwitchCalculatorService, SwitchCalculatorService>();
         services.AddScoped<PengoNomogramService>();
         services.AddScoped<PostgreSqlImportService>();
+        services.AddScoped<IMillepsDataService, MillepsDataService>();
 
         // DOAC Services
         services.AddScoped<IDOACInteractionService, DOACInteractionService>();
@@ -301,6 +302,18 @@ public partial class App : Application
             // FiscalCode: Aggiunto nella versione 1.X.X per supportare l'importazione pazienti
             await EnsureColumnExistsAsync(connection, "DoctorData", "FiscalCode",
                 "TEXT NOT NULL DEFAULT ''");
+
+            // =========================================================================
+            // TABELLA: Patients - Campi biometrici (v1.4.0)
+            // =========================================================================
+            await EnsureColumnExistsAsync(connection, "Patients", "Weight",
+                "TEXT NULL");
+            await EnsureColumnExistsAsync(connection, "Patients", "Height",
+                "TEXT NULL");
+            await EnsureColumnExistsAsync(connection, "Patients", "WeightLastUpdated",
+                "TEXT NULL");
+            await EnsureColumnExistsAsync(connection, "Patients", "HeightLastUpdated",
+                "TEXT NULL");
 
             // =========================================================================
             // TABELLA: DoacMonitoring (nuova per modulo DOAC)

@@ -343,6 +343,103 @@
                                 Foreground="{DynamicResource TextPrimaryBrush}"
                                 Text="{Binding Patient.Email}" />
                         </Grid>
+
+                        <!-- Sezione Dati Biometrici -->
+                        <Border Margin="0,25,0,0" Padding="15" Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        FontSize="14"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource PrimaryBrush}"
+                                        Text="DATI BIOMETRICI" />
+                                    <Button
+                                        Grid.Column="1"
+                                        Padding="10,5"
+                                        Command="{Binding RefreshBiometricDataCommand}"
+                                        Content="Aggiorna da Millewin"
+                                        FontSize="11"
+                                        Cursor="Hand"/>
+                                </Grid>
+
+                                <Grid Margin="0,15,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Peso -->
+                                    <TextBlock
+                                        Grid.Row="0" Grid.Column="0"
+                                        Margin="0,8"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource TextSecondaryBrush}"
+                                        Text="Peso (kg):" />
+                                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="0,8">
+                                        <TextBlock
+                                            Foreground="{DynamicResource TextPrimaryBrush}"
+                                            Text="{Binding Patient.Weight, StringFormat={}{0:F1}, TargetNullValue=--}" />
+                                        <TextBlock
+                                            Margin="10,0,0,0"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextSecondaryBrush}"
+                                            Text="{Binding Patient.WeightLastUpdated, StringFormat=({0:dd/MM/yyyy}), TargetNullValue=''}" />
+                                    </StackPanel>
+
+                                    <!-- Altezza -->
+                                    <TextBlock
+                                        Grid.Row="0" Grid.Column="2"
+                                        Margin="0,8"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource TextSecondaryBrush}"
+                                        Text="Altezza (cm):" />
+                                    <TextBlock
+                                        Grid.Row="0" Grid.Column="3"
+                                        Margin="0,8"
+                                        Foreground="{DynamicResource TextPrimaryBrush}"
+                                        Text="{Binding Patient.Height, StringFormat={}{0:F0}, TargetNullValue=--}" />
+
+                                    <!-- BMI -->
+                                    <TextBlock
+                                        Grid.Row="1" Grid.Column="0"
+                                        Margin="0,8"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource TextSecondaryBrush}"
+                                        Text="BMI:" />
+                                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,8">
+                                        <TextBlock
+                                            Foreground="{DynamicResource TextPrimaryBrush}"
+                                            Text="{Binding Patient.BMI, StringFormat={}{0:F1}, TargetNullValue=--}" />
+                                        <TextBlock
+                                            Margin="10,0,0,0"
+                                            FontSize="11"
+                                            FontStyle="Italic"
+                                            Foreground="{DynamicResource TextSecondaryBrush}"
+                                            Text="{Binding Patient.BMICategory}" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Messaggio se dati non disponibili -->
+                                <TextBlock
+                                    Margin="0,10,0,0"
+                                    FontSize="11"
+                                    FontStyle="Italic"
+                                    Foreground="{DynamicResource TextSecondaryBrush}"
+                                    Text="Clicca 'Aggiorna da Millewin' per importare i dati biometrici."
+                                    Visibility="{Binding HasNoBiometricData, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>

@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using WarfarinManager.Core.Interfaces;
 using WarfarinManager.Data.Repositories.Interfaces;
 using WarfarinManager.Shared.Constants;
 using WarfarinManager.UI.Models;
@@ -26,6 +27,7 @@ namespace WarfarinManager.UI.ViewModels
         private readonly IDialogService _dialogService;
         private readonly ILogger<PatientDetailsViewModel> _logger;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IMillepsDataService _millepsDataService;
 
         [ObservableProperty]
         private int _patientId;
@@ -98,12 +100,18 @@ namespace WarfarinManager.UI.ViewModels
         public bool IsDoacPatient => Patient?.IsDoacPatient ?? false;
 
         /// <summary>
+        /// Indica se non ci sono dati biometrici disponibili
+        /// </summary>
+        public bool HasNoBiometricData => Patient?.Weight == null && Patient?.Height == null;
+
+        /// <summary>
         /// Chiamato quando Patient cambia - notifica le proprietà computed dipendenti
         /// </summary>
         partial void OnPatientChanged(PatientDto? value)
         {
             OnPropertyChanged(nameof(IsWarfarinPatient));
             OnPropertyChanged(nameof(IsDoacPatient));
+            OnPropertyChanged(nameof(HasNoBiometricData));
             _logger.LogInformation("Patient changed: IsWarfarinPatient={IsWarfarin}, IsDoacPatient={IsDoac}",
                 IsWarfarinPatient, IsDoacPatient);
         }
@@ -118,13 +126,15 @@ namespace WarfarinManager.UI.ViewModels
             INavigationService navigationService,
             IDialogService dialogService,
             ILogger<PatientDetailsViewModel> logger,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IMillepsDataService millepsDataService)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
             _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            _millepsDataService = millepsDataService ?? throw new ArgumentNullException(nameof(millepsDataService));
 
             // Inizializza il MedicationsViewModel dal DI
             MedicationsViewModel = _serviceProvider.GetRequiredService<MedicationsViewModel>();
@@ -431,6 +441,86 @@ namespace WarfarinManager.UI.ViewModels
         }
 
         /// <summary>
+        /// Aggiorna i dati biometrici del paziente dal database Millewin
+        /// </summary>
+        [RelayCommand]
+        private async Task RefreshBiometricDataAsync()
+        {
+            if (Patient == null) return;
+
+            try
+            {
+                _logger.LogInformation("Aggiornamento dati biometrici da Millewin per paziente {FiscalCode}", Patient.FiscalCode);
+
+                // Verifica connessione Millewin
+                if (!await _millepsDataService.TestConnectionAsync())
+                {
+                    _dialogService.ShowError("Impossibile connettersi al database Millewin.\nVerificare che Millewin sia in esecuzione.", "Errore Connessione");
+                    return;
+                }
+
+                // Recupera dati biometrici da Millewin
+                var biometricData = await _millepsDataService.GetBiometricDataAsync(Patient.FiscalCode);
+
+                if (biometricData == null || (!biometricData.Weight.HasValue && !biometricData.Height.HasValue))
+                {
+                    _dialogService.ShowInformation("Nessun dato biometrico trovato in Millewin per questo paziente.", "Nessun Dato");
+                    return;
+                }
+
+                // Aggiorna il paziente nel database TaoGEST
+                var patient = await _unitOfWork.Patients.GetByIdAsync(PatientId);
+                if (patient == null) return;
+
+                bool updated = false;
+
+                if (biometricData.Weight.HasValue)
+                {
+                    patient.Weight = biometricData.Weight;
+                    patient.WeightLastUpdated = biometricData.WeightDate ?? DateTime.Now;
+                    updated = true;
+                }
+
+                if (biometricData.Height.HasValue)
+                {
+                    patient.Height = biometricData.Height;
+                    patient.HeightLastUpdated = biometricData.HeightDate ?? DateTime.Now;
+                    updated = true;
+                }
+
+                if (updated)
+                {
+                    await _unitOfWork.SaveChangesAsync();
+
+                    // Aggiorna il DTO locale
+                    Patient.Weight = patient.Weight;
+                    Patient.Height = patient.Height;
+                    Patient.WeightLastUpdated = patient.WeightLastUpdated;
+                    Patient.HeightLastUpdated = patient.HeightLastUpdated;
+
+                    // Notifica cambio proprietà
+                    OnPropertyChanged(nameof(Patient));
+                    OnPropertyChanged(nameof(HasNoBiometricData));
+
+                    _logger.LogInformation("Dati biometrici aggiornati: Peso={Weight}kg, Altezza={Height}cm",
+                        patient.Weight, patient.Height);
+
+                    _dialogService.ShowInformation(
+                        $"Dati biometrici aggiornati da Millewin:\n\n" +
+                        $"Peso: {patient.Weight:F1} kg\n" +
+                        $"Altezza: {patient.Height:F0} cm\n" +
+                        $"BMI: {patient.BMI:F1}",
+                        "Aggiornamento Completato");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Errore aggiornamento dati biometrici da Millewin");
+                _dialogService.ShowError($"Errore durante l'aggiornamento: {ex.Message}", "Errore");
+            }
+        }
+
+        /// <summary>
         /// Termina l'indicazione selezionata
         /// </summary>
         [RelayCommand(CanExecute = nameof(CanEndIndication))]
@@ -631,6 +721,11 @@ namespace WarfarinManager.UI.ViewModels
                 IsSlowMetabolizer = patient.IsSlowMetabolizer,
                 AnticoagulantType = patient.AnticoagulantType,
                 TherapyStartDate = patient.TherapyStartDate,
+                // Dati biometrici
+                Weight = patient.Weight,
+                Height = patient.Height,
+                WeightLastUpdated = patient.WeightLastUpdated,
+                HeightLastUpdated = patient.HeightLastUpdated,
                 // TODO: Caricare indicazione attiva, ultimo INR, TTR
                 ActiveIndication = null,
                 LastINR = null,
