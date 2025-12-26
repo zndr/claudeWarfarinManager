@@ -71,63 +71,8 @@
     </UserControl.Resources>
 
     <Grid Background="{DynamicResource ContentBackgroundBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <!-- Header compatto -->
-        <Border Grid.Row="0" Background="{DynamicResource PrimaryBrush}" Padding="15,10">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <TextBlock Grid.Column="0"
-                           Text="{Binding Patient.FullName, StringFormat='Paziente: {0}'}"
-                           FontSize="14"
-                           Foreground="{DynamicResource TextOnPrimaryBrush}"
-                           FontWeight="SemiBold"
-                           VerticalAlignment="Center"/>
-
-                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Content="💾 Salva"
-                            Command="{Binding SalvaRilevazioneCommand}"
-                            Background="{DynamicResource SuccessBrush}"
-                            Padding="20,10"
-                            Margin="5,0">
-                        <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="{DynamicResource SuccessHoverBrush}"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-                    <Button Content="🔍 Calcola Dosaggio"
-                            Command="{Binding CalcolaDosaggioCommand}"
-                            Background="{DynamicResource WarningBrush}"
-                            Padding="20,10"
-                            Margin="5,0">
-                        <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="{DynamicResource WarningHoverBrush}"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-                </StackPanel>
-            </Grid>
-        </Border>
-
         <!-- Content -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="20">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
             <StackPanel MaxWidth="1400">
 
                 <!-- Parametri Laboratorio - Layout compatto su una riga -->
@@ -192,12 +137,28 @@
                                      IsReadOnly="{Binding CrClCalcolato}"/>
                         </StackPanel>
 
-                        <Button Grid.Column="9"
-                                Content="⚙️"
-                                ToolTip="Calcola CrCl"
-                                Command="{Binding CalcolaClearanceCreatininaCommand}"
-                                VerticalAlignment="Bottom"
-                                Padding="10,6"/>
+                        <StackPanel Grid.Column="9" Orientation="Horizontal" VerticalAlignment="Bottom">
+                            <Button Content="⚙️"
+                                    ToolTip="Calcola CrCl"
+                                    Command="{Binding CalcolaClearanceCreatininaCommand}"
+                                    Padding="10,6"
+                                    Margin="0,0,5,0"/>
+                            <Button Content="💾 Salva"
+                                    ToolTip="Salva rilevazione"
+                                    Command="{Binding SalvaRilevazioneCommand}"
+                                    Background="{DynamicResource SuccessBrush}"
+                                    Padding="12,6">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource SuccessHoverBrush}"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </StackPanel>
                     </Grid>
                 </GroupBox>
 
@@ -456,8 +417,7 @@
         </ScrollViewer>
 
         <!-- Loading Overlay -->
-        <Border Grid.Row="0" Grid.RowSpan="2"
-                Background="#80000000"
+        <Border Background="#80000000"
                 Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
                 Panel.ZIndex="999">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
