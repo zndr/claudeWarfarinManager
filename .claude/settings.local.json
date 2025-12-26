@@ -122,7 +122,9 @@
       "Bash(cmd /c \"type d:\\\\Claude\\\\TaoGest\\\\src\\\\WarfarinManager.UI\\\\ViewModels\\\\DoacGestViewModel.cs | findstr /n OnAnti\")",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat\\(DoacGest\\): Implementazione checker interazioni farmacologiche DOAC\n\nAggiunto sistema completo per verificare le interazioni tra farmaci e DOAC:\n\n- DOACInteractionService: aggiunto fuzzy matching con normalizzazione nomi\n  farmaci e mappatura sinonimi \\(nomi commerciali italiani/inglesi\\)\n- DoacGestViewModel: nuova sezione per gestione farmaci con:\n  - Inserimento manuale farmaci con autocompletamento\n  - Caricamento automatico da terapia continuativa del paziente\n  - Calcolo interazioni in tempo reale al cambio DOAC\n- DoacGestConverters: nuovi converter per visualizzazione livelli interazione\n  con codifica colori \\(rosso=controindicato, arancio=pericoloso, blu=cautela\\)\n- DoacGestView.xaml: nuova UI con chip per farmaci inseriti e card colorate\n  per le interazioni rilevate con raccomandazioni cliniche\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(ls:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: Biblioteca Documenti con RCP DOAC e linee guida\n\n- Aggiunta Biblioteca Documenti accessibile dal menu Aiuto\n- Nuovo servizio DocumentLibraryService per gestione documenti\n- RCP ufficiali EMA per tutti i DOAC \\(Apixaban, Rivaroxaban, Dabigatran, Edoxaban\\)\n- Checker interazioni DOAC \\(HTML interattivo\\)\n- Linee guida FCSA, FCSA-SIMG 2018, ESC 2024\n- Documenti Bridge Therapy e Reazioni Avverse\n- Fix NullReferenceException all''apertura della Biblioteca Documenti\n- Ricerca documenti per titolo, descrizione e keywords\n- Filtro per categoria \\(Warfarin, DOAC, Switch, Linee Guida, ecc.\\)\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(powershell -ExecutionPolicy Bypass -File:*)"
     ],
     "deny": [],
     "ask": []

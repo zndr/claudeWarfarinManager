@@ -1,8 +1,8 @@
 {
-    "Version":  "1.2.4.4",
-    "ReleaseNotes":  "Correzioni UI tema scuro e fix WebView2:\n- RISOLTO: Testo versione non aggiornato in MainWindow\n- RISOLTO: Menu illeggibili in tema scuro (sfondo chiaro, testo giallo)\n- RISOLTO: Dialog About con problemi di contrasto in tema scuro\n- RISOLTO: Dialog Gestione Database con colori hardcoded\n- RISOLTO: Errore WebView2 in Switch Terapia (impossibile scrivere in Program Files)\n\nDettagli tecnici:\n- Aggiunto MenuItem Style globale con supporto tema dinamico\n- Tutti i dialog ora usano DynamicResource per background/foreground\n- WebView2 configurato per usare cartella utente (%LOCALAPPDATA%\\WarfarinManager\\WebView2Data)\n- Eliminati tutti i colori hardcoded nei dialog",
-    "DownloadUrl":  "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.2.4.4/TaoGEST-Setup-v1.2.4.4.exe",
-    "ReleaseDate":  "2025-12-23",
-    "Sha256Hash":  "60D5B0E60DE01835986F3E42C8CC7F22F7E959E11E4B4C3FED43189B7D8CF2CF",
-    "FileSize":  66497870
+    "Version":  "1.3.0.0",
+    "ReleaseNotes":  "Versione 1.3.0.0 - DoacGEST e Biblioteca Documenti\n\nNUOVE FUNZIONALITA:\n- Modulo DoacGEST per gestione terapia con DOAC (NAO)\n- Calcolo automatico dosaggio DOAC basato su peso, funzionalita renale e indicazione\n- Checker interazioni farmacologiche DOAC con P-gp e CYP3A4\n- Calcolo score HAS-BLED per rischio emorragico\n- Monitoraggio parametri ematochimici e renali\n- Biblioteca Documenti con accesso rapido a guide e RCP\n\nDOCUMENTI INCLUSI:\n- RCP ufficiali EMA per tutti i DOAC (Apixaban, Rivaroxaban, Dabigatran, Edoxaban)\n- Linee guida FCSA, FCSA-SIMG 2018, ESC 2024\n- Guida Bridge Therapy e Reazioni Avverse Warfarin\n- Checker interazioni DOAC interattivo\n\nMIGLIORAMENTI:\n- Nuovo menu Strumenti con accesso diretto a DoacGEST\n- Ricerca documenti per titolo, descrizione e keywords\n- Filtro documenti per categoria\n- Fix vari bug e miglioramenti UX",
+    "DownloadUrl":  "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.3.0.0/TaoGEST-Setup-v1.3.0.0.exe",
+    "ReleaseDate":  "2025-12-26",
+    "Sha256Hash":  "AA2FA7ABF861C3609AB0F9E0A5D839AF47C8E8B006C02B0F36DE94DDCCBB2D10",
+    "FileSize":  75431022
 }
