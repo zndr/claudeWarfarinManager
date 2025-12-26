@@ -6,12 +6,51 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using WarfarinManager.Core.Services;
 using WarfarinManager.Data.Entities;
 using WarfarinManager.Data.Repositories.Interfaces;
 using WarfarinManager.Data.Services;
+using WarfarinManager.Shared.Enums;
+using WarfarinManager.Shared.Models;
 using WarfarinManager.UI.Services;
 
 namespace WarfarinManager.UI.ViewModels;
+
+/// <summary>
+/// Rappresenta un farmaco inserito dall'utente per la verifica delle interazioni
+/// </summary>
+public partial class DrugEntryViewModel : ObservableObject
+{
+    /// <summary>
+    /// Nome del farmaco inserito
+    /// </summary>
+    [ObservableProperty]
+    private string _drugName = string.Empty;
+
+    /// <summary>
+    /// Indica se il farmaco è stato mappato a una categoria di interazione nota
+    /// </summary>
+    [ObservableProperty]
+    private bool _isMapped;
+
+    /// <summary>
+    /// Categoria di interazione se mappato
+    /// </summary>
+    [ObservableProperty]
+    private string? _mappedCategory;
+
+    /// <summary>
+    /// Livello di interazione se trovato
+    /// </summary>
+    [ObservableProperty]
+    private DOACInteractionLevel? _interactionLevel;
+
+    /// <summary>
+    /// Dettagli interazione se presente
+    /// </summary>
+    [ObservableProperty]
+    private DOACInteraction? _interaction;
+}
 
 /// <summary>
 /// ViewModel per la gestione completa del modulo DoacGest
@@ -21,6 +60,7 @@ public partial class DoacGestViewModel : ObservableObject
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDialogService _dialogService;
     private readonly ILogger<DoacGestViewModel> _logger;
+    private readonly IDOACInteractionService _interactionService;
 
     [ObservableProperty]
     private int _patientId;
@@ -281,14 +321,95 @@ public partial class DoacGestViewModel : ObservableObject
     [ObservableProperty]
     private string? _motivoSwitchWarfarin;
 
+    // ====== INTERAZIONI FARMACOLOGICHE ======
+
+    /// <summary>
+    /// Testo del farmaco da aggiungere
+    /// </summary>
+    [ObservableProperty]
+    private string _nuovoFarmaco = string.Empty;
+
+    /// <summary>
+    /// Lista dei farmaci inseriti dall'utente per verifica interazioni
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<DrugEntryViewModel> _farmaciInseriti = new();
+
+    /// <summary>
+    /// Lista delle interazioni rilevate
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<DOACInteraction> _interazioniRilevate = new();
+
+    /// <summary>
+    /// Numero di interazioni controindicanti
+    /// </summary>
+    [ObservableProperty]
+    private int _countContraindicazioni;
+
+    /// <summary>
+    /// Numero di interazioni pericolose
+    /// </summary>
+    [ObservableProperty]
+    private int _countPericolose;
+
+    /// <summary>
+    /// Numero di interazioni moderate
+    /// </summary>
+    [ObservableProperty]
+    private int _countModerate;
+
+    /// <summary>
+    /// Numero di interazioni minori
+    /// </summary>
+    [ObservableProperty]
+    private int _countMinori;
+
+    /// <summary>
+    /// Indica se ci sono farmaci non mappati (non riconosciuti)
+    /// </summary>
+    [ObservableProperty]
+    private bool _hasFarmaciNonMappati;
+
+    /// <summary>
+    /// Suggerimenti farmaci per autocompletamento
+    /// </summary>
+    public List<string> SuggerimentiFarmaci { get; } = new()
+    {
+        // Azoli antifungini
+        "Ketoconazolo", "Itraconazolo", "Voriconazolo", "Posaconazolo", "Fluconazolo",
+        // Inibitori proteasi HIV
+        "Ritonavir", "Cobicistat",
+        // Induttori
+        "Rifampicina", "Carbamazepina", "Fenitoina", "Fenobarbital", "Erba di San Giovanni", "Iperico",
+        // Antiaritmici
+        "Dronedarone", "Amiodarone", "Chinidina", "Verapamil", "Diltiazem",
+        // Immunosoppressori
+        "Ciclosporina", "Tacrolimus",
+        // Macrolidi
+        "Claritromicina", "Eritromicina",
+        // Antipiastrinici
+        "Acido acetilsalicilico", "ASA", "Aspirina", "Clopidogrel", "Ticagrelor", "Prasugrel",
+        // FANS
+        "Ibuprofene", "Naprossene", "Diclofenac", "Ketoprofene", "Indometacina", "Celecoxib", "Etoricoxib",
+        // Antidepressivi
+        "Sertralina", "Paroxetina", "Fluoxetina", "Citalopram", "Escitalopram", "Venlafaxina", "Duloxetina",
+        // HCV
+        "Glecaprevir", "Pibrentasvir",
+        // Altri
+        "Digossina", "Pantoprazolo", "Omeprazolo"
+    };
+
     public DoacGestViewModel(
         IUnitOfWork unitOfWork,
         IDialogService dialogService,
-        ILogger<DoacGestViewModel> logger)
+        ILogger<DoacGestViewModel> logger,
+        IDOACInteractionService interactionService)
     {
         _unitOfWork = unitOfWork;
         _dialogService = dialogService;
         _logger = logger;
+        _interactionService = interactionService;
 
         CurrentRecord = new DoacMonitoringRecord
         {
@@ -806,5 +927,214 @@ public partial class DoacGestViewModel : ObservableObject
     private void Stampa()
     {
         _dialogService.ShowInformation("Funzionalità di stampa in fase di sviluppo", "Stampa");
+    }
+
+    // ====== METODI INTERAZIONI FARMACOLOGICHE ======
+
+    /// <summary>
+    /// Converte il nome del DOAC selezionato in enum DOACType
+    /// </summary>
+    private DOACType GetDoacType()
+    {
+        return DoacSelezionato?.ToLower() switch
+        {
+            "apixaban" => DOACType.Apixaban,
+            "rivaroxaban" => DOACType.Rivaroxaban,
+            "dabigatran" => DOACType.Dabigatran,
+            "edoxaban" => DOACType.Edoxaban,
+            _ => DOACType.Apixaban
+        };
+    }
+
+    /// <summary>
+    /// Aggiunge uno o più farmaci alla lista per verifica interazioni
+    /// </summary>
+    [RelayCommand]
+    private void AggiungiFarmaco()
+    {
+        if (string.IsNullOrWhiteSpace(NuovoFarmaco))
+            return;
+
+        // Supporta input multipli separati da virgola, punto e virgola o a capo
+        var farmaci = NuovoFarmaco
+            .Split(new[] { ',', ';', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(f => f.Trim())
+            .Where(f => !string.IsNullOrEmpty(f))
+            .ToList();
+
+        var doacType = GetDoacType();
+
+        foreach (var farmaco in farmaci)
+        {
+            // Verifica se il farmaco è già presente
+            if (FarmaciInseriti.Any(f => f.DrugName.Equals(farmaco, StringComparison.OrdinalIgnoreCase)))
+                continue;
+
+            var entry = new DrugEntryViewModel { DrugName = farmaco };
+
+            // Cerca interazione nel servizio
+            var interaction = _interactionService.CheckInteraction(doacType, farmaco);
+            if (interaction != null)
+            {
+                entry.IsMapped = true;
+                entry.MappedCategory = interaction.DrugClass;
+                entry.InteractionLevel = interaction.InteractionLevel;
+                entry.Interaction = interaction;
+            }
+            else
+            {
+                entry.IsMapped = false;
+            }
+
+            FarmaciInseriti.Add(entry);
+        }
+
+        NuovoFarmaco = string.Empty;
+        AggiornaInterazioni();
+    }
+
+    /// <summary>
+    /// Rimuove un farmaco dalla lista
+    /// </summary>
+    [RelayCommand]
+    private void RimuoviFarmaco(DrugEntryViewModel? farmaco)
+    {
+        if (farmaco == null) return;
+
+        FarmaciInseriti.Remove(farmaco);
+        AggiornaInterazioni();
+    }
+
+    /// <summary>
+    /// Svuota la lista dei farmaci inseriti
+    /// </summary>
+    [RelayCommand]
+    private void SvuotaListaFarmaci()
+    {
+        FarmaciInseriti.Clear();
+        AggiornaInterazioni();
+    }
+
+    /// <summary>
+    /// Aggiorna la lista delle interazioni in base ai farmaci inseriti e al DOAC selezionato
+    /// </summary>
+    private void AggiornaInterazioni()
+    {
+        var doacType = GetDoacType();
+
+        // Raccogli tutte le interazioni dai farmaci inseriti
+        var interazioni = new List<DOACInteraction>();
+
+        foreach (var farmaco in FarmaciInseriti)
+        {
+            // Aggiorna l'interazione per il DOAC corrente
+            var interaction = _interactionService.CheckInteraction(doacType, farmaco.DrugName);
+            if (interaction != null)
+            {
+                farmaco.IsMapped = true;
+                farmaco.MappedCategory = interaction.DrugClass;
+                farmaco.InteractionLevel = interaction.InteractionLevel;
+                farmaco.Interaction = interaction;
+                interazioni.Add(interaction);
+            }
+            else
+            {
+                farmaco.IsMapped = false;
+                farmaco.MappedCategory = null;
+                farmaco.InteractionLevel = null;
+                farmaco.Interaction = null;
+            }
+        }
+
+        // Ordina per gravità
+        var interazioniOrdinate = interazioni
+            .OrderByDescending(i => i.InteractionLevel)
+            .ThenBy(i => i.DrugClass)
+            .ToList();
+
+        InterazioniRilevate = new ObservableCollection<DOACInteraction>(interazioniOrdinate);
+
+        // Aggiorna contatori
+        CountContraindicazioni = interazioni.Count(i => i.InteractionLevel == DOACInteractionLevel.Contraindicated);
+        CountPericolose = interazioni.Count(i => i.InteractionLevel == DOACInteractionLevel.Dangerous);
+        CountModerate = interazioni.Count(i => i.InteractionLevel == DOACInteractionLevel.Moderate);
+        CountMinori = interazioni.Count(i => i.InteractionLevel == DOACInteractionLevel.Minor);
+
+        // Verifica farmaci non mappati
+        HasFarmaciNonMappati = FarmaciInseriti.Any(f => !f.IsMapped);
+    }
+
+    /// <summary>
+    /// Quando cambia il DOAC selezionato, ricalcola le interazioni
+    /// </summary>
+    partial void OnDoacSelezionatoChanged(string value)
+    {
+        if (FarmaciInseriti.Count > 0)
+        {
+            AggiornaInterazioni();
+        }
+    }
+
+    /// <summary>
+    /// Carica i farmaci dalla terapia continuativa del paziente
+    /// </summary>
+    [RelayCommand]
+    private async Task CaricaFarmaciDaTerapiaAsync()
+    {
+        if (Patient == null) return;
+
+        try
+        {
+            var terapie = await _unitOfWork.TerapieContinuative.GetTerapieAttiveAsync(PatientId);
+
+            foreach (var terapia in terapie)
+            {
+                if (!string.IsNullOrEmpty(terapia.PrincipioAttivo))
+                {
+                    // Aggiungi solo se non già presente
+                    if (!FarmaciInseriti.Any(f => f.DrugName.Equals(terapia.PrincipioAttivo, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        NuovoFarmaco = terapia.PrincipioAttivo;
+                        AggiungiFarmaco();
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Errore durante il caricamento farmaci dalla terapia");
+        }
+    }
+
+    /// <summary>
+    /// Ottiene la descrizione del livello di interazione
+    /// </summary>
+    public static string GetInteractionLevelDescription(DOACInteractionLevel level)
+    {
+        return level switch
+        {
+            DOACInteractionLevel.Contraindicated => "CONTROINDICATO",
+            DOACInteractionLevel.Dangerous => "EVITARE / NON RACCOMANDATO",
+            DOACInteractionLevel.Moderate => "CAUTELA",
+            DOACInteractionLevel.Minor => "MONITORARE",
+            DOACInteractionLevel.None => "NESSUNA INTERAZIONE",
+            _ => level.ToString()
+        };
+    }
+
+    /// <summary>
+    /// Ottiene il colore del tag per il livello di interazione
+    /// </summary>
+    public static string GetInteractionLevelColor(DOACInteractionLevel level)
+    {
+        return level switch
+        {
+            DOACInteractionLevel.Contraindicated => "DangerBrush",
+            DOACInteractionLevel.Dangerous => "WarningBrush",
+            DOACInteractionLevel.Moderate => "InfoBrush",
+            DOACInteractionLevel.Minor => "SuccessBrush",
+            DOACInteractionLevel.None => "SuccessBrush",
+            _ => "TextSecondaryBrush"
+        };
     }
 }

@@ -35,9 +35,213 @@ public class DOACInteractionService : IDOACInteractionService
 
     public DOACInteraction? CheckInteraction(DOACType doacType, string drugName)
     {
-        return _interactions.FirstOrDefault(i =>
+        if (string.IsNullOrWhiteSpace(drugName))
+            return null;
+
+        var normalizedDrug = NormalizeDrugName(drugName);
+
+        // Prima cerca corrispondenza esatta
+        var exactMatch = _interactions.FirstOrDefault(i =>
             i.DOACType == doacType &&
             i.DrugName.Equals(drugName, StringComparison.OrdinalIgnoreCase));
+
+        if (exactMatch != null)
+            return exactMatch;
+
+        // Poi cerca con nome normalizzato nel DrugName
+        var normalizedMatch = _interactions.FirstOrDefault(i =>
+            i.DOACType == doacType &&
+            (NormalizeDrugName(i.DrugName).Contains(normalizedDrug) ||
+             normalizedDrug.Contains(NormalizeDrugName(i.DrugName))));
+
+        if (normalizedMatch != null)
+            return normalizedMatch;
+
+        // Cerca tra i sinonimi noti
+        var mappedName = GetMappedDrugName(normalizedDrug);
+        if (!string.IsNullOrEmpty(mappedName))
+        {
+            return _interactions.FirstOrDefault(i =>
+                i.DOACType == doacType &&
+                NormalizeDrugName(i.DrugName).Contains(mappedName));
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Normalizza il nome del farmaco per confronti
+    /// </summary>
+    private static string NormalizeDrugName(string drugName)
+    {
+        return drugName
+            .ToLowerInvariant()
+            .Replace("-", " ")
+            .Replace("_", " ")
+            .Replace("(", "")
+            .Replace(")", "")
+            .Replace(",", "")
+            .Replace(".", "")
+            .Trim();
+    }
+
+    /// <summary>
+    /// Mappa sinonimi e nomi commerciali ai nomi standard
+    /// </summary>
+    private static string? GetMappedDrugName(string normalizedDrug)
+    {
+        // Dizionario sinonimi -> nome standard nel database
+        var synonyms = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            // Azoli antifungini
+            { "ketoconazolo", "ketoconazolo" },
+            { "nizoral", "ketoconazolo" },
+            { "itraconazolo", "itraconazolo" },
+            { "sporanox", "itraconazolo" },
+            { "voriconazolo", "voriconazolo" },
+            { "vfend", "voriconazolo" },
+            { "posaconazolo", "posaconazolo" },
+            { "noxafil", "posaconazolo" },
+            { "fluconazolo", "fluconazolo" },
+            { "diflucan", "fluconazolo" },
+
+            // Inibitori proteasi HIV
+            { "ritonavir", "ritonavir" },
+            { "norvir", "ritonavir" },
+            { "cobicistat", "ritonavir" },
+            { "tybost", "ritonavir" },
+
+            // Induttori
+            { "rifampicina", "rifampicina" },
+            { "rifampin", "rifampicina" },
+            { "rifadin", "rifampicina" },
+            { "rimactan", "rifampicina" },
+            { "carbamazepina", "carbamazepina" },
+            { "tegretol", "carbamazepina" },
+            { "fenitoina", "fenitoina" },
+            { "phenytoin", "fenitoina" },
+            { "dintoina", "fenitoina" },
+            { "dilantin", "fenitoina" },
+            { "fenobarbital", "fenobarbital" },
+            { "phenobarbital", "fenobarbital" },
+            { "gardenale", "fenobarbital" },
+            { "iperico", "erba di san giovanni" },
+            { "hypericum", "erba di san giovanni" },
+            { "st john", "erba di san giovanni" },
+
+            // Antiaritmici
+            { "dronedarone", "dronedarone" },
+            { "multaq", "dronedarone" },
+            { "amiodarone", "amiodarone" },
+            { "cordarone", "amiodarone" },
+            { "chinidina", "chinidina" },
+            { "quinidina", "chinidina" },
+            { "verapamil", "verapamil" },
+            { "isoptin", "verapamil" },
+            { "diltiazem", "diltiazem" },
+
+            // Immunosoppressori
+            { "ciclosporina", "ciclosporina" },
+            { "ciclosporin", "ciclosporina" },
+            { "cyclosporine", "ciclosporina" },
+            { "sandimmun", "ciclosporina" },
+            { "neoral", "ciclosporina" },
+            { "tacrolimus", "ciclosporina" },
+
+            // Macrolidi
+            { "claritromicina", "claritromicina" },
+            { "clarithromycin", "claritromicina" },
+            { "klacid", "claritromicina" },
+            { "eritromicina", "eritromicina" },
+            { "erythromycin", "eritromicina" },
+
+            // Antipiastrinici
+            { "acido acetilsalicilico", "asa" },
+            { "aspirina", "asa" },
+            { "aspirin", "asa" },
+            { "cardioaspirina", "asa" },
+            { "clopidogrel", "clopidogrel" },
+            { "plavix", "clopidogrel" },
+            { "ticagrelor", "ticagrelor" },
+            { "brilique", "ticagrelor" },
+            { "prasugrel", "prasugrel" },
+            { "efient", "prasugrel" },
+
+            // FANS
+            { "ibuprofene", "fans" },
+            { "ibuprofen", "fans" },
+            { "brufen", "fans" },
+            { "moment", "fans" },
+            { "naprossene", "fans" },
+            { "naproxen", "fans" },
+            { "momendol", "fans" },
+            { "synflex", "fans" },
+            { "diclofenac", "fans" },
+            { "voltaren", "fans" },
+            { "ketoprofene", "fans" },
+            { "ketoprofen", "fans" },
+            { "oki", "fans" },
+            { "orudis", "fans" },
+            { "indometacina", "fans" },
+            { "indomethacin", "fans" },
+            { "celecoxib", "fans" },
+            { "celebrex", "fans" },
+            { "etoricoxib", "fans" },
+            { "arcoxia", "fans" },
+            { "nimesulide", "fans" },
+            { "aulin", "fans" },
+            { "piroxicam", "fans" },
+            { "feldene", "fans" },
+
+            // Antidepressivi SSRI/SNRI
+            { "sertralina", "ssri" },
+            { "sertraline", "ssri" },
+            { "zoloft", "ssri" },
+            { "paroxetina", "ssri" },
+            { "paroxetine", "ssri" },
+            { "sereupin", "ssri" },
+            { "fluoxetina", "ssri" },
+            { "fluoxetine", "ssri" },
+            { "prozac", "ssri" },
+            { "citalopram", "ssri" },
+            { "elopram", "ssri" },
+            { "escitalopram", "ssri" },
+            { "cipralex", "ssri" },
+            { "entact", "ssri" },
+            { "venlafaxina", "snri" },
+            { "venlafaxine", "snri" },
+            { "efexor", "snri" },
+            { "duloxetina", "snri" },
+            { "duloxetine", "snri" },
+            { "cymbalta", "snri" },
+
+            // HCV
+            { "glecaprevir", "glecaprevir/pibrentasvir" },
+            { "pibrentasvir", "glecaprevir/pibrentasvir" },
+            { "maviret", "glecaprevir/pibrentasvir" },
+
+            // Altri
+            { "digossina", "digossina" },
+            { "digoxin", "digossina" },
+            { "lanoxin", "digossina" },
+            { "pantoprazolo", "pantoprazolo" },
+            { "pantoprazole", "pantoprazolo" },
+            { "omeprazolo", "omeprazolo" },
+            { "omeprazole", "omeprazolo" },
+        };
+
+        // Cerca corrispondenza esatta
+        if (synonyms.TryGetValue(normalizedDrug, out var mapped))
+            return mapped;
+
+        // Cerca corrispondenza parziale
+        foreach (var kvp in synonyms)
+        {
+            if (normalizedDrug.Contains(kvp.Key) || kvp.Key.Contains(normalizedDrug))
+                return kvp.Value;
+        }
+
+        return null;
     }
 
     public List<DOACInteraction> CheckMultipleInteractions(DOACType doacType, List<string> drugNames)

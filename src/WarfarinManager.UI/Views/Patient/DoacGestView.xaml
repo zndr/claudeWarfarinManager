@@ -18,6 +18,11 @@
         <converters:ListToStringConverter x:Key="ListToStringConverter" />
         <converters:CountToVisibilityInverseConverter x:Key="CountToVisibilityInverseConverter" />
         <converters:NullableIntConverter x:Key="NullableIntConverter" />
+        <converters:InteractionLevelToTextConverter x:Key="InteractionLevelToTextConverter" />
+        <converters:InteractionLevelToBackgroundConverter x:Key="InteractionLevelToBackgroundConverter" />
+        <converters:InteractionLevelToBorderConverter x:Key="InteractionLevelToBorderConverter" />
+        <converters:InteractionLevelToForegroundConverter x:Key="InteractionLevelToForegroundConverter" />
+        <converters:IsMappedToChipBorderConverter x:Key="IsMappedToChipBorderConverter" />
 
         <!-- Stile per GroupBox -->
         <Style TargetType="GroupBox">
@@ -319,6 +324,259 @@
                                       SelectedItem="{Binding Indicazione}"/>
                         </StackPanel>
                     </Grid>
+                </GroupBox>
+
+                <!-- Interazioni Farmacologiche DOAC -->
+                <GroupBox Header="💊 Checker Interazioni Farmacologiche DOAC">
+                    <StackPanel>
+                        <TextBlock Text="Inserisci i farmaci assunti dal paziente per verificare le interazioni con il DOAC selezionato."
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   FontSize="12"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,10"/>
+
+                        <!-- Input farmaci -->
+                        <Border Background="{DynamicResource CardBackgroundBrush}"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="15"
+                                Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Column="0" Grid.Row="0" Margin="0,0,10,0">
+                                    <TextBlock Text="Aggiungi farmaco" Style="{StaticResource LabelStyle}"/>
+                                    <ComboBox IsEditable="True"
+                                              Text="{Binding NuovoFarmaco, UpdateSourceTrigger=PropertyChanged}"
+                                              ItemsSource="{Binding SuggerimentiFarmaci}"
+                                              IsTextSearchEnabled="True"
+                                              StaysOpenOnEdit="True">
+                                        <ComboBox.InputBindings>
+                                            <KeyBinding Key="Enter" Command="{Binding AggiungiFarmacoCommand}"/>
+                                        </ComboBox.InputBindings>
+                                    </ComboBox>
+                                    <TextBlock Text="Puoi inserire pi farmaci separati da virgola, punto e virgola o a capo"
+                                               FontSize="10"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               Margin="0,3,0,0"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" Grid.Row="0" VerticalAlignment="Bottom">
+                                    <Button Content="Aggiungi"
+                                            Command="{Binding AggiungiFarmacoCommand}"
+                                            Padding="15,8"
+                                            Margin="0,0,0,5"/>
+                                    <Button Content="Svuota"
+                                            Command="{Binding SvuotaListaFarmaciCommand}"
+                                            Background="{DynamicResource SecondaryBrush}"
+                                            Padding="15,8"/>
+                                </StackPanel>
+
+                                <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"
+                                        Content="Carica farmaci dalla terapia continuativa"
+                                        Command="{Binding CaricaFarmaciDaTerapiaCommand}"
+                                        Background="{DynamicResource InfoBrush}"
+                                        HorizontalAlignment="Left"
+                                        Padding="12,6"
+                                        Margin="0,10,0,0"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Lista farmaci inseriti (chips) -->
+                        <ItemsControl ItemsSource="{Binding FarmaciInseriti}"
+                                      Visibility="{Binding FarmaciInseriti.Count, Converter={StaticResource CountToVisibilityInverseConverter}}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{DynamicResource InputBackgroundBrush}"
+                                            BorderBrush="{Binding IsMapped, Converter={StaticResource IsMappedToChipBorderConverter}}"
+                                            BorderThickness="2"
+                                            CornerRadius="15"
+                                            Padding="10,5"
+                                            Margin="0,0,8,8">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding DrugName}"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Text=" → "
+                                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                                       VerticalAlignment="Center"
+                                                       Visibility="{Binding IsMapped, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                            <TextBlock Text="{Binding MappedCategory}"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                                       FontSize="11"
+                                                       VerticalAlignment="Center"
+                                                       Visibility="{Binding IsMapped, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                            <TextBlock Text=" (non riconosciuto)"
+                                                       Foreground="{DynamicResource DangerBrush}"
+                                                       FontSize="11"
+                                                       VerticalAlignment="Center"
+                                                       Visibility="{Binding IsMapped, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.RimuoviFarmacoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Background="Transparent"
+                                                    Foreground="{DynamicResource TextSecondaryBrush}"
+                                                    FontWeight="Bold"
+                                                    Padding="5,0"
+                                                    Margin="5,0,0,0"
+                                                    BorderThickness="0"
+                                                    Cursor="Hand"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Avviso farmaci non mappati -->
+                        <Border Background="{DynamicResource WarningBackgroundBrush}"
+                                BorderBrush="{DynamicResource WarningBrush}"
+                                BorderThickness="1"
+                                CornerRadius="5"
+                                Padding="10"
+                                Margin="0,5,0,10"
+                                Visibility="{Binding HasFarmaciNonMappati, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TextBlock Text="Attenzione: alcuni farmaci inseriti non sono stati riconosciuti. Nessun alert specifico garantito per quelli."
+                                       Foreground="{DynamicResource WarningBrush}"
+                                       FontSize="12"
+                                       TextWrapping="Wrap"/>
+                        </Border>
+
+                        <!-- Contatori interazioni -->
+                        <Border Background="{DynamicResource CardBackgroundBrush}"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="5"
+                                Padding="10"
+                                Margin="0,0,0,10"
+                                Visibility="{Binding InterazioniRilevate.Count, Converter={StaticResource CountToVisibilityInverseConverter}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Background="#FFDDDD" CornerRadius="10" Padding="8,4" Margin="0,0,10,0"
+                                        Visibility="{Binding CountContraindicazioni, Converter={StaticResource CountToVisibilityInverseConverter}}">
+                                    <TextBlock Foreground="#CC0000">
+                                        <Run Text="Controindicazioni: " FontWeight="Bold"/>
+                                        <Run Text="{Binding CountContraindicazioni}"/>
+                                    </TextBlock>
+                                </Border>
+                                <Border Background="#FFEECC" CornerRadius="10" Padding="8,4" Margin="0,0,10,0"
+                                        Visibility="{Binding CountPericolose, Converter={StaticResource CountToVisibilityInverseConverter}}">
+                                    <TextBlock Foreground="#CC6600">
+                                        <Run Text="Pericolose: " FontWeight="Bold"/>
+                                        <Run Text="{Binding CountPericolose}"/>
+                                    </TextBlock>
+                                </Border>
+                                <Border Background="#DDEEFF" CornerRadius="10" Padding="8,4" Margin="0,0,10,0"
+                                        Visibility="{Binding CountModerate, Converter={StaticResource CountToVisibilityInverseConverter}}">
+                                    <TextBlock Foreground="#0066CC">
+                                        <Run Text="Cautela: " FontWeight="Bold"/>
+                                        <Run Text="{Binding CountModerate}"/>
+                                    </TextBlock>
+                                </Border>
+                                <Border Background="#DDFFDD" CornerRadius="10" Padding="8,4"
+                                        Visibility="{Binding CountMinori, Converter={StaticResource CountToVisibilityInverseConverter}}">
+                                    <TextBlock Foreground="#006600">
+                                        <Run Text="Minori: " FontWeight="Bold"/>
+                                        <Run Text="{Binding CountMinori}"/>
+                                    </TextBlock>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Lista interazioni rilevate -->
+                        <ItemsControl ItemsSource="{Binding InterazioniRilevate}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Padding="12"
+                                            Margin="0,0,0,8"
+                                            CornerRadius="8"
+                                            BorderThickness="2"
+                                            Background="{Binding InteractionLevel, Converter={StaticResource InteractionLevelToBackgroundConverter}}"
+                                            BorderBrush="{Binding InteractionLevel, Converter={StaticResource InteractionLevelToBorderConverter}}">
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                                <Border Background="{Binding InteractionLevel, Converter={StaticResource InteractionLevelToBorderConverter}}"
+                                                        CornerRadius="10"
+                                                        Padding="8,3"
+                                                        Margin="0,0,10,0">
+                                                    <TextBlock Text="{Binding InteractionLevel, Converter={StaticResource InteractionLevelToTextConverter}}"
+                                                               Foreground="White"
+                                                               FontWeight="Bold"
+                                                               FontSize="11"/>
+                                                </Border>
+                                                <TextBlock Text="{Binding DrugName}"
+                                                           FontWeight="Bold"
+                                                           FontSize="14"
+                                                           Foreground="{Binding InteractionLevel, Converter={StaticResource InteractionLevelToForegroundConverter}}"
+                                                           VerticalAlignment="Center"/>
+                                                <TextBlock Text=" - "
+                                                           Foreground="{Binding InteractionLevel, Converter={StaticResource InteractionLevelToForegroundConverter}}"
+                                                           VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding DrugClass}"
+                                                           FontStyle="Italic"
+                                                           Foreground="{Binding InteractionLevel, Converter={StaticResource InteractionLevelToForegroundConverter}}"
+                                                           VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding Effect}"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{Binding InteractionLevel, Converter={StaticResource InteractionLevelToForegroundConverter}}"
+                                                       Margin="0,0,0,3"/>
+                                            <TextBlock Text="{Binding ClinicalRecommendation}"
+                                                       TextWrapping="Wrap"
+                                                       Foreground="{Binding InteractionLevel, Converter={StaticResource InteractionLevelToForegroundConverter}}"/>
+                                            <TextBlock Text="{Binding Notes}"
+                                                       FontSize="11"
+                                                       FontStyle="Italic"
+                                                       TextWrapping="Wrap"
+                                                       Foreground="{Binding InteractionLevel, Converter={StaticResource InteractionLevelToForegroundConverter}}"
+                                                       Margin="0,5,0,0"
+                                                       Visibility="{Binding Notes, Converter={StaticResource NullToVisibilityConverter}}"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Messaggio nessuna interazione -->
+                        <Border Background="{DynamicResource SuccessBackgroundBrush}"
+                                BorderBrush="{DynamicResource SuccessBrush}"
+                                BorderThickness="1"
+                                CornerRadius="5"
+                                Padding="15"
+                                Visibility="{Binding FarmaciInseriti.Count, Converter={StaticResource CountToVisibilityInverseConverter}}">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding FarmaciInseriti.Count}" Value="0"/>
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </MultiDataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                        </Border>
+
+                        <TextBlock Text="Promemoria: l'associazione con antiaggreganti/NSAID/SSRI-SNRI aumenta il rischio emorragico. Questo checker non sostituisce la SmPC completa."
+                                   FontSize="11"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,10,0,0"/>
+                    </StackPanel>
                 </GroupBox>
 
                 <!-- Fattori di Rischio HAS-BLED -->
