@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using WarfarinManager.Data.Repositories.Interfaces;
+using WarfarinManager.Shared.Constants;
 using WarfarinManager.UI.Services;
 
 namespace WarfarinManager.UI.ViewModels;
@@ -334,13 +335,26 @@ public partial class NewPatientWizardViewModel : ObservableObject
 
                 _logger.LogInformation("Wizard completato per paziente {PatientId}", PatientId);
 
-                // Chiedi se vuole inserire il primo valore INR
-                var result = _dialogService.ShowQuestion(
-                    "✅ Configurazione iniziale completata con successo!\n\n" +
-                    "Vuoi inserire subito il primo valore INR per questo paziente?",
-                    "Wizard Completato");
+                // Determina se il paziente è DOAC o Warfarin
+                var isDoacPatient = AnticoagulantTypes.IsDoac(patient.AnticoagulantType);
 
-                ShouldOpenINRForm = (result == System.Windows.MessageBoxResult.Yes);
+                if (isDoacPatient)
+                {
+                    // Per pazienti DOAC non chiedere l'INR (non è rilevante)
+                    ShouldOpenINRForm = false;
+                    _logger.LogInformation("Paziente DOAC: skip domanda INR");
+                }
+                else
+                {
+                    // Per pazienti Warfarin chiedi se vuole inserire il primo valore INR
+                    var result = _dialogService.ShowQuestion(
+                        "✅ Configurazione iniziale completata con successo!\n\n" +
+                        "Vuoi inserire subito il primo valore INR per questo paziente?",
+                        "Wizard Completato");
+
+                    ShouldOpenINRForm = (result == System.Windows.MessageBoxResult.Yes);
+                }
+
                 ShouldCloseWizard = true;
             }
         }

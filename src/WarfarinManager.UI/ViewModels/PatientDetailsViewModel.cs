@@ -82,6 +82,12 @@ namespace WarfarinManager.UI.ViewModels
         private SwitchTherapyViewModel? _switchTherapyViewModel;
 
         /// <summary>
+        /// ViewModel per la gestione DOAC (esposto per binding nel tab DoacGest)
+        /// </summary>
+        [ObservableProperty]
+        private DoacGestViewModel? _doacGestViewModel;
+
+        /// <summary>
         /// Indica se il paziente corrente assume Warfarin (per visibilità tab INR)
         /// </summary>
         public bool IsWarfarinPatient => Patient?.IsWarfarinPatient ?? true; // Default true per backward compatibility
@@ -90,6 +96,17 @@ namespace WarfarinManager.UI.ViewModels
         /// Indica se il paziente corrente assume un DOAC
         /// </summary>
         public bool IsDoacPatient => Patient?.IsDoacPatient ?? false;
+
+        /// <summary>
+        /// Chiamato quando Patient cambia - notifica le proprietà computed dipendenti
+        /// </summary>
+        partial void OnPatientChanged(PatientDto? value)
+        {
+            OnPropertyChanged(nameof(IsWarfarinPatient));
+            OnPropertyChanged(nameof(IsDoacPatient));
+            _logger.LogInformation("Patient changed: IsWarfarinPatient={IsWarfarin}, IsDoacPatient={IsDoac}",
+                IsWarfarinPatient, IsDoacPatient);
+        }
 
         /// <summary>
         /// Nome completo del farmaco anticoagulante (per TextBox indicatore)
@@ -126,6 +143,9 @@ namespace WarfarinManager.UI.ViewModels
 
             // Inizializza il SwitchTherapyViewModel dal DI
             SwitchTherapyViewModel = _serviceProvider.GetRequiredService<SwitchTherapyViewModel>();
+
+            // Inizializza il DoacGestViewModel dal DI
+            DoacGestViewModel = _serviceProvider.GetRequiredService<DoacGestViewModel>();
         }
 
         /// <summary>
@@ -165,18 +185,65 @@ namespace WarfarinManager.UI.ViewModels
                     return;
                 }
 
+                // IMPORTANTE: Reset del TabControl prima di cambiare paziente
+                // Questo forza WPF a ri-valutare le visibilità dei tab
+                SelectedTabIndex = 0;
+
                 Patient = MapPatientToDto(patient);
 
-                // Notifica cambio proprietà computed (per binding visibilità tab INR)
-                OnPropertyChanged(nameof(IsWarfarinPatient));
-                OnPropertyChanged(nameof(IsDoacPatient));
-                OnPropertyChanged(nameof(AnticoagulantDisplayName));
+                // Forza aggiornamento sincronizzato dei binding prima di qualsiasi altra operazione
+                // Questo assicura che IsDoacPatient sia corretto quando viene letto da OnSelectedTabIndexChanged
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.DataBind);
 
-                // Verifica se è un paziente appena creato senza controlli INR
+                _logger.LogInformation("Post-binding: IsWarfarinPatient={IsWarfarin}, IsDoacPatient={IsDoac}, SelectedTabIndex={TabIndex}",
+                    IsWarfarinPatient, IsDoacPatient, SelectedTabIndex);
+
+                // PRIMO: Carica le indicazioni PRIMA del check wizard
+                // Questo è necessario per determinare se il paziente DOAC ha bisogno del wizard
+                await LoadIndicationsAsync();
+
+                // SECONDO: Verifica se è un paziente che necessita del wizard iniziale
+                // Per pazienti DOAC senza indicazione → wizard
+                // Per pazienti Warfarin senza INR → dialog naive + wizard
                 await CheckAndShowNaivePatientDialogAsync(patient);
 
-                // Carica le indicazioni
-                await LoadIndicationsAsync();
+                // TERZO: Dopo il wizard (o se non necessario), imposta il tab corretto in base al tipo di paziente
+                // - Paziente DOAC con indicazioni → tab "Gestione DOAC" (indice 6)
+                // - Paziente Warfarin non-naive (wizard completato) → tab "Storico INR" (indice 4)
+                if (IsDoacPatient && Indications.Any())
+                {
+                    // Usa Dispatcher con doppio cambio tab per forzare WPF a ri-renderizzare il contenuto
+                    System.Windows.Application.Current.Dispatcher.BeginInvoke(
+                        System.Windows.Threading.DispatcherPriority.Loaded,
+                        new Action(() =>
+                        {
+                            _logger.LogInformation("FORZATURA tab Gestione DOAC per paziente DOAC con indicazione - step 1: vai a tab Anagrafica");
+                            SelectedTabIndex = 0; // Prima vai al tab Anagrafica
+
+                            // Poi con un secondo dispatcher, vai al tab Gestione DOAC
+                            System.Windows.Application.Current.Dispatcher.BeginInvoke(
+                                System.Windows.Threading.DispatcherPriority.Loaded,
+                                new Action(() =>
+                                {
+                                    _logger.LogInformation("FORZATURA tab Gestione DOAC per paziente DOAC - step 2: vai a indice 6");
+                                    SelectedTabIndex = 6; // Tab "Gestione DOAC" (indice fisso: 0=Anagrafica, 1=PreTAO, 2=Indicazione, 3=Farmaci, 4=StoricoINR, 5=Bridge, 6=DOAC)
+                                })
+                            );
+                        })
+                    );
+                }
+                else if (IsWarfarinPatient && patient.IsInitialWizardCompleted)
+                {
+                    // Paziente Warfarin non-naive (wizard già completato) → vai direttamente a Storico INR
+                    System.Windows.Application.Current.Dispatcher.BeginInvoke(
+                        System.Windows.Threading.DispatcherPriority.Loaded,
+                        new Action(() =>
+                        {
+                            _logger.LogInformation("Paziente Warfarin non-naive: impostazione tab Storico INR (indice 4)");
+                            SelectedTabIndex = 4; // Tab "Storico INR" (indice fisso)
+                        })
+                    );
+                }
 
                 // Carica i farmaci tramite MedicationsViewModel
                 if (MedicationsViewModel != null)
@@ -184,14 +251,14 @@ namespace WarfarinManager.UI.ViewModels
                     await MedicationsViewModel.LoadMedicationsAsync(PatientId);
                 }
 
-                // Inizializza il BridgeTherapyViewModel
+                // Inizializza il BridgeTherapyViewModel (solo per Warfarin, ma lo carichiamo comunque)
                 if (BridgeTherapyViewModel != null)
                 {
                     await BridgeTherapyViewModel.InitializeAsync(PatientId);
                 }
 
-                // Inizializza lo storico INR
-                if (InrHistoryViewModel != null)
+                // Inizializza lo storico INR (solo per Warfarin)
+                if (InrHistoryViewModel != null && IsWarfarinPatient)
                 {
                     // Ottieni target INR dall'indicazione attiva
                     var activeIndication = Indications.FirstOrDefault(i => i.IsActive);
@@ -228,6 +295,13 @@ namespace WarfarinManager.UI.ViewModels
                 {
                     _logger.LogInformation("Inizializzazione Switch Terapia per paziente {PatientId}", PatientId);
                     SwitchTherapyViewModel.SetCurrentPatient(PatientId);
+                }
+
+                // Inizializza DoacGest solo se il paziente assume un DOAC
+                if (DoacGestViewModel != null && IsDoacPatient)
+                {
+                    _logger.LogInformation("Inizializzazione DoacGest per paziente DOAC {PatientId}", PatientId);
+                    await DoacGestViewModel.InitializeAsync(PatientId);
                 }
 
                 _logger.LogInformation("Paziente caricato: {FullName}", Patient.FullName);
@@ -408,42 +482,85 @@ namespace WarfarinManager.UI.ViewModels
         }
 
         /// <summary>
-        /// Verifica se mostrare il dialog per paziente naive (solo se appena creato e senza INR)
+        /// Verifica se mostrare il wizard iniziale basandosi sul tipo di paziente e sulle indicazioni registrate
+        /// - Paziente Warfarin senza INR e wizard non completato → dialog naive + wizard completo
+        /// - Paziente DOAC senza indicazione → wizard per configurazione iniziale
+        /// NOTA: Richiede che LoadIndicationsAsync() sia già stato chiamato per popolare la collezione Indications
         /// </summary>
         private async Task CheckAndShowNaivePatientDialogAsync(Data.Entities.Patient patient)
         {
             try
             {
-                // Controlla se il paziente ha già controlli INR
-                var hasINRControls = await _unitOfWork.Database.INRControls
-                    .AnyAsync(c => c.PatientId == patient.Id);
+                // Determina il tipo di paziente
+                var isDoacPatient = AnticoagulantTypes.IsDoac(patient.AnticoagulantType);
+                var isWarfarinPatient = AnticoagulantTypes.IsWarfarin(patient.AnticoagulantType);
 
-                // Mostra il dialog solo se:
-                // 1. Il paziente non ha ancora controlli INR
-                // 2. Il wizard iniziale non è già stato completato
-                if (!hasINRControls && !patient.IsInitialWizardCompleted)
+                // Usa la collezione Indications già caricata (evita query DB aggiuntiva)
+                var hasIndications = Indications.Any();
+
+                _logger.LogInformation("Verifica wizard iniziale per paziente {PatientId}: IsDoac={IsDoac}, IsWarfarin={IsWarfarin}, WizardCompleted={WizardCompleted}, HasIndications={HasInd}",
+                    patient.Id, isDoacPatient, isWarfarinPatient, patient.IsInitialWizardCompleted, hasIndications);
+
+                // Se il wizard è già stato completato, non mostrare nulla
+                if (patient.IsInitialWizardCompleted)
                 {
-                    var isNaive = _dialogService.ShowNaivePatientDialog(patient.FullName);
+                    _logger.LogInformation("Paziente {PatientId}: wizard già completato, skip", patient.Id);
+                    return;
+                }
 
-                    if (isNaive.HasValue)
+                if (isDoacPatient)
+                {
+                    // === PAZIENTE DOAC ===
+                    // Se NON ha indicazioni → mostra wizard per configurazione iniziale
+                    if (!hasIndications)
                     {
-                        // Aggiorna il flag nel database
-                        patient.IsNaive = isNaive.Value;
+                        _logger.LogInformation("Paziente DOAC {PatientId} senza indicazioni: avvio wizard configurazione", patient.Id);
+                        await OpenInitialConfigurationWizardAsync(patient.Id);
+                    }
+                    else
+                    {
+                        _logger.LogInformation("Paziente DOAC {PatientId} ha già indicazioni registrate, nessun wizard necessario", patient.Id);
+                        // Marca il wizard come completato per evitare richieste future
+                        patient.IsInitialWizardCompleted = true;
                         await _unitOfWork.Patients.UpdateAsync(patient);
                         await _unitOfWork.SaveChangesAsync();
+                    }
+                }
+                else if (isWarfarinPatient)
+                {
+                    // === PAZIENTE WARFARIN ===
+                    // Controlla se il paziente ha già controlli INR
+                    var hasINRControls = await _unitOfWork.Database.INRControls
+                        .AnyAsync(c => c.PatientId == patient.Id);
 
-                        _logger.LogInformation("Paziente {PatientId} marcato come {Status}",
-                            patient.Id, isNaive.Value ? "Naive" : "Non-Naive");
+                    // Mostra il dialog solo se:
+                    // 1. Il paziente è in terapia con Warfarin
+                    // 2. Il paziente non ha ancora controlli INR
+                    // 3. Il wizard iniziale non è già stato completato
+                    if (!hasINRControls)
+                    {
+                        var isNaive = _dialogService.ShowNaivePatientDialog(patient.FullName);
 
-                        // Se è naive, mostra le informazioni sulla fase di induzione
-                        if (isNaive.Value)
+                        if (isNaive.HasValue)
                         {
-                            _dialogService.ShowInductionPhaseInfo();
-                        }
+                            // Aggiorna il flag nel database
+                            patient.IsNaive = isNaive.Value;
+                            await _unitOfWork.Patients.UpdateAsync(patient);
+                            await _unitOfWork.SaveChangesAsync();
 
-                        // SEMPRE apri il wizard di configurazione iniziale
-                        // (sia per pazienti naive che non-naive appena importati)
-                        await OpenInitialConfigurationWizardAsync(patient.Id);
+                            _logger.LogInformation("Paziente {PatientId} marcato come {Status}",
+                                patient.Id, isNaive.Value ? "Naive" : "Non-Naive");
+
+                            // Se è naive, mostra le informazioni sulla fase di induzione
+                            if (isNaive.Value)
+                            {
+                                _dialogService.ShowInductionPhaseInfo();
+                            }
+
+                            // SEMPRE apri il wizard di configurazione iniziale
+                            // (sia per pazienti naive che non-naive appena importati)
+                            await OpenInitialConfigurationWizardAsync(patient.Id);
+                        }
                     }
                 }
             }
@@ -456,16 +573,21 @@ namespace WarfarinManager.UI.ViewModels
 
         /// <summary>
         /// Gestisce il cambio di tab - ricarica i dati se necessario
+        /// Indici tab (fissi, indipendenti dalla visibility):
+        /// 0=Anagrafica, 1=PreTAO, 2=Indicazione, 3=Farmaci, 4=StoricoINR, 5=Bridge, 6=DOAC, 7=EventiAvversi, 8=Switch
         /// </summary>
         partial void OnSelectedTabIndexChanged(int value)
         {
-            // Tab 3 = Farmaci (indice 3)
+            _logger.LogInformation("Tab selezionato: indice {TabIndex}, IsWarfarinPatient: {IsWarfarin}, IsDoacPatient: {IsDoac}",
+                value, IsWarfarinPatient, IsDoacPatient);
+
+            // Tab 3 = Farmaci
             if (value == 3 && PatientId > 0 && MedicationsViewModel != null)
             {
                 _ = MedicationsViewModel.LoadMedicationsAsync(PatientId);
             }
-            // Tab 4 = Storico INR (indice 4)
-            else if (value == 4 && PatientId > 0 && InrHistoryViewModel != null)
+            // Tab 4 = Storico INR (solo Warfarin)
+            else if (value == 4 && PatientId > 0 && IsWarfarinPatient && InrHistoryViewModel != null)
             {
                 // Ottieni target INR dall'indicazione attiva
                 var activeIndication = Indications.FirstOrDefault(i => i.IsActive);
@@ -478,10 +600,16 @@ namespace WarfarinManager.UI.ViewModels
                     _ = InrHistoryViewModel.InitializeAsync(PatientId);
                 }
             }
-            // Tab 5 = Bridge Therapy (indice 5)
-            else if (value == 5 && PatientId > 0 && BridgeTherapyViewModel != null)
+            // Tab 5 = Bridge Therapy (solo Warfarin)
+            else if (value == 5 && PatientId > 0 && IsWarfarinPatient && BridgeTherapyViewModel != null)
             {
                 _ = BridgeTherapyViewModel.InitializeAsync(PatientId);
+            }
+            // Tab 6 = Gestione DOAC (solo DOAC)
+            else if (value == 6 && PatientId > 0 && IsDoacPatient && DoacGestViewModel != null)
+            {
+                _logger.LogInformation("Tab Gestione DOAC selezionato per paziente DOAC");
+                // DoacGestViewModel è già inizializzato in LoadPatientDataAsync
             }
         }
 
@@ -573,10 +701,17 @@ namespace WarfarinManager.UI.ViewModels
                         OnPropertyChanged(nameof(IsWarfarinPatient));
                         OnPropertyChanged(nameof(IsDoacPatient));
                         OnPropertyChanged(nameof(AnticoagulantDisplayName));
+
+                        // Inizializza DoacGest se il paziente è DOAC
+                        if (IsDoacPatient && DoacGestViewModel != null)
+                        {
+                            _logger.LogInformation("Post-wizard: inizializzazione DoacGest per paziente DOAC {PatientId}", patientId);
+                            await DoacGestViewModel.InitializeAsync(patientId);
+                        }
                     }
 
-                    // Verifica se l'utente vuole inserire il primo INR
-                    if (wizardViewModel.ShouldOpenINRForm)
+                    // Per pazienti Warfarin: verifica se l'utente vuole inserire il primo INR
+                    if (IsWarfarinPatient && wizardViewModel.ShouldOpenINRForm)
                     {
                         _logger.LogInformation("Apertura dialog Controllo INR per inserimento primo valore");
 
@@ -590,6 +725,24 @@ namespace WarfarinManager.UI.ViewModels
 
                         // Ricarica i dati dopo l'inserimento
                         await LoadPatientDataAsync(patientId);
+                    }
+                    else if (IsDoacPatient)
+                    {
+                        // Per pazienti DOAC: mostra messaggio di completamento e imposta il tab Gestione DOAC
+                        _dialogService.ShowInformation(
+                            "Configurazione iniziale completata con successo.\n\n" +
+                            "Ora puoi gestire la terapia DOAC nella sezione 'Gestione DOAC'.",
+                            "Configurazione Completata");
+
+                        // Imposta il tab Gestione DOAC
+                        System.Windows.Application.Current.Dispatcher.BeginInvoke(
+                            System.Windows.Threading.DispatcherPriority.Loaded,
+                            new Action(() =>
+                            {
+                                _logger.LogInformation("Post-wizard DOAC: impostazione tab Gestione DOAC");
+                                SelectedTabIndex = 6; // Tab "Gestione DOAC" (indice fisso: 0=Anagrafica, 1=PreTAO, 2=Indicazione, 3=Farmaci, 4=StoricoINR, 5=Bridge, 6=DOAC)
+                            })
+                        );
                     }
                     else
                     {
