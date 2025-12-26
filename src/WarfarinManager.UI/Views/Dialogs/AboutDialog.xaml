@@ -104,6 +104,63 @@
             <TabItem Header="Novità">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Background="{DynamicResource ContentBackgroundBrush}">
                     <StackPanel Margin="30,20">
+                        <!--  Versione 1.3.0.0  -->
+                        <Border
+                            Margin="0,0,0,15"
+                            Padding="15"
+                            Background="{DynamicResource CardBackgroundBrush}"
+                            BorderBrush="{DynamicResource PrimaryBrush}"
+                            BorderThickness="2"
+                            CornerRadius="5">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock
+                                        FontSize="16"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource TextPrimaryBrush}"
+                                        Text="Versione 1.3.0.0 (26 Dicembre 2025)" />
+                                    <Border
+                                        Margin="10,0,0,0"
+                                        Padding="8,2"
+                                        Background="#27AE60"
+                                        CornerRadius="3"
+                                        VerticalAlignment="Center">
+                                        <TextBlock
+                                            FontSize="10"
+                                            FontWeight="Bold"
+                                            Foreground="White"
+                                            Text="NUOVO" />
+                                    </Border>
+                                </StackPanel>
+                                <TextBlock
+                                    Margin="0,10,0,5"
+                                    FontWeight="SemiBold"
+                                    Foreground="#9B59B6"
+                                    Text="Nuove Funzionalità:" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Modulo DoacGEST per gestione terapia con DOAC (NAO)" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Calcolo automatico dosaggio DOAC basato su peso e funzionalità renale" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Checker interazioni farmacologiche DOAC con P-gp e CYP3A4" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Calcolo score HAS-BLED per rischio emorragico" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Biblioteca Documenti con accesso rapido a guide e RCP" />
+                                <TextBlock
+                                    Margin="0,10,0,5"
+                                    FontWeight="SemiBold"
+                                    Foreground="#3498DB"
+                                    Text="Documenti Inclusi:" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• RCP ufficiali EMA per tutti i DOAC" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Linee guida FCSA, FCSA-SIMG 2018, ESC 2024" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Checker interazioni DOAC interattivo" />
+                                <TextBlock
+                                    Margin="0,10,0,5"
+                                    FontWeight="SemiBold"
+                                    Foreground="#27AE60"
+                                    Text="Miglioramenti:" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Nuovo menu Strumenti con accesso diretto a DoacGEST" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Ricerca documenti per titolo, descrizione e keywords" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Filtro documenti per categoria" />
+                            </StackPanel>
+                        </Border>
+
                         <!--  Versione 1.2.3.1  -->
                         <Border
                             Margin="0,0,0,15"
