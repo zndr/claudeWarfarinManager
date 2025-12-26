@@ -27,6 +27,10 @@ public class WarfarinDbContext : DbContext
     public DbSet<DoctorData> DoctorData => Set<DoctorData>();
     public DbSet<TherapySwitch> TherapySwitches => Set<TherapySwitch>();
 
+    // DbSets - DOAC Module
+    public DbSet<DoacMonitoringRecord> DoacMonitoring => Set<DoacMonitoringRecord>();
+    public DbSet<TerapiaContinuativa> TerapieContinuative => Set<TerapiaContinuativa>();
+
     // DbSets - Lookup tables
     
     public DbSet<IndicationType> IndicationTypes => Set<IndicationType>();
@@ -164,6 +168,25 @@ public class WarfarinDbContext : DbContext
 
         modelBuilder.Entity<TherapySwitch>()
             .HasIndex(ts => new { ts.FirstFollowUpDate, ts.FollowUpCompleted });
+
+        // DoacMonitoring indexes
+        modelBuilder.Entity<DoacMonitoringRecord>()
+            .HasIndex(d => new { d.PatientId, d.DataRilevazione })
+            .IsDescending(false, true); // Patient ASC, Date DESC
+
+        modelBuilder.Entity<DoacMonitoringRecord>()
+            .HasIndex(d => d.DataProssimoControllo)
+            .HasFilter("[DataProssimoControllo] IS NOT NULL");
+
+        // TerapieContinuative indexes
+        modelBuilder.Entity<TerapiaContinuativa>()
+            .HasIndex(t => t.PatientId);
+
+        modelBuilder.Entity<TerapiaContinuativa>()
+            .HasIndex(t => new { t.Attiva, t.PatientId });
+
+        modelBuilder.Entity<TerapiaContinuativa>()
+            .HasIndex(t => new { t.Classe, t.PatientId, t.Attiva });
     }
     
     private static void SeedData(ModelBuilder modelBuilder)

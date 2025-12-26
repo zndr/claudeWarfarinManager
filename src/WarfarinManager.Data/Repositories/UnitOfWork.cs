@@ -18,6 +18,8 @@ public class UnitOfWork : IUnitOfWork
     private IIndicationRepository? _indications;
     private IBridgeTherapyPlanRepository? _bridgeTherapyPlans;
     private IRepository<Entities.AdverseEvent>? _adverseEvents;
+    private IDoacMonitoringRepository? _doacMonitoring;
+    private ITerapiaContinuativaRepository? _terapieContinuative;
 
     public UnitOfWork(WarfarinDbContext context)
     {
@@ -41,6 +43,12 @@ public class UnitOfWork : IUnitOfWork
 
     public IRepository<Entities.AdverseEvent> AdverseEvents =>
         _adverseEvents ??= new Repository<Entities.AdverseEvent>(_context);
+
+    public IDoacMonitoringRepository DoacMonitoring =>
+        _doacMonitoring ??= new DoacMonitoringRepository(_context, TerapieContinuative);
+
+    public ITerapiaContinuativaRepository TerapieContinuative =>
+        _terapieContinuative ??= new TerapiaContinuativaRepository(_context);
 
     public WarfarinDbContext Database => _context;
 

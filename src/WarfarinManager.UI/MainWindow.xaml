@@ -88,6 +88,10 @@
                 <MenuItem
                     Command="{Binding ShowSwitchTherapyCommand}"
                     Header="🔄 Switch Terapia (Warfarin ↔ DOAC)" />
+                <MenuItem
+                    Command="{Binding ShowDoacGestSimulatorCommand}"
+                    Header="🧪 DoacGest Simulatore - Paziente ipotetico"
+                    ToolTip="Calcolatore avanzato DOAC per simulazioni su pazienti ipotetici (React WebView2)" />
                 <Separator />
                 <MenuItem
                     Command="{Binding ShowDrugDatabaseCommand}"

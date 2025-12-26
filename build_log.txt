@@ -1,0 +1,44 @@
+Impossibile trovare il percorso specificato.
+  Individuazione dei progetti da ripristinare...
+  Tutti i progetti sono aggiornati per il ripristino.
+  === Sincronizzazione Guide TaoGEST ===
+  Sorgente: D:\Claude\TaoGest\docs
+  Destinazione: D:\Claude\TaoGest\src\WarfarinManager.UI\Resources\Guides
+  
+  â?­ï¸?  GiÃ  aggiornato: interactions.html
+  â?­ï¸?  GiÃ  aggiornato: LineeGuida.html
+  â?­ï¸?  GiÃ  aggiornato: LineeGuida.pdf
+  â?­ï¸?  GiÃ  aggiornato: Guida Warfarin per pazienti.pdf
+  â?­ï¸?  GiÃ  aggiornato: Algoritmo Gestione INR.html
+  â?­ï¸?  GiÃ  aggiornato: infografica-tao.html
+  â?­ï¸?  GiÃ  aggiornato: nomogramma-pengo.html
+  
+  === Riepilogo ===
+  File copiati: 0
+  File giÃ  aggiornati: 7
+  
+  Nessuna modifica rilevata.
+  WarfarinManager.Shared -> D:\Claude\TaoGest\src\WarfarinManager.Shared\bin\Debug\net8.0\WarfarinManager.Shared.dll
+D:\Claude\TaoGest\src\WarfarinManager.Data\Configuration\DailyDoseConfiguration.cs(27,9): warning CS0618: 'RelationalEntityTypeBuilderExtensions.HasCheckConstraint<TEntity>(EntityTypeBuilder<TEntity>, string, string?)' è obsoleto: 'Configure this using ToTable(t => t.HasCheckConstraint()) instead.' [D:\Claude\TaoGest\src\WarfarinManager.Data\WarfarinManager.Data.csproj]
+  WarfarinManager.Data -> D:\Claude\TaoGest\src\WarfarinManager.Data\bin\Debug\net8.0\WarfarinManager.Data.dll
+D:\Claude\TaoGest\src\WarfarinManager.Core\Services\InteractionCheckerService.cs(62,29): warning CS8601: Possibile assegnazione di riferimento Null. [D:\Claude\TaoGest\src\WarfarinManager.Core\WarfarinManager.Core.csproj]
+D:\Claude\TaoGest\src\WarfarinManager.Core\Services\InteractionCheckerService.cs(64,34): warning CS8601: Possibile assegnazione di riferimento Null. [D:\Claude\TaoGest\src\WarfarinManager.Core\WarfarinManager.Core.csproj]
+D:\Claude\TaoGest\src\WarfarinManager.Core\Services\InteractionCheckerService.cs(65,34): warning CS8601: Possibile assegnazione di riferimento Null. [D:\Claude\TaoGest\src\WarfarinManager.Core\WarfarinManager.Core.csproj]
+  WarfarinManager.Core -> D:\Claude\TaoGest\src\WarfarinManager.Core\bin\Debug\net8.0\WarfarinManager.Core.dll
+
+Compilazione NON RIUSCITA.
+
+D:\Claude\TaoGest\src\WarfarinManager.Data\Configuration\DailyDoseConfiguration.cs(27,9): warning CS0618: 'RelationalEntityTypeBuilderExtensions.HasCheckConstraint<TEntity>(EntityTypeBuilder<TEntity>, string, string?)' è obsoleto: 'Configure this using ToTable(t => t.HasCheckConstraint()) instead.' [D:\Claude\TaoGest\src\WarfarinManager.Data\WarfarinManager.Data.csproj]
+D:\Claude\TaoGest\src\WarfarinManager.Core\Services\InteractionCheckerService.cs(62,29): warning CS8601: Possibile assegnazione di riferimento Null. [D:\Claude\TaoGest\src\WarfarinManager.Core\WarfarinManager.Core.csproj]
+D:\Claude\TaoGest\src\WarfarinManager.Core\Services\InteractionCheckerService.cs(64,34): warning CS8601: Possibile assegnazione di riferimento Null. [D:\Claude\TaoGest\src\WarfarinManager.Core\WarfarinManager.Core.csproj]
+D:\Claude\TaoGest\src\WarfarinManager.Core\Services\InteractionCheckerService.cs(65,34): warning CS8601: Possibile assegnazione di riferimento Null. [D:\Claude\TaoGest\src\WarfarinManager.Core\WarfarinManager.Core.csproj]
+    Avvisi: 4
+    Errori: 0
+
+Tempo trascorso 00:00:03.75
+Terminare il processo batch (S/N)? 
+^C
+Return code: 1
+Premere un tasto per continuare . . . 
+Terminare il processo batch (S/N)? 
+^C

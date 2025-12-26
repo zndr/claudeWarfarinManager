@@ -606,7 +606,24 @@
                 <local:BridgeTherapyView DataContext="{Binding BridgeTherapyViewModel}" />
             </TabItem>
 
-            <!--  Tab 7: Eventi Avversi  -->
+            <!--  Tab 7: Gestione DOAC (solo per pazienti DOAC) -->
+            <TabItem Visibility="{Binding IsDoacPatient, Converter={StaticResource BoolToVisibilityConverter}}">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="16"
+                            Text="&#xEA8F;"
+                            VerticalAlignment="Center"
+                            Margin="0,0,6,0"
+                            Foreground="#10B981" />
+                        <TextBlock Text="Gestione DOAC"/>
+                    </StackPanel>
+                </TabItem.Header>
+                <local:DoacGestView DataContext="{Binding DoacGestViewModel}" />
+            </TabItem>
+
+            <!--  Tab 8: Eventi Avversi  -->
             <TabItem>
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
@@ -617,7 +634,7 @@
                 <local:AdverseEventsView DataContext="{Binding AdverseEventsViewModel}" />
             </TabItem>
 
-            <!--  Tab 8: Switch Terapia  -->
+            <!--  Tab 9: Switch Terapia  -->
             <TabItem>
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">

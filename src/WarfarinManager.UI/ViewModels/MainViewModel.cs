@@ -186,6 +186,21 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void ShowDoacGestSimulator()
+    {
+        try
+        {
+            var window = _serviceProvider.GetRequiredService<Views.Tools.DoacGestWebViewWindow>();
+            window.Owner = Application.Current.MainWindow;
+            window.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            _dialogService.ShowError($"Errore nell'apertura del simulatore DoacGest:\n{ex.Message}", "Errore");
+        }
+    }
+
+    [RelayCommand]
     private void ShowWeeklyDoseCalculator()
     {
         try

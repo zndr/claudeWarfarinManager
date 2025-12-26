@@ -13,6 +13,11 @@
         <!-- Converters -->
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:NullableDecimalConverter x:Key="NullableDecimalConverter" />
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <converters:ListToStringConverter x:Key="ListToStringConverter" />
+        <converters:CountToVisibilityInverseConverter x:Key="CountToVisibilityInverseConverter" />
+        <converters:NullableIntConverter x:Key="NullableIntConverter" />
 
         <!-- Stile per GroupBox -->
         <Style TargetType="GroupBox">
@@ -77,6 +82,136 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
             <StackPanel MaxWidth="1400">
 
+                <!-- Alert Clinici (in alto per massima visibilità) -->
+                <ItemsControl ItemsSource="{Binding AlertClinici}" Margin="0,0,0,15"
+                              Visibility="{Binding AlertClinici.Count, Converter={StaticResource CountToVisibilityInverseConverter}}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{DynamicResource DangerBackgroundBrush}"
+                                    BorderBrush="{DynamicResource DangerBrush}"
+                                    BorderThickness="2"
+                                    Padding="12"
+                                    Margin="0,0,0,8"
+                                    CornerRadius="5">
+                                <TextBlock Text="{Binding}"
+                                           TextWrapping="Wrap"
+                                           FontWeight="SemiBold"
+                                           FontSize="13"
+                                           Foreground="{DynamicResource DangerBrush}"/>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Valutazione Appropriatezza DOAC (in alto se non appropriato) -->
+                <GroupBox Header="⚠️ Valutazione Appropriatezza DOAC"
+                          Visibility="{Binding IsDoacAppropriato, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                          Margin="0,0,0,15">
+                    <StackPanel>
+                        <!-- Alert DOAC Controindicato/Sconsigliato -->
+                        <Border Padding="15" CornerRadius="5" Margin="0,0,0,10">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="{DynamicResource WarningBackgroundBrush}"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource WarningBrush}"/>
+                                    <Setter Property="BorderThickness" Value="2"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsDoacContraindicato}" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource DangerBackgroundBrush}"/>
+                                            <Setter Property="BorderBrush" Value="{DynamicResource DangerBrush}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <StackPanel>
+                                <TextBlock Text="{Binding RaccomandazioneDoac}"
+                                           FontWeight="Bold"
+                                           FontSize="14"
+                                           TextWrapping="Wrap"
+                                           Margin="0,0,0,10">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource WarningBrush}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsDoacContraindicato}" Value="True">
+                                                    <Setter Property="Foreground" Value="{DynamicResource DangerBrush}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+
+                                <!-- DOAC Consigliato -->
+                                <Border Background="{DynamicResource SuccessBackgroundBrush}"
+                                        Padding="10"
+                                        CornerRadius="5"
+                                        Visibility="{Binding DoacConsigliato, Converter={StaticResource NullToVisibilityConverter}}">
+                                    <StackPanel>
+                                        <TextBlock Text="Alternativa Consigliata:"
+                                                   FontWeight="Bold"
+                                                   Foreground="{DynamicResource SuccessBrush}"/>
+                                        <TextBlock FontSize="16"
+                                                   FontWeight="Bold"
+                                                   Foreground="{DynamicResource SuccessBrush}"
+                                                   Margin="0,5,0,0">
+                                            <Run Text="✓ "/>
+                                            <Run Text="{Binding DoacConsigliato}"/>
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding MotivoConsiglioCambio}"
+                                                   FontSize="12"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                   Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Suggerimento Switch a Warfarin -->
+                                <Border Background="{DynamicResource InfoBackgroundBrush}"
+                                        Padding="10"
+                                        CornerRadius="5"
+                                        Margin="0,10,0,0"
+                                        Visibility="{Binding SuggerisciSwitchWarfarin, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <StackPanel>
+                                        <TextBlock Text="💊 Considerare Switch a Warfarin"
+                                                   FontWeight="Bold"
+                                                   FontSize="14"
+                                                   Foreground="{DynamicResource PrimaryBrush}"/>
+                                        <TextBlock Text="{Binding MotivoSwitchWarfarin}"
+                                                   FontSize="12"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                   Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Altre Alternative -->
+                                <ItemsControl ItemsSource="{Binding DoacAlternativi}" Margin="0,10,0,0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{DynamicResource CardBackgroundBrush}"
+                                                    Padding="8"
+                                                    Margin="0,3,0,0"
+                                                    CornerRadius="3"
+                                                    BorderBrush="{DynamicResource BorderBrush}"
+                                                    BorderThickness="1">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Nome}"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource TextPrimaryBrush}"
+                                                               Width="100"/>
+                                                    <TextBlock Text="{Binding Vantaggi, Converter={StaticResource ListToStringConverter}}"
+                                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                                               TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </GroupBox>
+
                 <!-- Parametri Laboratorio - Layout compatto su una riga -->
                 <GroupBox Header="📊 Parametri Laboratorio">
                     <Grid>
@@ -135,7 +270,7 @@
 
                         <StackPanel Grid.Column="8" Margin="0,0,8,0" ToolTip="CrCl (mL/min) - Cockcroft-Gault">
                             <TextBlock Text="ClCr" Style="{StaticResource LabelStyle}"/>
-                            <TextBox Text="{Binding CrClCockroft, UpdateSourceTrigger=PropertyChanged}"
+                            <TextBox Text="{Binding CrClCockroft, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
                                      IsReadOnly="{Binding CrClCalcolato}"/>
                         </StackPanel>
 
@@ -242,6 +377,15 @@
                     </Grid>
                 </GroupBox>
 
+                <!-- Pulsante Calcola -->
+                <Button Content="🔬 Calcola Dosaggio e Valuta Appropriatezza"
+                        Command="{Binding CalcolaDosaggioCommand}"
+                        HorizontalAlignment="Center"
+                        Padding="20,12"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Margin="0,0,0,15"/>
+
                 <!-- Risultati Calcoli -->
                 <GroupBox Header="📈 Risultati e Raccomandazioni">
                     <StackPanel>
@@ -276,22 +420,60 @@
                             </Border>
 
                             <Border Grid.Column="1"
-                                    Background="{DynamicResource SuccessBackgroundBrush}"
                                     Padding="15"
                                     Margin="0,0,10,0"
                                     BorderBrush="{DynamicResource BorderBrush}"
                                     BorderThickness="1">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="{DynamicResource SuccessBackgroundBrush}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDoacContraindicato}" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource DangerBackgroundBrush}"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsDoacSconsigliato}" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource WarningBackgroundBrush}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
                                 <StackPanel>
                                     <TextBlock Text="Dosaggio Suggerito"
                                                FontWeight="Bold"
-                                               FontSize="14"
-                                               Foreground="{DynamicResource SuccessBrush}"/>
+                                               FontSize="14">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsDoacContraindicato}" Value="True">
+                                                        <Setter Property="Foreground" Value="{DynamicResource DangerBrush}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsDoacSconsigliato}" Value="True">
+                                                        <Setter Property="Foreground" Value="{DynamicResource WarningBrush}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                     <TextBlock Text="{Binding DosaggioSuggerito, FallbackValue='Calcolare'}"
                                                FontSize="18"
                                                FontWeight="Bold"
-                                               Foreground="{DynamicResource SuccessBrush}"
                                                Margin="0,5,0,0"
-                                               TextWrapping="Wrap"/>
+                                               TextWrapping="Wrap">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsDoacContraindicato}" Value="True">
+                                                        <Setter Property="Foreground" Value="{DynamicResource DangerBrush}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsDoacSconsigliato}" Value="True">
+                                                        <Setter Property="Foreground" Value="{DynamicResource WarningBrush}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </StackPanel>
                             </Border>
 
@@ -301,20 +483,52 @@
                                     BorderBrush="{DynamicResource BorderBrush}"
                                     BorderThickness="1">
                                 <StackPanel>
-                                    <TextBlock Text="Controllo Successivo"
+                                    <TextBlock Text="Prossimo Controllo"
                                                FontWeight="Bold"
                                                FontSize="14"
                                                Foreground="{DynamicResource WarningBrush}"/>
-                                    <ComboBox ItemsSource="{Binding IntervalliControlloOptions}"
-                                              SelectedItem="{Binding IntervalloControlloMesi}"
-                                              Margin="0,10,0,0"/>
-                                    <TextBlock Text="mesi"
+                                    <TextBlock Text="{Binding DataProssimoControllo, StringFormat='dd/MM/yyyy', FallbackValue='Da calcolare'}"
+                                               FontSize="18"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource WarningBrush}"
+                                               Margin="0,5,0,0"/>
+                                    <TextBlock Text="{Binding MotivazioneIntervallo}"
                                                FontSize="12"
                                                Foreground="{DynamicResource TextSecondaryBrush}"
+                                               TextWrapping="Wrap"
                                                Margin="0,5,0,0"/>
                                 </StackPanel>
                             </Border>
                         </Grid>
+
+                        <!-- Motivazioni Intervallo Controllo -->
+                        <Border Background="{DynamicResource InfoBackgroundBrush}"
+                                Padding="10"
+                                Margin="0,10,0,0"
+                                CornerRadius="5"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="1"
+                                Visibility="{Binding MotivazioniIntervallo.Count, Converter={StaticResource CountToVisibilityInverseConverter}}">
+                            <StackPanel>
+                                <TextBlock Text="Motivazioni intervallo controllo:"
+                                           FontWeight="SemiBold"
+                                           FontSize="12"
+                                           Foreground="{DynamicResource PrimaryBrush}"
+                                           Margin="0,0,0,5"/>
+                                <ItemsControl ItemsSource="{Binding MotivazioniIntervallo}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Foreground="{DynamicResource TextSecondaryBrush}"
+                                                       FontSize="11"
+                                                       Margin="10,2,0,0">
+                                                <Run Text="• "/>
+                                                <Run Text="{Binding Mode=OneWay}"/>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
 
                         <Border Background="{DynamicResource CardBackgroundBrush}"
                                 Padding="15"
@@ -334,23 +548,6 @@
                             </StackPanel>
                         </Border>
 
-                        <!-- Alert Clinici -->
-                        <ItemsControl ItemsSource="{Binding AlertClinici}" Margin="0,15,0,0">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Background="{DynamicResource DangerBackgroundBrush}"
-                                            BorderBrush="{DynamicResource DangerBrush}"
-                                            BorderThickness="1"
-                                            Padding="10"
-                                            Margin="0,5,0,0"
-                                            CornerRadius="5">
-                                        <TextBlock Text="{Binding}"
-                                                   TextWrapping="Wrap"
-                                                   Foreground="{DynamicResource DangerBrush}"/>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
                     </StackPanel>
                 </GroupBox>
 

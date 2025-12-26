@@ -179,6 +179,16 @@ public class Patient : BaseEntity
     /// </summary>
     public ICollection<PreTaoAssessment> PreTaoAssessments { get; set; } = new List<PreTaoAssessment>();
 
+    /// <summary>
+    /// Record di monitoraggio DOAC
+    /// </summary>
+    public ICollection<DoacMonitoringRecord> DoacMonitoringRecords { get; set; } = new List<DoacMonitoringRecord>();
+
+    /// <summary>
+    /// Terapie continuative
+    /// </summary>
+    public ICollection<TerapiaContinuativa> TerapieContinuative { get; set; } = new List<TerapiaContinuativa>();
+
     // Computed Properties (non mappate su DB)
     
     /// <summary>

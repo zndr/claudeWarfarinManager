@@ -113,7 +113,13 @@
       "Bash(gh pr merge:*)",
       "Bash(git stash push:*)",
       "Bash(powershell -Command \"Stop-Process -Id 69192 -Force\")",
-      "Bash(dir \"C:\\\\Users\\\\ZANDA\\\\Documents\\\\TaoGEST*.pdf\")"
+      "Bash(dir \"C:\\\\Users\\\\ZANDA\\\\Documents\\\\TaoGEST*.pdf\")",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfix: Corretta view iniziale per pazienti DOAC e Warfarin\n\n- Paziente DOAC con indicazione: view iniziale \"Gestione DOAC\" \\(tab 6\\)\n- Paziente DOAC senza indicazione: avvio wizard configurazione\n- Paziente Warfarin non-naive: view iniziale \"Storico INR\" \\(tab 4\\)\n- Paziente Warfarin naive: dialog + wizard come prima\n\nRisolto bug indice tab: WPF usa indici fissi indipendenti dalla\nVisibility dei TabItem \\(indice 4 era StoricoINR, non DOAC\\)\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(tr:*)",
+      "Bash(python3:*)",
+      "Bash(powershell -c \"''_antiaggreganti''.Substring\\(1\\).Substring\\(0,1\\).ToUpper\\(\\) + ''_antiaggreganti''.Substring\\(2\\)\")",
+      "Bash(powershell -c:*)",
+      "Bash(cmd /c \"type d:\\\\Claude\\\\TaoGest\\\\src\\\\WarfarinManager.UI\\\\ViewModels\\\\DoacGestViewModel.cs | findstr /n OnAnti\")"
     ],
     "deny": [],
     "ask": []

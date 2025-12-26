@@ -13,6 +13,8 @@ public interface IUnitOfWork : IDisposable
     IIndicationRepository Indications { get; }
     IBridgeTherapyPlanRepository BridgeTherapyPlans { get; }
     IRepository<Entities.AdverseEvent> AdverseEvents { get; }
+    IDoacMonitoringRepository DoacMonitoring { get; }
+    ITerapiaContinuativaRepository TerapieContinuative { get; }
 
     /// <summary>
     /// Accesso diretto al DbContext per query complesse

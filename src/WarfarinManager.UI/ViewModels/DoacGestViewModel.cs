@@ -120,6 +120,21 @@ public partial class DoacGestViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Ricalcola il HAS-BLED Score in tempo reale quando cambiano i checkbox
+    /// </summary>
+    private void RicalcolaHasBledScoreInTempoReale()
+    {
+        if (Patient == null) return;
+
+        // Crea un record temporaneo con i valori correnti del form
+        var tempRecord = BuildRecordFromForm();
+
+        // Calcola HAS-BLED score
+        HasBledScore = DoacCalculationService.CalcolaHasBledScore(tempRecord, Patient);
+        RischioEmorragico = DoacCalculationService.GetRischioEmorragico(HasBledScore);
+    }
+
     // ====== DOAC E INDICAZIONE ======
 
     [ObservableProperty]
@@ -149,35 +164,57 @@ public partial class DoacGestViewModel : ObservableObject
     [ObservableProperty]
     private bool _ipertensione;
 
+    partial void OnIpertensioneChanged(bool value) => RicalcolaHasBledScoreInTempoReale();
+
     [ObservableProperty]
     private bool _disfunzioneRenale;
+
+    partial void OnDisfunzioneRenaleChanged(bool value) => RicalcolaHasBledScoreInTempoReale();
 
     [ObservableProperty]
     private bool _disfunzioneEpatica;
 
+    partial void OnDisfunzioneEpaticaChanged(bool value) => RicalcolaHasBledScoreInTempoReale();
+
     [ObservableProperty]
     private bool _cirrosi;
+
+    partial void OnCirrosiChanged(bool value) => RicalcolaHasBledScoreInTempoReale();
 
     [ObservableProperty]
     private bool _ipertensPortale;
 
+    partial void OnIpertensPortaleChanged(bool value) => RicalcolaHasBledScoreInTempoReale();
+
     [ObservableProperty]
     private bool _storiaStroke;
+
+    partial void OnStoriaStrokeChanged(bool value) => RicalcolaHasBledScoreInTempoReale();
 
     [ObservableProperty]
     private bool _storiaSanguinamento;
 
+    partial void OnStoriaSanguinamentoChanged(bool value) => RicalcolaHasBledScoreInTempoReale();
+
     [ObservableProperty]
     private bool _inrLabile;
+
+    partial void OnInrLabileChanged(bool value) => RicalcolaHasBledScoreInTempoReale();
 
     [ObservableProperty]
     private bool _antiaggreganti;
 
+    partial void OnAntiaggregantiChanged(bool value) => RicalcolaHasBledScoreInTempoReale();
+
     [ObservableProperty]
     private bool _fans;
 
+    partial void OnFansChanged(bool value) => RicalcolaHasBledScoreInTempoReale();
+
     [ObservableProperty]
     private bool _abusoDiAlcol;
+
+    partial void OnAbusoDiAlcolChanged(bool value) => RicalcolaHasBledScoreInTempoReale();
 
     // ====== SCORE E DOSAGGIO ======
 
@@ -204,7 +241,45 @@ public partial class DoacGestViewModel : ObservableObject
     [ObservableProperty]
     private DateTime? _dataProssimoControllo;
 
+    [ObservableProperty]
+    private string? _motivazioneIntervallo;
+
+    [ObservableProperty]
+    private List<string> _motivazioniIntervallo = new();
+
     public List<int> IntervalliControlloOptions { get; } = new() { 3, 6, 12 };
+
+    // ====== VALUTAZIONE APPROPRIATEZZA DOAC ======
+
+    [ObservableProperty]
+    private bool _isDoacAppropriato = true;
+
+    [ObservableProperty]
+    private bool _isDoacContraindicato;
+
+    [ObservableProperty]
+    private bool _isDoacSconsigliato;
+
+    [ObservableProperty]
+    private string? _motivoInappropriatezza;
+
+    [ObservableProperty]
+    private string? _doacConsigliato;
+
+    [ObservableProperty]
+    private string? _motivoConsiglioCambio;
+
+    [ObservableProperty]
+    private string? _raccomandazioneDoac;
+
+    [ObservableProperty]
+    private List<DoacAlternativo> _doacAlternativi = new();
+
+    [ObservableProperty]
+    private bool _suggerisciSwitchWarfarin;
+
+    [ObservableProperty]
+    private string? _motivoSwitchWarfarin;
 
     public DoacGestViewModel(
         IUnitOfWork unitOfWork,
@@ -383,7 +458,7 @@ public partial class DoacGestViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Calcola HAS-BLED score e determina dosaggio DOAC
+    /// Calcola HAS-BLED score, determina dosaggio DOAC, valuta appropriatezza e intervallo controllo
     /// </summary>
     [RelayCommand]
     private async Task CalcolaDosaggioAsync()
@@ -396,14 +471,38 @@ public partial class DoacGestViewModel : ObservableObject
 
         try
         {
+            // Calcola automaticamente CrCl se non presente e abbiamo i dati necessari
+            if (!CrClCockroft.HasValue && Peso.HasValue && Creatinina.HasValue)
+            {
+                var crCl = DoacCalculationService.CalcolaCockcroftGault(Patient.Age, Peso, Creatinina, Patient.Gender);
+                if (crCl.HasValue)
+                {
+                    CrClCockroft = crCl.Value;
+                    CrClCalcolato = true;
+                }
+            }
+
             // Crea record temporaneo per calcoli
             var tempRecord = BuildRecordFromForm();
 
-            // Calcola HAS-BLED
+            // 1. Calcola HAS-BLED
             HasBledScore = DoacCalculationService.CalcolaHasBledScore(tempRecord, Patient);
             RischioEmorragico = DoacCalculationService.GetRischioEmorragico(HasBledScore);
 
-            // Determina dosaggio
+            // 2. Valuta appropriatezza del DOAC attuale
+            var valutazione = DoacCalculationService.ValutaAppropriatezzaDoac(tempRecord, Patient, DoacSelezionato);
+            IsDoacAppropriato = valutazione.IsAppropriato;
+            IsDoacContraindicato = valutazione.IsContraindicato;
+            IsDoacSconsigliato = valutazione.IsSconsigliato;
+            MotivoInappropriatezza = valutazione.MotivoInappropriatezza;
+            RaccomandazioneDoac = valutazione.Raccomandazione;
+            DoacConsigliato = valutazione.DoacConsigliato;
+            MotivoConsiglioCambio = valutazione.MotivoConsiglio;
+            DoacAlternativi = valutazione.DoacAlternativi;
+            SuggerisciSwitchWarfarin = valutazione.SuggerisciSwitchWarfarin;
+            MotivoSwitchWarfarin = valutazione.MotivoSwitchWarfarin;
+
+            // 3. Determina dosaggio (se DOAC appropriato)
             var dosaggio = DoacCalculationService.DeterminaDosaggio(
                 tempRecord,
                 Patient,
@@ -414,10 +513,38 @@ public partial class DoacGestViewModel : ObservableObject
             DosaggioSuggerito = dosaggio.Dose;
             RazionaleDosaggio = dosaggio.RazionaleCompleto;
 
-            // Genera alert clinici
+            // 4. Determina intervallo di controllo basato su HAS-BLED e altri fattori
+            var controlloRaccomandato = DoacCalculationService.DeterminaIntervalloControllo(
+                tempRecord,
+                Patient,
+                HasBledScore
+            );
+
+            IntervalloControlloMesi = controlloRaccomandato.IntervalloMesi;
+            DataProssimoControllo = controlloRaccomandato.DataProssimoControllo;
+            MotivazioneIntervallo = controlloRaccomandato.Descrizione;
+            MotivazioniIntervallo = controlloRaccomandato.Motivazioni;
+
+            // 5. Genera alert clinici
             AlertClinici = DoacCalculationService.GeneraAlert(tempRecord, Patient);
 
-            _dialogService.ShowInformation($"HAS-BLED Score: {HasBledScore}\nRischio: {RischioEmorragico}\nDosaggio: {DosaggioSuggerito}", "Calcolo Dosaggio");
+            // Mostra risultato
+            var messaggioRisultato = $"HAS-BLED Score: {HasBledScore} ({RischioEmorragico} rischio)\n\n";
+
+            if (!IsDoacAppropriato)
+            {
+                messaggioRisultato += $"ATTENZIONE: {RaccomandazioneDoac}\n";
+                if (!string.IsNullOrEmpty(DoacConsigliato))
+                {
+                    messaggioRisultato += $"Alternativa consigliata: {DoacConsigliato}\n";
+                }
+                messaggioRisultato += "\n";
+            }
+
+            messaggioRisultato += $"Dosaggio: {DosaggioSuggerito}\n";
+            messaggioRisultato += $"Prossimo controllo: {DataProssimoControllo:dd/MM/yyyy} ({IntervalloControlloMesi} mesi)";
+
+            _dialogService.ShowInformation(messaggioRisultato, "Valutazione Completa");
         }
         catch (Exception ex)
         {
@@ -595,8 +722,23 @@ public partial class DoacGestViewModel : ObservableObject
         RischioEmorragico = null;
         AlertClinici = new();
 
+        // Reset programmazione controlli
         IntervalloControlloMesi = 6;
         DataProssimoControllo = null;
+        MotivazioneIntervallo = null;
+        MotivazioniIntervallo = new();
+
+        // Reset valutazione appropriatezza DOAC
+        IsDoacAppropriato = true;
+        IsDoacContraindicato = false;
+        IsDoacSconsigliato = false;
+        MotivoInappropriatezza = null;
+        DoacConsigliato = null;
+        MotivoConsiglioCambio = null;
+        RaccomandazioneDoac = null;
+        DoacAlternativi = new();
+        SuggerisciSwitchWarfarin = false;
+        MotivoSwitchWarfarin = null;
     }
 
     /// <summary>
