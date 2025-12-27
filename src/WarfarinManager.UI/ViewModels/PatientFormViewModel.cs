@@ -60,7 +60,21 @@ public partial class PatientFormViewModel : ObservableObject, Services.INavigati
     private string _notes = string.Empty;
 
     [ObservableProperty]
+    private string _millewinCode = string.Empty;
+
+    [ObservableProperty]
     private bool _isSaving;
+
+    // Valori originali per confronto in HasUnsavedChanges()
+    private string _originalFirstName = string.Empty;
+    private string _originalLastName = string.Empty;
+    private DateTime _originalBirthDate;
+    private string _originalFiscalCode = string.Empty;
+    private Gender? _originalGender;
+    private string _originalPhone = string.Empty;
+    private string _originalEmail = string.Empty;
+    private string _originalAddress = string.Empty;
+    private string _originalNotes = string.Empty;
 
     [ObservableProperty]
     private string _firstNameError = string.Empty;
@@ -137,6 +151,18 @@ public partial class PatientFormViewModel : ObservableObject, Services.INavigati
             Email = patient.Email ?? string.Empty;
             Address = patient.Address ?? string.Empty;
             Notes = patient.Notes ?? string.Empty;
+            MillewinCode = patient.MillewinCode ?? string.Empty;
+
+            // Salva i valori originali per confronto in HasUnsavedChanges()
+            _originalFirstName = FirstName;
+            _originalLastName = LastName;
+            _originalBirthDate = BirthDate;
+            _originalFiscalCode = FiscalCode;
+            _originalGender = SelectedGender;
+            _originalPhone = Phone;
+            _originalEmail = Email;
+            _originalAddress = Address;
+            _originalNotes = Notes;
 
             _logger.LogInformation("Caricati dati paziente per modifica: {PatientId}", patientId);
         }
@@ -372,13 +398,30 @@ public partial class PatientFormViewModel : ObservableObject, Services.INavigati
 
     private bool HasUnsavedChanges()
     {
-        return !string.IsNullOrWhiteSpace(FirstName) ||
-               !string.IsNullOrWhiteSpace(LastName) ||
-               !string.IsNullOrWhiteSpace(FiscalCode) ||
-               !string.IsNullOrWhiteSpace(Phone) ||
-               !string.IsNullOrWhiteSpace(Email) ||
-               !string.IsNullOrWhiteSpace(Address) ||
-               !string.IsNullOrWhiteSpace(Notes);
+        if (IsEditMode)
+        {
+            // In modalità modifica: confronta con i valori originali caricati
+            return FirstName != _originalFirstName ||
+                   LastName != _originalLastName ||
+                   BirthDate != _originalBirthDate ||
+                   FiscalCode != _originalFiscalCode ||
+                   SelectedGender != _originalGender ||
+                   Phone != _originalPhone ||
+                   Email != _originalEmail ||
+                   Address != _originalAddress ||
+                   Notes != _originalNotes;
+        }
+        else
+        {
+            // In modalità creazione: controlla se l'utente ha inserito qualcosa
+            return !string.IsNullOrWhiteSpace(FirstName) ||
+                   !string.IsNullOrWhiteSpace(LastName) ||
+                   !string.IsNullOrWhiteSpace(FiscalCode) ||
+                   !string.IsNullOrWhiteSpace(Phone) ||
+                   !string.IsNullOrWhiteSpace(Email) ||
+                   !string.IsNullOrWhiteSpace(Address) ||
+                   !string.IsNullOrWhiteSpace(Notes);
+        }
     }
 
     private int CalculateAge(DateTime birthDate)

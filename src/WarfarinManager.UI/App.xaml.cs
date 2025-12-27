@@ -311,6 +311,9 @@ public partial class App : Application
             // FiscalCode: Aggiunto nella versione 1.X.X per supportare l'importazione pazienti
             await EnsureColumnExistsAsync(connection, "DoctorData", "FiscalCode",
                 "TEXT NOT NULL DEFAULT ''");
+            // MillewinCode: Aggiunto per integrazione Millewin - codice utente medico
+            await EnsureColumnExistsAsync(connection, "DoctorData", "MillewinCode",
+                "TEXT NULL");
 
             // =========================================================================
             // TABELLA: Patients - Campi biometrici (v1.4.0)
@@ -322,6 +325,9 @@ public partial class App : Application
             await EnsureColumnExistsAsync(connection, "Patients", "WeightLastUpdated",
                 "TEXT NULL");
             await EnsureColumnExistsAsync(connection, "Patients", "HeightLastUpdated",
+                "TEXT NULL");
+            // MillewinCode: Aggiunto per integrazione Millewin - codice univoco paziente (p.codice)
+            await EnsureColumnExistsAsync(connection, "Patients", "MillewinCode",
                 "TEXT NULL");
 
             // =========================================================================

@@ -70,5 +70,11 @@ public class MillepsPatientDto : INotifyPropertyChanged
     /// </summary>
     public string? Sesso { get; set; }
 
+    /// <summary>
+    /// Codice univoco del paziente in Millewin (p.codice).
+    /// Usato per il collegamento diretto tra TaoGEST e Millewin.
+    /// </summary>
+    public string? MillewinCode { get; set; }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 }

@@ -114,6 +114,42 @@ public record MillepsMedication(
 );
 
 /// <summary>
+/// Dati completi del paziente estratti da Milleps usando i codici medico/paziente
+/// </summary>
+public class MillepsPatientData
+{
+    /// <summary>
+    /// Codice fiscale del paziente (CFpazi)
+    /// </summary>
+    public string CodiceFiscalePaziente { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Codice interno Milleps del paziente (campo 'codice' in pazienti)
+    /// </summary>
+    public string? CodiceMillepsPaziente { get; set; }
+
+    /// <summary>
+    /// Codice medico Milleps (pa_medi) - userid dalla tabella users
+    /// </summary>
+    public string? CodiceMillepsMedico { get; set; }
+
+    /// <summary>
+    /// Dati biometrici (peso, altezza)
+    /// </summary>
+    public MillepsBiometricData? BiometricData { get; set; }
+
+    /// <summary>
+    /// Esami di laboratorio
+    /// </summary>
+    public MillepsLabResultsCollection LabResults { get; set; } = new();
+
+    /// <summary>
+    /// Indica se i dati sono stati recuperati correttamente
+    /// </summary>
+    public bool IsValid => !string.IsNullOrEmpty(CodiceMillepsPaziente);
+}
+
+/// <summary>
 /// Configurazione dei pattern per il matching dei nomi esami in Milleps
 /// Pattern basati sui dati reali estratti dal database milleps
 /// </summary>

@@ -41,4 +41,37 @@ public interface IMillepsDataService
     /// <param name="codiceFiscale">Codice fiscale del paziente</param>
     /// <returns>Codice interno Milleps o null se non trovato</returns>
     Task<string?> GetMillepsPatientCodeAsync(string codiceFiscale);
+
+    /// <summary>
+    /// Ottiene il codice utente (userid) del medico in Milleps dal codice fiscale
+    /// </summary>
+    /// <param name="codiceFiscaleMedico">Codice fiscale del medico</param>
+    /// <returns>UserId Milleps (pa_medi) o null se non trovato</returns>
+    Task<string?> GetMillepsDoctorCodeAsync(string codiceFiscaleMedico);
+
+    /// <summary>
+    /// Estrae i dati antropometrici e di laboratorio per un paziente usando i codici Millewin
+    /// </summary>
+    /// <param name="codiceFiscalePaziente">Codice fiscale del paziente (CFpazi)</param>
+    /// <param name="codiceFiscaleMedico">Codice fiscale del medico per ottenere pa_medi</param>
+    /// <returns>Dati combinati antropometrici e laboratorio</returns>
+    Task<MillepsPatientData?> GetPatientDataAsync(string codiceFiscalePaziente, string codiceFiscaleMedico);
+
+    /// <summary>
+    /// Estrae i dati antropometrici e di laboratorio usando il codice Millewin diretto del paziente.
+    /// Questo metodo è più efficiente perché evita la ricerca per codice fiscale.
+    /// </summary>
+    /// <param name="millewinPatientCode">Codice univoco del paziente in Millewin (p.codice)</param>
+    /// <param name="millewinDoctorCode">Codice del medico in Millewin (pa_medi)</param>
+    /// <returns>Dati combinati antropometrici e laboratorio</returns>
+    Task<MillepsPatientData?> GetPatientDataByCodeAsync(string millewinPatientCode, string millewinDoctorCode);
+
+    /// <summary>
+    /// Verifica se un paziente esiste ed è associato al medico specificato.
+    /// Usa le clausole obbligatorie (convenzione, non deceduto, non revocato).
+    /// </summary>
+    /// <param name="millewinPatientCode">Codice univoco del paziente in Millewin (p.codice)</param>
+    /// <param name="millewinDoctorCode">Codice del medico in Millewin (pa_medi)</param>
+    /// <returns>True se il paziente esiste ed è valido per il medico</returns>
+    Task<bool> ValidatePatientAsync(string millewinPatientCode, string millewinDoctorCode);
 }

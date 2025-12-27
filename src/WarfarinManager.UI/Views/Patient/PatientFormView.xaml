@@ -135,18 +135,32 @@
                     </StackPanel>
 
                     <!-- Codice Fiscale -->
-                    <StackPanel Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Margin="0,0,0,15">
+                    <StackPanel Grid.Column="0" Grid.Row="2" Margin="0,0,0,15">
                         <TextBlock Text="Codice Fiscale *" FontWeight="SemiBold" Margin="0,0,0,5"/>
                         <TextBox Text="{Binding FiscalCode, UpdateSourceTrigger=PropertyChanged}"
                                  MaxLength="16"
                                  CharacterCasing="Upper"
                                  Tag="{Binding FiscalCodeError, Converter={StaticResource ErrorToTagConverter}}"
                                  Style="{StaticResource TextBoxWithValidation}"/>
-                        <TextBlock Text="{Binding FiscalCodeError}" 
-                                   Foreground="{DynamicResource DangerBrush}" 
+                        <TextBlock Text="{Binding FiscalCodeError}"
+                                   Foreground="{DynamicResource DangerBrush}"
                                    FontSize="11"
                                    Margin="0,3,0,0"
                                    Visibility="{Binding FiscalCodeError, Converter={StaticResource StringToVisibilityConverter}}"/>
+                    </StackPanel>
+
+                    <!-- Codice Millewin (solo visualizzazione, mostrato solo se presente) -->
+                    <StackPanel Grid.Column="2" Grid.Row="2" Margin="0,0,0,15"
+                                Visibility="{Binding MillewinCode, Converter={StaticResource StringToVisibilityConverter}}">
+                        <TextBlock Text="Codice MWin" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding MillewinCode, Mode=OneWay}"
+                                 IsReadOnly="True"
+                                 Background="{DynamicResource ControlBackgroundBrush}"
+                                 Padding="8"
+                                 FontSize="13"
+                                 BorderBrush="{DynamicResource ControlBorderBrush}"
+                                 BorderThickness="1"
+                                 ToolTip="Codice univoco del paziente in Millewin (sola lettura)"/>
                     </StackPanel>
                 </Grid>
 

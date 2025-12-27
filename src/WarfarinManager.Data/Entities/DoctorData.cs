@@ -39,4 +39,10 @@ public class DoctorData : BaseEntity
     /// Indirizzo email
     /// </summary>
     public string Email { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Codice utente Millewin (userid dalla tabella users)
+    /// Recuperato automaticamente dal codice fiscale
+    /// </summary>
+    public string? MillewinCode { get; set; }
 }

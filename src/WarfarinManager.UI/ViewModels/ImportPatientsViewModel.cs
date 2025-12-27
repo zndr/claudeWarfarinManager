@@ -252,6 +252,7 @@ public partial class ImportPatientsViewModel : ObservableObject
                     Email = dto.Email ?? string.Empty,
                     AnticoagulantType = dto.Anticoagulante,
                     TherapyStartDate = dto.DataInizio,
+                    MillewinCode = dto.MillewinCode,  // Codice univoco Millewin per collegamento diretto
                     CreatedAt = DateTime.Now,
                     IsDeleted = false
                 };

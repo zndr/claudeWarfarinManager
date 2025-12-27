@@ -65,7 +65,8 @@ public class PostgreSqlImportService
                     ELSE 'altro'
                     END AS anticoagulante,
                     ct.data_open AS data_inizio,
-                    p.sesso
+                    p.sesso,
+                    p.codice AS codice_millewin
                 FROM pazienti p, cart_pazpbl cp, nos_002 nos, cart_terap ct
                 WHERE p.codice = nos.codice
                 AND p.codice = cp.codice
@@ -95,7 +96,8 @@ public class PostgreSqlImportService
                     Email = reader.IsDBNull(5) ? null : reader.GetString(5),
                     Anticoagulante = reader.IsDBNull(6) ? null : reader.GetString(6),
                     DataInizio = reader.IsDBNull(7) ? null : reader.GetDateTime(7),
-                    Sesso = reader.IsDBNull(8) ? null : reader.GetString(8)
+                    Sesso = reader.IsDBNull(8) ? null : reader.GetString(8),
+                    MillewinCode = reader.IsDBNull(9) ? null : reader.GetString(9)
                 };
 
                 patients.Add(patient);

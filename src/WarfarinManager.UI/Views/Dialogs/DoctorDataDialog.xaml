@@ -15,6 +15,7 @@
     mc:Ignorable="d">
 
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <Style TargetType="Label">
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Margin" Value="0,10,0,5" />
@@ -61,6 +62,25 @@
                 <!--  Codice Fiscale  -->
                 <Label Content="Codice Fiscale *" />
                 <TextBox Text="{Binding FiscalCode, UpdateSourceTrigger=PropertyChanged}" MaxLength="16" CharacterCasing="Upper" />
+
+                <!--  Codice Millewin (readonly)  -->
+                <Label Content="Codice MWin" />
+                <Grid>
+                    <TextBox
+                        Text="{Binding MillewinCode, Mode=OneWay}"
+                        IsReadOnly="True"
+                        Background="{DynamicResource ControlBackgroundDisabledBrush}"
+                        Foreground="{DynamicResource TextSecondaryBrush}"
+                        FontStyle="Italic"
+                        ToolTip="Codice utente Millewin (recuperato automaticamente dal Codice Fiscale)" />
+                    <TextBlock
+                        Text="Ricerca in corso..."
+                        Visibility="{Binding IsLookingUpMillewinCode, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        VerticalAlignment="Center"
+                        Margin="10,0"
+                        FontStyle="Italic"
+                        Foreground="{DynamicResource TextSecondaryBrush}" />
+                </Grid>
 
                 <!--  Indirizzo  -->
                 <Label Content="Via e numero civico" Margin="0,20,0,5" />

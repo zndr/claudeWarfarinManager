@@ -110,6 +110,12 @@ public class Patient : BaseEntity
     /// </summary>
     public DateTime? HeightLastUpdated { get; set; }
 
+    /// <summary>
+    /// Codice univoco del paziente in Millewin (p.codice dalla tabella pazienti).
+    /// Usato per il collegamento diretto tra TaoGEST e Millewin senza ricerca per CF.
+    /// </summary>
+    public string? MillewinCode { get; set; }
+
     // CHA₂DS₂-VASc Score Components (per calcolo rischio bridge therapy)
     
     /// <summary>
