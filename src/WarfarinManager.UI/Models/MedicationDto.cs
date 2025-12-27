@@ -11,12 +11,27 @@ public class MedicationDto
     public int Id { get; set; }
     
     public int PatientId { get; set; }
-    
+
     /// <summary>
-    /// Nome farmaco
+    /// Nome farmaco (nome commerciale)
     /// </summary>
     public string MedicationName { get; set; } = string.Empty;
-    
+
+    /// <summary>
+    /// Codice ATC del farmaco
+    /// </summary>
+    public string? AtcCode { get; set; }
+
+    /// <summary>
+    /// Principio attivo
+    /// </summary>
+    public string? ActiveIngredient { get; set; }
+
+    /// <summary>
+    /// Origine del farmaco (Manual o Milleps)
+    /// </summary>
+    public MedicationSource Source { get; set; }
+
     /// <summary>
     /// Dosaggio (es. "500 mg")
     /// </summary>
@@ -110,4 +125,25 @@ public class MedicationDto
     /// Ha interazione con warfarin
     /// </summary>
     public bool HasInteraction => InteractionLevel != InteractionLevel.None;
+
+    /// <summary>
+    /// Indica se il farmaco proviene da Milleps
+    /// </summary>
+    public bool IsFromMilleps => Source == MedicationSource.Milleps;
+
+    /// <summary>
+    /// Descrizione origine del farmaco
+    /// </summary>
+    public string SourceDescription => Source switch
+    {
+        MedicationSource.Milleps => "Importato da Millewin",
+        _ => "Inserito manualmente"
+    };
+
+    /// <summary>
+    /// Nome completo farmaco (nome commerciale + principio attivo)
+    /// </summary>
+    public string FullName => string.IsNullOrEmpty(ActiveIngredient)
+        ? MedicationName
+        : $"{MedicationName} ({ActiveIngredient})";
 }

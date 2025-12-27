@@ -277,39 +277,51 @@ public class MillepsDataService : IMillepsDataService
 
             _logger.LogInformation("Recupero terapie continuative per paziente {PatientCode}", patientCode);
 
-            // Query per terapie continuative attive
-            var query = @"
+            // Step 1: Query per terapie continuative attive con codice ATC
+            var medicationsQuery = @"
                 SELECT DISTINCT
                     ct.co_atc,
-                    ct.te_des,
-                    ct.te_dose,
+                    ct.co_des,
                     ct.data_open
                 FROM cart_terap ct
                 WHERE ct.codice = @PatientCode
                   AND ct.te_c_flag = 'C'
                   AND ct.co_atc IS NOT NULL
                   AND ct.co_atc <> ''
-                ORDER BY ct.te_des";
+                ORDER BY ct.co_des";
 
-            await using var cmd = new NpgsqlCommand(query, connection);
-            cmd.Parameters.AddWithValue("@PatientCode", patientCode);
+            var tempMedications = new List<(string AtcCode, string DrugName, DateTime? StartDate)>();
 
-            await using var reader = await cmd.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
+            await using (var cmd = new NpgsqlCommand(medicationsQuery, connection))
             {
-                var atcCode = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
-                var drugName = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
-                var dosage = reader.IsDBNull(2) ? null : reader.GetString(2);
-                var startDate = reader.IsDBNull(3) ? (DateTime?)null : reader.GetDateTime(3);
+                cmd.Parameters.AddWithValue("@PatientCode", patientCode);
 
-                if (!string.IsNullOrEmpty(atcCode))
+                await using var reader = await cmd.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
                 {
-                    medications.Add(new MillepsMedication(atcCode, drugName, dosage, startDate));
+                    var atcCode = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
+                    var drugName = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
+                    var startDate = reader.IsDBNull(2) ? (DateTime?)null : reader.GetDateTime(2);
+
+                    if (!string.IsNullOrEmpty(atcCode))
+                    {
+                        tempMedications.Add((atcCode, drugName, startDate));
+                    }
                 }
             }
 
-            _logger.LogInformation("Recuperate {Count} terapie continuative per paziente {PatientCode}",
+            _logger.LogInformation("Trovate {Count} terapie continuative, recupero principi attivi...",
+                tempMedications.Count);
+
+            // Step 2: Per ogni codice ATC, recupera il principio attivo dalla tabella tab_atc
+            foreach (var med in tempMedications)
+            {
+                string? activeIngredient = await GetActiveIngredientAsync(connection, med.AtcCode);
+                medications.Add(new MillepsMedication(med.AtcCode, med.DrugName, activeIngredient, med.StartDate));
+            }
+
+            _logger.LogInformation("Recuperate {Count} terapie continuative con principi attivi per paziente {PatientCode}",
                 medications.Count, patientCode);
 
             return medications;
@@ -318,6 +330,33 @@ public class MillepsDataService : IMillepsDataService
         {
             _logger.LogError(ex, "Errore durante il recupero delle terapie per CF: {CodiceFiscale}", codiceFiscale);
             throw;
+        }
+    }
+
+    /// <summary>
+    /// Recupera il principio attivo (atc_des) per un dato codice ATC
+    /// </summary>
+    private async Task<string?> GetActiveIngredientAsync(NpgsqlConnection connection, string atcCode)
+    {
+        try
+        {
+            var query = @"
+                SELECT DISTINCT a.atc_des
+                FROM mn_v_prodotti m, tab_atc a
+                WHERE a.atc_cod = m.codice_atc
+                  AND m.codice_atc = @AtcCode
+                LIMIT 1";
+
+            await using var cmd = new NpgsqlCommand(query, connection);
+            cmd.Parameters.AddWithValue("@AtcCode", atcCode);
+
+            var result = await cmd.ExecuteScalarAsync();
+            return result?.ToString();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Impossibile recuperare principio attivo per ATC: {AtcCode}", atcCode);
+            return null;
         }
     }
 

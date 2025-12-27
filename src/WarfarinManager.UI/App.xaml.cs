@@ -95,9 +95,10 @@ public partial class App : Application
         services.AddScoped<PengoNomogramService>();
         services.AddScoped<PostgreSqlImportService>();
         services.AddScoped<IMillepsDataService, MillepsDataService>();
+        services.AddScoped<IMedicationSyncService, MedicationSyncService>();
 
-        // Millewin Integration Service (singleton per mantenere lo stato)
-        services.AddSingleton<IMillewinIntegrationService, MillewinIntegrationService>();
+        // Millewin Integration Service (scoped per allineamento con IMillepsDataService)
+        services.AddScoped<IMillewinIntegrationService, MillewinIntegrationService>();
 
         // DOAC Services
         services.AddScoped<IDOACInteractionService, DOACInteractionService>();
@@ -329,6 +330,16 @@ public partial class App : Application
             // MillewinCode: Aggiunto per integrazione Millewin - codice univoco paziente (p.codice)
             await EnsureColumnExistsAsync(connection, "Patients", "MillewinCode",
                 "TEXT NULL");
+
+            // =========================================================================
+            // TABELLA: Medications - Campi Milleps (v1.4.0)
+            // =========================================================================
+            await EnsureColumnExistsAsync(connection, "Medications", "ActiveIngredient",
+                "TEXT NULL");
+            await EnsureColumnExistsAsync(connection, "Medications", "AtcCode",
+                "TEXT NULL");
+            await EnsureColumnExistsAsync(connection, "Medications", "Source",
+                "INTEGER NOT NULL DEFAULT 0");
 
             // =========================================================================
             // TABELLA: DoacMonitoring (nuova per modulo DOAC)

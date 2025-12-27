@@ -23,11 +23,14 @@ public partial class MedicationsViewModel : ObservableObject
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IInteractionCheckerService _interactionService;
+    private readonly IMedicationSyncService _syncService;
     private readonly IDialogService _dialogService;
     private readonly ILogger<MedicationsViewModel> _logger;
 
     [ObservableProperty]
     private int _patientId;
+
+    private string _patientFiscalCode = string.Empty;
 
     [ObservableProperty]
     private ObservableCollection<MedicationDto> _medications = new();
@@ -84,27 +87,58 @@ public partial class MedicationsViewModel : ObservableObject
     [ObservableProperty]
     private int _moderateRiskCount;
 
+    // Sincronizzazione Milleps
+    [ObservableProperty]
+    private bool _isSyncing;
+
+    [ObservableProperty]
+    private bool _canSync;
+
+    [ObservableProperty]
+    private int _millepsCount;
+
     public MedicationsViewModel(
         IUnitOfWork unitOfWork,
         IInteractionCheckerService interactionService,
+        IMedicationSyncService syncService,
         IDialogService dialogService,
         ILogger<MedicationsViewModel> logger)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _interactionService = interactionService ?? throw new ArgumentNullException(nameof(interactionService));
+        _syncService = syncService ?? throw new ArgumentNullException(nameof(syncService));
         _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+        // Verifica disponibilita sincronizzazione
+        CanSync = _syncService.IsSyncAvailable;
     }
 
     /// <summary>
     /// Carica i farmaci del paziente
     /// </summary>
-    public async Task LoadMedicationsAsync(int patientId)
+    public async Task LoadMedicationsAsync(int patientId, string? fiscalCode = null)
     {
         try
         {
             IsLoading = true;
             PatientId = patientId;
+
+            // Salva codice fiscale per sincronizzazione
+            if (!string.IsNullOrEmpty(fiscalCode))
+            {
+                _patientFiscalCode = fiscalCode;
+            }
+            else
+            {
+                // Recupera codice fiscale dal paziente
+                var patient = await _unitOfWork.Database.Patients
+                    .FirstOrDefaultAsync(p => p.Id == patientId);
+                _patientFiscalCode = patient?.FiscalCode ?? string.Empty;
+            }
+
+            // Aggiorna stato sincronizzazione
+            CanSync = _syncService.IsSyncAvailable && !string.IsNullOrEmpty(_patientFiscalCode);
 
             _logger.LogInformation("Caricamento farmaci per paziente {PatientId}", patientId);
 
@@ -149,6 +183,7 @@ public partial class MedicationsViewModel : ObservableObject
         TotalMedications = Medications.Count(m => m.IsActive);
         HighRiskCount = Medications.Count(m => m.IsActive && m.InteractionLevel == InteractionLevel.High);
         ModerateRiskCount = Medications.Count(m => m.IsActive && m.InteractionLevel == InteractionLevel.Moderate);
+        MillepsCount = Medications.Count(m => m.IsActive && m.IsFromMilleps);
     }
 
     /// <summary>
@@ -543,6 +578,80 @@ public partial class MedicationsViewModel : ObservableObject
     }
 
     /// <summary>
+    /// Sincronizza i farmaci da Millewin
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanSyncFromMilleps))]
+    private async Task SyncFromMillepsAsync()
+    {
+        if (string.IsNullOrEmpty(_patientFiscalCode))
+        {
+            _dialogService.ShowError(
+                "Codice fiscale del paziente non disponibile per la sincronizzazione.",
+                "Sincronizzazione non disponibile");
+            return;
+        }
+
+        try
+        {
+            IsSyncing = true;
+
+            _logger.LogInformation(
+                "Avvio sincronizzazione farmaci da Millewin per paziente {PatientId}",
+                PatientId);
+
+            var result = await _syncService.SyncMedicationsAsync(PatientId, _patientFiscalCode);
+
+            if (!result.Success)
+            {
+                _dialogService.ShowError(
+                    $"Sincronizzazione non riuscita:\n{result.ErrorMessage}",
+                    "Errore Sincronizzazione");
+                return;
+            }
+
+            // Ricarica la lista farmaci
+            await LoadMedicationsAsync(PatientId, _patientFiscalCode);
+
+            // Mostra messaggio risultato
+            if (result.HasChanges)
+            {
+                var message = "Sincronizzazione completata:\n\n";
+
+                if (result.Added > 0)
+                    message += $"  + {result.Added} farmaci aggiunti\n";
+                if (result.Updated > 0)
+                    message += $"  ~ {result.Updated} farmaci aggiornati\n";
+                if (result.Deactivated > 0)
+                    message += $"  - {result.Deactivated} farmaci disattivati\n";
+
+                if (result.NewInteractions > 0)
+                {
+                    message += $"\n  Rilevate {result.NewInteractions} nuove interazioni con Warfarin.";
+                }
+
+                _dialogService.ShowInformation(message, "Sincronizzazione Millewin");
+            }
+            else
+            {
+                _dialogService.ShowInformation(
+                    "Nessuna modifica necessaria.\nI farmaci sono gia sincronizzati con Millewin.",
+                    "Sincronizzazione Millewin");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Errore durante sincronizzazione farmaci da Millewin");
+            _dialogService.ShowError($"Errore: {ex.Message}", "Errore Sincronizzazione");
+        }
+        finally
+        {
+            IsSyncing = false;
+        }
+    }
+
+    private bool CanSyncFromMilleps() => CanSync && !IsSyncing && !string.IsNullOrEmpty(_patientFiscalCode);
+
+    /// <summary>
     /// Toggle visualizzazione solo farmaci attivi
     /// </summary>
     partial void OnShowOnlyActiveChanged(bool value)
@@ -575,6 +684,9 @@ public partial class MedicationsViewModel : ObservableObject
             Id = medication.Id,
             PatientId = medication.PatientId,
             MedicationName = medication.MedicationName,
+            AtcCode = medication.AtcCode,
+            ActiveIngredient = medication.ActiveIngredient,
+            Source = medication.Source,
             Dosage = medication.Dosage,
             Frequency = medication.Frequency,
             StartDate = medication.StartDate,

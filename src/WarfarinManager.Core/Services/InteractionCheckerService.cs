@@ -25,7 +25,12 @@ public class InteractionCheckerService : IInteractionCheckerService
 
     public async Task<InteractionCheckResult> CheckInteractionAsync(string medicationName)
     {
-        if (string.IsNullOrWhiteSpace(medicationName))
+        return await CheckInteractionAsync(medicationName, null);
+    }
+
+    public async Task<InteractionCheckResult> CheckInteractionAsync(string medicationName, string? activeIngredient)
+    {
+        if (string.IsNullOrWhiteSpace(medicationName) && string.IsNullOrWhiteSpace(activeIngredient))
         {
             return new InteractionCheckResult
             {
@@ -37,16 +42,37 @@ public class InteractionCheckerService : IInteractionCheckerService
 
         try
         {
-            var drug = await _drugRepository.FindByNameAsync(medicationName.Trim());
+            InteractionDrug? drug = null;
+
+            // Prima cerca per nome commerciale
+            if (!string.IsNullOrWhiteSpace(medicationName))
+            {
+                drug = await _drugRepository.FindByNameAsync(medicationName.Trim());
+            }
+
+            // Se non trovato, cerca per principio attivo
+            if (drug == null && !string.IsNullOrWhiteSpace(activeIngredient))
+            {
+                drug = await _drugRepository.FindByNameAsync(activeIngredient.Trim());
+                if (drug != null)
+                {
+                    _logger.LogInformation(
+                        "Farmaco '{MedicationName}' trovato tramite principio attivo '{ActiveIngredient}'",
+                        medicationName, activeIngredient);
+                }
+            }
 
             if (drug == null)
             {
-                _logger.LogInformation("Farmaco '{MedicationName}' non trovato nel database interazioni", medicationName);
+                _logger.LogInformation(
+                    "Farmaco '{MedicationName}' (principio attivo: '{ActiveIngredient}') non trovato nel database interazioni",
+                    medicationName, activeIngredient ?? "N/A");
+
                 return new InteractionCheckResult
                 {
                     HasInteraction = false,
                     InteractionLevel = InteractionLevel.None,
-                    MedicationName = medicationName,
+                    MedicationName = medicationName ?? activeIngredient ?? string.Empty,
                     Message = "Farmaco non presente nel database delle interazioni note"
                 };
             }

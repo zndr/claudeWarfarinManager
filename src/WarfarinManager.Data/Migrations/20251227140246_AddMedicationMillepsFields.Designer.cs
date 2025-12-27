@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WarfarinManager.Data.Context;
 
@@ -10,9 +11,11 @@ using WarfarinManager.Data.Context;
 namespace WarfarinManager.Data.Migrations
 {
     [DbContext(typeof(WarfarinDbContext))]
-    partial class WarfarinDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251227140246_AddMedicationMillepsFields")]
+    partial class AddMedicationMillepsFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");

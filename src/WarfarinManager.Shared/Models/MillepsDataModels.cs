@@ -108,8 +108,8 @@ public class MillepsLabResultsCollection
 /// </summary>
 public record MillepsMedication(
     string AtcCode,            // co_atc - codice ATC
-    string DrugName,           // te_des - nome farmaco
-    string? Dosage,            // dosaggio (se disponibile)
+    string DrugName,           // co_des - nome commerciale farmaco
+    string? ActiveIngredient,  // atc_des - principio attivo (da tab_atc)
     DateTime? StartDate        // data_open - inizio terapia
 );
 

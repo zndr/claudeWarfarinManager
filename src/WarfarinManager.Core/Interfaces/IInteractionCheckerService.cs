@@ -16,6 +16,15 @@ public interface IInteractionCheckerService
     Task<InteractionCheckResult> CheckInteractionAsync(string medicationName);
 
     /// <summary>
+    /// Verifica l'interazione di un farmaco con Warfarin cercando prima per nome,
+    /// poi per principio attivo se il nome non viene trovato
+    /// </summary>
+    /// <param name="medicationName">Nome commerciale del farmaco</param>
+    /// <param name="activeIngredient">Principio attivo (opzionale)</param>
+    /// <returns>Risultato della verifica con livello di rischio e raccomandazioni</returns>
+    Task<InteractionCheckResult> CheckInteractionAsync(string medicationName, string? activeIngredient);
+
+    /// <summary>
     /// Ottiene la raccomandazione per l'aggiustamento della dose
     /// </summary>
     /// <param name="medicationName">Nome del farmaco</param>

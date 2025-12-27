@@ -13,6 +13,7 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
         <converters:CountGreaterThanZeroToVisibilityConverter x:Key="CountGreaterThanZeroToVisibilityConverter"/>
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
         
         <!-- Stile pulsante standard -->
         <Style x:Key="StandardButtonStyle" TargetType="Button">
@@ -86,7 +87,25 @@
                             Background="#5C2D91"
                             Foreground="{DynamicResource TextOnPrimaryBrush}"
                             Style="{StaticResource StandardButtonStyle}"
+                            Margin="0,0,10,0"
                             Visibility="{Binding IsAddingMedication, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+
+                    <!-- Separatore visivo -->
+                    <Rectangle Width="1" Height="24" Fill="{DynamicResource BorderBrush}" Margin="5,0,15,0"
+                               Visibility="{Binding CanSync, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                    <!-- Pulsante Sincronizzazione Millewin -->
+                    <Button Command="{Binding SyncFromMillepsCommand}"
+                            Background="#0078D4"
+                            Foreground="{DynamicResource TextOnPrimaryBrush}"
+                            Style="{StaticResource StandardButtonStyle}"
+                            ToolTip="Sincronizza le terapie continuative da Millewin"
+                            Visibility="{Binding CanSync, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🔄 Sync Millewin" Visibility="{Binding IsSyncing, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+                            <TextBlock Text="⏳ Sincronizzazione..." Visibility="{Binding IsSyncing, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
 
                 <!-- Statistiche -->
@@ -112,6 +131,13 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="⚡ Moderato: " FontWeight="SemiBold" Foreground="#E65100" VerticalAlignment="Center"/>
                             <TextBlock Text="{Binding ModerateRiskCount}" FontWeight="Bold" Foreground="#E65100" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Background="#E3F2FD" CornerRadius="4" Padding="12,6" Margin="5,0"
+                            Visibility="{Binding MillepsCount, Converter={StaticResource CountGreaterThanZeroToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🔄 Millewin: " FontWeight="SemiBold" Foreground="#1565C0" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding MillepsCount}" FontWeight="Bold" Foreground="#1565C0" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>
@@ -364,10 +390,22 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="{Binding MedicationName}" 
-                                           FontWeight="SemiBold"
-                                           FontSize="13"/>
-                                <TextBlock Text="{Binding InteractionLevelDescription}" 
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding MedicationName}"
+                                               FontWeight="SemiBold"
+                                               FontSize="13"/>
+                                    <!-- Badge Millewin -->
+                                    <Border Background="#E3F2FD" CornerRadius="3" Padding="6,2" Margin="8,0,0,0"
+                                            Visibility="{Binding IsFromMilleps, Converter={StaticResource BoolToVisibilityConverter}}"
+                                            ToolTip="Importato da Millewin">
+                                        <TextBlock Text="MW" FontSize="9" FontWeight="Bold" Foreground="#1565C0"/>
+                                    </Border>
+                                </StackPanel>
+                                <TextBlock Text="{Binding ActiveIngredient}"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           Visibility="{Binding ActiveIngredient, Converter={StaticResource StringToVisibilityConverter}, FallbackValue=Collapsed}"/>
+                                <TextBlock Text="{Binding InteractionLevelDescription}"
                                            FontSize="11"
                                            Foreground="{Binding InteractionColor}"
                                            Visibility="{Binding HasInteraction, Converter={StaticResource BoolToVisibilityConverter}}"/>
