@@ -104,7 +104,7 @@
             <TabItem Header="Novità">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Background="{DynamicResource ContentBackgroundBrush}">
                     <StackPanel Margin="30,20">
-                        <!--  Versione 1.3.0.0  -->
+                        <!--  Versione 1.4.0.0  -->
                         <Border
                             Margin="0,0,0,15"
                             Padding="15"
@@ -118,7 +118,7 @@
                                         FontSize="16"
                                         FontWeight="SemiBold"
                                         Foreground="{DynamicResource TextPrimaryBrush}"
-                                        Text="Versione 1.3.0.0 (26 Dicembre 2025)" />
+                                        Text="Versione 1.4.0.0 (27 Dicembre 2025)" />
                                     <Border
                                         Margin="10,0,0,0"
                                         Padding="8,2"
@@ -132,6 +132,38 @@
                                             Text="NUOVO" />
                                     </Border>
                                 </StackPanel>
+                                <TextBlock
+                                    Margin="0,10,0,5"
+                                    FontWeight="SemiBold"
+                                    Foreground="#9B59B6"
+                                    Text="Integrazione Millewin Migliorata:" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Collegamento diretto paziente-Millewin tramite codice univoco" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Nuovo campo 'Codice MWin' nel form anagrafica paziente" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Query SQL ottimizzate con snippet riutilizzabili" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Validazione paziente-medico con clausole obbligatorie" />
+                                <TextBlock
+                                    Margin="0,10,0,5"
+                                    FontWeight="SemiBold"
+                                    Foreground="#E74C3C"
+                                    Text="Bug Fix:" />
+                                <TextBlock Margin="10,3" Foreground="{DynamicResource TextPrimaryBrush}" Text="• Corretto avviso 'modifiche non salvate' errato nel dialog anagrafica" />
+                            </StackPanel>
+                        </Border>
+
+                        <!--  Versione 1.3.0.0  -->
+                        <Border
+                            Margin="0,0,0,15"
+                            Padding="15"
+                            Background="{DynamicResource CardBackgroundBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="5">
+                            <StackPanel>
+                                <TextBlock
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource TextPrimaryBrush}"
+                                    Text="Versione 1.3.0.0 (26 Dicembre 2025)" />
                                 <TextBlock
                                     Margin="0,10,0,5"
                                     FontWeight="SemiBold"

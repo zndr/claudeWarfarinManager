@@ -3,6 +3,10 @@
 
 
 
+
+## [1.4.0.0] - 2025-12-27
+
+Integrazione Millewin migliorata: collegamento diretto paziente-Millewin tramite codice univoco, query SQL ottimizzate, campo Codice MWin nel form anagrafica. Corretto bug modifiche non salvate.
 ## [1.3.0.0] - 2025-12-26
 
 Versione 1.3.0.0 - DoacGEST e Biblioteca Documenti

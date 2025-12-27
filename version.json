@@ -1,8 +1,8 @@
 {
-    "Version":  "1.3.0.0",
-    "ReleaseNotes":  "Versione 1.3.0.0 - DoacGEST e Biblioteca Documenti\n\nNUOVE FUNZIONALITA:\n- Modulo DoacGEST per gestione terapia con DOAC (NAO)\n- Calcolo automatico dosaggio DOAC basato su peso, funzionalita renale e indicazione\n- Checker interazioni farmacologiche DOAC con P-gp e CYP3A4\n- Calcolo score HAS-BLED per rischio emorragico\n- Monitoraggio parametri ematochimici e renali\n- Biblioteca Documenti con accesso rapido a guide e RCP\n\nDOCUMENTI INCLUSI:\n- RCP ufficiali EMA per tutti i DOAC (Apixaban, Rivaroxaban, Dabigatran, Edoxaban)\n- Linee guida FCSA, FCSA-SIMG 2018, ESC 2024\n- Guida Bridge Therapy e Reazioni Avverse Warfarin\n- Checker interazioni DOAC interattivo\n\nMIGLIORAMENTI:\n- Nuovo menu Strumenti con accesso diretto a DoacGEST\n- Ricerca documenti per titolo, descrizione e keywords\n- Filtro documenti per categoria\n- Fix vari bug e miglioramenti UX",
-    "DownloadUrl":  "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.3.0.0/TaoGEST-Setup-v1.3.0.0.exe",
-    "ReleaseDate":  "2025-12-26",
-    "Sha256Hash":  "7B433D1E98DF4F6F9D6455062C59CDAF2C278EFD21CBC06C2151F2A85D433786",
-    "FileSize":  75431897
+    "Version":  "1.4.0.0",
+    "ReleaseNotes":  "Integrazione Millewin migliorata: collegamento diretto paziente-Millewin tramite codice univoco, query SQL ottimizzate, campo Codice MWin nel form anagrafica. Corretto bug modifiche non salvate.",
+    "DownloadUrl":  "https://github.com/zndr/claudeWarfarinManager/releases/download/v1.4.0.0/TaoGEST-Setup-v1.4.0.0.exe",
+    "ReleaseDate":  "2025-12-27",
+    "Sha256Hash":  "A20C9EFB63A6F7950D45B931176E9E110480B5E873C1AEF8A39BFFBF75D59944",
+    "FileSize":  75459730
 }
